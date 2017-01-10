@@ -1,6 +1,6 @@
 ---
 title: Applicability and Management of the QUIC Transport Protocol
-docname: draft-kuehlewind-quic-appman-00
+docname: draft-kuehlewind-quic-appman-latest
 date:
 category: info
 
