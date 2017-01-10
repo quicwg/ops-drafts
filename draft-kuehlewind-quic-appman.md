@@ -19,7 +19,7 @@ author:
     street: Gloriastrasse 35
     city: 8092 Zurich
     country: Switzerland
--
+  -
     ins: B. Trammell
     name: Brian Trammell
     org: ETH Zurich
