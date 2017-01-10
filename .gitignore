@@ -9,3 +9,5 @@
 .targets.mk
 venv/
 issues.json
+lib
+draft-kuehlewind-quic-appman.md

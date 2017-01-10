@@ -2,8 +2,8 @@
 
 Before submitting feedback, please familiarize yourself with our current issues
 list and review the [working group
-documents](https://datatracker.ietf.org/wg/{WG_NAME}/documents/) and [mailing
-list discussion](https://mailarchive.ietf.org/arch/browse/{WG_NAME}/). If you're
+documents](https://datatracker.ietf.org/wg/quic/documents/) and [mailing
+list discussion](https://mailarchive.ietf.org/arch/browse/quic/). If you're
 new to this, you may also want to read the [Tao of the
 IETF](https://www.ietf.org/tao.html).
 
@@ -12,7 +12,7 @@ WELL"](#note-well) terms outlined below.
 
 1. The best way to provide feedback (editorial or design) and ask questions is
 sending an e-mail to our mailing list
-([info](https://www.ietf.org/mailman/listinfo/{WG_NAME})). This will ensure that
+([info](https://www.ietf.org/mailman/listinfo/quic)). This will ensure that
 the entire Working Group sees your input in a timely fashion.
 
 2. If you have **editorial** suggestions (i.e., those that do not change the
