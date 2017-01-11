@@ -30,10 +30,11 @@ author:
 
 normative:
   RFC2119:
-  
   I-D.ietf-quic-transport:
 
 informative:
+  I-D.ietf-quic-tls:
+  I-D.ietf-quic-http:
   I-D.trammell-plus-statefulness:
   Trammell16:
     title: Internet Path Transparency Measurements using RIPE Atlas (RIPE72 MAT presentation)
