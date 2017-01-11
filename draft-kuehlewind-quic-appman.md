@@ -83,8 +83,9 @@ development in the IETF quic working group, focusing on support of semantics
 as needed for HTTP/2 {{I-D.ietf-quic-http}} such as stream-multiplexing to
 avoid head-of-line blocking. Based on current deployment practices, QUIC is
 encapsulated in UDP and encrypted by default. This means the version of QUIC
-that is currently under development will integrate TLS 1.3  {{I-D.ietf-quic-
-tls}} to encrypt all payload data including all header information needed for
+that is currently under development will integrate TLS 1.3 
+{{I-D.ietf-quic-tls}} to encrypt all payload data including all header 
+information needed for
 for stream-multiplexing and most on the  other header information. Given QUIC
 is an end-to-end transport protocol, all information in the protocol header
 is not meant to be mutable by the network, and will therefore be integrity-
