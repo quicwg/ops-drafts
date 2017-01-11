@@ -178,58 +178,52 @@ version number is present, and the meaning of the version number field itself.
 
 The rest of this document is concerned with the public header structure of the version of the QUIC transport document that is current as of this writing.
 
-## Version xxx QUIC Public Header Structure
+## Version xxx: QUIC Public Header Structure
 
-in the current version of the QUIC protocol, here's what is available and when:
+In the current version of the QUIC protocol, the following information are optionally exposed in the QUIC header: 
 
-- version 
-- connection ID (always in version negotiation and public reset, otherwise optional)
-- packet number (always except version negotiation and public reset)
-- flags (always, but might have different meanings, expect version flag)
-- diversification nonce (wtfis????)
+- flags: All QUIC packets have one byte of flags at the beginning of their header. The definition of these flags can change with the version of QUIC, expect for the version flag that indicated that the version number is present in the QUIC header. Other bits of the flag field in the current version of QUIC are the connection ID flag, the packet number size field, the public reset flag, and the kay phase flag.
+- version number: The version number is present if the version bit in the flags field is set. The version flag is always set in the first packet of a connection but could also be set in other packets.
+- connection ID: The connection ID is present if the connection ID bit in the flag field is set. The connection ID flag is always set on the first packet of a connection and can be set on others. Further the connection ID flag is always set when the public reset bit is set as well. QUIC connections are resistant to IP address rebindings. Therefore if exposed, the same connection ID can occur in QUIC packet with different 5-tuples, indicating that this QUIC packet belongs to the same connection.
+- packet number: The packet number is variable length as indicated by packet number size field. If the length is indicated as zero the packet number is not present. If the public reset flag is set, the packet number cannot be present.
+- diversification nonce (????)
 
 ## Integrity Protection of the Wire Image
 
-no meddleboxes
+All information in the QUIC header, even if exposed to the network, are integrity protected, therefore a device on the network path MUST not change these information. Altering of header information would fail any integrity check, leading to packet drop at the receiver.
 
 ## Connection ID and Rebinding
 
-a flow might change one of its IP addresses but keep the same connection ID
+A flow might change one of its IP addresses but keep the same connection ID (discussed above...)
+
+[EDITOR'S NOTE: What does that mean for the network, if anything (given the connection ID is only rarely present)?]
 
 ## Packet Numbers
 
-note that packet numbers are monotonically increasing, but that packets
-containing retransmissions as well as packets containing only acknowledgments
-will get new packet numbers. Pure control and retransmission packets are
+Packet numbers are monotonically increasing. 
+Packets containing retransmissions as well as packets containing only control information, such as acknowledgments,
+will get a new packet numbers. Therefore pure control and retransmission packets are
 impossible to distinguish on the wire.
+
+While loss detection in QUIC is still based on packet numbers, congestion control by default provides richer information that plain TCP does. Especially, QUIC does not rely on duplicated ACKs, making it more resistant to re-ordering.
 
 ## Stateful Treatment of QUIC Traffic {#statefulness}
 
-borrow from {{I-D.trammell-plus-statefulness}}. connection ID echo as
-association/confirmation signal. public reset as partial one-way stop. note
-that adding two-way stop as in {{I-D.trammell-plus-statefulness}} has nice
-properties.
+Stateful network devices such as firewalls use exposed header information to support state setup and tear-down. See {{I-D.trammell-plus-statefulness}} for a general model of in-network state management. In-line with {{I-D.trammell-plus-statefulness}}, a connection ID echo can be used as an association/confirmation signal and QUIC's public reset as partial one-way stop. 
+
+[EDITOR'S NOTE: note public reset changes for state management may be desirable: two-way stop as in {{I-D.trammell-plus-statefulness}} has nice properties.]
 
 ## Measuring QUIC Traffic
 
-look at the packet numbers, gaps mean upstream loss. out-of-order always means
-upstream reordering. unlike with TCP, there is no way to measure RTT
-passively.
+Given packet numbers can be expected to be exposed on most packets (expect public reset but that terminates the connection anyway), packet numbers can be used by the network to measure loss that occurred between the sender and the measurement point in the network. Further out-of-order packets similarly indicate upstream reordering. Unlike with TCP, there is no way to measure downstream loss and RTT passively.
 
-note that addition of a simple packet number echo would allow passive RTT
-measurement and partial passive downstream loss/reordering measurement. packet
+[EDITOR'S NOTE: the addition of a simple packet number echo would allow passive RTT
+measurement and partial passive downstream loss/reordering measurement. Packet
 number echo can be sampled at the echo-side (i.e. one-in-N packets or 1/p
-packets can carry an echo) for efficiency tradeoff, if necessary.
+packets can carry an echo) for efficiency tradeoff, if necessary.]
 
-look at the connection IDs for partial tracking of mobility events.
+[EDITOR'S NOTE: look at the connection IDs for partial tracking of mobility events.]
 
-# Open Issues in the QUIC Transport Protocol
-
-note public reset changes for state management may be desirable.
-
-note packet number echo for measurement may be desirable.
-
-note that fiddly-ass packet header structures are asking for hard-to-debug trouble.
 
 # IANA Considerations
 
@@ -237,7 +231,7 @@ This document has no actions for IANA.
 
 # Security Considerations
 
-write me
+Some security considerations can be found on the body of this document. However, further consideration might be needed while this document evolves.
 
 # Acknowledgments
 
