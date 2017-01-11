@@ -36,66 +36,95 @@ informative:
 
 --- abstract
 
-This document discusses the applicability of the QUIC transport protocol,
-focusing on caveats impacting application protocol development and deployment
-over QUIC, and network operations involving QUIC traffic. It also describes
-the manageability of QUIC traffic on Internet-connected networks, blah blah
-blorg snarf.
+This document discusses the applicability and manageability of the QUIC
+transport protocol, focusing on caveats impacting application protocol
+development and deployment over QUIC, and network operations involving QUIC
+traffic.
 
 --- middle
 
 # Introduction
 
-frontmatter!!
-
-note that this document is only notes. remove this note when we have written a
-real draft.
-
-# Terminology
-
-do we need this? mirja says no.
+[EDITOR'S NOTE: This document contains notes toward a -00 revision of the QUIC
+applicability and manageability statement. Write some frontmatter, then remove
+this note when we have written a real draft.]
 
 # Applicability of QUIC
 
-note that applicability concerns mainly those aspects of the protocol that
-have an impact on the applications that run over QUIC.
+The QUIC transport is more suited to certain applications and deployment
+scenarios than others. The applicability of the protocol concerns mainly those
+aspects of the protocol that have an impact on the applications that run over
+QUIC. In the following subsections we discuss specific caveats to QUIC's
+applicability, and issues that application developers must consider when using
+QUIC as a transport for their application.
 
 ## The Necessity of TCP Fallback
 
-UDP blocking about five percent, application must be able to fall back to TCP
-over TLS. there are interface issues here: first, must work without stream
-multiplexing. second, crypto must work with vanilla TLS 1.3.
+QUIC uses UDP as a substrate for userspace implementation and port numbers for
+NAT and middlebox traversal. While there is no evidence of widespread,
+systematic disadvantage of UDP traffic compared to TCP {{Edeline16}},
+somewhere between three {{Trammell16-RIPE}} five {{Swett16-MAPRG}} percent of
+networks simply block UDP traffic. All applications running on top of QUIC
+must therefore either be prepared to accept connectivity failure on such
+networks, or be engineered to fall back to TLS, or TLS-equivalent crypto, over
+TCP. These applications must operate, perhaps with impaired functionality, in
+the absence of features provided by QUIC not present in TLS over TCP: stream
+multiplexing,
+
+We hope that the deployment of a proposed standard version of the QUIC
+protocol will provide an incentive for these networks to permit QUIC traffic.
+Indeed, the ability to treat QUIC traffic statefully as in {{statefulness}}
+removes one network management incentive to block this traffic. In the
+intermediate-term future, QUIC may therefore be able to evolve into a general-
+purpose transport protocol for all applications, without this caveat.
 
 ## Zero RTT: Here There Be Dragons
 
-Zero RTT data must be treated specially by the application layer: it must be
-idempotent, as it may be retransmitted. Note that there is also a replay
-attack vector here, so the application layer protocol must also be defined in
-such a way to eliminate the utility of a replay attack using zero RTT data.
+QUIC provides for 0-RTT connection establishment (see section 3.2 of 
+{{I-D.ietf-quic-transport}}). However, data in the frames contained in the
+first packet of a such a connection must be treated specially by the
+application layer. Since a retransmission of these frames resulting from a
+lost acknowledgment may cause the data to appear twice, either the
+application- layer protocol has to be designed such that all such data is
+treated as idempotent, or there must be some application-layer mechanism for
+recognizing spuriously retransmitted frame and dropping them.
 
-## Other Shiny Crypto Stuff?
-
-what happens when we have 
+[EDITOR'S NOTE: discuss defenses against replay attacks using 0-RTT data.]
 
 ## Stream versus Flow Multiplexing
 
-Since stream multiplexing is implemented within the crypto veil, it is not
-visible to the network. therefore it is not useful for differentiating streams
-in terms of network treatment. in this case, use different five-tuples
-instead. this isn't a big deal due to low costs of setting up a new
-connection.
+QUIC's stream multiplexing feature allows applications to run multiple streams
+over a single connection associated at a point in time with a single five-
+tuple. Streams are meaningful only to the application; since stream
+information is carried inside QUIC's encryption boundary, no information about
+the stream(s) whose frames are carried by a given packet is visible to the
+network, so stream multiplexing is not useful for differentiating streams in
+terms of network treatment.
+
+Different QUIC traffic requiring different network treatment should therefore
+be carried over different five-tuples (i.e. multiple connections). If this
+functionality is deemed important, the protocol's rebinding functionality (see
+section 3.7 of {{I-D.ietf-quic-transport}}) could be extended to allow
+multiple five-tuples to share a connection ID simultaneously, instead of
+sequentially.
 
 # Manageability of QUIC
 
-note that manageability concerns mainly those aspects of the protocol that
-have an impact on the operations of devices that forward QUIC packets. here we
-concern ourselves primarily with QUIC's wire image, which we define as the
-information available in the unencrypted packet header in each QUIC packet,
-and the dynamics of that information.
+The properties of transport-layer protocols have an effect on the operations
+and management of the networks that carry them. This section discusses those
+aspects of the QUIC transport protocol that have an impact on the design and
+operation of devices that forward QUIC packets. This section is concerned
+primarily with QUIC's unencrypted wire image, which we define as the
+information available in the packet header in each QUIC packet, and the
+dynamics of that information.
 
 ## Versioning
 
-everything can change except the position and meaning of the version field. 
+QUIC is a versioned protocol. Everything about the header format can change
+except the mechanism by which a receiver can determine whether and where a
+version number is present, and the meaning of the version number field itself.
+
+The rest of this document is concerned with the public header structure of the version of the QUIC transport document that is current as of this writing.
 
 ## Version xxx QUIC Public Header Structure
 
@@ -122,7 +151,7 @@ containing retransmissions as well as packets containing only acknowledgments
 will get new packet numbers. Pure control and retransmission packets are
 impossible to distinguish on the wire.
 
-## Stateful Treatment of QUIC Traffic
+## Stateful Treatment of QUIC Traffic {#statefulness}
 
 borrow from {{I-D.trammell-plus-statefulness}}. connection ID echo as
 association/confirmation signal. public reset as partial one-way stop. note
