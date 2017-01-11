@@ -35,7 +35,37 @@ normative:
 
 informative:
   I-D.trammell-plus-statefulness:
-
+  Trammell16:
+    title: Internet Path Transparency Measurements using RIPE Atlas (RIPE72 MAT presentation)
+    author:
+      -
+        ins: B. Trammell
+      -
+        ins: M. Kuehlewind
+    url: https://ripe72.ripe.net/wp-content/uploads/presentations/86-atlas-udpdiff.pdf
+    date: 2016-05-25
+  Edeline16:
+    title: Using UDP for Internet Transport Evolution (arXiv preprint 1612.07816)
+    author:
+      -
+        ins: K. Edeline
+      -
+        ins: M. Kuehlewind
+      -
+        ins: B. Trammell
+      - 
+        ins: E. Aben
+      - 
+        ins: B. Donnet
+    url: https://arxiv.org/abs/1612.07816
+    date: 2016-12-22
+  Swett16:
+    title: QUIC Deployment Experience at Google (IETF96 QUIC BoF presentation)
+    author:
+      -
+        ins: I. Swett
+    url: https://www.ietf.org/proceedings/96/slides/slides-96-quic-3.pdf
+    date: 2016-07-20
 --- abstract
 
 This document discusses the applicability and manageability of the QUIC
@@ -84,8 +114,8 @@ QUIC as a transport for their application.
 
 QUIC uses UDP as a substrate for userspace implementation and port numbers for
 NAT and middlebox traversal. While there is no evidence of widespread,
-systematic disadvantage of UDP traffic compared to TCP {{Edeline16}},
-somewhere between three {{Trammell16-RIPE}} five {{Swett16-MAPRG}} percent of
+systematic disadvantage of UDP traffic compared to TCP in the Internet {{Edeline16}},
+somewhere between three {{Trammell16}} and five {{Swett16}} percent of
 networks simply block UDP traffic. All applications running on top of QUIC
 must therefore either be prepared to accept connectivity failure on such
 networks, or be engineered to fall back to TLS, or TLS-equivalent crypto, over
