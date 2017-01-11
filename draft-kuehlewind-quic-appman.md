@@ -1,6 +1,6 @@
 ---
 title: Applicability and Management of the QUIC Transport Protocol
-docname: draft-kuehlewind-quic-appman-latest
+docname: draft-kuehlewind-quic-appman-00
 date:
 category: info
 
@@ -95,9 +95,9 @@ This document serves two purposes:
 
 1. It provides guidance for application developers that want to use the QUIC
 protocol without implementing it on their own. This includes general guidance
-for application use of HTTP/3 over QUIC as well as the use of other
+for application use of HTTP/2 over QUIC as well as the use of other
 application layer protocols over QUIC. For specific guidance on how to
-integrate HTTP/2 with quick see {{I-D.ietf-quic-http}}.
+integrate HTTP/2 with QUIC, see {{I-D.ietf-quic-http}}.
 
 2. It provides guidance for network operation and management of QUIC traffic.
 This includes guidance on how to interpret and utilize information that is
@@ -168,12 +168,12 @@ are carried by a given packet is visible to the network.
 Stream multiplexing is not intended to be used for differentiating streams in
 terms of network treatment. Application traffic requiring different network
 treatment should therefore be carried over different five-tuples (i.e.
-multiple QUIC connections). Given  QUIC's ability to send application data on
-the first packet of a connection  (if a previous connection to the same host
+multiple QUIC connections). Given QUIC's ability to send application data on
+the first packet of a connection (if a previous connection to the same host
 has been successfully established to provide the respective credentials), the
 cost for establishing another connection are extremely low.
 
-[EDITOR'S NOTE: For discussion: If establishing a new connection does seem to
+[EDITOR'S NOTE: For discussion: If establishing a new connection does not seem to
 be sufficient, the protocol's rebinding functionality (see section 3.7 of
 {{I-D.ietf-quic-transport}}) could be extended to allow multiple five-tuples
 to share a connection ID simultaneously, instead of sequentially.]
@@ -197,9 +197,9 @@ version of the QUIC transport document that is current as of this writing.
 
 In the current version of the QUIC protocol, the following information are optionally exposed in the QUIC header: 
 
-- flags: All QUIC packets have one byte of flags at the beginning of their header. The definition of these flags can change with the version of QUIC, expect for the version flag that indicated that the version number is present in the QUIC header. Other bits of the flag field in the current version of QUIC are the connection ID flag, the packet number size field, the public reset flag, and the kay phase flag.
+- flags: All QUIC packets have one byte of flags at the beginning of their header. The definition of these flags can change with the version of QUIC, expect for the version flag that indicated that the version number is present in the QUIC header. Other bits of the flag field in the current version of QUIC are the connection ID flag, the packet number size field, the public reset flag, and the key phase flag.
 - version number: The version number is present if the version bit in the flags field is set. The version flag is always set in the first packet of a connection but could also be set in other packets.
-- connection ID: The connection ID is present if the connection ID bit in the flag field is set. The connection ID flag is always set on the first packet of a connection and can be set on others. Further the connection ID flag is always set when the public reset bit is set as well. QUIC connections are resistant to IP address rebindings. Therefore if exposed, the same connection ID can occur in QUIC packet with different 5-tuples, indicating that this QUIC packet belongs to the same connection.
+- connection ID: The connection ID is present if the connection ID bit in the flag field is set. The connection ID flag is always set on the first packet of a connection and can be set on others. Further the connection ID flag is always set when the public reset bit is set as well. QUIC connections are resistant to IP address changes. Therefore if exposed, the same connection ID can occur in QUIC packet with different 5-tuples, indicating that this QUIC packet belongs to the same connection.
 - packet number: The packet number is variable length as indicated by packet number size field. If the length is indicated as zero the packet number is not present. If the public reset flag is set, the packet number cannot be present.
 - diversification nonce [EDITOR'S NOTE: talk about this once it's clear what it will be...]
 
@@ -224,7 +224,7 @@ as acknowledgments, will get a new packet numbers. Therefore pure control and
 retransmission packets are impossible to distinguish on the wire.
 
 While loss detection in QUIC is still based on packet numbers, congestion
-control by default provides richer information that plain TCP does.
+control by default provides richer information than vanilla TCP does.
 Especially, QUIC does not rely on duplicated ACKs, making it more tolerant of
 packet re-ordering.
 
