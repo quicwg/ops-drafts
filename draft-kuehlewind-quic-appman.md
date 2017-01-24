@@ -227,6 +227,10 @@ control by default provides richer information than vanilla TCP does.
 Especially, QUIC does not rely on duplicated ACKs, making it more tolerant of
 packet re-ordering.
 
+[EDITOR'S NOTE: packet numbers could be skipped; name cases where this is proposed and advise to monitor average link loss rate and disregard overly high loss rates]
+
+[EDITORS'S NOTE: Also for multipath: would packet number be shared in this case?]
+
 ## Stateful Treatment of QUIC Traffic {#statefulness}
 
 Stateful network devices such as firewalls use exposed header information to
@@ -238,6 +242,7 @@ as a partial one-way stop signal.
 
 [EDITOR'S NOTE: note public reset changes for state management may be desirable: two-way stop as in {{I-D.trammell-plus-statefulness}} has nice properties.]
 
+[EDITOR'S NOTE: is the first packet spcial? It can probably be identified but don't misuse this information...?]
 ## Measuring QUIC Traffic
 
 Given packet numbers can be expected to be exposed on most packets (expect
