@@ -1,6 +1,6 @@
 ---
 title: Applicability and Management of the QUIC Transport Protocol
-docname: draft-kuehlewind-quic-appman-00
+docname: draft-kuehlewind-quic-appman-latest
 date:
 category: info
 
@@ -201,7 +201,6 @@ In the current version of the QUIC protocol, the following information are optio
 - version number: The version number is present if the version bit in the flags field is set. The version flag is always set in the first packet of a connection but could also be set in other packets.
 - connection ID: The connection ID is present if the connection ID bit in the flag field is set. The connection ID flag is always set on the first packet of a connection and can be set on others. Further the connection ID flag is always set when the public reset bit is set as well. QUIC connections are resistant to IP address changes. Therefore if exposed, the same connection ID can occur in QUIC packet with different 5-tuples, indicating that this QUIC packet belongs to the same connection.
 - packet number: The packet number is variable length as indicated by packet number size field. If the length is indicated as zero the packet number is not present. If the public reset flag is set, the packet number cannot be present.
-- diversification nonce [EDITOR'S NOTE: talk about this once it's clear what it will be...]
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
