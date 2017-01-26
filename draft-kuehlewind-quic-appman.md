@@ -178,6 +178,9 @@ be sufficient, the protocol's rebinding functionality (see section 3.7 of
 {{I-D.ietf-quic-transport}}) could be extended to allow multiple five-tuples
 to share a connection ID simultaneously, instead of sequentially.]
 
+## Prioritization
+
+
 # Manageability of QUIC
 
 This section discusses those aspects of the QUIC transport protocol that have
