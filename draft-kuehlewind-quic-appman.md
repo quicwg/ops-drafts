@@ -76,6 +76,14 @@ traffic.
 
 --- middle
 
+# Open Issues
+
+From the minutes of the QUIC interim on 26 Jan:
+
+- note fallback might not be TCP, or might be omitted by an application
+- split the document in two: applicability, and manageability
+- managament document should address awareness that different applications / users / communities  have different requirements on information exposure.
+
 # Introduction
 
 QUIC {{I-D.ietf-quic-transport}} is a new transport protocol currently under
@@ -118,6 +126,9 @@ applicability, and issues that application developers must consider when using
 QUIC as a transport for their application.
 
 ## The Necessity of TCP Fallback
+
+[EDITOR'S NOTE: note that fallback might not be TCP; e.g. for DNS over QUIC,
+fallback is straight DNS. note that some applications might choose no fallback]
 
 QUIC uses UDP as a substrate for userspace implementation and port numbers for
 NAT and middlebox traversal. While there is no evidence of widespread,
