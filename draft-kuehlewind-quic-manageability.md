@@ -34,6 +34,18 @@ normative:
   I-D.ietf-quic-tls:
 
 informative:
+  RFC7011:
+  IPIM:
+    title: In-Protocol Internet Measurement (arXiv preprint 1612.02902)
+    author:
+      - 
+        ins: M. Allman
+      -
+        ins: R. Beverly
+      -
+        ins: B. Trammell
+    url: https://arxiv.org/abs/1612.02902
+    date: 2016-12-09
   draft-kuehlewing-quic-applicability:
     title: Applicability of the QUIC Transport Protocol
     docname: draft-kuehlewind-quic-applicability-00
@@ -287,7 +299,7 @@ respective type of traffic.
 "don't do this". Would anyone ever use different QUIC streams like this? There
 is of course the further problem of classifying encrypted traffic.]
 
-As noted in section 4 of {{I-D.kuehlewind-quic-applicability}}, QUIC supports
+As noted in section 4 of {{draft-kuehlewind-quic-applicability}}, QUIC supports
 stream multiplexing within the same connection; i.e. on the same 5-tuple. This provides
 several benefits, however at same time it prevents a 3GPP mobile network from
 working as previously described, because  there is no way to de-multiplex the
