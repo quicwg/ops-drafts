@@ -66,6 +66,28 @@ informative:
         ins: I. Swett
     url: https://www.ietf.org/proceedings/96/slides/slides-96-quic-3.pdf
     date: 2016-07-20
+
+  draft-kuehlewind-quic-manageability:
+    title: Manageability of the QUIC Transport Protocol
+    docname: draft-kuehlewind-quic-manageability-00
+    date: 2017-03-01
+    author:
+      -
+        ins: M. Kuehlewind
+        name: Mirja Kuehlewind
+        org: ETH Zurich
+        email: mirja.kuehlewind@tik.ee.ethz.ch
+        street: Gloriastrasse 35
+        city: 8092 Zurich
+        country: Switzerland
+      -
+        ins: B. Trammell
+        name: Brian Trammell
+        org: ETH Zurich
+        email: ietf@trammell.ch
+        street: Gloriastrasse 35
+        city: 8092 Zurich
+        country: Switzerland
 --- abstract
 
 This document discusses the applicability of the QUIC transport protocol,
@@ -131,7 +153,7 @@ the user that secure communication is unavailable.
 We hope that the deployment of a proposed standard version of the QUIC protocol
 will provide an incentive for these networks to permit QUIC traffic. Indeed, the
 ability to treat QUIC traffic statefully as discussed in section XX of
-{{I-D.kuehlewind-quic-manageability}} would remove one network management
+{{draft-kuehlewind-quic-manageability}} would remove one network management
 incentive to block this traffic.
 
 # Zero RTT: Here There Be Dragons {#zero-rtt}
