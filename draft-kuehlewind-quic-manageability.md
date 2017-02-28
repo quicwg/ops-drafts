@@ -173,6 +173,8 @@ A flow might change one of its IP addresses but keep the same connection ID, as
 noted in {{public-header}} [EDITOR'S NOTE: refer to the appropriate section of
 {{I-D.ietf-quic-transport}} for details on how rebinding works]. 
 
+[EDITOR'S NOTE: Update this section to explain that connection ID may change after 'handshake' if connection ID is server initiated. ]
+
 ## Packet Numbers
 
 The packet number field is always present in the QUIC packet header. The packet
