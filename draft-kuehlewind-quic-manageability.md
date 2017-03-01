@@ -46,7 +46,9 @@ informative:
         ins: B. Trammell
     url: https://arxiv.org/abs/1612.02902
     date: 2016-12-09
-  draft-kuehlewing-quic-applicability:
+  I-D.ietf-quic-http:
+  I-D.trammell-plus-statefulness:
+  draft-kuehlewind-quic-applicability:
     title: Applicability of the QUIC Transport Protocol
     docname: draft-kuehlewind-quic-applicability-00
     date: 2017-03-01
