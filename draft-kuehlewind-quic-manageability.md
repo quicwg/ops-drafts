@@ -192,6 +192,10 @@ control by default provides richer information than vanilla TCP does.
 Especially, QUIC does not rely on duplicated ACKs, making it more tolerant of
 packet re-ordering.
 
+## Greasing
+
+[Editor's note: say something about greasing if added to the transport draftss]
+
 # Specific Network Management Tasks
 
 In this section, we address specific network management and measurement
