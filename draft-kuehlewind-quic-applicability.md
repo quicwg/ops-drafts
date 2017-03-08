@@ -113,7 +113,7 @@ for application use of HTTP/2 over QUIC as well as the use of other
 application layer protocols over QUIC. For specific guidance on how to
 integrate HTTP/2 with QUIC, see {{I-D.ietf-quic-http}}.
 
-In the following ssections we discuss specific caveats to QUIC's
+In the following sections we discuss specific caveats to QUIC's
 applicability, and issues that application developers must consider when using
 QUIC as a transport for their application.
 
