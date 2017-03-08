@@ -152,6 +152,8 @@ the short. The long header is typically used during connection start or for othe
 - key phase: To support 0-RTT session establishment, QUIC uses two key phases; the key phase of each packet must be exposed to support efficient reception.
 - additional flags: Additional flags for diagnostic use are also under consideration; see https://github.com/quicwg/base-drafts/issues/279.
 
+[Editor's note: also further discuss which bits cannot change with versioning]
+
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
 As soon as the cryptograhic context is established, 
@@ -194,7 +196,7 @@ packet re-ordering.
 
 ## Greasing
 
-[Editor's note: say something about greasing if added to the transport draftss]
+[Editor's note: say something about greasing if added to the transport draft]
 
 # Specific Network Management Tasks
 
