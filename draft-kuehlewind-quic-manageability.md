@@ -309,7 +309,7 @@ congestion controller.
 
 ## Load balancing
 
-[Editor's note: explain how this work as soon as we have decided who chooses the connection ID and when to set it how.]
+[Editor's note: explain how this works as soon as we have decided who chooses the connection ID and when to set it. Related to https://github.com/quicwg/base-drafts/issues/349]
 
 
 # IANA Considerations
