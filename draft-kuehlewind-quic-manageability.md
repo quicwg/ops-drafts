@@ -276,14 +276,15 @@ the connection ID can be used as a confirmation signal as per
 {{I-D.trammell-plus-statefulness}}. In this case, similar as for all 
 in-network functions that rely on the connection ID,
 a defense system can only rely on this signal for known QUIC's versions and if the 
-connection ID is present.
+connection ID is present (also see https://github.com/quicwg/base-drafts/issues/293).
 
 Further, the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient, and requires more state to be maintained by
 DDoS defense systems. However, it is questionable if connection migrations needs to be
 supported in a DDOS attack or if a defense system might simply rely on the fast
-resumption mechanism provided by QUIC. This problem is also related to this issue under 
-discussion: https://github.com/quicwg/base-drafts/issues/203
+resumption mechanism provided by QUIC. This problem is also related to these issues under 
+discussion: https://github.com/quicwg/base-drafts/issues/203 and
+https://github.com/quicwg/base-drafts/issues/349
 
 
 ## QoS support and ECMP
