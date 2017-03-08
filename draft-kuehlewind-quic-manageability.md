@@ -83,8 +83,8 @@ informative:
 
 This document discusses manageability of the QUIC transport protocol, focusing
 on caveats impacting network operations involving QUIC traffic. Its intended
-audience is network operators, as well as implementors of the QUIC transport
-protocol and applications using it.
+audience is network operators, as well as content providers that rely on the use
+of QUIC-aware middleboxes, e.g. for load balancing.
 
 --- middle
 
@@ -92,16 +92,15 @@ protocol and applications using it.
 
 QUIC {{I-D.ietf-quic-transport}} is a new transport protocol currently under
 development in the IETF quic working group, focusing on support of semantics as
-needed for HTTP/2 {{I-D.ietf-quic-http}} such as stream-multiplexing to avoid
-head-of-line blocking. Based on current deployment practices, QUIC is
-encapsulated in UDP and encrypted by default. This means the version of QUIC
-that is currently under development will integrate TLS 1.3 {{I-D.ietf-quic-tls}}
+needed for HTTP/2 {{I-D.ietf-quic-http}}. Based on current deployment practices, QUIC is
+encapsulated in UDP and encrypted by default. The current version of QUIC
+integrates TLS {{I-D.ietf-quic-tls}}
 to encrypt all payload data and most header information. Given QUIC is an
 end-to-end transport protocol, all information in the protocol header, even that
 which can be inspected, is is not meant to be mutable by the network, and will
 therefore be integrity-protected to the extent possible.
 
-This document provides guidance for network operation and management of QUIC
+This document provides guidance for network operation on the management of QUIC
 traffic. This includes guidance on how to interpret and utilize information that
 is exposed by QUIC to the network as well as explaining requirement and
 assumptions that the QUIC protocol design takes toward the expected network
@@ -143,7 +142,8 @@ focused on the protocol as presently defined in {{I-D.ietf-quic-transport}} and
 
 The QUIC packet header is under active development; see section 5 of {{I-D.ietf-quic-transport}} for the present header structure, and https://github.com/quicwg/base-drafts/pull/361 for one current proposed redesign.
 
-In any case, the following information may be exposed in the packet header:
+Currently the first bit of the QUIC header indicates the present of a long header that exposed more information than 
+the short. The long header is typically used during connection start or for other control processes while the short header will be used on mostly packets to limited unnecessary header overhead. The following information may be exposed in the packet header:
 
 - version number: The version number is present during version negotiation.
 - connection ID: The connection ID identifies the connection associated with a QUIC packet, for load-balancing and NAT rebinding purposes; see {{rebinding}}.
@@ -154,7 +154,8 @@ In any case, the following information may be exposed in the packet header:
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
-All information in the QUIC header, even that exposed in the packet header, is
+As soon as the cryptograhic context is established, 
+all information in the QUIC header, including that exposed in the packet header, is
 integrity protected. Therefore, devices on path MUST NOT change QUIC packet
 headers, as alteration of header information would cause packet drop due to a
 failed integrity check at the receiver.
@@ -173,7 +174,7 @@ ID may change during a connection as well; see section 6.3 of
 https://github.com/quicwg/base-drafts/issues/349 for ongoing discussion of the
 Connection ID.
 
-## Packet Numbers
+## Packet Numbers {#packetnumber}
 
 The packet number field is always present in the QUIC packet header. The packet
 number exposes the least significant 32, 16, or 8 bits of an internal packet
@@ -220,7 +221,7 @@ https://github.com/quicwg/base-drafts/pull/20.
 
 Passive measurement of TCP performance parameters is commonly deployed in access
 and enterprise networks to aid troubleshooting and performance monitoring
-without requiring the generation of active measurement traffic. The availability of 
+without requiring the generation of active measurement traffic.
 
 The presence of packet numbers on most QUIC packets allows the trivial one-sided
 estimation of packet loss and reordering between the sender and a given
@@ -258,59 +259,49 @@ routed to a "scrubbing environment" where the traffic is filtered, allowing the
 remaining "good" traffic to continue to the customer environment.
 
 This type of DDoS mitigation is fundamentally based on tracking state for flows
-(see {{statefulness}}), and classifying flows as legitimate or DoS traffic. The
-QUIC packet header currently has limited information to support this
-classification, especially when the DDoS traffic consists of legitimate QUIC
-packets.
+(see {{statefulness}}) that have receiver confirmation and a proof of return-routability, 
+and classifying flows as legitimate or DoS traffic. The
+QUIC packet header currently does not support an explicit mechanism to 
+easily distinguish legitimate QUIC traffic from other UDP traffic. However,
+the first packet in a QUIC connection will usually be a client cleartext packet
+with a version field and a connection ID. This can be used to identify the 
+first packet of the connection (also see https://github.com/quicwg/base-drafts/issues/185).
 
-In addition, the use of a connection ID to support connection migration renders
-5-tuple based filtering ineffective, and requires more state to be maintained by
-DDoS defense systems. QUIC's version negotiation feature, if used to support
-many simultaneously deployed versions of QUIC with different packet header
-layouts, will further complicate fast inspection and discrimination of
-legitimate from illegitimate QUIC packets in-network.
+If the QUIC handshake was not observed by the defense system, 
+the connection ID can be used as a confirmation signal as per
+{{I-D.trammell-plus-statefulness}}. In this case, similar as for all 
+in-network functions that rely on the connection ID,
+a defense system can only rely on this signal for known QUIC's versions and if the 
+connection ID is present.
 
-0-RTT connection establishment further complicates the identification of valid
-QUIC traffic and the extraction of association and confirmation signals as per
-{{I-D.trammell-plus-statefulness}}. IoT devices acting as servers will pose a
-particular risk in this context.
+Further, the use of a connection ID to support connection migration renders
+5-tuple based filtering insufficient, and requires more state to be maintained by
+DDoS defense systems. However, it is questionable if connection migrations needs to be
+supported in a DDOS attack or if a defense system might simply rely on the fast
+resumption mechanism provided by QUIC. This problem is also related to this issue under 
+discussion: https://github.com/quicwg/base-drafts/issues/203
 
-<!-- need to discuss more before this goes into the draft.
 
-## Radio Access Network Tuning and Channel Optimization
+## QoS support and ECMP
 
-[EDITOR'S NOTE: per ACCORD, there seems to be some disconnect as to whether
-anyone is actually using, or planning to use, multiple-bearer solutions for
-Internet-bound traffic. If not, this section is moot.]
+QUIC does not provide any additional information on requirements on Quality of Service (QoS)
+provided from the network. QUIC assumes that all packets with the same 5-tuple 
+{dest addr, source addr, protocol, dest port, source port} will receive similar network treatment.
+That means all stream that are multiplexed over the same QUIC connection require the 
+same network treatment and are handled by the same congestion controller. If 
+differential network treatment is desired, multiple QUIC connection to the same server might
+be used, given that establishing a new connection using 0-RTT support is cheap and fast.
 
-3GPP mobile networks support Traffic Flow Templates that allow specific flows,
-identified by 5-tuples, to traverse different data bearers with different
-characteristics based on how they are configured. [EDITOR'S NOTE: a reference
-here would be nice]. Specifically, in scheduled networks, there is an inherent
-balancing act among absolute data rate, latency, and jitter. Today's 3GPP mobile
-networks balance the needs of different types of traffic (e.g. the high bit rate
-download that is unaffected by jitter vs real time communications that are lower
-bit rate but require minimal jitter or latency impact) by performing traffic
-inspection to classify flows, assigning them to bearers best configured for the
-respective type of traffic.
+QoS mechanisms in the network MAY also use the connection ID for service differentiation 
+as usually a change of connection ID is bind to a change of address which anyway is likely to
+lead to a re-route on a different path with different network characteristics. 
 
-[EDITOR'S NOTE: I'm not sure what the problem is here, since applicability says
-"don't do this". Would anyone ever use different QUIC streams like this? There
-is of course the further problem of classifying encrypted traffic.]
+Given that QUIC is more tolerant of packet re-ordering than TCP (see {{packetnumber}}), 
+Equal-cost multi-path routing (ECMP) does not necessarily need to be flow based. 
+However, 5-tuple (plus eventually connection ID if present) 
+matching is still beneficial for QoS given all packets are handled by the same
+congestion controller.
 
-As noted in section 4 of {{draft-kuehlewind-quic-applicability}}, QUIC supports
-stream multiplexing within the same connection; i.e. on the same 5-tuple. This provides
-several benefits, however at same time it prevents a 3GPP mobile network from
-working as previously described, because  there is no way to de-multiplex the
-traffic into multiple data bearers. For a 3GPP mobile network operator this
-limits the ability to tune the network efficiently based on traffic
-classification. This can become even more challenging when different
-applications will be able to rely on QUIC as a transport protocol. This
-particular scenario is not to be confused with different QoS requirements for
-the flows as those can be addressed be the client by initiating different
-connections.
-
--->
 
 # IANA Considerations
 
