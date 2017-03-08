@@ -1,6 +1,6 @@
 ---
 title: Manageability of the QUIC Transport Protocol
-docname: draft-kuehlewind-quic-manageability-latest
+docname: draft-kuehlewind-quic-manageability-00
 date:
 category: info
 
@@ -46,12 +46,21 @@ informative:
         ins: B. Trammell
     url: https://arxiv.org/abs/1612.02902
     date: 2016-12-09
+  Ding2015:
+    title: TCP Stretch Acknowledgments and Timestamps - Findings and Impliciations for Passive RTT Measurement (ACM Computer Communication Review)
+    author:
+      - 
+        ins: H. Ding
+      -
+        ins: M. Rabinovich
+    url: http://www.sigcomm.org/sites/default/files/ccr/papers/2015/July/0000000-0000002.pdf
+    date: 2015-07 
   I-D.ietf-quic-http:
   I-D.trammell-plus-statefulness:
   draft-kuehlewind-quic-applicability:
     title: Applicability of the QUIC Transport Protocol
     docname: draft-kuehlewind-quic-applicability-00
-    date: 2017-03-01
+    date: 2017-03-08
     author:
       -
         ins: M. Kuehlewind
@@ -99,13 +108,17 @@ assumptions that the QUIC protocol design takes toward the expected network
 treatment. It also discusses how common network management practices will be
 impacted by QUIC.
 
-Note that network management is not a one-size-fits-all endeavour: practices
+Of course, network management is not a one-size-fits-all endeavour: practices
 considered necessary or even mandatory within enterprise networks with certain
 compliance requirements, for example, would be impermissible on other networks
 without those requirements. This document therefore does not make any specific
 recommendations as to which practices should or should not be applied; for each
 practice, it describes what is and is not possible with the QUIC transport
 protocol as defined. 
+
+QUIC is at the moment very much a moving target. This document refers the state
+of the QUIC working group drafs as well as to changes under discussion, via
+issues and pull requests in GitHub current as of the time of writing.
 
 ## Notational Conventions
 
@@ -128,32 +141,16 @@ focused on the protocol as presently defined in {{I-D.ietf-quic-transport}} and
 
 ## QUIC Packet Header Structure {#public-header}
 
-[EDITOR'S NOTE: this gets mostly rewritten after PR#xxx happens. This text is
-unchanged from the -00 revision of the combined applicability and manageability
-document.]
+The QUIC packet header is under active development; see section 5 of {{I-D.ietf-quic-transport}} for the present header structure, and https://github.com/quicwg/base-drafts/pull/361 for one current proposed redesign.
 
-In the current version of the QUIC protocol, the following information are
-optionally exposed in the QUIC header:
+In any case, the following information may be exposed in the packet header:
 
-- flags: All QUIC packets have one byte of flags at the beginning of their
-  header. The definition of these flags can change with the version of QUIC,
-  expect for the version flag that indicated that the version number is present
-  in the QUIC header. Other bits of the flag field in the current version of
-  QUIC are the connection ID flag, the packet number size field, the public
-  reset flag, and the key phase flag.
-- version number: The version number is present if the version bit in the flags
-  field is set. The version flag is always set in the first packet of a
-  connection but could also be set in other packets.
-- connection ID: The connection ID is present if the connection ID bit in the
-  flag field is set. The connection ID flag is always set on the first packet of
-  a connection and can be set on others. Further the connection ID flag is
-  always set when the public reset bit is set as well. QUIC connections are
-  resistant to IP address changes. Therefore if exposed, the same connection ID
-  can occur in QUIC packet with different 5-tuples, indicating that this QUIC
-  packet belongs to the same connection.
-- packet number: The packet number is variable length as indicated by packet
-  number size field. If the length is indicated as zero the packet number is not
-  present. If the public reset flag is set, the packet number cannot be present.
+- version number: The version number is present during version negotiation.
+- connection ID: The connection ID identifies the connection associated with a QUIC packet, for load-balancing and NAT rebinding purposes; see {{rebinding}}.
+- packet number: Every packet has an associated packet number; this packet number increases with each packet, and the least-significant bits of the packet number are present on each packet; see {{packet-numbers}}.
+- public reset indication: Public reset packets expose the fact that a connection is being torn down to devices along the path. The applicability of public reset is currently under discussion; see https://github.com/quicwg/base-drafts/issues/353 and https://github.com/quicwg/base-drafts/pull/20.
+- key phase: To support 0-RTT session establishment, QUIC uses two key phases; the key phase of each packet must be exposed to support efficient reception.
+- additional flags: Additional flags for diagnostic use are also under consideration; see https://github.com/quicwg/base-drafts/issues/279.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
@@ -169,34 +166,30 @@ packets at load balancers on other than five-tuple information, ensuring that
 related flows are appropriately balanced together; and to allow rebinding of a
 connection after one of the endpoint's addresses changes - usually the client's,
 in the case of the HTTP binding. The connection ID is proposed by the server
-during connection establishment [EDITOR'S NOTE: check this]. 
-
-A flow might change one of its IP addresses but keep the same connection ID, as
-noted in {{public-header}} [EDITOR'S NOTE: refer to the appropriate section of
-{{I-D.ietf-quic-transport}} for details on how rebinding works]. 
-
-[EDITOR'S NOTE: Update this section to explain that connection ID may change after 'handshake' if connection ID is server initiated. ]
+during connection establishment. A flow might change one of its IP addresses but
+keep the same connection ID, as noted in {{public-header}}, and the connection
+ID may change during a connection as well; see section 6.3 of
+{{I-D.ietf-quic-transport}}. See also
+https://github.com/quicwg/base-drafts/issues/349 for ongoing discussion of the
+Connection ID.
 
 ## Packet Numbers
 
 The packet number field is always present in the QUIC packet header. The packet
 number exposes the least significant 32, 16, or 8 bits of an internal packet
-counter per flow direction that increments by one with each packet sent
-[EDITOR'S NOTE: make sure this has been done now]. This packet counter is
-initialized with a random 31-bit initial value at the start of a connection.
+counter per flow direction that increments with each packet sent. This packet
+counter is initialized with a random 31-bit initial value at the start of a
+connection.
 
 Unlike TCP sequence numbers, this packet number increases with every packet,
 including those containing only acknowledgment or other control information.
 Indeed, whether a packet contains user data or only control information is
-intentionally left unexposed to the network [EDITOR'S NOTE: currently
-outstanding PRs may change this?].
+intentionally left unexposed to the network.
 
 While loss detection in QUIC is based on packet numbers, congestion
 control by default provides richer information than vanilla TCP does.
 Especially, QUIC does not rely on duplicated ACKs, making it more tolerant of
 packet re-ordering.
-
-[EDITORS'S NOTE: For future multipath QUIC: would packet number be shared in this case?]
 
 # Specific Network Management Tasks
 
@@ -214,11 +207,14 @@ valid QUIC connection establishment from other traffic, in order to establish
 state; and determining the end of a QUIC connection, in order to tear that state
 down.
 
-[EDITOR'S NOTE: walk through how 1-RTT and 0-RTT connection establishment look
-from the path's point of view.]
+1-RTT connection establishment, using a TLS handshake on stream 0, is detectable
+using heuristics similar to those used to detect TLS over TCP. 0-RTT connection
+establishment, however, provides no particular heuristic for differentiation
+from random background traffic at this time.
 
-[EDITOR'S NOTE: follow ongoing discussion about public reset and
-CONNECTION_CLOSE exposure.]
+Exposure of connection shutdown is currently under discussion; see
+https://github.com/quicwg/base-drafts/issues/353 and
+https://github.com/quicwg/base-drafts/pull/20.
 
 ## Measurement of QUIC Traffic {#measurement}
 
@@ -236,22 +232,20 @@ QUIC packet header makes running passive estimation of latency via round trip
 time (RTT) impossible. RTT can only be measured at connection establishment
 time, and only when 1-RTT establishment is used.
 
-The authors note that a simple packet number echo exposed in the QUIC packet
-header, containing the maximum packet number received by the sender before a
-given packet was sent, would rectify the passive RTT measurement problem, and
-make partial estimates of observation point to receiver loss possible as well.
-For efficiency purposes, this packet number echo need not be carried on every
-packet, and could be made optional, allowing endpoints to make a
-measurability/efficiency tradeoff [EDITOR'S NOTE: (see section x.y of
-{{IPIM}})]. We further note that this facility would have significantly better
-measurability characteristics than sequence-acknowledgement-based RTT
+Note that adding packet number echo (as in
+https://github.com/quicwg/base-drafts/pull/367 or
+https://github.com/quicwg/base-drafts/pull/368) to the public header would allow
+passive RTT measurement at on-path observation points. For efficiency purposes,
+this packet number echo need not be carried on every packet, and could be made
+optional, allowing endpoints to make a measurability/efficiency tradeoff; see
+section 4 of {{IPIM}}. Note further that this facility would have significantly
+better measurability characteristics than sequence-acknowledgement-based RTT
 measurement currently available in TCP on typical asymmetric flows, as adequate
 samples will be available in both directions, and packet number echo would be
-decoupled from the underlying acknowledgment machinery [EDITOR'S NOTE: cite
-stretch-ack].
+decoupled from the underlying acknowledgment machinery; see e.g. {{Ding2015}}
 
-[EDITOR'S NOTE: note in-network devices can inspect and correlate connection IDs
-for partial tracking of mobility events. does this need its own section?]
+Note in-network devices can inspect and correlate connection IDs for partial
+tracking of mobility events.
 
 ## DDoS Detection and Mitigation
 
@@ -261,8 +255,7 @@ operators offer Security as a Service (SaaS) solutions that detect attacks by
 monitoring, analyzing and filtering traffic. These approaches generally utilize
 network flow data {{RFC7011}}. If any flows pose a threat, usually they are
 routed to a "scrubbing environment" where the traffic is filtered, allowing the
-remaining "good" traffic to continue to the customer environment. [EDITOR'S
-NOTE: has dots produced anything to cite here?]
+remaining "good" traffic to continue to the customer environment.
 
 This type of DDoS mitigation is fundamentally based on tracking state for flows
 (see {{statefulness}}), and classifying flows as legitimate or DoS traffic. The
@@ -281,6 +274,8 @@ legitimate from illegitimate QUIC packets in-network.
 QUIC traffic and the extraction of association and confirmation signals as per
 {{I-D.trammell-plus-statefulness}}. IoT devices acting as servers will pose a
 particular risk in this context.
+
+<!-- need to discuss more before this goes into the draft.
 
 ## Radio Access Network Tuning and Channel Optimization
 
@@ -314,6 +309,8 @@ applications will be able to rely on QUIC as a transport protocol. This
 particular scenario is not to be confused with different QoS requirements for
 the flows as those can be addressed be the client by initiating different
 connections.
+
+-->
 
 # IANA Considerations
 
