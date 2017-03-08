@@ -1,6 +1,6 @@
 ---
 title: Applicability of the QUIC Transport Protocol
-docname: draft-kuehlewind-quic-applicability-latest
+docname: draft-kuehlewind-quic-applicability-00
 date:
 category: info
 
@@ -66,11 +66,17 @@ informative:
         ins: I. Swett
     url: https://www.ietf.org/proceedings/96/slides/slides-96-quic-3.pdf
     date: 2016-07-20
-
+  PaaschNanog:
+    title: Network Ssupport for TCP Fast Open (NANOG 67 presentation)
+    author:
+      -
+        ins: C. Paasch
+    url: https://www.nanog.org/sites/default/files/Paasch_Network_Support.pdf
+    date: 2016-06-13
   draft-kuehlewind-quic-manageability:
     title: Manageability of the QUIC Transport Protocol
     docname: draft-kuehlewind-quic-manageability-00
-    date: 2017-03-01
+    date: 2017-03-08
     author:
       -
         ins: M. Kuehlewind
@@ -144,7 +150,7 @@ the application layer if needed. Further, TCP by default does not support 0-RTT
 session resumption. TCP Fast Open could be used, but might no be supported by
 the far end or could be blocked on the network path. Note that there is some
 evidence of middleboxes blocking SYN data even if TFO was successfully
-negotiated. [EDITOR'S NOTE: cite Christoph Paasch's NANOG presentation here]
+negotiated (see {{PaaschNanog}}).
 Moreover, while encryption (in this case TLS) is inseparable integrated with
 QUIC, TLS negotiation over TCP can be blocked. In case it is RECOMMENDED to
 abort the connection, allowing the application to present a suitable prompt to
@@ -191,10 +197,6 @@ cost for establishing another connection are extremely low.
 be sufficient, the protocol's rebinding functionality (see section 3.7 of
 {{I-D.ietf-quic-transport}}) could be extended to allow multiple five-tuples
 to share a connection ID simultaneously, instead of sequentially.]
-
-# Prioritization
-
-[EDITOR'S NOTE: Is there anything to say here?]
 
 # IANA Considerations
 
