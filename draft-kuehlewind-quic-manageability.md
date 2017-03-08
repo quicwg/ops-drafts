@@ -302,6 +302,10 @@ However, 5-tuple (plus eventually connection ID if present)
 matching is still beneficial for QoS given all packets are handled by the same
 congestion controller.
 
+## Load balancing
+
+[Editor's note: explain how this work as soon as we have decided who chooses the connection ID and when to set it how.]
+
 
 # IANA Considerations
 
