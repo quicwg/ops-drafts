@@ -1,6 +1,6 @@
 ---
 title: Applicability of the QUIC Transport Protocol
-docname: draft-kuehlewind-quic-applicability-00
+docname: draft-kuehlewind-quic-applicability-01
 date:
 category: info
 
@@ -224,6 +224,9 @@ QUIC exposed some information to the network in the unencrypted part of the head
 implications, an application may indicate to not support exposure of certain information.
 
 In case of the connection ID this can be the case if the application has additional information that the client is not behind a NAT and the server is not behind a load balancer, and therefore it is unlikely that the addresses will be re-binded.
+
+[EDITOR'S NOTE: per https://github.com/quicwg/base-drafts/issues/514 potentially expand this
+with guidance on server connection ID selection.]
 
 # Use of Versions and Cryptographic Handshake
 
