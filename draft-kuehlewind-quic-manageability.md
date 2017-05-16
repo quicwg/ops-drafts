@@ -27,6 +27,11 @@ author:
     street: Gloriastrasse 35
     city: 8092 Zurich
     country: Switzerland
+  - 
+    ins: D. Druta
+    name: Dan Druta
+    org: AT&T
+    email: dd5826@att.com
 
 normative:
   RFC2119:
