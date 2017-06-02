@@ -182,12 +182,11 @@ packets at load balancers on other than five-tuple information, ensuring that
 related flows are appropriately balanced together; and to allow rebinding of a
 connection after one of the endpoint's addresses changes - usually the client's,
 in the case of the HTTP binding. The connection ID is proposed by the server
-during connection establishment. A flow might change one of its IP addresses but
-keep the same connection ID, as noted in {{public-header}}, and the connection
-ID may change during a connection as well; see section 6.3 of
-{{I-D.ietf-quic-transport}}. See also
-https://github.com/quicwg/base-drafts/issues/349 for ongoing discussion of the
-Connection ID.
+during connection establishment, and a server might provide additional connection IDs
+that can the used by the client at any time during the connection. 
+Therefore if a flow changes one of its IP addresses it may keep the same connection ID, or the connection
+ID may also change together with the IP address migration, avoiding linkability; see section 7.6 of
+{{I-D.ietf-quic-transport}}.
 
 ## Packet Numbers {#packetnumber}
 
@@ -200,7 +199,8 @@ connection.
 Unlike TCP sequence numbers, this packet number increases with every packet,
 including those containing only acknowledgment or other control information.
 Indeed, whether a packet contains user data or only control information is
-intentionally left unexposed to the network.
+intentionally left unexposed to the network. The packet number increases with every packet
+but they sender may skip packet numbers.
 
 While loss detection in QUIC is based on packet numbers, congestion
 control by default provides richer information than vanilla TCP does.
@@ -211,9 +211,16 @@ packet re-ordering.
 
 [Editor's note: text needed.]
 
-## Greasing
+## Version Negotiation and Greasing
 
-[Editor's note: say something about greasing if added to the transport draft]
+Version negotiation is not protected, given the used protection mechanism can change with the version.
+However, the choices provided in the list of version in the Version Negotiation packet will be validated
+as soon as the cryptographic context has been established. Therefore any manipulation of this list
+will be detected and will cause the endpoints to terminate the connection.
+
+Also note that the list of versions in the Version Negotiation packet may contain reserved versions. This mechanism is
+used to avoid ossification in the implementation on the selection mechanism. Further, a client may send a Initial Client packet with a reserved version number to trigger version negotiation. In the Version Negotiation packet the connection ID and packet number of the Client Initial packet are reflected to provide a proof of return-routability. Therefore changing these information will also cause the connection to fail.
+
 
 # Specific Network Management Tasks
 
@@ -247,7 +254,7 @@ Passive measurement of TCP performance parameters is commonly deployed in access
 and enterprise networks to aid troubleshooting and performance monitoring
 without requiring the generation of active measurement traffic.
 
-The presence of packet numbers on most QUIC packets allows the trivial one-sided
+The presence of packet numbers on all QUIC packets allows the trivial one-sided
 estimation of packet loss and reordering between the sender and a given
 observation point. However, since retransmissions are not identifiable as such,
 loss between an observation point and the receiver cannot be reliably estimated.
@@ -255,10 +262,10 @@ loss between an observation point and the receiver cannot be reliably estimated.
 The lack of any acknowledgement information or timestamping information in the
 QUIC packet header makes running passive estimation of latency via round trip
 time (RTT) impossible. RTT can only be measured at connection establishment
-time, by observing the Initial Client packet and the Server's reply to this packet which
+time, by observing the Client Initial packet and the Server's reply to this packet which
 maybe a Server Cleartext, Version Negotiation, or Server Stateless Retry packet.
 
-Note that adding packet number echo (as in
+Note that adding a packet number echo (as in
 https://github.com/quicwg/base-drafts/pull/367 or
 https://github.com/quicwg/base-drafts/pull/368) to the public header would allow
 passive RTT measurement at on-path observation points. For efficiency purposes,
