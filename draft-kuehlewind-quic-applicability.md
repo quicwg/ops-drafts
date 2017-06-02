@@ -109,9 +109,9 @@ QUIC {{I-D.ietf-quic-transport}} is a new transport protocol currently under
 development in the IETF quic working group, focusing on support of semantics as
 needed for HTTP/2 {{I-D.ietf-quic-http}} such as stream-multiplexing to avoid
 head-of-line blocking. Based on current deployment practices, QUIC is
-encapsulated in UDP and encrypted by default. This means the version of QUIC
+encapsulated in UDP. The version of QUIC
 that is currently under development will integrate TLS 1.3 {{I-D.ietf-quic-tls}}
-to encrypt all payload data and most header information.
+to encrypt all payload data and most control information.
 
 This document provides guidance for application developers that want to use the QUIC
 protocol without implementing it on their own. This includes general guidance
@@ -146,32 +146,28 @@ These applications must operate, perhaps with impaired functionality, in the
 absence of features provided by QUIC not present in the fallback protocol. For
 fallback to TLS over TCP, the most obvious difference is that TCP does not provide
 stream multiplexing and therefore stream multiplexing would need to be implemented in
-the application layer if needed. Further, TCP by default does not support 0-RTT
-session resumption. TCP Fast Open could be used, but might no be supported by
+the application layer if needed. Further, TCP without the TCP Fast Open extension does not support 0-RTT
+session resumption. TCP Fast Open can be requested by the connection initiator but might no be supported by
 the far end or could be blocked on the network path. Note that there is some
 evidence of middleboxes blocking SYN data even if TFO was successfully
-negotiated (see {{PaaschNanog}}).
+negotiated (see {{PaaschNanog}}). Any fallback mechanism is likely to impose 
+a performance degradation, however, fallback MUST not silently change the expectation on 
+confidentiality or integrity of the payload data of the higher layer.
+
+
 Moreover, while encryption (in this case TLS) is inseparable integrated with
 QUIC, TLS negotiation over TCP can be blocked. In case it is RECOMMENDED to
 abort the connection, allowing the application to present a suitable prompt to
 the user that secure communication is unavailable.
 
-We hope that the deployment of a proposed standard version of the QUIC protocol
-will provide an incentive for these networks to permit QUIC traffic. Indeed, the
-ability to treat QUIC traffic statefully as discussed in section 3.1 of
-{{draft-kuehlewind-quic-manageability}} would remove one network management
-incentive to block this traffic.
 
 # Zero RTT: Here There Be Dragons {#zero-rtt}
 
 QUIC provides for 0-RTT connection establishment (see section 3.2 of
-{{I-D.ietf-quic-transport}}). However, data in the frames contained in the
-first packet of a such a connection must be treated specially by the
-application layer. Since a retransmission of these frames resulting from a
-lost acknowledgment may cause the data to appear twice, either the
-application-layer protocol has to be designed such that all such data is
-treated as idempotent, or there must be some application-layer mechanism for
-recognizing spuriously retransmitted frames and dropping them.
+{{I-D.ietf-quic-transport}}). However, data in the frames contained in 
+0-RTT packets of a such a connection must be treated specially by the
+application layer. Replay of these packets can cause the data to processed twice.
+This is further described in {{I-D.nottingham-httpbis-retry-01}}.
 
 Applications that cannot treat data that may appear in a 0-RTT connection
 establishment as idempotent MUST NOT use 0-RTT establishment. For this reason the
@@ -190,15 +186,11 @@ are carried by a given packet is visible to the network.
 Stream multiplexing is not intended to be used for differentiating streams in
 terms of network treatment. Application traffic requiring different network
 treatment SHOULD therefore be carried over different five-tuples (i.e.
-multiple QUIC connections). Given QUIC's ability to send application data on
-the first packet of a connection (if a previous connection to the same host
+multiple QUIC connections). Given QUIC's ability to send application data in
+the first RTT of a connection (if a previous connection to the same host
 has been successfully established to provide the respective credentials), the
 cost for establishing another connection are extremely low.
 
-[EDITOR'S NOTE: For discussion: If establishing a new connection does not seem to
-be sufficient, the protocol's rebinding functionality (see section 3.7 of
-{{I-D.ietf-quic-transport}}) could be extended to allow multiple five-tuples
-to share a connection ID simultaneously, instead of sequentially.]
 
 # Prioritization
 
@@ -206,7 +198,7 @@ Stream prioritization is not exposed to the network, nor to the receiver.
 Prioritization can be realized by the sender and the QUIC transport should provide
 and interface for applications to prioritize streams {{I-D.ietf-quic-transport}}.
 
-Priority handling of retransmissions may be implemented in the transport layer and
+Priority handling of retransmissions may be implemented by the sender in the transport layer and
 {{I-D.ietf-quic-transport}} does not specify a specific way how this must be
 handled. Currently QUIC only provides fully reliable stream transmission, and as such
 prioritization of retransmission is likely beneficial. For not fully reliable streams
@@ -220,20 +212,28 @@ decision from the reliability level of the stream.
 
 # Information exposure and the Connection ID
 
-QUIC exposed some information to the network in the unencrypted part of the header. This is either because there is no encryption context established yet or because this information is intended to be consumed by the network. Some of these information can be optionally exposed (still under discussion). Given that exposing these information can have privacy
-implications, an application may indicate to not support exposure of certain information.
+QUIC exposed some information to the network in the unencrypted part of the header. This is either because there is no encryption context established yet or because this information is intended to be consumed by the network. 
+QUIC has a long header that is used during connection establishment and for other control processes and a short header that may be used for data transmission in an established connection. While the long header is fixed and exposed some information, the short header only exposed the packet number by default and may optionally expose a connection ID. Given that exposing these information can have privacy implications, an application may indicate to not support exposure of certain information.
 
-In case of the connection ID this can be the case if the application has additional information that the client is not behind a NAT and the server is not behind a load balancer, and therefore it is unlikely that the addresses will be re-binded.
+As the connection ID is optional on the short header, an application that has additional information that the client is not behind a NAT and the server is not behind a load balancer, and therefore it is unlikely that the addresses will be re-binded,
+may indicate to the transport that is wishes to not expose a connection ID.
 
-[EDITOR'S NOTE: per https://github.com/quicwg/base-drafts/issues/514 potentially expand this
-with guidance on server connection ID selection.]
+Also see https://github.com/quicwg/base-drafts/issues/514 for guidance on server connection ID selection. More text might be provided.
+
+
+# Using Server Retry for Redirection
+
+QUIC provide a Server Retry packet that can be send by a server in response to the Client Initial packet. The 
+server may choose a new connection ID in that packet and the client will retry by sending another Client Initial packet with the server-selected connection ID. This mechanism can be used to redirect a connection to a different server, e.g. due to performance reasons or when servers in a server poll are upgraded gradually and therefore may support different versions of quic. In this case it is assumed that all servers belonging to a certain poll are served in cooperation with load balancers that forward the traffic based on the connection ID. A server can chose the connection ID in the Server Retry packet such that the load balancer will redirect the next Client Initial packet to a different server in that pool.
+
 
 # Use of Versions and Cryptographic Handshake
 
 Versioning in QUIC may change the whole protocol behavior, beside some header fields that have been declared to be fixed. As such a new or higher version of QUIC does not necessarily provide a better service but just a very different service, an application needs to be able to select which versions of QUIC it wants to use.
 
-The use of a different encryption scheme than TLS1.3 or higher needs a new version of QUIC.
+A new version could even use a different encryption scheme other than TLS1.3 or higher.
 {{I-D.ietf-quic-transport}} specifies requirements for the cryptographic handshake as currently realized by TLS1.3 and described in a separate specification {{I-D.ietf-quic-tls}}. This split is performed to enable light-weight versioning with different cryptographic handshakes.
+
 
 # IANA Considerations
 
