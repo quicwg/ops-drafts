@@ -100,7 +100,7 @@ development in the IETF quic working group, focusing on support of semantics as
 needed for HTTP/2 {{I-D.ietf-quic-http}}. Based on current deployment practices, QUIC is
 encapsulated in UDP and encrypted by default. The current version of QUIC
 integrates TLS {{I-D.ietf-quic-tls}}
-to encrypt all payload data and most header information. Given QUIC is an
+to encrypt all payload data and most control information. Given QUIC is an
 end-to-end transport protocol, all information in the protocol header, even that
 which can be inspected, is is not meant to be mutable by the network, and will
 therefore be integrity-protected to the extent possible.
@@ -121,7 +121,7 @@ practice, it describes what is and is not possible with the QUIC transport
 protocol as defined. 
 
 QUIC is at the moment very much a moving target. This document refers the state
-of the QUIC working group drafs as well as to changes under discussion, via
+of the QUIC working group drafts as well as to changes under discussion, via
 issues and pull requests in GitHub current as of the time of writing.
 
 ## Notational Conventions
@@ -137,35 +137,43 @@ have an impact on the design and operation of devices that forward QUIC packets.
 Here, we are concerned primarily with QUIC's unencrypted wire image, which we
 define as the information available in the packet header in each QUIC packet,
 and the dynamics of that information. Since QUIC is a versioned protocol,
-everything about the header format can change except the mechanism by which a
-receiver can determine whether and where a version number is present, and the
-meaning of the fields used in the version negotiation process. This document is
-focused on the protocol as presently defined in {{I-D.ietf-quic-transport}} and
+also the wire image of the header format can change. However, at least 
+the mechanism by which a receiver can determine which version is used and the
+meaning and location of fields used in the version negotiation process need to be fixed. 
+
+This document is focused on the protocol as presently defined in {{I-D.ietf-quic-transport}} and
 {{I-D.ietf-quic-tls}}, and will change to track those documents.
 
 ## QUIC Packet Header Structure {#public-header}
 
-The QUIC packet header is under active development; see section 5 of {{I-D.ietf-quic-transport}} for the present header structure, and https://github.com/quicwg/base-drafts/pull/361 for one current proposed redesign.
+The QUIC packet header is under active development; see section 5 of {{I-D.ietf-quic-transport}} for the present header structure.
 
-Currently the first bit of the QUIC header indicates the present of a long header that exposed more information than 
-the short. The long header is typically used during connection start or for other control processes while the short header will be used on mostly packets to limited unnecessary header overhead. The following information may be exposed in the packet header:
+The first bit of the QUIC header indicates the present of a long header that exposes more information than 
+the short header. The long header is typically used during connection start or for other control processes while the short header will be used on most data packets to limited unnecessary header overhead. The fields and location of these fields as defined by the current version of QUIC for the long header are fixed for all future version as well. However, note that future versions of QUIC may provide additional fields. In the current version of quic the long header for all header types has a fixed length, containing, besides the Header Form bit, a 7-bit header Type, a 64-bit Connection ID, a 32-bit Packet Number, and a 32-bit Version. The short header is variable length where bits after the Header Form bit indicate the present on the Connection ID, and the length of the packet number. 
 
-- version number: The version number is present during version negotiation.
-- connection ID: The connection ID identifies the connection associated with a QUIC packet, for load-balancing and NAT rebinding purposes; see {{rebinding}}.
-- packet number: Every packet has an associated packet number; this packet number increases with each packet, and the least-significant bits of the packet number are present on each packet; see {{packetnumber}}.
-- public reset indication: Public reset packets expose the fact that a connection is being torn down to devices along the path. The applicability of public reset is currently under discussion; see https://github.com/quicwg/base-drafts/issues/353 and https://github.com/quicwg/base-drafts/pull/20.
-- key phase: To support 0-RTT session establishment, QUIC uses two key phases; the key phase of each packet must be exposed to support efficient reception.
-- additional flags: Additional flags for diagnostic use are also under consideration; see https://github.com/quicwg/base-drafts/issues/279.
+The following information may be exposed in the packet header:
 
-[Editor's note: also further discuss which bits cannot change with versioning]
+- header type: the long header has a 7-bit header type field following the Header Form bit. The current version of QUIC defines 7 header types, namely Version Negotiation, Client Initial, Server Stateless Retry, Server Cleartext, Client Cleartext, 0-RTT Protected, 1-RTT Protected (key phase 0), 1-RTT Protected (key phase 1), and Public Reset. 
+
+- connection ID: The connection ID is always present on the long and optionally present on the short header indicated by the Connection ID Flag. If present at the short header it at the same position then for the long header. The position and length pf the congestion ID itself as well as the Connection ID flag in the short header is fixed for all versions of QUIC. The connection ID identifies the connection associated with a QUIC packet, for load-balancing and NAT rebinding purposes; see {{rebinding}}. Therefore it is also expected that the Connection ID will either be present on all packets of a flow or none of the short header packets. However, this field is under endpoint control and there is protocol mechanism that hinders the sending endpoint to revise its decision about exposing the Connection ID at any time during the connection.
+
+- packet number: Every packet has an associated packet number. The packet number increases with each packet, and the least-significant bits of the packet number are present on each packet. In the short header the length of the exposed packet number field is defined by the (short) header type and can either be 8, 16, or 32 bits. See {{packetnumber}}.
+
+- version number: The version number is present on the long headers and identifies the version used for that packet, expect for the Version negotiation packet. The version negotiation packet is fixed for all version of QUIC and contains a lit of versions that is supported by the sender. However the version in the version field of the header is the reflected version of the clients initial packet and is therefore explicitly not supported by the sender.
+
+- key phase: The short header further has a Key Phase flag that is used by the endpoint identify the right key that was used to encrypt the packet. Different key phases are indicated with the use of the long header by using to different header types for protected long header packets.
+
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
-As soon as the cryptograhic context is established, 
-all information in the QUIC header, including that exposed in the packet header, is
-integrity protected. Therefore, devices on path MUST NOT change QUIC packet
-headers, as alteration of header information would cause packet drop due to a
-failed integrity check at the receiver.
+As soon as the cryptographic context is established, 
+all information in the QUIC header, including those exposed in the packet header, is
+integrity protected. Further, information that were sent and exposed in previous packets 
+when the cryptographic context was established yet, e.g. for the cryptographic initial handshake itself,
+will be validate later during the cryptographic handshake, such as the version number.
+Therefore, devices on path MUST NOT change any information or bits in QUIC packet
+headers. As alteration of header information would cause packet drop due to a
+failed integrity check at the receiver, or can even lead to connection termination.
 
 ## Connection ID and Rebinding {#rebinding}
 
@@ -199,6 +207,10 @@ control by default provides richer information than vanilla TCP does.
 Especially, QUIC does not rely on duplicated ACKs, making it more tolerant of
 packet re-ordering.
 
+## Initial Handshake and PMTUD
+
+[Editor's note: text needed.]
+
 ## Greasing
 
 [Editor's note: say something about greasing if added to the transport draft]
@@ -219,10 +231,11 @@ valid QUIC connection establishment from other traffic, in order to establish
 state; and determining the end of a QUIC connection, in order to tear that state
 down.
 
-1-RTT connection establishment, using a TLS handshake on stream 0, is detectable
+Both, 1-RTT and O-RTT connection establishment, using a TLS handshake on stream 0, is detectable
 using heuristics similar to those used to detect TLS over TCP. 0-RTT connection
-establishment, however, provides no particular heuristic for differentiation
-from random background traffic at this time.
+may additional also send data packets, right after the client hello. These data may be
+reorder in the network, therefore it may be possible that 0-RTT Protected data packet are 
+seen before the Client Initial packet.
 
 Exposure of connection shutdown is currently under discussion; see
 https://github.com/quicwg/base-drafts/issues/353 and
@@ -242,7 +255,8 @@ loss between an observation point and the receiver cannot be reliably estimated.
 The lack of any acknowledgement information or timestamping information in the
 QUIC packet header makes running passive estimation of latency via round trip
 time (RTT) impossible. RTT can only be measured at connection establishment
-time, and only when 1-RTT establishment is used.
+time, by observing the Initial Client packet and the Server's reply to this packet which
+maybe a Server Cleartext, Version Negotiation, or Server Stateless Retry packet.
 
 Note that adding packet number echo (as in
 https://github.com/quicwg/base-drafts/pull/367 or
@@ -274,24 +288,21 @@ This type of DDoS mitigation is fundamentally based on tracking state for flows
 and classifying flows as legitimate or DoS traffic. The
 QUIC packet header currently does not support an explicit mechanism to 
 easily distinguish legitimate QUIC traffic from other UDP traffic. However,
-the first packet in a QUIC connection will usually be a client cleartext packet
-with a version field and a connection ID. This can be used to identify the 
-first packet of the connection (also see https://github.com/quicwg/base-drafts/issues/185).
+the first packet in a QUIC connection will usually be a Client Initial packet. 
+This can be used to identify the first packet of the connection.
 
 If the QUIC handshake was not observed by the defense system, 
 the connection ID can be used as a confirmation signal as per
-{{I-D.trammell-plus-statefulness}}. In this case, similar as for all 
-in-network functions that rely on the connection ID,
-a defense system can only rely on this signal for known QUIC's versions and if the 
-connection ID is present (also see https://github.com/quicwg/base-drafts/issues/293).
+{{I-D.trammell-plus-statefulness}} if present in both directions. 
 
 Further, the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient, and requires more state to be maintained by
 DDoS defense systems. However, it is questionable if connection migrations needs to be
-supported in a DDOS attack or if a defense system might simply rely on the fast
+supported in a DDOS attack. If the connection migration is not visible to the network 
+that performs the DDoS detection, an active, migrated QUIC connection may be blocked 
+by such a system under attack. However, a defense system might simply rely on the fast
 resumption mechanism provided by QUIC. This problem is also related to these issues under 
-discussion: https://github.com/quicwg/base-drafts/issues/203 and
-https://github.com/quicwg/base-drafts/issues/349
+discussion: https://github.com/quicwg/base-drafts/issues/203 
 
 
 ## QoS support and ECMP
