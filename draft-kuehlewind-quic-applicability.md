@@ -73,27 +73,7 @@ informative:
         ins: C. Paasch
     url: https://www.nanog.org/sites/default/files/Paasch_Network_Support.pdf
     date: 2016-06-13
-  draft-kuehlewind-quic-manageability:
-    title: Manageability of the QUIC Transport Protocol
-    docname: draft-kuehlewind-quic-manageability-00
-    date: 2017-03-08
-    author:
-      -
-        ins: M. Kuehlewind
-        name: Mirja Kuehlewind
-        org: ETH Zurich
-        email: mirja.kuehlewind@tik.ee.ethz.ch
-        street: Gloriastrasse 35
-        city: 8092 Zurich
-        country: Switzerland
-      -
-        ins: B. Trammell
-        name: Brian Trammell
-        org: ETH Zurich
-        email: ietf@trammell.ch
-        street: Gloriastrasse 35
-        city: 8092 Zurich
-        country: Switzerland
+  I-D.nottingham-httpbis-retry:
 --- abstract
 
 This document discusses the applicability of the QUIC transport protocol,
@@ -167,7 +147,7 @@ QUIC provides for 0-RTT connection establishment (see section 3.2 of
 {{I-D.ietf-quic-transport}}). However, data in the frames contained in 
 0-RTT packets of a such a connection must be treated specially by the
 application layer. Replay of these packets can cause the data to processed twice.
-This is further described in {{I-D.nottingham-httpbis-retry-01}}.
+This is further described in {{I-D.nottingham-httpbis-retry}}.
 
 Applications that cannot treat data that may appear in a 0-RTT connection
 establishment as idempotent MUST NOT use 0-RTT establishment. For this reason the

@@ -62,27 +62,6 @@ informative:
     date: 2015-07 
   I-D.ietf-quic-http:
   I-D.trammell-plus-statefulness:
-  draft-kuehlewind-quic-applicability:
-    title: Applicability of the QUIC Transport Protocol
-    docname: draft-kuehlewind-quic-applicability-00
-    date: 2017-03-08
-    author:
-      -
-        ins: M. Kuehlewind
-        name: Mirja Kuehlewind
-        org: ETH Zurich
-        email: mirja.kuehlewind@tik.ee.ethz.ch
-        street: Gloriastrasse 35
-        city: 8092 Zurich
-        country: Switzerland
-      -
-        ins: B. Trammell
-        name: Brian Trammell
-        org: ETH Zurich
-        email: ietf@trammell.ch
-        street: Gloriastrasse 35
-        city: 8092 Zurich
-        country: Switzerland
 
 --- abstract
 
