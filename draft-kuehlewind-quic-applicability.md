@@ -130,10 +130,11 @@ the application layer if needed. Further, TCP without the TCP Fast Open extensio
 session resumption. TCP Fast Open can be requested by the connection initiator but might no be supported by
 the far end or could be blocked on the network path. Note that there is some
 evidence of middleboxes blocking SYN data even if TFO was successfully
-negotiated (see {{PaaschNanog}}). Any fallback mechanism is likely to impose 
-a performance degradation, however, fallback MUST not silently change the expectation on 
-confidentiality or integrity of the payload data of the higher layer.
+negotiated (see {{PaaschNanog}}). 
 
+Any fallback mechanism is likely to impose a degradation of performance;
+however, fallback MUST not silently violate the application's expectation of
+confidentiality or integrity of its payload data.
 
 Moreover, while encryption (in this case TLS) is inseparable integrated with
 QUIC, TLS negotiation over TCP can be blocked. In case it is RECOMMENDED to
@@ -174,6 +175,8 @@ cost for establishing another connection are extremely low.
 
 # Prioritization
 
+[EDITOR'S NOTE: is prioritization still current in the QUIC transport itself?]
+
 Stream prioritization is not exposed to the network, nor to the receiver.
 Prioritization can be realized by the sender and the QUIC transport should provide
 and interface for applications to prioritize streams {{I-D.ietf-quic-transport}}.
@@ -192,28 +195,54 @@ decision from the reliability level of the stream.
 
 # Information exposure and the Connection ID
 
-QUIC exposed some information to the network in the unencrypted part of the header. This is either because there is no encryption context established yet or because this information is intended to be consumed by the network. 
-QUIC has a long header that is used during connection establishment and for other control processes and a short header that may be used for data transmission in an established connection. While the long header is fixed and exposed some information, the short header only exposed the packet number by default and may optionally expose a connection ID. Given that exposing these information can have privacy implications, an application may indicate to not support exposure of certain information.
+QUIC exposes some information to the network in the unencrypted part of the
+header, either before the encryption context is established, because the
+information is intended to be used by the network. QUIC has a long header that
+is used during connection establishment and for other control processes, and a
+short header that may be used for data transmission in an established
+connection. While the long header is fixed and exposes some information, the
+short header only exposes the packet number by default and may optionally expose
+a connection ID. Given that exposing this information can have privacy
+implications, an application may indicate to not support exposure of certain
+information.
 
-As the connection ID is optional on the short header, an application that has additional information that the client is not behind a NAT and the server is not behind a load balancer, and therefore it is unlikely that the addresses will be re-binded,
-may indicate to the transport that is wishes to not expose a connection ID.
+As the connection ID is optional on the short header, an application that has
+additional information that the client is not behind a NAT and the server is not
+behind a load balancer, and therefore it is unlikely that the addresses will be
+re-bound, may indicate to the transport that is wishes to not expose a
+connection ID.
 
-Also see https://github.com/quicwg/base-drafts/issues/514 for guidance on server connection ID selection. More text might be provided.
+Also see https://github.com/quicwg/base-drafts/issues/514 for guidance on server connection ID selection.
 
 
 # Using Server Retry for Redirection
 
-QUIC provide a Server Retry packet that can be send by a server in response to the Client Initial packet. The 
-server may choose a new connection ID in that packet and the client will retry by sending another Client Initial packet with the server-selected connection ID. This mechanism can be used to redirect a connection to a different server, e.g. due to performance reasons or when servers in a server poll are upgraded gradually and therefore may support different versions of quic. In this case it is assumed that all servers belonging to a certain poll are served in cooperation with load balancers that forward the traffic based on the connection ID. A server can chose the connection ID in the Server Retry packet such that the load balancer will redirect the next Client Initial packet to a different server in that pool.
+QUIC provide a Server Retry packet that can be send by a server in response to
+the Client Initial packet. The server may choose a new connection ID in that
+packet and the client will retry by sending another Client Initial packet with
+the server-selected connection ID. This mechanism can be used to redirect a
+connection to a different server, e.g. due to performance reasons or when
+servers in a server pool are upgraded gradually, and therefore may support
+different versions of QUIC. In this case, it is assumed that all servers
+belonging to a certain pool are served in cooperation with load balancers that
+forward the traffic based on the connection ID. A server can chose the
+connection ID in the Server Retry packet such that the load balancer will
+redirect the next Client Initial packet to a different server in that pool.
 
 
 # Use of Versions and Cryptographic Handshake
 
-Versioning in QUIC may change the whole protocol behavior, beside some header fields that have been declared to be fixed. As such a new or higher version of QUIC does not necessarily provide a better service but just a very different service, an application needs to be able to select which versions of QUIC it wants to use.
+Versioning in QUIC may change the the protocol's behavior completely, except for
+the meaning of a few header fields that have been declared to be fixed. As such
+version of QUIC with a higher version number does not necessarily provide a
+better service, but might simply provide a very different service, so an
+application needs to be able to select which versions of QUIC it wants to use.
 
-A new version could even use a different encryption scheme other than TLS1.3 or higher.
-{{I-D.ietf-quic-transport}} specifies requirements for the cryptographic handshake as currently realized by TLS1.3 and described in a separate specification {{I-D.ietf-quic-tls}}. This split is performed to enable light-weight versioning with different cryptographic handshakes.
-
+A new version could use an encryption scheme other than TLS 1.3 or higher.
+{{I-D.ietf-quic-transport}} specifies requirements for the cryptographic
+handshake as currently realized by TLS 1.3 and described in a separate
+specification {{I-D.ietf-quic-tls}}. This split is performed to enable
+light-weight versioning with different cryptographic handshakes.
 
 # IANA Considerations
 
