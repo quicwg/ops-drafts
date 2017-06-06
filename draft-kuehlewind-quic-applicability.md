@@ -124,13 +124,14 @@ In the case of HTTP, this fallback is TLS 1.3 over TCP.
 
 These applications must operate, perhaps with impaired functionality, in the
 absence of features provided by QUIC not present in the fallback protocol. For
-fallback to TLS over TCP, the most obvious difference is that TCP does not provide
-stream multiplexing and therefore stream multiplexing would need to be implemented in
-the application layer if needed. Further, TCP without the TCP Fast Open extension does not support 0-RTT
-session resumption. TCP Fast Open can be requested by the connection initiator but might no be supported by
-the far end or could be blocked on the network path. Note that there is some
-evidence of middleboxes blocking SYN data even if TFO was successfully
-negotiated (see {{PaaschNanog}}). 
+fallback to TLS over TCP, the most obvious difference is that TCP does not
+provide stream multiplexing and therefore stream multiplexing would need to be
+implemented in the application layer if needed. Further, TCP without the TCP
+Fast Open extension does not support 0-RTT session resumption. TCP Fast Open can
+be requested by the connection initiator but might no be supported by the far
+end or could be blocked on the network path. Note that there is some evidence of
+middleboxes blocking SYN data even if TFO was successfully negotiated (see
+{{PaaschNanog}}).
 
 Any fallback mechanism is likely to impose a degradation of performance;
 however, fallback MUST not silently violate the application's expectation of
@@ -172,7 +173,6 @@ the first RTT of a connection (if a previous connection to the same host
 has been successfully established to provide the respective credentials), the
 cost for establishing another connection are extremely low.
 
-
 # Prioritization
 
 Stream prioritization is not exposed to the network, nor to the receiver.
@@ -191,7 +191,8 @@ decision from the reliability level of the stream.
 
 [EDITOR'S NOTE: give some guidance here about the steps an application should take; however this is still work in progress]
 
-# Information exposure and the Connection ID
+
+# Information exposure and the Connection ID {#connid}
 
 QUIC exposes some information to the network in the unencrypted part of the
 header, either before the encryption context is established, because the
@@ -200,20 +201,64 @@ is used during connection establishment and for other control processes, and a
 short header that may be used for data transmission in an established
 connection. While the long header is fixed and exposes some information, the
 short header only exposes the packet number by default and may optionally expose
-a connection ID. Given that exposing this information can have privacy
-implications, an application may indicate to not support exposure of certain
-information.
+a connection ID.  
 
-As the connection ID is optional on the short header, an application that has
-additional information that the client is not behind a NAT and the server is not
-behind a load balancer, and therefore it is unlikely that the addresses will be
-re-bound, may indicate to the transport that is wishes to not expose a
-connection ID.
+Given that exposing this information may make it possible to associate multiple
+addresses with a single client during rebinding, which has privacy implications,
+an application may indicate to not support exposure of certain information after
+the handshake. Specificially, an application that has additional information
+that the client is not behind a NAT and the server is not behind a load
+balancer, and therefore it is unlikely that the addresses will be re-bound, may
+indicate to the transport that is wishes to not expose a connection ID.
 
-Also see https://github.com/quicwg/base-drafts/issues/514 for guidance on server
-connection ID selection.
+## Server-Generated Connection ID
 
+The Connection ID is used in part to support load balancing in content
+distribution networks (CDNs), which operate complexm geographically distributed
+pools of back-end servers, fronted by load balancing systems.  These load
+balancers are responsible for identifying the most appropriate server for each
+connection and for routing all packets belonging to that connection to the
+chosen server.
+ 
+Load balancers are often deployed in pools for redundancy and load sharing. For
+high availability, it is important that when packets belonging to a flow start
+to arrive at a different load balancer in the load balancer pool, the packets
+continue to be forwarded to the original server in the server pool. 
 
+Support for seamless connection migration is an important design goal of QUIC
+– a necessity due to the proliferation of mobile connected devices. This
+connection persistence provides an additional challenge for multi-homed
+anycast-based services often employed by large content owners and CDNs. The
+challenge is that a migration to a different network in the middle of the
+connection greatly increases the chances of the packets routed to a different
+anycast point of presence (POP) due to the new network’s different connectivity
+and Internet peering arrangements. The load balancer in the new POP, potentially
+thousands of miles away, will not have information about the established flow
+and would not be able to route it back to the original POP.
+
+Since a client-generated Connection ID would require state migration in the CDN,
+QUIC supports a server-generated Connection ID, transmitted to the client during
+connection establishment. This Connection ID may encode the identity of the
+server or information about its load balancing pool, in order to support
+stateless load balancing. Once the server generates a Connection ID that encodes
+its identity, every CDN load balancer would be able to forward the packets to
+that server without needing information about every specific flow it is
+forwarding.
+  
+Server-generated Connection IDs must not encode any information other that that
+needed to route packets to the appropriate backend server(s):  typically the
+identity of the backend server or pool of servers, if the data-center’s load
+balancing system keeps “local” state of all flows itself.  Care must be
+exercised to ensure that the information encoded in the Connection ID is not
+sufficient to identify unique end users.
+ 
+By encoding routing information in the Connection ID, the load balancing systems
+open up a new attack vector that allows bad actors to direct traffic at a
+specific backend server (or backend server pool).  It is recommended that
+Server-Generated Connection ID includes a cryptographic MAC that the load
+balancer pool server are able to identify and discard packets featuring an
+invalid MAC.
+ 
 # Using Server Retry for Redirection
 
 QUIC provide a Server Retry packet that can be send by a server in response to
@@ -258,6 +303,10 @@ be used due to network blocking of UDP SHOULD guarantee the same security
 properties as QUIC; if this is not possible, the connection SHOULD fail to allow
 the application to explicitly handle fallback to a less-secure alternative. See
 {{fallback}}.
+
+# Contributors
+
+Igor Lubashev contributed text to {{connid}} on server-selected connection IDs.
 
 # Acknowledgments
 
