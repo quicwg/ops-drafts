@@ -213,52 +213,27 @@ indicate to the transport that is wishes to not expose a connection ID.
 
 ## Server-Generated Connection ID
 
-The Connection ID is used in part to support load balancing in content
-distribution networks (CDNs), which operate complexm geographically distributed
-pools of back-end servers, fronted by load balancing systems.  These load
-balancers are responsible for identifying the most appropriate server for each
-connection and for routing all packets belonging to that connection to the
-chosen server.
- 
-Load balancers are often deployed in pools for redundancy and load sharing. For
-high availability, it is important that when packets belonging to a flow start
-to arrive at a different load balancer in the load balancer pool, the packets
-continue to be forwarded to the original server in the server pool. 
-
-Support for seamless connection migration is an important design goal of QUIC
-– a necessity due to the proliferation of mobile connected devices. This
-connection persistence provides an additional challenge for multi-homed
-anycast-based services often employed by large content owners and CDNs. The
-challenge is that a migration to a different network in the middle of the
-connection greatly increases the chances of the packets routed to a different
-anycast point of presence (POP) due to the new network’s different connectivity
-and Internet peering arrangements. The load balancer in the new POP, potentially
-thousands of miles away, will not have information about the established flow
-and would not be able to route it back to the original POP.
-
-Since a client-generated Connection ID would require state migration in the CDN,
 QUIC supports a server-generated Connection ID, transmitted to the client during
-connection establishment. This Connection ID may encode the identity of the
-server or information about its load balancing pool, in order to support
-stateless load balancing. Once the server generates a Connection ID that encodes
-its identity, every CDN load balancer would be able to forward the packets to
-that server without needing information about every specific flow it is
-forwarding.
+connection establishment: see section 5.7 of {{I-D.ietf-quic-transport}} Servers
+behind load balancers should propose a Connection ID during the handshake,
+encoding the identity of the server or information about its load balancing
+pool, in order to support stateless load balancing. Once the server generates a
+Connection ID that encodes its identity, every CDN load balancer would be able
+to forward the packets to that server without needing information about every
+specific flow it is forwarding.
   
 Server-generated Connection IDs must not encode any information other that that
-needed to route packets to the appropriate backend server(s):  typically the
+needed to route packets to the appropriate backend server(s): typically the
 identity of the backend server or pool of servers, if the data-center’s load
 balancing system keeps “local” state of all flows itself.  Care must be
 exercised to ensure that the information encoded in the Connection ID is not
-sufficient to identify unique end users.
- 
-By encoding routing information in the Connection ID, the load balancing systems
-open up a new attack vector that allows bad actors to direct traffic at a
-specific backend server (or backend server pool).  It is recommended that
-Server-Generated Connection ID includes a cryptographic MAC that the load
-balancer pool server are able to identify and discard packets featuring an
-invalid MAC.
- 
+sufficient to identify unique end users. Note that by encoding routing
+information in the Connection ID, load balancers open up a new attack vector
+that allows bad actors to direct traffic at a specific backend server or pool.
+It is therefore recommended that Server-Generated Connection ID includes a
+cryptographic MAC that the load balancer pool server are able to identify and
+discard packets featuring an invalid MAC.
+
 # Using Server Retry for Redirection
 
 QUIC provide a Server Retry packet that can be send by a server in response to

@@ -134,14 +134,24 @@ The following information may be exposed in the packet header:
 
 - header type: the long header has a 7-bit header type field following the Header Form bit. The current version of QUIC defines 7 header types, namely Version Negotiation, Client Initial, Server Stateless Retry, Server Cleartext, Client Cleartext, 0-RTT Protected, 1-RTT Protected (key phase 0), 1-RTT Protected (key phase 1), and Public Reset. 
 
-- connection ID: The connection ID is always present on the long and optionally present on the short header indicated by the Connection ID Flag. If present at the short header it at the same position then for the long header. The position and length pf the congestion ID itself as well as the Connection ID flag in the short header is fixed for all versions of QUIC. The connection ID identifies the connection associated with a QUIC packet, for load-balancing and NAT rebinding purposes; see {{rebinding}}. Therefore it is also expected that the Connection ID will either be present on all packets of a flow or none of the short header packets. However, this field is under endpoint control and there is protocol mechanism that hinders the sending endpoint to revise its decision about exposing the Connection ID at any time during the connection.
+- connection ID: The connection ID is always present on the long and optionally
+  present on the short header indicated by the Connection ID Flag. If present at
+  the short header it at the same position then for the long header. The
+  position and length pf the congestion ID itself as well as the Connection ID
+  flag in the short header is fixed for all versions of QUIC. The connection ID
+  identifies the connection associated with a QUIC packet, for load-balancing
+  and NAT rebinding purposes; see {{loadbalancing}} and {{rebinding}}.
+  Therefore it is also expected that the Connection ID will either be present on
+  all packets of a flow or none of the short header packets. However, this field
+  is under endpoint control and there is protocol mechanism that hinders the
+  sending endpoint to revise its decision about exposing the Connection ID at
+  any time during the connection.
 
 - packet number: Every packet has an associated packet number. The packet number increases with each packet, and the least-significant bits of the packet number are present on each packet. In the short header the length of the exposed packet number field is defined by the (short) header type and can either be 8, 16, or 32 bits. See {{packetnumber}}.
 
 - version number: The version number is present on the long headers and identifies the version used for that packet, expect for the Version negotiation packet. The version negotiation packet is fixed for all version of QUIC and contains a lit of versions that is supported by the sender. However the version in the version field of the header is the reflected version of the clients initial packet and is therefore explicitly not supported by the sender.
 
 - key phase: The short header further has a Key Phase flag that is used by the endpoint identify the right key that was used to encrypt the packet. Different key phases are indicated with the use of the long header by using to different header types for protected long header packets.
-
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
@@ -161,10 +171,11 @@ packets at load balancers on other than five-tuple information, ensuring that
 related flows are appropriately balanced together; and to allow rebinding of a
 connection after one of the endpoint's addresses changes - usually the client's,
 in the case of the HTTP binding. The connection ID is proposed by the server
-during connection establishment, and a server might provide additional connection IDs
-that can the used by the client at any time during the connection. 
-Therefore if a flow changes one of its IP addresses it may keep the same connection ID, or the connection
-ID may also change together with the IP address migration, avoiding linkability; see section 7.6 of
+during connection establishment, and a server might provide additional
+connection IDs that can the used by the client at any time during the
+connection. Therefore if a flow changes one of its IP addresses it may keep the
+same connection ID, or the connection ID may also change together with the IP
+address migration, avoiding linkability; see section 7.6 of
 {{I-D.ietf-quic-transport}}.
 
 ## Packet Numbers {#packetnumber}
@@ -199,7 +210,6 @@ will be detected and will cause the endpoints to terminate the connection.
 
 Also note that the list of versions in the Version Negotiation packet may contain reserved versions. This mechanism is
 used to avoid ossification in the implementation on the selection mechanism. Further, a client may send a Initial Client packet with a reserved version number to trigger version negotiation. In the Version Negotiation packet the connection ID and packet number of the Client Initial packet are reflected to provide a proof of return-routability. Therefore changing these information will also cause the connection to fail.
-
 
 # Specific Network Management Tasks
 
@@ -290,7 +300,6 @@ by such a system under attack. However, a defense system might simply rely on th
 resumption mechanism provided by QUIC. This problem is also related to these issues under 
 discussion: https://github.com/quicwg/base-drafts/issues/203 
 
-
 ## QoS support and ECMP
 
 QUIC does not provide any additional information on requirements on Quality of Service (QoS)
@@ -311,9 +320,49 @@ However, 5-tuple (plus eventually connection ID if present)
 matching is still beneficial for QoS given all packets are handled by the same
 congestion controller.
 
-## Load balancing
+## Load Balancing using the Connection ID {#loadbalancing}
 
-[Editor's note: explain how this works as soon as we have decided who chooses the connection ID and when to set it. Related to https://github.com/quicwg/base-drafts/issues/349]
+The Connection ID is used in part to support load balancing in content
+distribution networks (CDNs), which operate complex, geographically distributed
+pools of back-end servers, fronted by load balancing systems.  These load
+balancers are responsible for identifying the most appropriate server for each
+connection and for routing all packets belonging to that connection to the
+chosen server.
+ 
+Load balancers are often deployed in pools for redundancy and load sharing. For
+high availability, it is important that when packets belonging to a flow start
+to arrive at a different load balancer in the load balancer pool, the packets
+continue to be forwarded to the original server in the server pool. 
+
+Support for seamless connection migration is an important design goal of QUIC
+– a necessity due to the proliferation of mobile connected devices. This
+connection persistence provides an additional challenge for multi-homed
+anycast-based services often employed by large content owners and CDNs. The
+challenge is that a migration to a different network in the middle of the
+connection greatly increases the chances of the packets routed to a different
+anycast point of presence (POP) due to the new network’s different connectivity
+and Internet peering arrangements. The load balancer in the new POP, potentially
+thousands of miles away, will not have information about the established flow
+and would not be able to route it back to the original POP.
+
+Load balancers may cooperate with servers or server pools behind them to use a
+server-generated Connection ID value, in order to support stateless load
+balancing, even across NAT rebinding or other address change events (see
+{{rebinding}}). See section 5.7 of {{I-D.ietf-quic-transport}}.
+
+Server-generated Connection IDs must not encode any information other that that
+needed to route packets to the appropriate backend server(s): typically the
+identity of the backend server or pool of servers, if the data-center’s load
+balancing system keeps “local” state of all flows itself.  Care must be
+exercised to ensure that the information encoded in the Connection ID is not
+sufficient to identify unique end users. Note that by encoding routing
+information in the Connection ID, load balancers open up a new attack vector
+that allows bad actors to direct traffic at a specific backend server or pool.
+It is therefore recommended that Server-Generated Connection ID includes a
+cryptographic MAC that the load balancer pool server are able to identify and
+discard packets featuring an invalid MAC.
+ 
+
 
 
 # IANA Considerations
@@ -336,6 +385,11 @@ At the other extreme, supporting current traffic classification methods that
 operate through the deep packet inspection (DPI) of application-layer headers
 are directly antithetical to QUIC's goal to provide confidentiality to its
 application-layer protocol(s); in these cases, alternatives must be found.
+
+# Contributors 
+
+Igor Lubashev contributed text to {{loadbalancing}} on the use of the connection
+ID for load balancing.
 
 
 # Acknowledgments
