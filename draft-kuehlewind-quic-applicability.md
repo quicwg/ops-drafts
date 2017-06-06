@@ -175,8 +175,6 @@ cost for establishing another connection are extremely low.
 
 # Prioritization
 
-[EDITOR'S NOTE: is prioritization still current in the QUIC transport itself?]
-
 Stream prioritization is not exposed to the network, nor to the receiver.
 Prioritization can be realized by the sender and the QUIC transport should provide
 and interface for applications to prioritize streams {{I-D.ietf-quic-transport}}.
@@ -212,7 +210,8 @@ behind a load balancer, and therefore it is unlikely that the addresses will be
 re-bound, may indicate to the transport that is wishes to not expose a
 connection ID.
 
-Also see https://github.com/quicwg/base-drafts/issues/514 for guidance on server connection ID selection.
+Also see https://github.com/quicwg/base-drafts/issues/514 for guidance on server
+connection ID selection.
 
 
 # Using Server Retry for Redirection
