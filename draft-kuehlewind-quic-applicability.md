@@ -142,6 +142,9 @@ QUIC, TLS negotiation over TCP can be blocked. In case it is RECOMMENDED to
 abort the connection, allowing the application to present a suitable prompt to
 the user that secure communication is unavailable.
 
+# Session resumption vervus Keep-alive
+
+[EDITOR'S NOTE: guidance/recommendation to us 0-RTT session resumption rather then sending keep-alives?]
 
 # Zero RTT: Here There Be Dragons {#zero-rtt}
 
