@@ -1,73 +1,106 @@
-# Contributing
+# Contributing to the QUIC Operations drafts
 
-Before submitting feedback, please familiarize yourself with our current issues
-list and review the [working group
-documents](https://datatracker.ietf.org/wg/quic/documents/) and [mailing
-list discussion](https://mailarchive.ietf.org/arch/browse/quic/). If you're
-new to this, you may also want to read the [Tao of the
-IETF](https://www.ietf.org/tao.html).
+Before submitting feedback, please familiarize yourself with the working group [charter](https://datatracker.ietf.org/wg/quic/about/), the [base drafts](https://github.com/quicwg/base-drafts/) on which the operations drafts are based, and our current [issues list](https://github.com/quicwg/ops-drafts/issues). If you're
+new to this, you may also want to read the [Tao of the IETF](https://www.ietf.org/tao.html).
 
-Be aware that all contributions to the specification fall under the ["NOTE
-WELL"](#note-well) terms outlined below.
+**Be aware that all contributions fall under the "NOTE WELL" terms outlined below.**
 
-1. The best way to provide feedback (editorial or design) and ask questions is
-sending an e-mail to our mailing list
-([info](https://www.ietf.org/mailman/listinfo/quic)). This will ensure that
-the entire Working Group sees your input in a timely fashion.
+## Following Discussion
 
-2. If you have **editorial** suggestions (i.e., those that do not change the
-meaning of the specification), you can either:
+The Working Group has a few venues for discussion:
 
-  a) Fork this repository and submit a pull request; this is the lowest
-  friction way to get editorial changes in.
+* We plain to meet at all [IETF meetings](https://www.ietf.org/meeting/) for the foreseeable future, and hold interim meetings between them, at least through 2017. See our [meeting materials repository](https://github.com/quicwg/wg-materials) and the [official proceedings](https://datatracker.ietf.org/wg/quic/meetings/).
 
-  b) Submit a new issue to Github, and mention that you believe it is editorial
-  in the issue body. It is not necessary to notify the mailing list for
-  editorial issues.
+* Our [mailing list](https://www.ietf.org/mailman/listinfo/quic) is used for most communication, including notifications of meetings, new drafts, consensus calls and other business, as well as issue discussion.
 
-  c) Make comments on individual commits in Github. Note that this feedback is
-  processed only with best effort by the editors, so it should only be used for
-  quick editorial suggestions or questions.
+* We also discuss specific issues on the appropriate issues list in [Github](https://github.com/quicwg/). If you don't want to use Github to follow these discussions, you can subscribe to the [issue announce list](https://www.ietf.org/mailman/listinfo/quic-issues).
 
-3. For non-editorial (i.e., **design**) issues, you can also create an issue on
-Github. However, you **must notify the mailing list** when creating such issues,
-providing a link to the issue in the message body.
+To be active in the Working Group, you can participate in any of these places. Most activity takes
+place on the mailing list, but if you just want to comment on and raise issues, that's fine too.
 
-  Note that **github issues are not for substantial discussions**; the only
-  appropriate place to discuss design issues is on the mailing list itself.
+## Raising Issues
+
+We use our [Github](https://github.com/quicwg/ops-drafts) issues lists to track items for discussion and
+their resolution.
+
+Before filing a new issue on the operations drafts, please consider a few things:
+
+* Issues should be just that; issues with our deliverables, **not questions or support requests**.
+* Please review the issues list to make sure that you aren't filing a duplicate.
+* The operations drafts are intended to track applicability and manageability aspects of the QUIC protocol as defined by the latest version of the [base drafts](https://github.com/quicwg/base-drafts). Discussion about changing the definition of the protocol to support a particular application and/or to change the manageability aspects of the protocol should be discussed as [issues](https://github.com/quicwg/base-drafts) there.
+* If you're not sure how to phrase your issue, please ask on the [mailing list](https://www.ietf.org/mailman/listinfo/quic).
+
+Issues can also be raised on the [Working Group mailing
+list](https://www.ietf.org/mailman/listinfo/quic) by clearly marking them as such (e.g., "New
+Issue" in the `Subject:` line).
+
+Be aware that issues might be rephrased, changed in scope, or combined with others, so that the
+group can focus its efforts. If you feel that such a change loses an important part of your
+original issue, please bring it up, either in comments or on the list.
+
+Off-topic and duplicate issues will be closed without discussion. Note that comments on individual
+commits will only be responded to with best effort, and may not be seen.
+
+
+## Resolving Issues
+
+Issues will be labeled by the Chairs as either `editorial` or `design`:
+
+* **Design** issues require discussion and consensus in the Working Group. This discussion can happen both in the issue and on the [Working Group mailing list](https://www.ietf.org/mailman/listinfo/quic), as outlined below. Note that design issues on the ops drafts primarily concern the scope of the drafts themselves (i.e., whether a certain aspect of management or a certain application should be considered by the draft). Design proposals impacting applicability and manageability of the QUIC protocol should be discussed as [issues](https://github.com/quicwg/base-drafts) on the base drafts.
+
+* **Editorial** issues can be dealt with by the editor(s) without consensus or notification. Typically, any discussion will take place on the issue itself.
+
+The `open` design issues in the issues list are those that we are currently or plan to discuss. When a design issue is `closed`, it implies that the issue has a proposed resolution that is reflected in the drafts; if a `closed` design issue is labeled with `has-consensus`, it means that the incorporated resolution has Working Group consensus.
+
+Design issues can be discussed on the mailing list or the issues list. The editors can also propose resolutions to design issues for the group's consideration by incorporating them into the draft(s).
+
+When a new draft is published, the design issues that have been closed since the last draft will be highlighted on the mailing list, to aid reviewers. Once consensus is confirmed, those issues will be labeled with [`has-consensus`](https://github.com/quicwg/base-drafts/issues?utf8=✓&q=label%3Ahas-consensus%20).
+
+Note that whether or not a design issue is closed does **not** reflect consensus of the Working Group; an issue's `open`/`closed` state is only used to organise our discussions. If you have a question or problem with an issue in the `closed` state, please comment on it (either in the issues list or mailing list), and we'll adjust its state accordingly. Note that reopening issues with `has-consensus` requires new information.
+
+
+## Pull Requests
+
+We welcome pull requests, both for editorial suggestions and to resolve open issues. In the latter
+case, please identify the relevant issue.
+
+Please do not use a pull request to open a new issue; it may not be noticed. 
+
+
+## Code of Conduct
+
+The [IETF Guidelines for Conduct](https://tools.ietf.org/html/rfc7154) applies to all Working Group
+communications and meetings.
 
 
 ## NOTE WELL
 
-Any submission to the [IETF](https://www.ietf.org/) intended by the Contributor
-for publication as all or part of an IETF Internet-Draft or RFC and any
-statement made within the context of an IETF activity is considered an "IETF
-Contribution". Such statements include oral statements in IETF sessions, as well
-as written and electronic communications made at any time or place, which are
+Any submission to the [IETF](https://www.ietf.org/) intended by the Contributor for publication as
+all or part of an IETF Internet-Draft or RFC and any statement made within the context of an IETF
+activity is considered an "IETF Contribution". Such statements include oral statements in IETF
+sessions, as well as written and electronic communications made at any time or place, which are
 addressed to:
 
  * The IETF plenary session
  * The IESG, or any member thereof on behalf of the IESG
- * Any IETF mailing list, including the IETF list itself, any working group or
-   design team list, or any other list functioning under IETF auspices
+ * Any IETF mailing list, including the IETF list itself, any working group
+   or design team list, or any other list functioning under IETF auspices
  * Any IETF working group or portion thereof
  * Any Birds of a Feather (BOF) session
  * The IAB or any member thereof on behalf of the IAB
  * The RFC Editor or the Internet-Drafts function
+ * All IETF Contributions are subject to the rules of
+   [RFC 5378](https://tools.ietf.org/html/rfc5378) and
+   [RFC 8179](https://tools.ietf.org/html/rfc8179).
 
-All IETF Contributions are subject to the rules of [RFC
-5378](https://tools.ietf.org/html/rfc5378) and [RFC
-3979](https://tools.ietf.org/html/rfc3979) (updated by [RFC
-4879](https://tools.ietf.org/html/rfc4879)).
+Statements made outside of an IETF session, mailing list or other function, that are clearly not
+intended to be input to an IETF activity, group or function, are not IETF Contributions in the
+context of this notice.
 
-Statements made outside of an IETF session, mailing list or other function, that
-are clearly not intended to be input to an IETF activity, group or function, are
-not IETF Contributions in the context of this notice.  Please consult [RFC
-5378](https://tools.ietf.org/html/rfc5378) and [RFC
-3979](https://tools.ietf.org/html/rfc3979) for details.
+Please consult [RFC 5378](https://tools.ietf.org/html/rfc5378) and [RFC 8179](https://tools.ietf.org/html/rfc8179) for details.
 
-A participant in any IETF activity is deemed to accept all IETF rules of
-process, as documented in Best Current Practices RFCs and IESG Statements.
+A participant in any IETF activity is deemed to accept all IETF rules of process, as documented in
+Best Current Practices RFCs and IESG Statements.
 
-A participant in any IETF activity acknowledges that written, audio and video
-records of meetings may be made and may be available to the public.
+A participant in any IETF activity acknowledges that written, audio and video records of meetings
+may be made and may be available to the public.
