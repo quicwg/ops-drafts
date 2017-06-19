@@ -1,6 +1,6 @@
 ---
 title: Applicability of the QUIC Transport Protocol
-docname: draft-kuehlewind-quic-applicability-01
+docname: draft-ietf-quic-applicability-latest
 date:
 category: info
 
@@ -142,22 +142,34 @@ QUIC, TLS negotiation over TCP can be blocked. In case it is RECOMMENDED to
 abort the connection, allowing the application to present a suitable prompt to
 the user that secure communication is unavailable.
 
-# Session resumption vervus Keep-alive
+# Session resumption versus Keep-alive
 
 [EDITOR'S NOTE: guidance/recommendation to us 0-RTT session resumption rather then sending keep-alives?]
 
-# Zero RTT: Here There Be Dragons {#zero-rtt}
+# Zero RTT {#zero-rtt}
 
 QUIC provides for 0-RTT connection establishment (see section 3.2 of
-{{I-D.ietf-quic-transport}}). However, data in the frames contained in 
-0-RTT packets of a such a connection must be treated specially by the
-application layer. Replay of these packets can cause the data to processed twice.
-This is further described in {{I-D.nottingham-httpbis-retry}}.
+{{I-D.ietf-quic-transport}}). This presents opportunities and challenges for
+applications using QUIC.
+
+## Thinking in zero RTT
+
+[Editor's Note: Jana noted at the interim in Paris that we should point out that applications need to be re-thought slightly to get the benefits of zero RTT. Add a little text here to discuss this and why it's worth the effort, before we go straight into the dragons.]
+
+## Here There Be Dragons 
+
+However, data in the frames contained in 0-RTT packets of a such a connection
+must be treated specially by the application layer. Replay of these packets can
+cause the data to processed twice. This is further described in
+{{I-D.nottingham-httpbis-retry}}.
+
+0-RTT data also does not benefit from perfect forward secrecy (PFS).
 
 Applications that cannot treat data that may appear in a 0-RTT connection
-establishment as idempotent MUST NOT use 0-RTT establishment. For this reason the
-QUIC transport SHOULD provide an interface for the application to indicate if
-0-RTT support is in general desired or a way to indicate if data is idempotent.
+establishment as idempotent MUST NOT use 0-RTT establishment. For this reason
+the QUIC transport SHOULD provide an interface for the application to indicate
+if 0-RTT support is in general desired or a way to indicate whether data is
+idempotent, and/or whether PFS is a hard requirement
 
 # Stream versus Flow Multiplexing
 

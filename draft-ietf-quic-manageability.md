@@ -1,6 +1,6 @@
 ---
 title: Manageability of the QUIC Transport Protocol
-docname: draft-kuehlewind-quic-manageability-00
+docname: draft-ietf-quic-manageability-latest
 date:
 category: info
 
