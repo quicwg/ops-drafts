@@ -45,7 +45,7 @@ informative:
         ins: R. Beverly
       -
         ins: B. Trammell
-    url: https://arxiv.org/abs/1612.02902
+    target: https://arxiv.org/abs/1612.02902
     date: 2016-12-09
   Ding2015:
     title: TCP Stretch Acknowledgments and Timestamps - Findings and Impliciations for Passive RTT Measurement (ACM Computer Communication Review)
@@ -54,7 +54,7 @@ informative:
         ins: H. Ding
       -
         ins: M. Rabinovich
-    url: http://www.sigcomm.org/sites/default/files/ccr/papers/2015/July/0000000-0000002.pdf
+    target: http://www.sigcomm.org/sites/default/files/ccr/papers/2015/July/0000000-0000002.pdf
     date: 2015-07
 
 --- abstract

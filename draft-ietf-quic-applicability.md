@@ -39,7 +39,7 @@ informative:
         ins: B. Trammell
       -
         ins: M. Kuehlewind
-    url: https://ripe72.ripe.net/wp-content/uploads/presentations/86-atlas-udpdiff.pdf
+    target: https://ripe72.ripe.net/wp-content/uploads/presentations/86-atlas-udpdiff.pdf
     date: 2016-05-25
   Edeline16:
     title: Using UDP for Internet Transport Evolution (arXiv preprint 1612.07816)
@@ -54,21 +54,21 @@ informative:
         ins: E. Aben
       -
         ins: B. Donnet
-    url: https://arxiv.org/abs/1612.07816
+    target: https://arxiv.org/abs/1612.07816
     date: 2016-12-22
   Swett16:
     title: QUIC Deployment Experience at Google (IETF96 QUIC BoF presentation)
     author:
       -
         ins: I. Swett
-    url: https://www.ietf.org/proceedings/96/slides/slides-96-quic-3.pdf
+    target: https://www.ietf.org/proceedings/96/slides/slides-96-quic-3.pdf
     date: 2016-07-20
   PaaschNanog:
     title: Network Ssupport for TCP Fast Open (NANOG 67 presentation)
     author:
       -
         ins: C. Paasch
-    url: https://www.nanog.org/sites/default/files/Paasch_Network_Support.pdf
+    target: https://www.nanog.org/sites/default/files/Paasch_Network_Support.pdf
     date: 2016-06-13
   I-D.nottingham-httpbis-retry:
 --- abstract
