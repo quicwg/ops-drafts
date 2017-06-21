@@ -30,11 +30,8 @@ author:
 
 normative:
   RFC2119:
-  I-D.ietf-quic-transport:
-  I-D.ietf-quic-tls:
 
 informative:
-  I-D.ietf-quic-http:
   Trammell16:
     title: Internet Path Transparency Measurements using RIPE Atlas (RIPE72 MAT presentation)
     author:
@@ -42,7 +39,7 @@ informative:
         ins: B. Trammell
       -
         ins: M. Kuehlewind
-    url: https://ripe72.ripe.net/wp-content/uploads/presentations/86-atlas-udpdiff.pdf
+    target: https://ripe72.ripe.net/wp-content/uploads/presentations/86-atlas-udpdiff.pdf
     date: 2016-05-25
   Edeline16:
     title: Using UDP for Internet Transport Evolution (arXiv preprint 1612.07816)
@@ -57,21 +54,21 @@ informative:
         ins: E. Aben
       -
         ins: B. Donnet
-    url: https://arxiv.org/abs/1612.07816
+    target: https://arxiv.org/abs/1612.07816
     date: 2016-12-22
   Swett16:
     title: QUIC Deployment Experience at Google (IETF96 QUIC BoF presentation)
     author:
       -
         ins: I. Swett
-    url: https://www.ietf.org/proceedings/96/slides/slides-96-quic-3.pdf
+    target: https://www.ietf.org/proceedings/96/slides/slides-96-quic-3.pdf
     date: 2016-07-20
   PaaschNanog:
     title: Network Ssupport for TCP Fast Open (NANOG 67 presentation)
     author:
       -
         ins: C. Paasch
-    url: https://www.nanog.org/sites/default/files/Paasch_Network_Support.pdf
+    target: https://www.nanog.org/sites/default/files/Paasch_Network_Support.pdf
     date: 2016-06-13
   I-D.nottingham-httpbis-retry:
 --- abstract
@@ -85,29 +82,29 @@ to QUIC, and implementors of these application protocols.
 
 # Introduction
 
-QUIC {{I-D.ietf-quic-transport}} is a new transport protocol currently under
-development in the IETF quic working group, focusing on support of semantics as
-needed for HTTP/2 {{I-D.ietf-quic-http}} such as stream-multiplexing to avoid
-head-of-line blocking. Based on current deployment practices, QUIC is
-encapsulated in UDP. The version of QUIC
-that is currently under development will integrate TLS 1.3 {{I-D.ietf-quic-tls}}
-to encrypt all payload data and most control information.
+QUIC {{!QUIC=I-D.ietf-quic-transport}} is a new transport protocol currently
+under development in the IETF quic working group, focusing on support of
+semantics as needed for HTTP/2 {{?QUIC-HTTP=I-D.ietf-quic-http}} such as
+stream-multiplexing to avoid head-of-line blocking. Based on current deployment
+practices, QUIC is encapsulated in UDP. The version of QUIC that is currently
+under development will integrate TLS 1.3 {{!TLS13=I-D.ietf-quic-tls}} to
+encrypt all payload data and most control information.
 
-This document provides guidance for application developers that want to use the QUIC
-protocol without implementing it on their own. This includes general guidance
-for application use of HTTP/2 over QUIC as well as the use of other
+This document provides guidance for application developers that want to use the
+QUIC protocol without implementing it on their own. This includes general
+guidance for application use of HTTP/2 over QUIC as well as the use of other
 application layer protocols over QUIC. For specific guidance on how to
-integrate HTTP/2 with QUIC, see {{I-D.ietf-quic-http}}.
+integrate HTTP/2 with QUIC, see {{QUIC-HTTP}}.
 
-In the following sections we discuss specific caveats to QUIC's
-applicability, and issues that application developers must consider when using
-QUIC as a transport for their application.
+In the following sections we discuss specific caveats to QUIC's applicability,
+and issues that application developers must consider when using QUIC as a
+transport for their application.
 
 ## Notational Conventions
 
 The words "MUST", "MUST NOT", "SHOULD", and "MAY" are used in this document.
-It's not shouting; when these words are capitalized, they have a special meaning
-as defined in {{RFC2119}}.
+It's not shouting; when these words are capitalized, they have a special
+meaning as defined in {{RFC2119}}.
 
 # The Necessity of Fallback {#fallback}
 
@@ -144,24 +141,28 @@ the user that secure communication is unavailable.
 
 # Session resumption versus Keep-alive
 
-[EDITOR'S NOTE: guidance/recommendation to us 0-RTT session resumption rather then sending keep-alives?]
+\[EDITOR'S NOTE: guidance/recommendation to us 0-RTT session resumption rather
+then sending keep-alives?]
 
 # Zero RTT {#zero-rtt}
 
 QUIC provides for 0-RTT connection establishment (see section 3.2 of
-{{I-D.ietf-quic-transport}}). This presents opportunities and challenges for
-applications using QUIC.
+{{!QUIC}}). This presents opportunities and challenges for applications using
+QUIC.
 
 ## Thinking in zero RTT
 
-[Editor's Note: Jana noted at the interim in Paris that we should point out that applications need to be re-thought slightly to get the benefits of zero RTT. Add a little text here to discuss this and why it's worth the effort, before we go straight into the dragons.]
+\[Editor's Note: Jana noted at the interim in Paris that we should point out
+that applications need to be re-thought slightly to get the benefits of zero
+RTT. Add a little text here to discuss this and why it's worth the effort,
+before we go straight into the dragons.]
 
-## Here There Be Dragons 
+## Here There Be Dragons
 
 However, data in the frames contained in 0-RTT packets of a such a connection
 must be treated specially by the application layer. Replay of these packets can
 cause the data to processed twice. This is further described in
-{{I-D.nottingham-httpbis-retry}}.
+{{?HTTP-RETRY=I-D.nottingham-httpbis-retry}}.
 
 0-RTT data also does not benefit from perfect forward secrecy (PFS).
 
@@ -175,36 +176,38 @@ idempotent, and/or whether PFS is a hard requirement
 
 QUIC's stream multiplexing feature allows applications to run multiple streams
 over a single connection, without head-of-line blocking between streams,
-associated at a point in time with a single five-tuple. Streams are
-meaningful only to the application; since stream information is carried inside
-QUIC's encryption boundary, no information about the stream(s) whose frames
-are carried by a given packet is visible to the network.
+associated at a point in time with a single five-tuple. Streams are meaningful
+only to the application; since stream information is carried inside QUIC's
+encryption boundary, no information about the stream(s) whose frames are
+carried by a given packet is visible to the network.
 
 Stream multiplexing is not intended to be used for differentiating streams in
 terms of network treatment. Application traffic requiring different network
 treatment SHOULD therefore be carried over different five-tuples (i.e.
 multiple QUIC connections). Given QUIC's ability to send application data in
-the first RTT of a connection (if a previous connection to the same host
-has been successfully established to provide the respective credentials), the
+the first RTT of a connection (if a previous connection to the same host has
+been successfully established to provide the respective credentials), the
 cost for establishing another connection are extremely low.
 
 # Prioritization
 
 Stream prioritization is not exposed to the network, nor to the receiver.
-Prioritization can be realized by the sender and the QUIC transport should provide
-and interface for applications to prioritize streams {{I-D.ietf-quic-transport}}.
+Prioritization can be realized by the sender and the QUIC transport should
+provide and interface for applications to prioritize streams {{!QUIC}}.
 
-Priority handling of retransmissions may be implemented by the sender in the transport layer and
-{{I-D.ietf-quic-transport}} does not specify a specific way how this must be
-handled. Currently QUIC only provides fully reliable stream transmission, and as such
-prioritization of retransmission is likely beneficial. For not fully reliable streams
-priority scheduling of retransmissions over data of higher-priority streams might not be
-desired. In this case QUIC could also provide an interface or derive the prioritization
-decision from the reliability level of the stream.
+Priority handling of retransmissions may be implemented by the sender in the
+transport layer and {{QUIC}} does not specify a specific way how this must be
+handled. Currently QUIC only provides fully reliable stream transmission, and
+as such prioritization of retransmission is likely beneficial. For not fully
+reliable streams priority scheduling of retransmissions over data of
+higher-priority streams might not be desired. In this case QUIC could also
+provide an interface or derive the prioritization decision from the reliability
+level of the stream.
 
 # Graceful connection closure
 
-[EDITOR'S NOTE: give some guidance here about the steps an application should take; however this is still work in progress]
+\[EDITOR'S NOTE: give some guidance here about the steps an application should
+take; however this is still work in progress]
 
 
 # Information exposure and the Connection ID {#connid}
@@ -215,28 +218,29 @@ information is intended to be used by the network. QUIC has a long header that
 is used during connection establishment and for other control processes, and a
 short header that may be used for data transmission in an established
 connection. While the long header is fixed and exposes some information, the
-short header only exposes the packet number by default and may optionally expose
-a connection ID.  
+short header only exposes the packet number by default and may optionally
+expose a connection ID.
 
 Given that exposing this information may make it possible to associate multiple
-addresses with a single client during rebinding, which has privacy implications,
-an application may indicate to not support exposure of certain information after
-the handshake. Specificially, an application that has additional information
-that the client is not behind a NAT and the server is not behind a load
-balancer, and therefore it is unlikely that the addresses will be re-bound, may
-indicate to the transport that is wishes to not expose a connection ID.
+addresses with a single client during rebinding, which has privacy
+implications, an application may indicate to not support exposure of certain
+information after the handshake. Specificially, an application that has
+additional information that the client is not behind a NAT and the server is
+not behind a load balancer, and therefore it is unlikely that the addresses
+will be re-bound, may indicate to the transport that is wishes to not expose a
+connection ID.
 
 ## Server-Generated Connection ID
 
-QUIC supports a server-generated Connection ID, transmitted to the client during
-connection establishment: see section 5.7 of {{I-D.ietf-quic-transport}} Servers
-behind load balancers should propose a Connection ID during the handshake,
-encoding the identity of the server or information about its load balancing
-pool, in order to support stateless load balancing. Once the server generates a
+QUIC supports a server-generated Connection ID, transmitted to the client
+during connection establishment: see Section 5.7 of {{!QUIC}} Servers behind
+load balancers should propose a Connection ID during the handshake, encoding
+the identity of the server or information about its load balancing pool, in
+order to support stateless load balancing. Once the server generates a
 Connection ID that encodes its identity, every CDN load balancer would be able
 to forward the packets to that server without needing information about every
 specific flow it is forwarding.
-  
+
 Server-generated Connection IDs must not encode any information other that that
 needed to route packets to the appropriate backend server(s): typically the
 identity of the backend server or pool of servers, if the data-center’s load
@@ -266,17 +270,17 @@ redirect the next Client Initial packet to a different server in that pool.
 
 # Use of Versions and Cryptographic Handshake
 
-Versioning in QUIC may change the the protocol's behavior completely, except for
-the meaning of a few header fields that have been declared to be fixed. As such
-version of QUIC with a higher version number does not necessarily provide a
-better service, but might simply provide a very different service, so an
+Versioning in QUIC may change the the protocol's behavior completely, except
+for the meaning of a few header fields that have been declared to be fixed. As
+such version of QUIC with a higher version number does not necessarily provide
+a better service, but might simply provide a very different service, so an
 application needs to be able to select which versions of QUIC it wants to use.
 
 A new version could use an encryption scheme other than TLS 1.3 or higher.
-{{I-D.ietf-quic-transport}} specifies requirements for the cryptographic
-handshake as currently realized by TLS 1.3 and described in a separate
-specification {{I-D.ietf-quic-tls}}. This split is performed to enable
-light-weight versioning with different cryptographic handshakes.
+{{QUIC}} specifies requirements for the cryptographic handshake as currently
+realized by TLS 1.3 and described in a separate specification
+{{!QUIC-TLS=I-D.ietf-quic-tls}}. This split is performed to enable light-weight
+versioning with different cryptographic handshakes.
 
 # IANA Considerations
 
@@ -284,15 +288,15 @@ This document has no actions for IANA.
 
 # Security Considerations
 
-See the security considerations in {{I-D.ietf-quic-transport}} and
-{{I-D.ietf-quic-tls}}; the security considerations for the underlying transport
-protocol are relevant for applications using QUIC, as well.
+See the security considerations in {{!QUIC}} and {{!QUIC-TLS}}; the security
+considerations for the underlying transport protocol are relevant for
+applications using QUIC, as well.
 
 Application developers should note that any fallback they use when QUIC cannot
 be used due to network blocking of UDP SHOULD guarantee the same security
-properties as QUIC; if this is not possible, the connection SHOULD fail to allow
-the application to explicitly handle fallback to a less-secure alternative. See
-{{fallback}}.
+properties as QUIC; if this is not possible, the connection SHOULD fail to
+allow the application to explicitly handle fallback to a less-secure
+alternative. See {{fallback}}.
 
 # Contributors
 
