@@ -1,5 +1,6 @@
 ---
 title: Manageability of the QUIC Transport Protocol
+abbrev: QUIC Manageability
 docname: draft-ietf-quic-manageability-latest
 date:
 category: info

@@ -1,5 +1,6 @@
 ---
 title: Applicability of the QUIC Transport Protocol
+abbrev: QUIC Applicability
 docname: draft-ietf-quic-applicability-latest
 date:
 category: info
@@ -64,7 +65,7 @@ informative:
     target: https://www.ietf.org/proceedings/96/slides/slides-96-quic-3.pdf
     date: 2016-07-20
   PaaschNanog:
-    title: Network Ssupport for TCP Fast Open (NANOG 67 presentation)
+    title: Network Support for TCP Fast Open (NANOG 67 presentation)
     author:
       -
         ins: C. Paasch
@@ -139,11 +140,6 @@ QUIC, TLS negotiation over TCP can be blocked. In case it is RECOMMENDED to
 abort the connection, allowing the application to present a suitable prompt to
 the user that secure communication is unavailable.
 
-# Session resumption versus Keep-alive
-
-\[EDITOR'S NOTE: guidance/recommendation to us 0-RTT session resumption rather
-then sending keep-alives?]
-
 # Zero RTT {#zero-rtt}
 
 QUIC provides for 0-RTT connection establishment (see section 3.2 of
@@ -152,7 +148,7 @@ QUIC.
 
 ## Thinking in zero RTT
 
-\[Editor's Note: Jana noted at the interim in Paris that we should point out
+\[EDITOR'S NOTE: Jana noted at the interim in Paris that we should point out
 that applications need to be re-thought slightly to get the benefits of zero
 RTT. Add a little text here to discuss this and why it's worth the effort,
 before we go straight into the dragons.]
@@ -171,6 +167,11 @@ establishment as idempotent MUST NOT use 0-RTT establishment. For this reason
 the QUIC transport SHOULD provide an interface for the application to indicate
 if 0-RTT support is in general desired or a way to indicate whether data is
 idempotent, and/or whether PFS is a hard requirement
+
+## Session resumption versus Keep-alive
+
+\[EDITOR'S NOTE: guidance/recommendation to us 0-RTT session resumption rather
+then sending keep-alives?]
 
 # Stream versus Flow Multiplexing
 
@@ -208,7 +209,6 @@ level of the stream.
 
 \[EDITOR'S NOTE: give some guidance here about the steps an application should
 take; however this is still work in progress]
-
 
 # Information exposure and the Connection ID {#connid}
 
