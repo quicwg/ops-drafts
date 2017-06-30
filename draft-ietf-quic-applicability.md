@@ -146,32 +146,40 @@ QUIC provides for 0-RTT connection establishment (see section 3.2 of
 {{!QUIC}}). This presents opportunities and challenges for applications using
 QUIC.
 
-## Thinking in zero RTT
+## Thinking in Zero RTT
 
-\[EDITOR'S NOTE: Jana noted at the interim in Paris that we should point out
-that applications need to be re-thought slightly to get the benefits of zero
-RTT. Add a little text here to discuss this and why it's worth the effort,
-before we go straight into the dragons.]
+A transport protocol that provides 0-RTT connection establishment to recently
+contacted servers is qualitatively different than one that does not from the
+point of view of the application using it. Relative tradeoffs between the cost
+of closing and reopening a connection and trying to keep it open are different;
+see {{resumption-v-keepalive}}.
+
+Applications must be slightly rethought in order to make best use of 0-RTT
+resumption. Most importantly, application operations must be divided into
+idempotent and non-idempotent operations, as only idempotent operations may
+appear in 0-RTT packets. This implies that the interface between the application
+and transport layer exposes idempotence either ecplicitly or implicitly.
 
 ## Here There Be Dragons
 
-However, data in the frames contained in 0-RTT packets of a such a connection
-must be treated specially by the application layer. Replay of these packets can
-cause the data to processed twice. This is further described in
-{{?HTTP-RETRY=I-D.nottingham-httpbis-retry}}.
+Retransmission or (malicious) replay of data contained in 0-RTT resumption
+packets could cause the server side to receive two copies of the same data. This
+is further described in {{?HTTP-RETRY=I-D.nottingham-httpbis-retry}}. Data sent
+during 0-RTT resumption also cannot benefit from perfect forward secrecy (PFS).
 
-0-RTT data also does not benefit from perfect forward secrecy (PFS).
+Data in the first flight sent by the client in a connection established with
+0-RTT MUST be idempotent. Applications MUST be designed, and their data MUST be
+framed, such that multiple reception of idempotent data is recognized as such by
+the receiverApplications that cannot treat data that may appear in a 0-RTT
+connection establishment as idempotent MUST NOT use 0-RTT establishment. For
+this reason the QUIC transport SHOULD provide an interface for the application
+to indicate if 0-RTT support is in general desired or a way to indicate whether
+data is idempotent, and/or whether PFS is a hard requirement for the
+application.
 
-Applications that cannot treat data that may appear in a 0-RTT connection
-establishment as idempotent MUST NOT use 0-RTT establishment. For this reason
-the QUIC transport SHOULD provide an interface for the application to indicate
-if 0-RTT support is in general desired or a way to indicate whether data is
-idempotent, and/or whether PFS is a hard requirement
+## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
-## Session resumption versus Keep-alive
-
-\[EDITOR'S NOTE: guidance/recommendation to us 0-RTT session resumption rather
-then sending keep-alives?]
+\[EDITOR'S NOTE: see https://github.com/quicwg/ops-drafts/issues/6]
 
 # Stream versus Flow Multiplexing
 
