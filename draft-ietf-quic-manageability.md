@@ -370,16 +370,17 @@ high availability, it is important that when packets belonging to a flow start
 to arrive at a different load balancer in the load balancer pool, the packets
 continue to be forwarded to the original server in the server pool.
 
-Support for seamless connection migration is an important design goal of QUIC
-– a necessity due to the proliferation of mobile connected devices. This
-connection persistence provides an additional challenge for multi-homed
+Support for seamless connection migration is an important design goal of
+QUIC - a necessity due to the proliferation of mobile connected devices.
+This connection persistence provides an additional challenge for multi-homed
 anycast-based services often employed by large content owners and CDNs. The
 challenge is that a migration to a different network in the middle of the
 connection greatly increases the chances of the packets routed to a different
-anycast point of presence (POP) due to the new network’s different connectivity
-and Internet peering arrangements. The load balancer in the new POP, potentially
-thousands of miles away, will not have information about the established flow
-and would not be able to route it back to the original POP.
+anycast point of presence (POP) due to the new network’s different
+connectivity and Internet peering arrangements. The load balancer in the
+new POP, potentially thousands of miles away, will not have information
+about the established flow and would not be able to route it back to the
+original POP.
 
 Load balancers may cooperate with servers or server pools behind them to use a
 server-generated Connection ID value, in order to support stateless load
