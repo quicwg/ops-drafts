@@ -181,16 +181,46 @@ application.
 
 \[EDITOR'S NOTE: see https://github.com/quicwg/ops-drafts/issues/6]
 
-# Stream versus Flow Multiplexing
+# Use of Streams 
 
 QUIC's stream multiplexing feature allows applications to run multiple streams
 over a single connection, without head-of-line blocking between streams,
-associated at a point in time with a single five-tuple. Streams are meaningful
-only to the application; since stream information is carried inside QUIC's
+associated at a point in time with a single five-tuple. Stream data is 
+carried within Frames, where one (UDP) packet on the wired can carry one of multiple
+stream frames. 
+
+Stream can be independently open and closed, gracefully or by error. If a critical stream
+for the application is closed, the application can generate respective error messages on
+the application layer to inform the other end or the higher layer and eventually indicate 
+quic to reset the connection. QUIC, however, does not need to know which streams are critical,
+and does not provide an interface to exceptional handling of any stream. There are special streams
+in QUIC that are used for control on the QUIC connection, however, these streams are not exposed 
+to the apllication.
+
+Mapping of application data to streams is application-specific and
+described for HTTP/s in {{QUIC-HTTP}}. In general data that can be processed independently,
+and therefore would suffer from head of line blocking, if forced to be received in order,
+should be transmitted over different streams. If there is a logical grouping of those data
+chunks or messages, stream can be reused, or a new stream can be opened for each chunk/message.
+However, a QUIC receiver has a maximum number of concurrently open streams. If the stream 
+limit is exhausted a sender is able to indicate that more streams are needed, however, this does
+not automatically lead to an increase of the maximum number of streams by the receiver.
+Therefore it can be valuable to expose this maximum number to the application, or the number
+of currently still available, unused streams, and make the mapping of data to streams dependent
+on this information.
+
+Further, streams have a maximum number of bytes that can be sent on one stream. This number is
+high enough (2^64) that this will usually not be reached with current applications. Applications
+that send chunks of data over a very long period of time (such as days, months, or years), 
+should rather utilize the 0-RTT seesion
+resumption ability provided by QUIC, than trying to maintain one connection open.
+
+## Stream versus Flow Multiplexing
+
+Streams are meaningful only to the application; since stream information is carried inside QUIC's
 encryption boundary, no information about the stream(s) whose frames are
 carried by a given packet is visible to the network.
-
-Stream multiplexing is not intended to be used for differentiating streams in
+Therefore stream multiplexing is not intended to be used for differentiating streams in
 terms of network treatment. Application traffic requiring different network
 treatment SHOULD therefore be carried over different five-tuples (i.e.
 multiple QUIC connections). Given QUIC's ability to send application data in
@@ -198,20 +228,44 @@ the first RTT of a connection (if a previous connection to the same host has
 been successfully established to provide the respective credentials), the
 cost for establishing another connection are extremely low.
 
-# Prioritization
+## Paketization and latency
+
+Quic provides an interface that provides multiple streams to the application, 
+however, the application usually doesn't have control how the data transmitted 
+over one stream is mapped into frame and how frames are bundled into packets. 
+By default QUIC will try to maximally pack packets to minimize bandwidth consumption
+and computational costs with one or multiple same data frames. If not enough
+data available to send QUIC may even wait for a short time, trading of latency 
+and bandwidth effeciency. This time might either be pre-configured or can the
+dynamically adjusted based on the observed sending pattern of the application.
+If the apllication requires low latency, with only small chunks of data to send, 
+it may be valuable to indicate to QUIC that all data should be send out immediately.
+Or if a certain sending pattern is know by the application, it might also provide
+valuabe to QUIC how long it should wait to bundle frame into a packet.
+
+## Prioritization
 
 Stream prioritization is not exposed to the network, nor to the receiver.
 Prioritization can be realized by the sender and the QUIC transport should
-provide and interface for applications to prioritize streams {{!QUIC}}.
+provide an interface for applications to prioritize streams {{!QUIC}}. Further
+applications can implement their own prioritization scheme on top of QUIC: an
+an (application) protocol that run on top of QUIC can define explict messages 
+for signaling priority, such as those defined for HTTP/2; 
+it can define rules that allow an endpoint to 
+determine priority based on context; or it can provide a higher level interface
+and leave the determination to the application on top.
 
-Priority handling of retransmissions may be implemented by the sender in the
-transport layer and {{QUIC}} does not specify a specific way how this must be
-handled. Currently QUIC only provides fully reliable stream transmission, and
-as such prioritization of retransmission is likely beneficial. For not fully
+Priority handling of retransmissions can be implemented by the sender in the
+transport layer. {{QUIC}} recommends to retransmit lost data before new data,
+unless indicated differently by the application.
+Currently QUIC only provides fully reliable stream transmission, and
+as such prioritization of retransmission is likely beneficial in most cases, as gaps that
+get filled up and thereby free up flow control. For not fully
 reliable streams priority scheduling of retransmissions over data of
 higher-priority streams might not be desired. In this case QUIC could also
 provide an interface or derive the prioritization decision from the reliability
 level of the stream.
+
 
 # Graceful connection closure
 
