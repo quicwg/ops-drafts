@@ -168,7 +168,8 @@ is further described in {{?HTTP-RETRY=I-D.nottingham-httpbis-retry}}. Data sent
 during 0-RTT resumption also cannot benefit from perfect forward secrecy (PFS).
 
 Data in the first flight sent by the client in a connection established with
-0-RTT MUST be idempotent. Applications MUST be designed, and their data MUST be
+0-RTT MUST be idempotent (as specified in section 3.2 in {{!QUIC-TLS}}). 
+Applications MUST be designed, and their data MUST be
 framed, such that multiple reception of idempotent data is recognized as such by
 the receiverApplications that cannot treat data that may appear in a 0-RTT
 connection establishment as idempotent MUST NOT use 0-RTT establishment. For
@@ -315,7 +316,7 @@ It is therefore recommended that Server-Generated Connection ID includes a
 cryptographic MAC that the load balancer pool server are able to identify and
 discard packets featuring an invalid MAC.
 
-# Using Server Retry for Redirection
+## Using Server Retry for Redirection
 
 QUIC provide a Server Retry packet that can be send by a server in response to
 the Client Initial packet. The server may choose a new connection ID in that
