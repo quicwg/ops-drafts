@@ -28,11 +28,7 @@ author:
     street: Gloriastrasse 35
     city: 8092 Zurich
     country: Switzerland
-  -
-    ins: D. Druta
-    name: Dan Druta
-    org: AT&T
-    email: dd5826@att.com
+
 
 normative:
 
@@ -399,7 +395,7 @@ It is therefore recommended that Server-Generated Connection ID includes a
 cryptographic MAC that the load balancer pool server are able to identify and
 discard packets featuring an invalid MAC.
 
-## DDoS Detection and Mitigation
+## DDoS Detection and Mitigation {#sec-ddos-dec}
 
 Current practices in detection and mitigation of Distributed Denial of Service
 (DDoS) attacks generally involve passive measurement using network flow data
@@ -471,8 +467,8 @@ application-layer protocol(s); in these cases, alternatives must be found.
 
 # Contributors
 
-Igor Lubashev contributed text to {{sec-loadbalancing}} on the use of the
-connection ID for load balancing.
+Dan Druta contributed text to {{#sec-ddos-dec}}. Igor Lubashev contributed text 
+to {{sec-loadbalancing}} on the use of the connection ID for load balancing.
 
 
 # Acknowledgments
