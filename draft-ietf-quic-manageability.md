@@ -127,9 +127,10 @@ The QUIC packet header is under active development; see section 5 of {{!QUIC}}
 for the present header structure.
 
 The first bit of the QUIC header indicates the present of a long header that
-exposes more information than the short header. The long header is typically
-used during connection start or for other control processes while the short
-header will be used on most data packets to limited unnecessary header overhead.
+exposes more information than the short header. The long header is used during 
+connection start including version negotiation, server retry, and 0-RTT data
+while the short header is used after the handshake and therefore on most data 
+packets to limited unnecessary header overhead.
 The fields and location of these fields as defined by the current version of
 QUIC for the long header are fixed for all future version as well. However, note
 that future versions of QUIC may provide additional fields. In the current
@@ -142,10 +143,9 @@ Connection ID, and the length of the packet number.
 The following information may be exposed in the packet header:
 
 - header type: the long header has a 7-bit header type field following the
-  Header Form bit. The current version of QUIC defines 7 header types, namely
+  Header Form bit. The current version of QUIC defines 6 header types, namely
   Version Negotiation, Client Initial, Server Stateless Retry, Server Cleartext,
-  Client Cleartext, 0-RTT Protected, 1-RTT Protected (key phase 0), 1-RTT
-  Protected (key phase 1), and Public Reset.
+  Client Cleartext, 0-RTT Protected.
 
 - connection ID: The connection ID is always present on the long and optionally
   present on the short header indicated by the Connection ID Flag. If present at
@@ -156,7 +156,7 @@ The following information may be exposed in the packet header:
   and NAT rebinding purposes; see {{sec-loadbalancing}} and {{rebinding}}.
   Therefore it is also expected that the Connection ID will either be present on
   all packets of a flow or none of the short header packets. However, this field
-  is under endpoint control and there is protocol mechanism that hinders the
+  is under endpoint control and there is no protocol mechanism that hinders the
   sending endpoint to revise its decision about exposing the Connection ID at
   any time during the connection.
 
@@ -169,15 +169,13 @@ The following information may be exposed in the packet header:
 - version number: The version number is present on the long headers and
   identifies the version used for that packet, expect for the Version
   negotiation packet. The version negotiation packet is fixed for all version of
-  QUIC and contains a lit of versions that is supported by the sender. However
-  the version in the version field of the header is the reflected version of the
-  clients initial packet and is therefore explicitly not supported by the
-  sender.
+  QUIC and contains a list of versions that is supported by the sender. The 
+  version in the version field of the Version Negotiation packet is the 
+  reflected version of the Client Initial packet and is therefore explicitly n
+  ot supported by the sender.
 
 - key phase: The short header further has a Key Phase flag that is used by the
-  endpoint identify the right key that was used to encrypt the packet. Different
-  key phases are indicated with the use of the long header by using to different
-  header types for protected long header packets.
+  endpoint identify the right key that was used to encrypt the packet.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
@@ -185,7 +183,7 @@ As soon as the cryptographic context is established, all information in the QUIC
 header, including those exposed in the packet header, is integrity protected.
 Further, information that were sent and exposed in previous packets when the
 cryptographic context was established yet, e.g. for the cryptographic initial
-handshake itself, will be validate later during the cryptographic handshake,
+handshake itself, will be validated later during the cryptographic handshake,
 such as the version number.  Therefore, devices on path MUST NOT change any
 information or bits in QUIC packet headers. As alteration of header information
 would cause packet drop due to a failed integrity check at the receiver, or can
@@ -197,8 +195,10 @@ The connection ID in the QUIC packer header is used to allow routing of QUIC
 packets at load balancers on other than five-tuple information, ensuring that
 related flows are appropriately balanced together; and to allow rebinding of a
 connection after one of the endpoint's addresses changes - usually the client's,
-in the case of the HTTP binding. The connection ID is proposed by the server
-during connection establishment, and a server might provide additional
+in the case of the HTTP binding. The client set a Connection ID in the Initial
+Client packet that will be used during the handshake. A new connection ID is then
+provided by the server during connection establishment, that will be used in the 
+short header after the handshake. Further a server might provide additional
 connection IDs that can the used by the client at any time during the
 connection. Therefore if a flow changes one of its IP addresses it may keep the
 same connection ID, or the connection ID may also change together with the IP
