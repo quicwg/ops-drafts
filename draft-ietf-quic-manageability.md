@@ -105,7 +105,7 @@ The words "MUST", "MUST NOT", "SHOULD", and "MAY" are used in this document.
 It's not shouting; when these words are capitalized, they have a special meaning
 as defined in {{!RFC2119}}.
 
-# Features of the QUIC Wire Image
+# Features of the QUIC Wire Image {#sec-wire-image}
 
 In this section, we discusses those aspects of the QUIC transport protocol that
 have an impact on the design and operation of devices that forward QUIC packets.
@@ -117,8 +117,9 @@ the mechanism by which a receiver can determine which version is used and the
 meaning and location of fields used in the version negotiation process need to
 be fixed.
 
-This document is focused on the protocol as presently defined in {{!QUIC}} and
-{{!QUIC-TLS}}, and will change to track those documents.
+This document is focused on the protocol as presently defined in
+{{!QUIC=I-D.ietf-quic-transport}} and {{!QUIC-TLS}}, and will change to track
+those documents.
 
 ## QUIC Packet Header Structure {#public-header}
 
@@ -152,7 +153,7 @@ The following information may be exposed in the packet header:
   position and length pf the congestion ID itself as well as the Connection ID
   flag in the short header is fixed for all versions of QUIC. The connection ID
   identifies the connection associated with a QUIC packet, for load-balancing
-  and NAT rebinding purposes; see {{loadbalancing}} and {{rebinding}}.
+  and NAT rebinding purposes; see {{sec-loadbalancing}} and {{rebinding}}.
   Therefore it is also expected that the Connection ID will either be present on
   all packets of a flow or none of the short header packets. However, this field
   is under endpoint control and there is protocol mechanism that hinders the
@@ -243,21 +244,54 @@ the Version Negotiation packet the connection ID and packet number of the Client
 Initial packet are reflected to provide a proof of return-routability. Therefore
 changing these information will also cause the connection to fail.
 
-# Specific Network Management Tasks
+# Network-visible information about QUIC flows
 
-In this section, we address specific network management and measurement
-techniques and how QUIC's design impacts them.
+This section addresses the different kinds of observations and inferences that
+can be made about QUIC flows by a passive observer in the network based on the
+wire image in {{sec-wire-image}}. Here we assume a bidirectional observer (one
+that can see packets in both directions in the sequence in which they are
+carried on the wire) unless noted.
 
-## Stateful Treatment of QUIC Traffic {#statefulness}
+## Identifying QUIC traffic {#sec-identifying}
 
-Stateful network devices such as firewalls use exposed header information to
-support state setup and tear-down. {{?STATEFULNESS}} provides a
-general model for in-network state management on these devices, independent of
-transport protocol. Features already present in QUIC may be used for state
-maintenance in this model. Here, there are two important goals: distinguishing
-valid QUIC connection establishment from other traffic, in order to establish
-state; and determining the end of a QUIC connection, in order to tear that state
-down.
+The QUIC wire image is not specifically designed to be distinguishable from
+other UDP traffic.
+
+The only application binding currently defined for QUIC is HTTP
+{{!QUIC-HTTP=I-D.ietf-quic-http}}. HTTP over QUIC uses UDP port 443 by default,
+although URLs referring to resources available over HTTP over QUIC may specify
+alternate port numbers. Simple assumptions about whether a given flow is using
+QUIC based upon a UDP port number may therefore not hold; see also {{!RFC7605}}
+section 5.
+
+### Identifying Negotiated Version
+
+An in-network observer assuming that a set of packets belongs to a QUIC flow can
+infer the version number in use by observing the handshake for 1-RTT flows: a
+Client Initial of 0-RTT protected packet with a given version followed by
+handshake packet from the server other than a Version Negotiaton packet implies
+acceptance of that version.
+
+Negotiated version cannot be identified for flows for which a handshake is not
+observed, such as in the case of NAT rebinding; however, these flows can be
+associated with flows for which a version has been identified; see
+{{sec-flow-association}}.
+
+In the rest of this section, we discuss only packets belonging to Version 1 QUIC
+flows, and assume that these packets have been identified as such through the
+observation of a version negotiation.
+
+### Rejection of Garbage Traffic {#sec-garbage}
+
+A related question is whether a first packet of a given flow on known
+QUIC-associated port is a valid QUIC packet, in order to support in-network
+filtering of garbage UDP packets (reflection attacks, random backscatter). While
+heuristics based on the first byte of the packet (packet type) could be used to
+separate valid from invalid first packet types, the deployment of such
+heuristics is not recommended, as packet types may have different meanings in
+future versions of the protocol.
+
+## Connection confirmation {#sec-confirm}
 
 Both, 1-RTT and O-RTT connection establishment, using a TLS handshake on stream
 0, is detectable using heuristics similar to those used to detect TLS over TCP.
@@ -265,132 +299,103 @@ Both, 1-RTT and O-RTT connection establishment, using a TLS handshake on stream
 hello. These data may be reorder in the network, therefore it may be possible
 that 0-RTT Protected data packet are seen before the Client Initial packet.
 
-Exposure of connection shutdown is currently under discussion; see
-https://github.com/quicwg/base-drafts/issues/353 and
-https://github.com/quicwg/base-drafts/pull/20.
+## Flow association {#sec-flow-association}
 
-## Measurement of QUIC Traffic {#measurement}
+The QUIC Connection ID (see {{rebinding}}) is designed to allow an on-path
+device such as a load-balancer to associate two flows as identified by
+five-tuple when the address and port of one of the endpoints changes; e.g. due
+to NAT rebinding or server IP address migration. An observer keeping flow state
+can associate a connection ID with a given flow, and can associate a known flow
+with a new flow when when observing a packet sharing a connection ID and one
+endpoint address (IP address and port) with the known flow.
 
-Passive measurement of TCP performance parameters is commonly deployed in access
-and enterprise networks to aid troubleshooting and performance monitoring
-without requiring the generation of active measurement traffic.
+The connection ID to be used for a long-running flow is chosen by the server
+(see {{QUIC}} section 5.6) during the handshake. This value should be treated as
+opaque; see {{sec-loadbalancing}} for caveats regarding connection ID selection
+at servers.
 
-The presence of packet numbers on all QUIC packets allows the trivial one-sided
-estimation of packet loss and reordering between the sender and a given
-observation point. However, since retransmissions are not identifiable as such,
-loss between an observation point and the receiver cannot be reliably estimated.
+## Flow teardown {#sec-teardown}
+
+The QUIC does not expose the end of a connection; the only indication to on-path
+devices that a flow has ended is that packets are no longer observed. Stateful
+devices on path such as NATs and firewalls must therefore use idle timeouts to
+determine when to drop state for QUIC flows.
+
+Changes to this behavior are currently under discussion:  see
+https://github.com/quicwg/base-drafts/issues/602.
+
+## Round-trip time measurement {#sec-rtt}
+
+Round-trip time of QUIC flows can be inferred by observation once per flow,
+during the 1-RTT handshake phase, as in passive TCP measurement. The delay
+between the client initial packet and the first packet sent by the server back
+to the client represents the RTT component on the path between the observer and
+the server, and the delay between this packet and the second packet sent by the
+client in reply represents the RTT component on the path between the observer
+and the client. This measurement necessarily includes any application delay at
+both sides.
+
+Passive RTT measurement is not possible during a 0-RTT resumption, since a
+client may send an entire initial window of packets, making the client-observer
+part of the measurement above impossible.
 
 The lack of any acknowledgement information or timestamping information in the
-QUIC packet header makes running passive estimation of latency via round trip
-time (RTT) impossible. RTT can only be measured at connection establishment
-time, by observing the Client Initial packet and the Server's reply to this
-packet which maybe a Server Cleartext, Version Negotiation, or Server Stateless
-Retry packet.
+QUIC wire image also makes running passive estimation RTT impossible. RTT can
+only be measured at connection establishment time, by observing the Client
+Initial packet and the Server's reply to this packet which maybe a Server
+Cleartext, Version Negotiation, or Server Stateless Retry packet.
 
-Note that adding a packet number echo (as in
-https://github.com/quicwg/base-drafts/pull/367 or
-https://github.com/quicwg/base-drafts/pull/368) to the public header would allow
-passive RTT measurement at on-path observation points. For efficiency purposes,
-this packet number echo need not be carried on every packet, and could be made
-optional, allowing endpoints to make a measurability/efficiency tradeoff; see
-section 4 of {{IPIM}}. Note further that this facility would have significantly
-better measurability characteristics than sequence-acknowledgement-based RTT
-measurement currently available in TCP on typical asymmetric flows, as adequate
-samples will be available in both directions, and packet number echo would be
-decoupled from the underlying acknowledgment machinery; see e.g. {{Ding2015}}
+Changes to this behavior are currently under discussion:  see
+https://github.com/quicwg/base-drafts/issues/631.
 
-Note in-network devices can inspect and correlate connection IDs for partial
-tracking of mobility events.
+## Packet loss measurement {#sec-loss}
 
-## DDoS Detection and Mitigation
+All QUIC packets carry packet numbers in cleartext, and while the protocol
+allows packet numbers to be skipped, skipping is not recommended in the general
+case. This allows the trivial one-sided estimation of packet loss and reordering
+between the sender and a given observation point ("upstream loss"). However,
+since retransmissions are not identifiable as such, loss between an observation
+point and the receiver ("downstream loss") cannot be reliably estimated.
 
-For enterprises and network operators one of the biggest management challenges
-is dealing with Distributed Denial of Service (DDoS) attacks. Some network
-operators offer Security as a Service (SaaS) solutions that detect attacks by
-monitoring, analyzing and filtering traffic. These approaches generally utilize
-network flow data {{?RFC7011}}. If any flows pose a threat, usually they are
-routed to a "scrubbing environment" where the traffic is filtered, allowing the
-remaining "good" traffic to continue to the customer environment.
+## Flow symmetry measurement {#sec-symmetry}
 
-This type of DDoS mitigation is fundamentally based on tracking state for flows
-(see {{statefulness}}) that have receiver confirmation and a proof of
-return-routability, and classifying flows as legitimate or DoS traffic. The QUIC
-packet header currently does not support an explicit mechanism to easily
-distinguish legitimate QUIC traffic from other UDP traffic. However, the first
-packet in a QUIC connection will usually be a Client Initial packet.  This can
-be used to identify the first packet of the connection.
+QUIC explicitly exposes which side of a connection is a client and which side is
+a server during the 1-RTT handshake, and this can be trivially inferred during a
+0-RTT handshake. In addition, the symmerty of a flow (whether primarily
+client-to-server, primarily server-to-client, or roughly bidirectional, as input
+to basic traffic classification techniques) can be inferred through the
+measurement of data rate in each direction. While QUIC traffic is protected and
+ACKS may be padded, padding is not required.
 
-If the QUIC handshake was not observed by the defense system, the connection ID
-can be used as a confirmation signal as per
-{{?STATEFULNESS=I-D.trammell-plus-statefulness}} if present in both directions.
+# Specific Network Management Tasks
 
-Further, the use of a connection ID to support connection migration renders
-5-tuple based filtering insufficient, and requires more state to be maintained
-by DDoS defense systems. However, it is questionable if connection migrations
-needs to be supported in a DDOS attack. If the connection migration is not
-visible to the network that performs the DDoS detection, an active, migrated
-QUIC connection may be blocked by such a system under attack. However, a defense
-system might simply rely on the fast resumption mechanism provided by QUIC. This
-problem is also related to these issues under discussion:
-https://github.com/quicwg/base-drafts/issues/203
+In this section, we address specific network management and measurement
+techniques and how QUIC's design impacts them.
 
-## QoS support and ECMP
+## Stateful treatment of QUIC traffic {#sec-stateful}
 
-QUIC does not provide any additional information on requirements on Quality of
-Service (QoS) provided from the network. QUIC assumes that all packets with the
-same 5-tuple {dest addr, source addr, protocol, dest port, source port} will
-receive similar network treatment.  That means all stream that are multiplexed
-over the same QUIC connection require the same network treatment and are handled
-by the same congestion controller. If differential network treatment is desired,
-multiple QUIC connection to the same server might be used, given that
-establishing a new connection using 0-RTT support is cheap and fast.
+Stateful treatment of QUIC traffic is possible through QUIC traffic and version
+identification ({{sec-identifying}}) and observation of the handshake for
+connection confirmation ({{sec-confirm}}). The lack of any visible end-of-flow
+signal ({{sec-teardown}}) means that this state must be purged either through
+timers or through least-recently-used eviction, depending on application
+requirements.
 
-QoS mechanisms in the network MAY also use the connection ID for service
-differentiation as usually a change of connection ID is bind to a change of
-address which anyway is likely to lead to a re-route on a different path with
-different network characteristics.
+## Passive network performance measurement and troubleshooting
 
-Given that QUIC is more tolerant of packet re-ordering than TCP (see
-{{packetnumber}}), Equal-cost multi-path routing (ECMP) does not necessarily
-need to be flow based.  However, 5-tuple (plus eventually connection ID if
-present) matching is still beneficial for QoS given all packets are handled by
-the same congestion controller.
+Extremely limited loss and RTT measurement are possible by passive observation
+of QUIC traffic; see {{sec-rtt}} and {{sec-loss}}.
 
-## Load Balancing using the Connection ID {#loadbalancing}
+## Server cooperation with load balancers {#sec-loadbalancing}
 
-The Connection ID is used in part to support load balancing in content
-distribution networks (CDNs), which operate complex, geographically distributed
-pools of back-end servers, fronted by load balancing systems.  These load
-balancers are responsible for identifying the most appropriate server for each
-connection and for routing all packets belonging to that connection to the
-chosen server.
-
-Load balancers are often deployed in pools for redundancy and load sharing. For
-high availability, it is important that when packets belonging to a flow start
-to arrive at a different load balancer in the load balancer pool, the packets
-continue to be forwarded to the original server in the server pool.
-
-Support for seamless connection migration is an important design goal of
-QUIC - a necessity due to the proliferation of mobile connected devices.
-This connection persistence provides an additional challenge for multi-homed
-anycast-based services often employed by large content owners and CDNs. The
-challenge is that a migration to a different network in the middle of the
-connection greatly increases the chances of the packets routed to a different
-anycast point of presence (POP) due to the new network’s different
-connectivity and Internet peering arrangements. The load balancer in the
-new POP, potentially thousands of miles away, will not have information
-about the established flow and would not be able to route it back to the
-original POP.
-
-Load balancers may cooperate with servers or server pools behind them to use a
-server-generated Connection ID value, in order to support stateless load
-balancing, even across NAT rebinding or other address change events (see
-{{rebinding}}). See section 5.7 of {{!QUIC}}.
+In the case of content distribution networking architectures including load
+balancers, the connection ID provides a way for the server to signal information
+about the desired treatment of a flow to the load balancers.
 
 Server-generated Connection IDs must not encode any information other that that
 needed to route packets to the appropriate backend server(s): typically the
 identity of the backend server or pool of servers, if the data-center’s load
-balancing system keeps “local” state of all flows itself.  Care must be
+balancing system keeps "local" state of all flows itself.  Care must be
 exercised to ensure that the information encoded in the Connection ID is not
 sufficient to identify unique end users. Note that by encoding routing
 information in the Connection ID, load balancers open up a new attack vector
@@ -399,6 +404,54 @@ It is therefore recommended that Server-Generated Connection ID includes a
 cryptographic MAC that the load balancer pool server are able to identify and
 discard packets featuring an invalid MAC.
 
+## DDoS Detection and Mitigation
+
+Current practices in detection and mitigation of Distributed Denial of Service
+(DDoS) attacks generally involve passive measurement using network flow data
+{{?RFC7011}}, classification of traffic into "good" (productive) and "bad" (DoS)
+flows, and filtering of these bad flows in a "scrubbing" environment. Key to
+successful DDoS mitigation is efficient classification of this traffic.
+
+Limited first-packet garbage detection as in {{sec-garbage}} and stateful
+tracking of QUIC traffic as in {{sec-stateful}} above can be used in this
+classification step. For traffic where the classification step did not observe a
+QUIC handshake, the presence of packets carrying the same Connection ID in both
+directions is a further indication of legitimate traffic. Note that these
+classification techniques help only against floods of garbage traffic, not
+against DDoS attacks using legitimate QUIC clients.
+
+Note that the use of a connection ID to support connection migration renders
+5-tuple based filtering insufficient, and requires more state to be maintained
+by DDoS defense systems. However, it is questionable if connection migrations
+needs to be supported in a DDOS attack. If the connection migration is not
+visible to the network that performs the DDoS detection, an active, migrated
+QUIC connection may be blocked by such a system under attack. However, a defense
+system might simply rely on the fast resumption mechanism provided by QUIC. See
+also https://github.com/quicwg/base-drafts/issues/203
+
+## QoS support and ECMP
+
+\[EDITOR'S NOTE: this is a bit speculative; keep?]
+
+QUIC does not provide any additional information on requirements on Quality of
+Service (QoS) provided from the network. QUIC assumes that all packets with the
+same 5-tuple {dest addr, source addr, protocol, dest port, source port} will
+receive similar network treatment.  That means all stream that are multiplexed
+over the same QUIC connection require the same network treatment and are handled
+by the same congestion controller. If differential network treatment is desired,
+multiple QUIC connections to the same server might be used, given that
+establishing a new connection using 0-RTT support is cheap and fast.
+
+QoS mechanisms in the network MAY also use the connection ID for service
+differentiation, as a change of connection ID is bound to a change of
+address which anyway is likely to lead to a re-route on a different path with
+different network characteristics.
+
+Given that QUIC is more tolerant of packet re-ordering than TCP (see
+{{packetnumber}}), Equal-cost multi-path routing (ECMP) does not necessarily
+need to be flow based.  However, 5-tuple (plus eventually connection ID if
+present) matching is still beneficial for QoS given all packets are handled by
+the same congestion controller.
 
 # IANA Considerations
 
@@ -423,8 +476,8 @@ application-layer protocol(s); in these cases, alternatives must be found.
 
 # Contributors
 
-Igor Lubashev contributed text to {{loadbalancing}} on the use of the connection
-ID for load balancing.
+Igor Lubashev contributed text to {{sec-loadbalancing}} on the use of the
+connection ID for load balancing.
 
 
 # Acknowledgments
