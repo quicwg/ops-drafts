@@ -267,9 +267,9 @@ section 5.
 ### Identifying Negotiated Version
 
 An in-network observer assuming that a set of packets belongs to a QUIC flow can
-infer the version number in use by observing the handshake for 1-RTT flows: a
-Client Initial of 0-RTT protected packet with a given version followed by
-handshake packet from the server other than a Version Negotiaton packet implies
+infer the version number in use by observing the handshake: a
+Client Initial with a given version followed by
+Server Cleartext packet with the same version implies
 acceptance of that version.
 
 Negotiated version cannot be identified for flows for which a handshake is not
@@ -293,11 +293,12 @@ future versions of the protocol.
 
 ## Connection confirmation {#sec-confirm}
 
-Both, 1-RTT and O-RTT connection establishment, using a TLS handshake on stream
-0, is detectable using heuristics similar to those used to detect TLS over TCP.
-0-RTT connection may additional also send data packets, right after the client
-hello. These data may be reorder in the network, therefore it may be possible
-that 0-RTT Protected data packet are seen before the Client Initial packet.
+Connection establishment requires cleartext packets and is using a TLS 
+handshake on stream 0. Therefore it is detectable using heuristics similar 
+to those used to detect TLS over TCP. 0-RTT connection may additional also 
+send data packets, right after the Client Initial with the TLS client hello. 
+These data may be reordered in the network, therefore it may be possible 
+that 0-RTT Protected data packets are seen before the Client Initial packet.
 
 ## Flow association {#sec-flow-association}
 
@@ -327,23 +328,18 @@ https://github.com/quicwg/base-drafts/issues/602.
 ## Round-trip time measurement {#sec-rtt}
 
 Round-trip time of QUIC flows can be inferred by observation once per flow,
-during the 1-RTT handshake phase, as in passive TCP measurement. The delay
-between the client initial packet and the first packet sent by the server back
+during the handshake, as in passive TCP measurement. The delay
+between the Client Initial packet and the Server Cleartext packet sent back
 to the client represents the RTT component on the path between the observer and
-the server, and the delay between this packet and the second packet sent by the
-client in reply represents the RTT component on the path between the observer
+the server, and the delay between this packet and the Client Cleartext packet 
+in reply represents the RTT component on the path between the observer
 and the client. This measurement necessarily includes any application delay at
-both sides.
-
-Passive RTT measurement is not possible during a 0-RTT resumption, since a
-client may send an entire initial window of packets, making the client-observer
-part of the measurement above impossible.
+both sides. Note that the Server's reply mayalso be a Version Negotiation or 
+Server Stateless Retry packet. In this case the Client will send another 
+Client Initial or the connection will fail.
 
 The lack of any acknowledgement information or timestamping information in the
-QUIC wire image also makes running passive estimation RTT impossible. RTT can
-only be measured at connection establishment time, by observing the Client
-Initial packet and the Server's reply to this packet which maybe a Server
-Cleartext, Version Negotiation, or Server Stateless Retry packet.
+QUIC wire image makes running passive RTT estimation impossible.
 
 Changes to this behavior are currently under discussion:  see
 https://github.com/quicwg/base-drafts/issues/631.
@@ -360,8 +356,7 @@ point and the receiver ("downstream loss") cannot be reliably estimated.
 ## Flow symmetry measurement {#sec-symmetry}
 
 QUIC explicitly exposes which side of a connection is a client and which side is
-a server during the 1-RTT handshake, and this can be trivially inferred during a
-0-RTT handshake. In addition, the symmerty of a flow (whether primarily
+a server during the handshake. In addition, the symmerty of a flow (whether primarily
 client-to-server, primarily server-to-client, or roughly bidirectional, as input
 to basic traffic classification techniques) can be inferred through the
 measurement of data rate in each direction. While QUIC traffic is protected and
