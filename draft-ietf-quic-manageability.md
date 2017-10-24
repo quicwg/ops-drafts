@@ -111,11 +111,10 @@ In this section, we discusses those aspects of the QUIC transport protocol that
 have an impact on the design and operation of devices that forward QUIC packets.
 Here, we are concerned primarily with QUIC's unencrypted wire image, which we
 define as the information available in the packet header in each QUIC packet,
-and the dynamics of that information. Since QUIC is a versioned protocol,
-also the wire image of the header format can change. However, at least
-the mechanism by which a receiver can determine which version is used and the
-meaning and location of fields used in the version negotiation process need to
-be fixed.
+and the dynamics of that information. Since QUIC is a versioned protocol, also
+the wire image of the header format can change. However, at least the mechanism
+by which a receiver can determine which version is used and the meaning and
+location of fields used in the version negotiation process need to be fixed.
 
 This document is focused on the protocol as presently defined in
 {{!QUIC=I-D.ietf-quic-transport}} and {{!QUIC-TLS}}, and will change to track
@@ -127,55 +126,54 @@ The QUIC packet header is under active development; see section 5 of {{!QUIC}}
 for the present header structure.
 
 The first bit of the QUIC header indicates the present of a long header that
-exposes more information than the short header. The long header is used during 
+exposes more information than the short header. The long header is used during
 connection start including version negotiation, server retry, and 0-RTT data
-while the short header is used after the handshake and therefore on most data 
-packets to limited unnecessary header overhead.
-The fields and location of these fields as defined by the current version of
-QUIC for the long header are fixed for all future version as well. However, note
-that future versions of QUIC may provide additional fields. In the current
-version of quic the long header for all header types has a fixed length,
-containing, besides the Header Form bit, a 7-bit header Type, a 64-bit
-Connection ID, a 32-bit Packet Number, and a 32-bit Version. The short header is
-variable length where bits after the Header Form bit indicate the present on the
-Connection ID, and the length of the packet number.
+while the short header is used after the handshake and therefore on most data
+packets to limited unnecessary header overhead. The fields and location of these
+fields as defined by the current version of QUIC for the long header are fixed
+for all future version as well. However, note that future versions of QUIC may
+provide additional fields. In the current version of quic the long header for
+all header types has a fixed length, containing, besides the Header Form bit, a
+7-bit header Type, a 64-bit Connection ID, a 32-bit Packet Number, and a 32-bit
+Version. The short header is variable length where bits after the Header Form
+bit indicate the present on the Connection ID, and the length of the packet
+number.
 
 The following information may be exposed in the packet header:
 
 - header type: the long header has a 7-bit header type field following the
-  Header Form bit. The current version of QUIC defines 6 header types, namely
-  Version Negotiation, Client Initial, Server Stateless Retry, Server Cleartext,
-  Client Cleartext, 0-RTT Protected.
+Header Form bit. The current version of QUIC defines 6 header types, namely
+Version Negotiation, Client Initial, Server Stateless Retry, Server Cleartext,
+Client Cleartext, 0-RTT Protected.
 
 - connection ID: The connection ID is always present on the long and optionally
-  present on the short header indicated by the Connection ID Flag. If present at
-  the short header it at the same position then for the long header. The
-  position and length pf the congestion ID itself as well as the Connection ID
-  flag in the short header is fixed for all versions of QUIC. The connection ID
-  identifies the connection associated with a QUIC packet, for load-balancing
-  and NAT rebinding purposes; see {{sec-loadbalancing}} and {{rebinding}}.
-  Therefore it is also expected that the Connection ID will either be present on
-  all packets of a flow or none of the short header packets. However, this field
-  is under endpoint control and there is no protocol mechanism that hinders the
-  sending endpoint to revise its decision about exposing the Connection ID at
-  any time during the connection.
+present on the short header indicated by the Connection ID Flag. If present at
+the short header it at the same position then for the long header. The position
+and length pf the congestion ID itself as well as the Connection ID flag in the
+short header is fixed for all versions of QUIC. The connection ID identifies the
+connection associated with a QUIC packet, for load-balancing and NAT rebinding
+purposes; see {{sec-loadbalancing}} and {{rebinding}}. Therefore it is also
+expected that the Connection ID will either be present on all packets of a flow
+or none of the short header packets. However, this field is under endpoint
+control and there is no protocol mechanism that hinders the sending endpoint to
+revise its decision about exposing the Connection ID at any time during the
+connection.
 
 - packet number: Every packet has an associated packet number. The packet number
-  increases with each packet, and the least-significant bits of the packet
-  number are present on each packet. In the short header the length of the
-  exposed packet number field is defined by the (short) header type and can
-  either be 8, 16, or 32 bits. See {{packetnumber}}.
+increases with each packet, and the least-significant bits of the packet number
+are present on each packet. In the short header the length of the exposed packet
+number field is defined by the (short) header type and can either be 8, 16, or
+32 bits. See {{packetnumber}}.
 
 - version number: The version number is present on the long headers and
-  identifies the version used for that packet, expect for the Version
-  negotiation packet. The version negotiation packet is fixed for all version of
-  QUIC and contains a list of versions that is supported by the sender. The 
-  version in the version field of the Version Negotiation packet is the 
-  reflected version of the Client Initial packet and is therefore explicitly n
-  ot supported by the sender.
+identifies the version used for that packet, expect for the Version negotiation
+packet. The version negotiation packet is fixed for all version of QUIC and
+contains a list of versions that is supported by the sender. The version in the
+version field of the Version Negotiation packet is the reflected version of the
+Client Initial packet and is therefore explicitly n ot supported by the sender.
 
 - key phase: The short header further has a Key Phase flag that is used by the
-  endpoint identify the right key that was used to encrypt the packet.
+endpoint identify the right key that was used to encrypt the packet.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
@@ -196,14 +194,13 @@ packets at load balancers on other than five-tuple information, ensuring that
 related flows are appropriately balanced together; and to allow rebinding of a
 connection after one of the endpoint's addresses changes - usually the client's,
 in the case of the HTTP binding. The client set a Connection ID in the Initial
-Client packet that will be used during the handshake. A new connection ID is then
-provided by the server during connection establishment, that will be used in the 
-short header after the handshake. Further a server might provide additional
-connection IDs that can the used by the client at any time during the
+Client packet that will be used during the handshake. A new connection ID is
+then provided by the server during connection establishment, that will be used
+in the short header after the handshake. Further a server might provide
+additional connection IDs that can the used by the client at any time during the
 connection. Therefore if a flow changes one of its IP addresses it may keep the
 same connection ID, or the connection ID may also change together with the IP
-address migration, avoiding linkability; see Section 7.6 of
-{{!QUIC}}.
+address migration, avoiding linkability; see Section 7.6 of {{!QUIC}}.
 
 ## Packet Numbers {#packetnumber}
 
@@ -219,10 +216,9 @@ Indeed, whether a packet contains user data or only control information is
 intentionally left unexposed to the network. The packet number increases with
 every packet but they sender may skip packet numbers.
 
-While loss detection in QUIC is based on packet numbers, congestion
-control by default provides richer information than vanilla TCP does.
-Especially, QUIC does not rely on duplicated ACKs, making it more tolerant of
-packet re-ordering.
+While loss detection in QUIC is based on packet numbers, congestion control by
+default provides richer information than vanilla TCP does. Especially, QUIC does
+not rely on duplicated ACKs, making it more tolerant of packet re-ordering.
 
 ## Initial Handshake and PMTUD
 
@@ -267,10 +263,9 @@ section 5.
 ### Identifying Negotiated Version
 
 An in-network observer assuming that a set of packets belongs to a QUIC flow can
-infer the version number in use by observing the handshake: a
-Client Initial with a given version followed by
-Server Cleartext packet with the same version implies
-acceptance of that version.
+infer the version number in use by observing the handshake: a Client Initial
+with a given version followed by Server Cleartext packet with the same version
+implies acceptance of that version.
 
 Negotiated version cannot be identified for flows for which a handshake is not
 observed, such as in the case of NAT rebinding; however, these flows can be
@@ -293,12 +288,12 @@ future versions of the protocol.
 
 ## Connection confirmation {#sec-confirm}
 
-Connection establishment requires cleartext packets and is using a TLS 
-handshake on stream 0. Therefore it is detectable using heuristics similar 
-to those used to detect TLS over TCP. 0-RTT connection may additional also 
-send data packets, right after the Client Initial with the TLS client hello. 
-These data may be reordered in the network, therefore it may be possible 
-that 0-RTT Protected data packets are seen before the Client Initial packet.
+Connection establishment requires cleartext packets and is using a TLS handshake
+on stream 0. Therefore it is detectable using heuristics similar to those used
+to detect TLS over TCP. 0-RTT connection may additional also send data packets,
+right after the Client Initial with the TLS client hello. These data may be
+reordered in the network, therefore it may be possible that 0-RTT Protected data
+packets are seen before the Client Initial packet.
 
 ## Flow association {#sec-flow-association}
 
@@ -328,15 +323,15 @@ https://github.com/quicwg/base-drafts/issues/602.
 ## Round-trip time measurement {#sec-rtt}
 
 Round-trip time of QUIC flows can be inferred by observation once per flow,
-during the handshake, as in passive TCP measurement. The delay
-between the Client Initial packet and the Server Cleartext packet sent back
-to the client represents the RTT component on the path between the observer and
-the server, and the delay between this packet and the Client Cleartext packet 
-in reply represents the RTT component on the path between the observer
-and the client. This measurement necessarily includes any application delay at
-both sides. Note that the Server's reply mayalso be a Version Negotiation or 
-Server Stateless Retry packet. In this case the Client will send another 
-Client Initial or the connection will fail.
+during the handshake, as in passive TCP measurement. The delay between the
+Client Initial packet and the Server Cleartext packet sent back to the client
+represents the RTT component on the path between the observer and the server,
+and the delay between this packet and the Client Cleartext packet in reply
+represents the RTT component on the path between the observer and the client.
+This measurement necessarily includes any application delay at both sides. Note
+that the Server's reply mayalso be a Version Negotiation or Server Stateless
+Retry packet. In this case the Client will send another Client Initial or the
+connection will fail.
 
 The lack of any acknowledgement information or timestamping information in the
 QUIC wire image makes running passive RTT estimation impossible.
@@ -356,11 +351,11 @@ point and the receiver ("downstream loss") cannot be reliably estimated.
 ## Flow symmetry measurement {#sec-symmetry}
 
 QUIC explicitly exposes which side of a connection is a client and which side is
-a server during the handshake. In addition, the symmerty of a flow (whether primarily
-client-to-server, primarily server-to-client, or roughly bidirectional, as input
-to basic traffic classification techniques) can be inferred through the
-measurement of data rate in each direction. While QUIC traffic is protected and
-ACKS may be padded, padding is not required.
+a server during the handshake. In addition, the symmerty of a flow (whether
+primarily client-to-server, primarily server-to-client, or roughly
+bidirectional, as input to basic traffic classification techniques) can be
+inferred through the measurement of data rate in each direction. While QUIC
+traffic is protected and ACKS may be padded, padding is not required.
 
 # Specific Network Management Tasks
 
@@ -438,9 +433,9 @@ multiple QUIC connections to the same server might be used, given that
 establishing a new connection using 0-RTT support is cheap and fast.
 
 QoS mechanisms in the network MAY also use the connection ID for service
-differentiation, as a change of connection ID is bound to a change of
-address which anyway is likely to lead to a re-route on a different path with
-different network characteristics.
+differentiation, as a change of connection ID is bound to a change of address
+which anyway is likely to lead to a re-route on a different path with different
+network characteristics.
 
 Given that QUIC is more tolerant of packet re-ordering than TCP (see
 {{packetnumber}}), Equal-cost multi-path routing (ECMP) does not necessarily
@@ -479,6 +474,5 @@ connection ID for load balancing.
 
 This work is partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
-Internet (MAMI), and by the Swiss State Secretariat for Education, Research,
-and Innovation under contract no. 15.0268. This support does not imply
-endorsement.
+Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and
+Innovation under contract no. 15.0268. This support does not imply endorsement.
