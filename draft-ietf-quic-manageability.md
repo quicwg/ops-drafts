@@ -462,7 +462,7 @@ application-layer protocol(s); in these cases, alternatives must be found.
 
 # Contributors
 
-Dan Druta contributed text to {{#sec-ddos-dec}}. Igor Lubashev contributed text 
+Dan Druta contributed text to {{sec-ddos-dec}}. Igor Lubashev contributed text
 to {{sec-loadbalancing}} on the use of the connection ID for load balancing.
 
 
