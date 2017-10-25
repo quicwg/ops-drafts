@@ -151,7 +151,7 @@ QUIC.
 
 A transport protocol that provides 0-RTT connection establishment to recently
 contacted servers is qualitatively different than one that does not from the
-point of view of the application using it. Relative tradeoffs between the cost
+point of view of the application using it. Relative trade-offs between the cost
 of closing and reopening a connection and trying to keep it open are
 different; see {{resumption-v-keepalive}}.
 
@@ -159,7 +159,7 @@ Applications must be slightly rethought in order to make best use of 0-RTT
 resumption. Most importantly, application operations must be divided into
 idempotent and non-idempotent operations, as only idempotent operations may
 appear in 0-RTT packets. This implies that the interface between the
-application and transport layer exposes idempotence either ecplicitly or
+application and transport layer exposes idempotence either explicitly or
 implicitly.
 
 ## Here There Be Dragons
@@ -200,27 +200,26 @@ the higher layer and eventually indicate quic to reset the connection. QUIC,
 however, does not need to know which streams are critical, and does not
 provide an interface to exceptional handling of any stream. There are special
 streams in QUIC that are used for control on the QUIC connection, however,
-these streams are not exposed to the apllication.
+these streams are not exposed to the application.
 
 Mapping of application data to streams is application-specific and described
 for HTTP/s in {{QUIC-HTTP}}. In general data that can be processed
 independently, and therefore would suffer from head of line blocking, if
 forced to be received in order, should be transmitted over different streams.
 If there is a logical grouping of those data chunks or messages, stream can be
-reused, or a new stream can be opened for each chunk/message. However, a QUIC
-receiver has a maximum number of concurrently open streams. If the stream
-limit is exhausted a sender is able to indicate that more streams are needed,
-however, this does not automatically lead to an increase of the maximum number
-of streams by the receiver. Therefore it can be valuable to expose this
-maximum number to the application, or the number of currently still available,
-unused streams, and make the mapping of data to streams dependent on this
-information.
+reused, or a new stream can be opened for each chunk/message. If a QUIC
+receiver has maximum allowed concurrent streams open and the sender on the
+other end indicates that more streams are needed, it doesn't automatically
+lead to an increase of the maximum number of streams by the receiver.
+Therefore it can be valuable to expose maximum number of allowed, currently
+open and currently used streams to the application to make the mapping of
+data to streams dependent on this information.
 
 Further, streams have a maximum number of bytes that can be sent on one
 stream. This number is high enough (2^64) that this will usually not be
 reached with current applications. Applications that send chunks of data over
 a very long period of time (such as days, months, or years), should rather
-utilize the 0-RTT seesion resumption ability provided by QUIC, than trying to
+utilize the 0-RTT session resumption ability provided by QUIC, than trying to
 maintain one connection open.
 
 ## Stream versus Flow Multiplexing
@@ -236,7 +235,7 @@ the first RTT of a connection (if a previous connection to the same host has
 been successfully established to provide the respective credentials), the cost
 for establishing another connection are extremely low.
 
-## Paketization and latency
+## Packetization and latency
 
 Quic provides an interface that provides multiple streams to the application,
 however, the application usually doesn't have control how the data transmitted
@@ -244,21 +243,21 @@ over one stream is mapped into frame and how frames are bundled into packets.
 By default QUIC will try to maximally pack packets to minimize bandwidth
 consumption and computational costs with one or multiple same data frames. If
 not enough data available to send QUIC may even wait for a short time, trading
-of latency and bandwidth effeciency. This time might either be pre-configured
+of latency and bandwidth efficiency. This time might either be pre-configured
 or can the dynamically adjusted based on the observed sending pattern of the
-application. If the apllication requires low latency, with only small chunks
+application. If the application requires low latency, with only small chunks
 of data to send, it may be valuable to indicate to QUIC that all data should
 be send out immediately. Or if a certain sending pattern is know by the
-application, it might also provide valuabe to QUIC how long it should wait to
-bundle frame into a packet.
+application, it might also provide valuable guidance to QUIC how long it
+should wait to bundle frame into a packet.
 
 ## Prioritization
 
 Stream prioritization is not exposed to the network, nor to the receiver.
 Prioritization can be realized by the sender and the QUIC transport should
 provide an interface for applications to prioritize streams {{!QUIC}}. Further
-applications can implement their own prioritization scheme on top of QUIC: an
-an (application) protocol that run on top of QUIC can define explict messages
+applications can implement their own prioritization scheme on top of QUIC: (an
+application) protocol that run on top of QUIC can define explicit messages
 for signaling priority, such as those defined for HTTP/2; it can define rules
 that allow an endpoint to determine priority based on context; or it can
 provide a higher level interface and leave the determination to the
@@ -268,7 +267,7 @@ Priority handling of retransmissions can be implemented by the sender in the
 transport layer. {{QUIC}} recommends to retransmit lost data before new data,
 unless indicated differently by the application. Currently QUIC only provides
 fully reliable stream transmission, and as such prioritization of
-retransmissionis likely beneficial in most cases, as gaps that get filled up
+retransmissions likely beneficial in most cases, as gaps that get filled up
 and thereby free up flow control. For not fully reliable streams priority
 scheduling of retransmissions over data of higher-priority streams might not
 be desired. In this case QUIC could also provide an interface or derive the
@@ -294,7 +293,7 @@ expose a connection ID.
 Given that exposing this information may make it possible to associate
 multiple addresses with a single client during rebinding, which has privacy
 implications, an application may indicate to not support exposure of certain
-information after the handshake. Specificially, an application that has
+information after the handshake. Specifically, an application that has
 additional information that the client is not behind a NAT and the server is
 not behind a load balancer, and therefore it is unlikely that the addresses
 will be re-bound, may indicate to the transport that is wishes to not expose a
@@ -340,7 +339,7 @@ redirect the next Client Initial packet to a different server in that pool.
 
 # Use of Versions and Cryptographic Handshake
 
-Versioning in QUIC may change the the protocol's behavior completely, except
+Versioning in QUIC may change the protocol's behavior completely, except
 for the meaning of a few header fields that have been declared to be fixed. As
 such version of QUIC with a higher version number does not necessarily provide
 a better service, but might simply provide a very different service, so an
