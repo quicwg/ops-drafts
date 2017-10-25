@@ -65,12 +65,12 @@ of QUIC-aware middleboxes, e.g. for load balancing.
 
 # Introduction
 
-QUIC {{!QUIC=I-D.ietf-quic-transport}} is a new transport protocol currently
+QUIC {{?QUIC=I-D.ietf-quic-transport}} is a new transport protocol currently
 under development in the IETF quic working group, focusing on support of
-semantics as needed for HTTP/2 {{!QUIC-HTTP=I-D.ietf-quic-http}}. Based on
+semantics as needed for HTTP/2 {{?QUIC-HTTP=I-D.ietf-quic-http}}. Based on
 current deployment practices, QUIC is encapsulated in UDP and encrypted by
 default. The current version of QUIC integrates TLS
-{{!QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all payload data and most control
+{{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all payload data and most control
 information. Given QUIC is an end-to-end transport protocol, all information in
 the protocol header, even that which can be inspected, is is not meant to be
 mutable by the network, and will therefore be integrity-protected to the extent
@@ -113,12 +113,12 @@ by which a receiver can determine which version is used and the meaning and
 location of fields used in the version negotiation process need to be fixed.
 
 This document is focused on the protocol as presently defined in
-{{!QUIC=I-D.ietf-quic-transport}} and {{!QUIC-TLS}}, and will change to track
+{{?QUIC}} and {{?QUIC-TLS}}, and will change to track
 those documents.
 
 ## QUIC Packet Header Structure {#public-header}
 
-The QUIC packet header is under active development; see section 5 of {{!QUIC}}
+The QUIC packet header is under active development; see section 5 of {{?QUIC}}
 for the present header structure.
 
 The first bit of the QUIC header indicates the present of a long header that
@@ -196,7 +196,7 @@ in the short header after the handshake. Further a server might provide
 additional connection IDs that can the used by the client at any time during the
 connection. Therefore if a flow changes one of its IP addresses it may keep the
 same connection ID, or the connection ID may also change together with the IP
-address migration, avoiding linkability; see Section 7.6 of {{!QUIC}}.
+address migration, avoiding linkability; see Section 7.6 of {{?QUIC}}.
 
 ## Packet Numbers {#packetnumber}
 
@@ -250,10 +250,10 @@ The QUIC wire image is not specifically designed to be distinguishable from
 other UDP traffic.
 
 The only application binding currently defined for QUIC is HTTP
-{{!QUIC-HTTP=I-D.ietf-quic-http}}. HTTP over QUIC uses UDP port 443 by default,
+{{?QUIC-HTTP}}. HTTP over QUIC uses UDP port 443 by default,
 although URLs referring to resources available over HTTP over QUIC may specify
 alternate port numbers. Simple assumptions about whether a given flow is using
-QUIC based upon a UDP port number may therefore not hold; see also {{!RFC7605}}
+QUIC based upon a UDP port number may therefore not hold; see also {{?RFC7605}}
 section 5.
 
 ### Identifying Negotiated Version
@@ -302,9 +302,9 @@ with a new flow when when observing a packet sharing a connection ID and one
 endpoint address (IP address and port) with the known flow.
 
 The connection ID to be used for a long-running flow is chosen by the server
-(see {{QUIC}} section 5.6) during the handshake. This value should be treated as
-opaque; see {{sec-loadbalancing}} for caveats regarding connection ID selection
-at servers.
+(see {{?QUIC}} section 5.6) during the handshake. This value should be treated
+as opaque; see {{sec-loadbalancing}} for caveats regarding connection ID
+selection at servers.
 
 ## Flow teardown {#sec-teardown}
 
