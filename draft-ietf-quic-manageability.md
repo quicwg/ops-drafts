@@ -284,16 +284,15 @@ future versions of the protocol.
 
 ## Connection confirmation {#sec-confirm}
 
-Connection establishment uses Initial and Retry packets containing a TLS
-handshake on Stream 0. Connection establishment can therefore be detected
-using heuristics similar to those used to detect TLS over TCP. A client using
-0-RTT connection may also send data packets in 0-RTT Protected packets
-directly after the Initial packet containing the TLS Client Hello. Since these
-packets may be reordered in the network, note that 0-RTT Protected data
-packets may be seen before the Initial packet. Note that clients and servers
-cannot be identified from the QUIC packet type, so the TLS handshake in
-Initial and Retry packets must be parsed to determine which side of a
-connection is which.
+Connection establishment uses Initial, Handshake, and Retry packets containing
+a TLS handshake on Stream 0. Connection establishment can therefore be
+detected using heuristics similar to those used to detect TLS over TCP. A
+client using 0-RTT connection may also send data packets in 0-RTT Protected
+packets directly after the Initial packet containing the TLS Client Hello.
+Since these packets may be reordered in the network, note that 0-RTT Protected
+data packets may be seen before the Initial packet. Note that only clients
+send Initial packets, so the sides of a connection can be distinguished by
+QUIC packet type in the handshake.
 
 ## Application Identification {#sec-server}
 
@@ -304,6 +303,13 @@ that name. It may also contain information from Application-Layer Protocol
 Negotiation (ALPN) {{?RFC7301}}, by which the client exposes the names of
 application-layer protocols it supports; an observer can deduce that one of
 those protocols will be used if the connection continues.
+
+Work is currently underway in the TLS working group to encrypt the SNI in TLS
+1.3 {{?TLS-ENCRYPT-SNI=I-D.ietf-tls-sni-encryption}}, reducing the information
+available in the SNI to the name of a fronting service, which can generally be
+identified by the IP address of the server anyway. If used with QUIC, this
+would make SNI-based application identification impossible through passive
+measurement.
 
 ## Flow association {#sec-flow-association}
 
