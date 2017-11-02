@@ -284,14 +284,16 @@ future versions of the protocol.
 
 ## Connection confirmation {#sec-confirm}
 
-Connection establishment uses Client Initial, Server Cleartext, and Client
-Cleartext packets containing a TS handshake on Stream 0. Connection
-establishment can therefore be detected using heuristics similar to those used
-to detect TLS over TCP. A client using 0-RTT connection may also send data
-packets in 0-RTT Protected packets directly after the Client Initial packet
-containing the TLS Client Hello. Since these packets may be reordered in the
-network, note that 0-RTT Protected data packets may be seen before the Client
-Initial packet.
+Connection establishment uses Initial and Retry packets containing a TLS
+handshake on Stream 0. Connection establishment can therefore be detected
+using heuristics similar to those used to detect TLS over TCP. A client using
+0-RTT connection may also send data packets in 0-RTT Protected packets
+directly after the Initial packet containing the TLS Client Hello. Since these
+packets may be reordered in the network, note that 0-RTT Protected data
+packets may be seen before the Initial packet. Note that clients and servers
+cannot be identified from the QUIC packet type, so the TLS handshake in
+Initial and Retry packets must be parsed to determine which side of a
+connection is which.
 
 ## Application Identification {#sec-server}
 
@@ -300,8 +302,8 @@ The cleartext TLS handshake may contain Server Name Indication (SNI)
 connect to, in order to allow the server to present a certificate based on
 that name. It may also contain information from Application-Layer Protocol
 Negotiation (ALPN) {{?RFC7301}}, by which the client exposes the names of
-application-layer protocols it supports and the server exposes the name of the
-selected protocol.
+application-layer protocols it supports; an observer can deduce that one of
+those protocols will be used if the connection continues.
 
 ## Flow association {#sec-flow-association}
 
