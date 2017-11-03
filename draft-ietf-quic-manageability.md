@@ -121,26 +121,23 @@ those documents.
 The QUIC packet header is under active development; see section 5 of {{?QUIC}}
 for the present header structure.
 
-The first bit of the QUIC header indicates the present of a long header that
+The first bit of the QUIC header indicates the presence of a long header that
 exposes more information than the short header. The long header is used during
-connection start including version negotiation, server retry, and 0-RTT data
-while the short header is used after the handshake and therefore on most data
-packets to limited unnecessary header overhead. The fields and location of these
-fields as defined by the current version of QUIC for the long header are fixed
-for all future version as well. However, note that future versions of QUIC may
-provide additional fields. In the current version of quic the long header for
-all header types has a fixed length, containing, besides the Header Form bit, a
-7-bit header Type, a 64-bit Connection ID, a 32-bit Packet Number, and a 32-bit
-Version. The short header is variable length where bits after the Header Form
-bit indicate the present on the Connection ID, and the length of the packet
-number.
+connection establishment, including version negotiation, server retry, and
+0-RTT data while the short header is used after the handshake and therefore on
+most data packets. The fields and location of these fields in the QUIC long
+header are invariant for future versions of QUIC, although  future versions of
+QUIC may provide additional fields in the long header.. In the current version
+of QUIC the long header is fixed-length, containing a header Type, a 64-bit
+Connection ID, a 32-bit Packet Number, and a 32-bit Version. The short header
+is variable length, where the bits after the Header Form bit indicate the
+presence of the Connection ID, and the length of the packet number.
 
 The following information may be exposed in the packet header:
 
-- header type: the long header has a 7-bit header type field following the
-Header Form bit. The current version of QUIC defines 6 header types, namely
-Version Negotiation, Client Initial, Server Stateless Retry, Server Cleartext,
-Client Cleartext, 0-RTT Protected.
+- header type: the long header has a 7-bit packet type field following the
+Header Form bit. The current version of QUIC defines five packet types, namely
+Version Negotiation, Initial, Retry, Handshake, 0-RTT Protected.
 
 - connection ID: The connection ID is always present on the long and optionally
 present on the short header indicated by the Connection ID Flag. If present at
@@ -166,10 +163,9 @@ identifies the version used for that packet, expect for the Version negotiation
 packet. The version negotiation packet is fixed for all version of QUIC and
 contains a list of versions that is supported by the sender. The version in the
 version field of the Version Negotiation packet is the reflected version of the
-Client Initial packet and is therefore explicitly n ot supported by the sender.
+Initial packet and is therefore explicitly not supported by the sender.
 
-- key phase: The short header further has a Key Phase flag that is used by the
-endpoint identify the right key that was used to encrypt the packet.
+- key phase: The Key Phase bit identifies the key used to encrypt the packet.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
@@ -258,10 +254,10 @@ section 5.
 
 ### Identifying Negotiated Version
 
-An in-network observer assuming that a set of packets belongs to a QUIC flow can
-infer the version number in use by observing the handshake: a Client Initial
-with a given version followed by Server Cleartext packet with the same version
-implies acceptance of that version.
+An in-network observer assuming that a set of packets belongs to a QUIC flow
+can infer the version number in use by observing the handshake: an Initial
+packet with a given version from a client to which a server responds with an
+Initial packet with the same version implies acceptance of that version.
 
 Negotiated version cannot be identified for flows for which a handshake is not
 observed, such as in the case of NAT rebinding; however, these flows can be
@@ -319,18 +315,26 @@ https://github.com/quicwg/base-drafts/issues/602.
 ## Round-trip time measurement {#sec-rtt}
 
 Round-trip time of QUIC flows can be inferred by observation once per flow,
-during the handshake, as in passive TCP measurement. The delay between the
-Client Initial packet and the Server Cleartext packet sent back to the client
-represents the RTT component on the path between the observer and the server,
-and the delay between this packet and the Client Cleartext packet in reply
-represents the RTT component on the path between the observer and the client.
-This measurement necessarily includes any application delay at both sides. Note
-that the Server's reply mayalso be a Version Negotiation or Server Stateless
-Retry packet. In this case the Client will send another Client Initial or the
-connection will fail.
+during the handshake, as in passive TCP measurement; this requires parsing of
+the QUIC packet header and the cleartext TLS handshake on stream 0.
 
-The lack of any acknowledgement information or timestamping information in the
-QUIC wire image makes running passive RTT estimation impossible.
+In the common case, the delay between the Initial packet containing the TLS
+Client Hello and the Handshake packet containing the TLS Server Hello
+represents the RTT component on the path between the observer and the server.
+The delay between the TLS Server Hello and the Handshake packet containing the
+TLS Finished message sent by the client represents the RTT component on the
+path between the observer and the client. While the client may send 0-RTT
+Protected packets after the Initial packet during 0-RTT connection
+re-establishment, these can be ignored for RTT measurement purposes.
+
+Handshake RTT can be measured by adding the client-to-observer and
+observer-to-server RTT components together. This measurement necessarily
+includes any transport and application layer delay at both sides.
+
+QUIC does not expose any acknowledgement or timestamping information in its
+wire image. This makes passive measurement of more than one RTT sample per
+flow, or passive measurement of changes in RTT during a flow's lifetime,
+impossible in the general case.
 
 Changes to this behavior are currently under discussion:  see
 https://github.com/quicwg/base-drafts/issues/631.
