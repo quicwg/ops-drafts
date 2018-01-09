@@ -351,13 +351,45 @@ Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
 includes any transport and application layer delay at both sides.
 
-QUIC does not expose any acknowledgement or timestamping information in its
-wire image. This makes passive measurement of more than one RTT sample per
-flow, or passive measurement of changes in RTT during a flow's lifetime,
-impossible in the general case.
+RTT measurements during a flow are are possible by observing the series of the
+latency spin bit on QUIC packets. When a QUIC flow is sending at full rate
+(i.e., neither application nor flow control limited), the latency spin bit in
+each direction changes value once per round-trip time (RTT). An on-path
+observer can observe the time difference between edges in the spin bit signal
+in a single direction to measure one sample of end-to-end RTT. Note that this
+measurement, as with passive RTT measurement for TCP, includes any transport
+protocol delay (e.g., delayed sending of acknowledgements) and/or application
+layer delay (e.g., waiting for a request to complete). It therefore provides
+devices on path a good instantaneous estimate of the RTT as experienced by the
+application. A simple linear smoothing or moving minimum filter can be applied
+to the stream of RTT information to get a more stable estimate.
 
-Changes to this behavior are currently under discussion:  see
-https://github.com/quicwg/base-drafts/issues/631.
+An on-path observer that can see traffic in both directions (from client to
+server and from server to client) can also use the spin bit to measuregit
+"upstream" and "downstream" component RTT; i.e, the component of the
+end-to-end RTT attributable to the paths between the observer and the server
+and the observer and the client, respectively. It does this by measuring the
+delay between a spin edge observed in the upstream direction and that observed
+in the downstream direction, and vice versa.
+
+Application-limited and flow-control-limited senders can have application and
+transport layer delay, respectively, that are much greater than network RTT.
+Therefore, the spin bit provides network latency information only when the
+sender is neither application nor flow control limited. When the sender is
+application-limited by periodic application traffic, where that period is
+longer than the RTT, measuring the spin bit provides information about the
+application period, not the RTT. Simple heuristics based on the observed data
+rate per flow or changes in the RTT series can be used to reject bad RTT
+samples due to application or flow control limitation.
+
+Since the spin bit logic at each endpoint considers only samples on packets
+that advance the largest packet number seen, signal generation itself is
+resistant to reordering. However, reordering can cause problems at an observer
+by causing spurious edge detection and therefore low RTT estimates, if
+reordering occurs across a spin bit flip in the stream. This can be
+probabilistically mitigated by the observer also tracking the low-order bits
+of the packet number, and rejecting edges that appear out-of-order
+{{?RFC4737}}.
 
 ## Packet loss measurement {#sec-loss}
 
@@ -393,8 +425,8 @@ requirements.
 
 ## Passive network performance measurement and troubleshooting
 
-Extremely limited loss and RTT measurement are possible by passive observation
-of QUIC traffic; see {{sec-rtt}} and {{sec-loss}}.
+Limited loss measurement and detailed RTT measurement are possible by passive
+observation of QUIC traffic; see {{sec-rtt}} and {{sec-loss}}.
 
 ## Server cooperation with load balancers {#sec-loadbalancing}
 
@@ -488,7 +520,7 @@ application-layer protocol(s); in these cases, alternatives must be found.
 
 Dan Druta contributed text to {{sec-ddos-dec}}. Igor Lubashev contributed text
 to {{sec-loadbalancing}} on the use of the connection ID for load balancing.
-
+Marcus Ilhar contributed text to {{sec-rtt}} on the use of the spin bit.
 
 # Acknowledgments
 
