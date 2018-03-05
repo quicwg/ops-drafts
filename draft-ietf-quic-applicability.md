@@ -136,7 +136,7 @@ Any fallback mechanism is likely to impose a degradation of performance;
 however, fallback MUST not silently violate the application's expectation of
 confidentiality or integrity of its payload data.
 
-Moreover, while encryption (in this case TLS) is inseparable integrated with
+Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. In case it is RECOMMENDED to
 abort the connection, allowing the application to present a suitable prompt to
 the user that secure communication is unavailable.
@@ -190,7 +190,7 @@ application.
 QUIC's stream multiplexing feature allows applications to run multiple streams
 over a single connection, without head-of-line blocking between streams,
 associated at a point in time with a single five-tuple. Stream data is carried
-within Frames, where one (UDP) packet on the wired can carry one of multiple
+within Frames, where one (UDP) packet on the wire can carry one of multiple
 stream frames.
 
 Stream can be independently open and closed, gracefully or by error. If a
@@ -257,7 +257,7 @@ Stream prioritization is not exposed to the network, nor to the receiver.
 Prioritization can be realized by the sender and the QUIC transport should
 provide an interface for applications to prioritize streams {{!QUIC}}. Further
 applications can implement their own prioritization scheme on top of QUIC: (an
-application) protocol that run on top of QUIC can define explicit messages
+application) protocol that runs on top of QUIC can define explicit messages
 for signaling priority, such as those defined for HTTP/2; it can define rules
 that allow an endpoint to determine priority based on context; or it can
 provide a higher level interface and leave the determination to the
@@ -302,7 +302,7 @@ connection ID.
 ## Server-Generated Connection ID
 
 QUIC supports a server-generated Connection ID, transmitted to the client
-during connection establishment: see Section 5.7 of {{!QUIC}} Servers behind
+during connection establishment: see Section 5.7 of {{!QUIC}}. Servers behind
 load balancers should propose a Connection ID during the handshake, encoding
 the identity of the server or information about its load balancing pool, in
 order to support stateless load balancing. Once the server generates a
@@ -319,12 +319,12 @@ sufficient to identify unique end users. Note that by encoding routing
 information in the Connection ID, load balancers open up a new attack vector
 that allows bad actors to direct traffic at a specific backend server or pool.
 It is therefore recommended that Server-Generated Connection ID includes a
-cryptographic MAC that the load balancer pool server are able to identify and
+cryptographic MAC that the load balancer pool server is able to identify and
 discard packets featuring an invalid MAC.
 
 ## Using Server Retry for Redirection
 
-QUIC provide a Server Retry packet that can be send by a server in response to
+QUIC provides a Server Retry packet that can be sent by a server in response to
 the Client Initial packet. The server may choose a new connection ID in that
 packet and the client will retry by sending another Client Initial packet with
 the server-selected connection ID. This mechanism can be used to redirect a
