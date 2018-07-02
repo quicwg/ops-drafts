@@ -351,21 +351,22 @@ Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
 includes any transport and application layer delay at both sides.
 
-RTT measurements during a flow are are possible by observing the series of the
-latency spin bit on QUIC packets. When a QUIC flow is sending at full rate
-(i.e., neither application nor flow control limited), the latency spin bit in
-each direction changes value once per round-trip time (RTT). An on-path
-observer can observe the time difference between edges in the spin bit signal
-in a single direction to measure one sample of end-to-end RTT. Note that this
-measurement, as with passive RTT measurement for TCP, includes any transport
-protocol delay (e.g., delayed sending of acknowledgements) and/or application
-layer delay (e.g., waiting for a request to complete). It therefore provides
-devices on path a good instantaneous estimate of the RTT as experienced by the
-application. A simple linear smoothing or moving minimum filter can be applied
-to the stream of RTT information to get a more stable estimate.
+The spin bit experiment, detailed in {{?QUIC-SPIN=I-D.ietf-quic-spin-exp}},
+provides an additional method to measure intraflow per-flow RTT.  When a QUIC
+flow is sending at full rate (i.e., neither application nor flow control
+limited), the latency spin bit described in that document changes value once
+per round-trip time (RTT). An on-path observer can observe the time difference
+between edges in the spin bit signal in a single direction to measure one
+sample of end-to-end RTT. Note that this measurement, as with passive RTT
+measurement for TCP, includes any transport protocol delay (e.g., delayed
+sending of acknowledgements) and/or application layer delay (e.g., waiting for
+a request to complete). It therefore provides devices on path a good
+instantaneous estimate of the RTT as experienced by the application. A simple
+linear smoothing or moving minimum filter can be applied to the stream of RTT
+information to get a more stable estimate.
 
 An on-path observer that can see traffic in both directions (from client to
-server and from server to client) can also use the spin bit to measuregit
+server and from server to client) can also use the spin bit to measure
 "upstream" and "downstream" component RTT; i.e, the component of the
 end-to-end RTT attributable to the paths between the observer and the server
 and the observer and the client, respectively. It does this by measuring the
