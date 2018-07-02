@@ -109,10 +109,10 @@ packets. Here, we are concerned primarily with QUIC's unencrypted wire image
 {{?WIRE-IMAGE=I-D.trammell-wire-image}}, which we define as the information
 available in the packet header in each QUIC packet, and the dynamics of that
 information. Since QUIC is a versioned protocol, the wire image of the header
-format can also change from version. However, at least the mechanism by which
-a receiver can determine which version is used and the meaning and location of
-fields used in the version negotiation process is invariant
-{{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
+format can also change from version to version. However, at least the
+mechanism by which a receiver can determine which version is used and the
+meaning and location of fields used in the version negotiation process is
+invariant {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
 This document is focused on the protocol as presently defined in
 {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}, and will change to track
@@ -419,7 +419,7 @@ successful DDoS mitigation is efficient classification of this traffic.
 
 Limited first-packet garbage detection as in {{sec-garbage}} and stateful
 tracking of QUIC traffic as in {{sec-stateful}} above can be used in this
-classification step. 
+classification step.
 
 Note that the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient, and requires more state to be maintained
@@ -431,7 +431,7 @@ However, it is questionable if connection migrations needs to be supported in
 a DDOS attack. If the connection migration is not visible to the network that
 performs the DDoS detection, an active, migrated QUIC connection may be
 blocked by such a system under attack. However, a defense system might simply
-rely on the fast resumption mechanism provided by QUIC. 
+rely on the fast resumption mechanism provided by QUIC.
 
 ## QoS support and ECMP
 
