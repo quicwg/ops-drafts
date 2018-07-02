@@ -65,15 +65,15 @@ of QUIC-aware middleboxes, e.g. for load balancing.
 
 # Introduction
 
-QUIC {{?QUIC=I-D.ietf-quic-transport}} is a new transport protocol currently
-under development in the IETF quic working group, focusing on support of
-semantics as needed for HTTP/2 {{?QUIC-HTTP=I-D.ietf-quic-http}}. Based on
-current deployment practices, QUIC is encapsulated in UDP and encrypted by
-default. The current version of QUIC integrates TLS
+QUIC {{?QUIC-TRANSPORT=I-D.ietf-quic-transport}} is a new transport protocol
+currently under development in the IETF quic working group, focusing on
+support of semantics as needed for HTTP/2 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
+Based on current deployment practices, QUIC is encapsulated in UDP and
+encrypted by default. The current version of QUIC integrates TLS
 {{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all payload data and most control
-information. Given QUIC is an end-to-end transport protocol, all information in
-the protocol header, even that which can be inspected, is is not meant to be
-mutable by the network, and will therefore be integrity-protected to the extent
+information. Given QUIC is an end-to-end transport protocol, all information
+in the protocol header, even that which can be inspected, is is not meant to
+be mutable by the network, and is therefore integrity-protected to the extent
 possible.
 
 This document provides guidance for network operation on the management of QUIC
@@ -103,114 +103,118 @@ as defined in {{!RFC2119}}.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
-In this section, we discusses those aspects of the QUIC transport protocol that
-have an impact on the design and operation of devices that forward QUIC packets.
-Here, we are concerned primarily with QUIC's unencrypted wire image, which we
-define as the information available in the packet header in each QUIC packet,
-and the dynamics of that information. Since QUIC is a versioned protocol, also
-the wire image of the header format can change. However, at least the mechanism
-by which a receiver can determine which version is used and the meaning and
-location of fields used in the version negotiation process need to be fixed.
+In this section, we discusses those aspects of the QUIC transport protocol
+that have an impact on the design and operation of devices that forward QUIC
+packets. Here, we are concerned primarily with QUIC's unencrypted wire image
+{{?WIRE-IMAGE=I-D.trammell-wire-image}}, which we define as the information
+available in the packet header in each QUIC packet, and the dynamics of that
+information. Since QUIC is a versioned protocol, the wire image of the header
+format can also change from version to version. However, at least the
+mechanism by which a receiver can determine which version is used and the
+meaning and location of fields used in the version negotiation process is
+invariant {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
 This document is focused on the protocol as presently defined in
-{{?QUIC}} and {{?QUIC-TLS}}, and will change to track
+{{QUIC-TRANSPORT}} and {{?QUIC-TLS}}, and will change to track
 those documents.
 
 ## QUIC Packet Header Structure {#public-header}
 
-The QUIC packet header is under active development; see section 5 of {{?QUIC}}
-for the present header structure.
+QUIC packets may have either a long header, or a short header. The first bit
+of the QUIC header indicates which type of header is present.
 
-The first bit of the QUIC header indicates the presence of a long header that
-exposes more information than the short header. The long header is used during
-connection establishment, including version negotiation, server retry, and
-0-RTT data while the short header is used after the handshake and therefore on
-most data packets. The fields and location of these fields in the QUIC long
-header are invariant for future versions of QUIC, although  future versions of
-QUIC may provide additional fields in the long header.. In the current version
-of QUIC the long header is fixed-length, containing a header Type, a 64-bit
-Connection ID, a 32-bit Packet Number, and a 32-bit Version. The short header
-is variable length, where the bits after the Header Form bit indicate the
-presence of the Connection ID, and the length of the packet number.
+The long header exposes more information. It is used during connection
+establishment, including version negotiation, server retry, and 0-RTT data. It
+contains a version number, as well as source and destination connection IDs
+for grouping packets belonging to the same flow. The definition and location
+of these fields in the QUIC long header are invariant for future versions of
+QUIC, although future versions of QUIC may provide additional fields in the
+long header {{QUIC-INVARIANTS}}.
 
-The following information may be exposed in the packet header:
+Short headers are used after connection establishment. The only information
+they contain for inspection on the path is an optional, variable-length
+destination connection ID.
+
+As of draft version 13 of the QUIC transport document, the following
+information may be exposed in QUIC packet headers:
 
 - header type: the long header has a 7-bit packet type field following the
-Header Form bit. The current version of QUIC defines five packet types, namely
-Version Negotiation, Initial, Retry, Handshake, 0-RTT Protected.
+  Header Form bit. Header types correspond to stages of the handshake; see
+  Section 4.1 of {{QUIC-TRANSPORT}}.
 
-- connection ID: The connection ID is always present on the long and optionally
-present on the short header indicated by the Connection ID Flag. If present at
-the short header it at the same position then for the long header. The position
-and length pf the congestion ID itself as well as the Connection ID flag in the
-short header is fixed for all versions of QUIC. The connection ID identifies the
-connection associated with a QUIC packet, for load-balancing and NAT rebinding
-purposes; see {{sec-loadbalancing}} and {{rebinding}}. Therefore it is also
-expected that the Connection ID will either be present on all packets of a flow
-or none of the short header packets. However, this field is under endpoint
-control and there is no protocol mechanism that hinders the sending endpoint to
-revise its decision about exposing the Connection ID at any time during the
-connection.
+- version number: The version number is present in the long header, and
+  identifies the version used for that packet. Note that during Version
+  Negotiation (see {{version}}, and Section 4.3 of {{QUIC-TRANSPORT}}, the
+  version number field has a special value (0x00000000) that identifies the
+  packet as a Version Negotiation packet.
 
-- packet number: Every packet has an associated packet number. The packet number
-increases with each packet, and the least-significant bits of the packet number
-are present on each packet. In the short header the length of the exposed packet
-number field is defined by the (short) header type and can either be 8, 16, or
-32 bits. See {{packetnumber}}.
+- source and destination connection ID: The source and destination connection
+  IDs are variable-length fields that can be used to identify the connection
+  associated with a QUIC packet, for load-balancing and NAT rebinding
+  purposes; see {{sec-loadbalancing}} and {{rebinding}}. The source connection
+  ID corresponds to the destination connection ID the source would like to
+  have on packets sent to it, and is only present on long packet headers. The
+  destination connection ID, if present, is present on both long and short
+  header packets. On long header packets, the length of the connection IDs is
+  also present; on short header packets, the length of the destination
+  connection ID is implicit.
 
-- version number: The version number is present on the long headers and
-identifies the version used for that packet, expect for the Version negotiation
-packet. The version negotiation packet is fixed for all version of QUIC and
-contains a list of versions that is supported by the sender. The version in the
-version field of the Version Negotiation packet is the reflected version of the
-Initial packet and is therefore explicitly not supported by the sender.
+- length: the length of the remaining quic packet after the length field, present on
+  long headers. This field is used to implement coalesced packets during the
+  handshake (see {{coalesced}}).
 
-- key phase: The Key Phase bit identifies the key used to encrypt the packet.
+- packet number: Every packet has an associated packet number; however, this
+  packet number is encrypted, and therefore not of use to on-path observers.
+  This packet number has a fixed location and length in long headers, and an
+  implicit location and encrypted variable length in short headers.
+
+- key phase: The Key Phase bit, present in short headers identifies the key
+  used to encrypt the packet during key rotation.
+
+## Coalesced Packets {#coalesced}
+
+Multiple QUIC packets may be coalesced into a UDP datagram, with a datagram
+carrying one or more long header packets followed by zero or one short header
+packets. When packets are coalesced, the Length fields in the long headers are
+used to separate QUIC packets. The length header field is variable length and 
+its position in the header is also variable depending on the length of the 
+source and destionation connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
-As soon as the cryptographic context is established, all information in the QUIC
-header, including those exposed in the packet header, is integrity protected.
-Further, information that were sent and exposed in previous packets when the
-cryptographic context was established yet, e.g. for the cryptographic initial
-handshake itself, will be validated later during the cryptographic handshake,
-such as the version number.  Therefore, devices on path MUST NOT change any
-information or bits in QUIC packet headers. As alteration of header information
-would cause packet drop due to a failed integrity check at the receiver, or can
-even lead to connection termination.
+As soon as the cryptographic context is established, all information in the
+QUIC header, including those exposed in the packet header, is integrity
+protected. Further, information that were sent and exposed in previous packets
+when the cryptographic context was established yet, e.g. for the cryptographic
+initial handshake itself, will be validated later during the cryptographic
+handshake.  Therefore, devices on path MUST NOT change any information or bits
+in QUIC packet headers, since alteration of header information will lead to a
+failed integrity check at the receiver, and can even lead to connection
+termination.
 
 ## Connection ID and Rebinding {#rebinding}
 
-The connection ID in the QUIC packer header is used to allow routing of QUIC
-packets at load balancers on other than five-tuple information, ensuring that
-related flows are appropriately balanced together; and to allow rebinding of a
-connection after one of the endpoint's addresses changes - usually the client's,
-in the case of the HTTP binding. The client set a Connection ID in the Initial
-Client packet that will be used during the handshake. A new connection ID is
-then provided by the server during connection establishment, that will be used
-in the short header after the handshake. Further a server might provide
-additional connection IDs that can the used by the client at any time during the
-connection. Therefore if a flow changes one of its IP addresses it may keep the
-same connection ID, or the connection ID may also change together with the IP
-address migration, avoiding linkability; see Section 7.6 of {{?QUIC}}.
+The connection ID in the QUIC packet headers allows routing of QUIC packets at
+load balancers on other than five-tuple information, ensuring that related
+flows are appropriately balanced together; and to allow rebinding of a
+connection after one of the endpoint's addresses changes - usually the
+client's, in the case of the HTTP binding. Client and server negotiate
+connection IDs during the handshake; typically, however, only the server will
+request a connection ID for the lifetime of the connection. Connection IDs for
+either endpoint may change during the lifetime of a connection, with the new
+connection ID being negotiated via encrypted frames. See Section 6.1 of
+{{QUIC-TRANSPORT}}.
+
 
 ## Packet Numbers {#packetnumber}
 
-The packet number field is always present in the QUIC packet header. The packet
-number exposes the least significant 32, 16, or 8 bits of an internal packet
-counter per flow direction that increments with each packet sent. This packet
-counter is initialized with a random 31-bit initial value at the start of a
-connection.
+The packet number field is always present in the QUIC packet header; however,
+it is always encrypted. The encryption key for packet number protection on
+handshake packets sent before cryptographic context establishment is specific
+to the QUIC version, while packet number protection on subsequent packets uses
+secrets derived from the end-to-end cryptographic context. Packet numbers are
+therefore not part of the wire image that is useful to on-path observers.
 
-Unlike TCP sequence numbers, this packet number increases with every packet,
-including those containing only acknowledgment or other control information.
-Indeed, whether a packet contains user data or only control information is
-intentionally left unexposed to the network. The packet number increases with
-every packet but they sender may skip packet numbers.
-
-While loss detection in QUIC is based on packet numbers, congestion control by
-default provides richer information than vanilla TCP does. Especially, QUIC does
-not rely on duplicated ACKs, making it more tolerant of packet re-ordering.
 
 ## Version Negotiation and Greasing
 
@@ -314,7 +318,7 @@ with a new flow when when observing a packet sharing a connection ID and one
 endpoint address (IP address and port) with the known flow.
 
 The connection ID to be used for a long-running flow is chosen by the server
-(see {{?QUIC}} section 5.6) during the handshake. This value should be treated
+(see {{QUIC-TRANSPORT}} section 5.6) during the handshake. This value should be treated
 as opaque; see {{sec-loadbalancing}} for caveats regarding connection ID
 selection at servers.
 
@@ -325,7 +329,8 @@ devices that a flow has ended is that packets are no longer observed. Stateful
 devices on path such as NATs and firewalls must therefore use idle timeouts to
 determine when to drop state for QUIC flows.
 
-Changes to this behavior are currently under discussion:  see
+Changes to this behavior have been discussed in the working group, but there
+is no current proposal to implement these changes:  see
 https://github.com/quicwg/base-drafts/issues/602.
 
 ## Round-trip time measurement {#sec-rtt}
@@ -388,15 +393,6 @@ probabilistically mitigated by the observer also tracking the low-order bits
 of the packet number, and rejecting edges that appear out-of-order
 {{?RFC4737}}.
 
-## Packet loss measurement {#sec-loss}
-
-All QUIC packets carry packet numbers in cleartext, and while the protocol
-allows packet numbers to be skipped, skipping is not recommended in the general
-case. This allows the trivial one-sided estimation of packet loss and reordering
-between the sender and a given observation point ("upstream loss"). However,
-since retransmissions are not identifiable as such, loss between an observation
-point and the receiver ("downstream loss") cannot be reliably estimated.
-
 ## Flow symmetry measurement {#sec-symmetry}
 
 QUIC explicitly exposes which side of a connection is a client and which side is
@@ -422,8 +418,11 @@ requirements.
 
 ## Passive network performance measurement and troubleshooting
 
-Limited loss measurement and detailed RTT measurement are possible by passive
-observation of QUIC traffic; see {{sec-rtt}} and {{sec-loss}}.
+Limited RTT measurement is possible by passive observation of QUIC traffic;
+see {{sec-rtt}}. No passive measurement of loss is possible with the present
+wire image. Extremely limited observation of upstream congestion may be
+possible via the observation of CE markings on ECN-enabled QUIC traffic.
+
 
 ## Server cooperation with load balancers {#sec-loadbalancing}
 
@@ -453,20 +452,19 @@ successful DDoS mitigation is efficient classification of this traffic.
 
 Limited first-packet garbage detection as in {{sec-garbage}} and stateful
 tracking of QUIC traffic as in {{sec-stateful}} above can be used in this
-classification step. For traffic where the classification step did not observe a
-QUIC handshake, the presence of packets carrying the same Connection ID in both
-directions is a further indication of legitimate traffic. Note that these
-classification techniques help only against floods of garbage traffic, not
-against DDoS attacks using legitimate QUIC clients.
+classification step.
 
 Note that the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient, and requires more state to be maintained
-by DDoS defense systems. However, it is questionable if connection migrations
-needs to be supported in a DDOS attack. If the connection migration is not
-visible to the network that performs the DDoS detection, an active, migrated
-QUIC connection may be blocked by such a system under attack. However, a defense
-system might simply rely on the fast resumption mechanism provided by QUIC. See
-also https://github.com/quicwg/base-drafts/issues/203
+by DDoS defense systems, and linkability resistance in connection ID update
+mechanisms means that a connection ID aware DDoS defense system must have the
+same information about flows as the load balancer.
+
+However, it is questionable if connection migrations needs to be supported in
+a DDOS attack. If the connection migration is not visible to the network that
+performs the DDoS detection, an active, migrated QUIC connection may be
+blocked by such a system under attack. However, a defense system might simply
+rely on the fast resumption mechanism provided by QUIC.
 
 ## QoS support and ECMP
 
