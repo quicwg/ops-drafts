@@ -159,7 +159,7 @@ information may be exposed in QUIC packet headers:
   also present; on short header packets, the length of the destination
   connection ID is implicit.
 
-- payload length: the length of the payload after the long header, present on
+- length: the length of the remaining quic packet after the length field, present on
   long headers. This field is used to implement coalesced packets during the
   handshake (see {{coalesced}}).
 
@@ -176,7 +176,9 @@ information may be exposed in QUIC packet headers:
 Multiple QUIC packets may be coalesced into a UDP datagram, with a datagram
 carrying one or more long header packets followed by zero or one short header
 packets. When packets are coalesced, the Length fields in the long headers are
-used to separate QUIC packets. See Section 4.6 of {{QUIC-TRANSPORT}}.
+used to separate QUIC packets. The length header field is variable length and 
+its position in the header is also variable depending on the length of the 
+source and destionation connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
