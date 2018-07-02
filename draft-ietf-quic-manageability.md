@@ -212,10 +212,6 @@ While loss detection in QUIC is based on packet numbers, congestion control by
 default provides richer information than vanilla TCP does. Especially, QUIC does
 not rely on duplicated ACKs, making it more tolerant of packet re-ordering.
 
-## Initial Handshake and PMTUD
-
-\[Editor's note: text needed.]
-
 ## Version Negotiation and Greasing
 
 Version negotiation is not protected, given the used protection mechanism can
