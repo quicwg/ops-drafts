@@ -215,11 +215,8 @@ to the QUIC version, while packet number protection on subsequent packets uses
 secrets derived from the end-to-end cryptographic context. Packet numbers are
 therefore not part of the wire image that is useful to on-path observers.
 
-## Initial Handshake and PMTUD
 
-\[Editor's note: text needed.]
-
-## Version Negotiation and Greasing {#version}
+## Version Negotiation and Greasing
 
 Version negotiation is not protected, given the used protection mechanism can
 change with the version.  However, the choices provided in the list of version
@@ -355,13 +352,46 @@ Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
 includes any transport and application layer delay at both sides.
 
-QUIC does not expose any acknowledgement or timestamping information in its
-wire image. This makes passive measurement of more than one RTT sample per
-flow, or passive measurement of changes in RTT during a flow's lifetime,
-impossible in the general case.
+The spin bit experiment, detailed in {{?QUIC-SPIN=I-D.ietf-quic-spin-exp}},
+provides an additional method to measure intraflow per-flow RTT.  When a QUIC
+flow is sending at full rate (i.e., neither application nor flow control
+limited), the latency spin bit described in that document changes value once
+per round-trip time (RTT). An on-path observer can observe the time difference
+between edges in the spin bit signal in a single direction to measure one
+sample of end-to-end RTT. Note that this measurement, as with passive RTT
+measurement for TCP, includes any transport protocol delay (e.g., delayed
+sending of acknowledgements) and/or application layer delay (e.g., waiting for
+a request to complete). It therefore provides devices on path a good
+instantaneous estimate of the RTT as experienced by the application. A simple
+linear smoothing or moving minimum filter can be applied to the stream of RTT
+information to get a more stable estimate.
 
-Changes to this behavior are currently under discussion:  see
-https://github.com/quicwg/base-drafts/issues/631.
+An on-path observer that can see traffic in both directions (from client to
+server and from server to client) can also use the spin bit to measure
+"upstream" and "downstream" component RTT; i.e, the component of the
+end-to-end RTT attributable to the paths between the observer and the server
+and the observer and the client, respectively. It does this by measuring the
+delay between a spin edge observed in the upstream direction and that observed
+in the downstream direction, and vice versa.
+
+Application-limited and flow-control-limited senders can have application and
+transport layer delay, respectively, that are much greater than network RTT.
+Therefore, the spin bit provides network latency information only when the
+sender is neither application nor flow control limited. When the sender is
+application-limited by periodic application traffic, where that period is
+longer than the RTT, measuring the spin bit provides information about the
+application period, not the RTT. Simple heuristics based on the observed data
+rate per flow or changes in the RTT series can be used to reject bad RTT
+samples due to application or flow control limitation.
+
+Since the spin bit logic at each endpoint considers only samples on packets
+that advance the largest packet number seen, signal generation itself is
+resistant to reordering. However, reordering can cause problems at an observer
+by causing spurious edge detection and therefore low RTT estimates, if
+reordering occurs across a spin bit flip in the stream. This can be
+probabilistically mitigated by the observer also tracking the low-order bits
+of the packet number, and rejecting edges that appear out-of-order
+{{?RFC4737}}.
 
 ## Flow symmetry measurement {#sec-symmetry}
 
@@ -392,6 +422,7 @@ Limited RTT measurement is possible by passive observation of QUIC traffic;
 see {{sec-rtt}}. No passive measurement of loss is possible with the present
 wire image. Extremely limited observation of upstream congestion may be
 possible via the observation of CE markings on ECN-enabled QUIC traffic.
+
 
 ## Server cooperation with load balancers {#sec-loadbalancing}
 
@@ -484,7 +515,7 @@ application-layer protocol(s); in these cases, alternatives must be found.
 
 Dan Druta contributed text to {{sec-ddos-dec}}. Igor Lubashev contributed text
 to {{sec-loadbalancing}} on the use of the connection ID for load balancing.
-
+Marcus Ilhar contributed text to {{sec-rtt}} on the use of the spin bit.
 
 # Acknowledgments
 
