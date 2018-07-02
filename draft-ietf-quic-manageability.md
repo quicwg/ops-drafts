@@ -159,7 +159,8 @@ information may be exposed in QUIC packet headers:
   also present; on short header packets, the length of the destination
   connection ID is implicit.
 
-- length: the length of the remaining quic packet after the length field, present on
+- length: the length of the remaining quic packet after the length field,
+  present on
   long headers. This field is used to implement coalesced packets during the
   handshake (see {{coalesced}}).
 
@@ -176,8 +177,8 @@ information may be exposed in QUIC packet headers:
 Multiple QUIC packets may be coalesced into a UDP datagram, with a datagram
 carrying one or more long header packets followed by zero or one short header
 packets. When packets are coalesced, the Length fields in the long headers are
-used to separate QUIC packets. The length header field is variable length and 
-its position in the header is also variable depending on the length of the 
+used to separate QUIC packets. The length header field is variable length and
+its position in the header is also variable depending on the length of the
 source and destionation connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
@@ -216,7 +217,7 @@ secrets derived from the end-to-end cryptographic context. Packet numbers are
 therefore not part of the wire image that is useful to on-path observers.
 
 
-## Version Negotiation and Greasing
+## Version Negotiation and Greasing {#version}
 
 Version negotiation is not protected, given the used protection mechanism can
 change with the version.  However, the choices provided in the list of version
@@ -318,7 +319,8 @@ with a new flow when when observing a packet sharing a connection ID and one
 endpoint address (IP address and port) with the known flow.
 
 The connection ID to be used for a long-running flow is chosen by the server
-(see {{QUIC-TRANSPORT}} section 5.6) during the handshake. This value should be treated
+(see {{QUIC-TRANSPORT}} section 5.6) during the handshake. This value should
+be treated
 as opaque; see {{sec-loadbalancing}} for caveats regarding connection ID
 selection at servers.
 
