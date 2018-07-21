@@ -196,7 +196,7 @@ stream frames.
 Stream can be independently open and closed, gracefully or by error. If a
 critical stream for the application is closed, the application can generate
 respective error messages on the application layer to inform the other end or
-the higher layer and eventually indicate quic to reset the connection. QUIC,
+the higher layer and eventually indicate QUIC to reset the connection. QUIC,
 however, does not need to know which streams are critical, and does not
 provide an interface to exceptional handling of any stream. There are special
 streams in QUIC that are used for control on the QUIC connection, however,
@@ -233,31 +233,31 @@ network treatment SHOULD therefore be carried over different five-tuples (i.e.
 multiple QUIC connections). Given QUIC's ability to send application data in
 the first RTT of a connection (if a previous connection to the same host has
 been successfully established to provide the respective credentials), the cost
-for establishing another connection are extremely low.
+of establishing another connection is extremely low.
 
 ## Packetization and latency
 
-Quic provides an interface that provides multiple streams to the application,
-however, the application usually doesn't have control how the data transmitted
-over one stream is mapped into frame and how frames are bundled into packets.
-By default QUIC will try to maximally pack packets to minimize bandwidth
-consumption and computational costs with one or multiple same data frames. If
-not enough data available to send QUIC may even wait for a short time, trading
-of latency and bandwidth efficiency. This time might either be pre-configured
-or can the dynamically adjusted based on the observed sending pattern of the
-application. If the application requires low latency, with only small chunks
-of data to send, it may be valuable to indicate to QUIC that all data should
-be send out immediately. Or if a certain sending pattern is know by the
-application, it might also provide valuable guidance to QUIC how long it
-should wait to bundle frame into a packet.
+QUIC provides an interface that provides multiple streams to the application;
+however, the application usually cannot control how data transmitted over one
+stream is mapped into frames or how those frames are bundled into packets.
+By default, QUIC will try to maximally pack packets with one or more stream
+data frames to minimize bandwidth consumption and computational costs. If
+there is not enough data available to fill a packet, QUIC may even wait for a
+short time, to optimize bandwidth efficiency instead of latency. This delay can
+either be pre-configured or dynamically adjusted based on the observed
+sending pattern of the application. If the application requires low latency,
+with only small chunks of data to send, it may be valuable to indicate to QUIC
+that all data should be send out immediately. Alternatively, if the application
+expects to use a specific sending pattern, it can also provide a suggested
+delay to QUIC for how long  to wait before bundle frames into a packet.
 
 ## Prioritization
 
-Stream prioritization is not exposed to the network, nor to the receiver.
-Prioritization can be realized by the sender and the QUIC transport should
+Stream prioritization is not exposed to either the network or the receiver.
+Prioritization is managed by the sender, and the QUIC transport should
 provide an interface for applications to prioritize streams {{!QUIC}}. Further
-applications can implement their own prioritization scheme on top of QUIC: (an
-application) protocol that runs on top of QUIC can define explicit messages
+applications can implement their own prioritization scheme on top of QUIC: an
+application protocol that runs on top of QUIC can define explicit messages
 for signaling priority, such as those defined for HTTP/2; it can define rules
 that allow an endpoint to determine priority based on context; or it can
 provide a higher level interface and leave the determination to the
@@ -265,14 +265,14 @@ application on top.
 
 Priority handling of retransmissions can be implemented by the sender in the
 transport layer. {{QUIC}} recommends to retransmit lost data before new data,
-unless indicated differently by the application. Currently QUIC only provides
-fully reliable stream transmission, and as such prioritization of
-retransmissions likely beneficial in most cases, as gaps that get filled up
-and thereby free up flow control. For not fully reliable streams priority
-scheduling of retransmissions over data of higher-priority streams might not
-be desired. In this case QUIC could also provide an interface or derive the
-prioritization decision from the reliability level of the stream.
-
+unless indicated differently by the application. Currently, QUIC only provides
+fully reliable stream transmission, which means that prioritization of
+retransmissions will be beneficial in most cases, by filling in gaps and freeing
+up the flow control window. For partially reliable or unreliable streams,
+priority scheduling of retransmissions over data of higher-priority streams
+might not be desirable. For such streams, QUIC could either provide an
+explicit interface to control prioritization, or derive the prioritization
+decision from the reliability level of the stream.
 
 # Graceful connection closure
 
@@ -286,9 +286,9 @@ header, either before the encryption context is established, because the
 information is intended to be used by the network. QUIC has a long header that
 is used during connection establishment and for other control processes, and a
 short header that may be used for data transmission in an established
-connection. While the long header is fixed and exposes some information, the
-short header only exposes the packet number by default and may optionally
-expose a connection ID.
+connection. While the long header always exposes some information (such as the
+version and Connection IDs), the short header only optionally exposes a single
+Connection ID.
 
 Given that exposing this information may make it possible to associate
 multiple addresses with a single client during rebinding, which has privacy
@@ -297,7 +297,7 @@ information after the handshake. Specifically, an application that has
 additional information that the client is not behind a NAT and the server is
 not behind a load balancer, and therefore it is unlikely that the addresses
 will be re-bound, may indicate to the transport that is wishes to not expose a
-connection ID.
+Connection ID.
 
 ## Server-Generated Connection ID
 
@@ -325,25 +325,26 @@ discard packets featuring an invalid MAC.
 ## Using Server Retry for Redirection
 
 QUIC provides a Server Retry packet that can be sent by a server in response to
-the Client Initial packet. The server may choose a new connection ID in that
+the Client Initial packet. The server may choose a new Connection ID in that
 packet and the client will retry by sending another Client Initial packet with
-the server-selected connection ID. This mechanism can be used to redirect a
+the server-selected Connection ID. This mechanism can be used to redirect a
 connection to a different server, e.g. due to performance reasons or when
 servers in a server pool are upgraded gradually, and therefore may support
 different versions of QUIC. In this case, it is assumed that all servers
 belonging to a certain pool are served in cooperation with load balancers that
-forward the traffic based on the connection ID. A server can chose the
-connection ID in the Server Retry packet such that the load balancer will
+forward the traffic based on the Connection ID. A server can choose the
+Connection ID in the Server Retry packet such that the load balancer will
 redirect the next Client Initial packet to a different server in that pool.
 
 
 # Use of Versions and Cryptographic Handshake
 
 Versioning in QUIC may change the protocol's behavior completely, except
-for the meaning of a few header fields that have been declared to be fixed. As
-such version of QUIC with a higher version number does not necessarily provide
-a better service, but might simply provide a very different service, so an
-application needs to be able to select which versions of QUIC it wants to use.
+for the meaning of a few header fields that have been declared to be invariant
+{{!QUIC-INVARIANTS=I-D.ietf-quic-invariants}}. A version of QUIC
+with a higher version number will not necessarily provide a better service,
+but might simply provide a different feature set. As such, an application needs
+to be able to select which versions of QUIC it wants to use.
 
 A new version could use an encryption scheme other than TLS 1.3 or higher.
 {{QUIC}} specifies requirements for the cryptographic handshake as currently
@@ -369,7 +370,7 @@ alternative. See {{fallback}}.
 
 # Contributors
 
-Igor Lubashev contributed text to {{connid}} on server-selected connection IDs.
+Igor Lubashev contributed text to {{connid}} on server-selected Connection IDs.
 
 # Acknowledgments
 
