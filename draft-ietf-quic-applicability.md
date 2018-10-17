@@ -31,6 +31,7 @@ author:
 
 normative:
   RFC2119:
+  RFC6335:
 
 informative:
   Trammell16:
@@ -273,6 +274,29 @@ priority scheduling of retransmissions over data of higher-priority streams
 might not be desirable. For such streams, QUIC could either provide an
 explicit interface to control prioritization, or derive the prioritization
 decision from the reliability level of the stream.
+
+# Port Selection
+
+As QUIC is a general purpose transport protocol, there are no requirements that 
+servers use a particular UDP port for QUIC in general but rather the same port
+number as would be used for the same application over TCP. In case of HTTP
+the expectation is that port 443 is used which has already been register for
+"http protocol over TLS/SSL". However, {{QUIC-HTTP}} also specifies the use 
+of Alt-Svc for HTTP/QUIC discovery which allows the server to use and
+announce of a different port number.
+
+In general port numbers serves two purposes: "first, they provide a
+demultiplexing identifier to differentiate transport sessions between the
+same pair of endpoints, and second, they may also identify the application
+protocol and associated service to which processes connect" {{RFC6335}}.
+However, {{RFC6335}} also acknowledges that the assumption that an application
+can be identified in the network based on the port number is less true today, 
+due to encapsulation, mechanism for dynmaic port assignments as well as NATs.
+
+However, whenever a none "standard" port is used ,that does not enable easy 
+mapping to a registered service name, this can lead to blocking by 
+network elements such as firewalls that rely on the port number as a first order
+of filtering.
 
 # Graceful connection closure
 
