@@ -181,6 +181,21 @@ used to separate QUIC packets. The length header field is variable length and
 its position in the header is also variable depending on the length of the
 source and destionation connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
 
+## Use of Port Numbers
+
+Applications that have a mapping for TCP as well as QUIC are expected to
+use the same port number for both services. However, similar as today
+for TCP based services, especially when application layer information are 
+encrypted, there is no guarantee that a specific application uses the 
+registered port, or the used port is carrying traffic belong to the
+respective registered service. Respectively {{QUIC-TRANSPORT}} specifies
+the use of Alt-Svc for discovery of QUIC/HTTP services on other ports.
+
+Further, as QUIC as a connection ID, it is also possible to maintain multiple
+QUIC connection over one 5-tuple. However, if the connection ID is not present
+in the packet header, all packets of the 5-tuple belong to the same QUIC
+connection.
+
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
 As soon as the cryptographic context is established, all information in the
