@@ -183,7 +183,22 @@ application.
 
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
-\[EDITOR'S NOTE: see https://github.com/quicwg/ops-drafts/issues/6]
+QUIC provides PING frames in order to send keep-alives to prevent the
+connection as well as middlebox state from timing out. Recommendations for the
+use of keep-alives are application specific, mainly depending on the latency
+requirements and message frequency of the application. It should be noted, as
+QUIC uses UDP as an encapsulation, usually middlebox time-outs are short
+and requires a high ping frequency (15 to 30 seconds) which therefore may
+cause rather larger bandwidth overhead.
+
+Given that QUIC provides 0-RTT resumption it can be beneficial to just let a
+connection time-out, or gracefully shut down after a known series messages,
+and simply re-connection for the next message exchange. Such an approach can
+reduce state and bandwidth demands as well as complexity as a reconnection
+logic is needed in any case. 
+
+Also note that if keep-alives are used {{!QUIC}} requires that the application
+needs to specify if the client or the server sends the PING frames. 
 
 # Use of Streams
 
