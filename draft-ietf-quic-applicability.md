@@ -192,13 +192,13 @@ and requires a high ping frequency (15 to 30 seconds) which therefore may
 cause rather larger bandwidth overhead.
 
 Given that QUIC provides 0-RTT resumption it can be beneficial to just let a
-connection time-out, or gracefully shut down after a known series messages,
+connection time out, or gracefully shut down after a known series messages,
 and simply reconnect for the next message exchange. Such an approach can
 reduce state and bandwidth demands as well as complexity as a reconnection
-logic is needed in any case. 
+logic is needed in any case.
 
 Also note that if keep-alives are used {{!QUIC}} requires that the application
-needs to specify if the client or the server sends the PING frames. 
+needs to specify if the client or the server sends the PING frames.
 
 # Use of Streams
 
