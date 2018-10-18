@@ -193,7 +193,7 @@ cause rather larger bandwidth overhead.
 
 Given that QUIC provides 0-RTT resumption it can be beneficial to just let a
 connection time-out, or gracefully shut down after a known series messages,
-and simply re-connection for the next message exchange. Such an approach can
+and simply reconnect for the next message exchange. Such an approach can
 reduce state and bandwidth demands as well as complexity as a reconnection
 logic is needed in any case. 
 
