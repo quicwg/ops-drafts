@@ -689,17 +689,6 @@ Supporting manageability of QUIC traffic inherently involves tradeoffs with the
 confidentiality of QUIC's control information; this entire document is therefore
 security-relevant.
 
-Some of the properties of the QUIC header used in network management are
-irrelevant to application-layer protocol operation and/or user privacy. For
-example, packet number exposure (and echo, as proposed in this document), as
-well as connection establishment exposure for 1-RTT establishment, make no
-additional information about user traffic available to devices on path.
-
-At the other extreme, supporting current traffic classification methods that
-operate through the deep packet inspection (DPI) of application-layer headers
-are directly antithetical to QUIC's goal to provide confidentiality to its
-application-layer protocol(s); in these cases, alternatives must be found.
-
 # Contributors
 
 Dan Druta contributed text to {{sec-ddos-dec}}. Igor Lubashev contributed text
