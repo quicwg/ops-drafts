@@ -299,6 +299,18 @@ not behind a load balancer, and therefore it is unlikely that the addresses
 will be re-bound, may indicate to the transport that is wishes to not expose a
 Connection ID.
 
+Server-generated Connection IDs must not encode any information other that that
+needed to route packets to the appropriate backend server(s): typically the
+identity of the backend server or pool of servers, if the data-center’s load
+balancing system keeps "local" state of all flows itself.  Care must be
+exercised to ensure that the information encoded in the Connection ID is not
+sufficient to identify unique end users. Note that by encoding routing
+information in the Connection ID, load balancers open up a new attack vector
+that allows bad actors to direct traffic at a specific backend server or pool.
+It is therefore recommended that Server-Generated Connection ID includes a
+cryptographic MAC that the load balancer pool server are able to identify and
+discard packets featuring an invalid MAC.
+
 ## Server-Generated Connection ID
 
 QUIC supports a server-generated Connection ID, transmitted to the client

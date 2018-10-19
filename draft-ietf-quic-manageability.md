@@ -624,24 +624,13 @@ see {{sec-rtt}}. No passive measurement of loss is possible with the present
 wire image. Extremely limited observation of upstream congestion may be
 possible via the observation of CE markings on ECN-enabled QUIC traffic.
 
-
 ## Server cooperation with load balancers {#sec-loadbalancing}
 
 In the case of content distribution networking architectures including load
 balancers, the connection ID provides a way for the server to signal information
-about the desired treatment of a flow to the load balancers.
-
-Server-generated Connection IDs must not encode any information other that that
-needed to route packets to the appropriate backend server(s): typically the
-identity of the backend server or pool of servers, if the data-center’s load
-balancing system keeps "local" state of all flows itself.  Care must be
-exercised to ensure that the information encoded in the Connection ID is not
-sufficient to identify unique end users. Note that by encoding routing
-information in the Connection ID, load balancers open up a new attack vector
-that allows bad actors to direct traffic at a specific backend server or pool.
-It is therefore recommended that Server-Generated Connection ID includes a
-cryptographic MAC that the load balancer pool server are able to identify and
-discard packets featuring an invalid MAC.
+about the desired treatment of a flow to the load balancers. Guidance on
+assigning connection IDs is given in
+{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}}.
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
