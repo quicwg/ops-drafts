@@ -346,13 +346,13 @@ a link among these addresses to observers on the network. However, analysis of
 the lifetimes of six-tuples (source and destination addresses as well as the
 migrated CID) may expose these links anyway.
 
-The key insight here is that a given observation point in the network, a finite
-set of flows will be undergoing migration within any one time window, and any
+In practice, a finite set of flows will be undergoing migration within any one
+time window as seen from any given observation point in the network, and any
 migration must keep at least one endpoint address constant during the migration.
-This finite set of flows represents the anonymity set for any one flow
-undergoing migration within it. For endpoints with low volume, this anonymity
-set will be necessarily small, so there remains a significant risk of linkage
-exposure through timing-based analysis.
+Because of this, a key insight here is that this finite set of flows represents
+the anonymity set for any one flow undergoing migration within it. For endpoints
+with low volume, this anonymity set will be necessarily small, so there remains
+a significant risk of linkage exposure through timing-based analysis.
 
 The most efficient mitigation for these attacks is operational, by increasing
 the size of the anonymity set as seen from a passive observer in the Internet,
