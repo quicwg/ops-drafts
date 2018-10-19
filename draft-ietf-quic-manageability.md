@@ -196,7 +196,7 @@ detail.
 In the nominal case, the QUIC handshake can be recognized on the wire through at
 least four datagrams we'll call "QUIC Client Hello", "QUIC Server Hello", and
 "Initial Completion", and "Handshake Completion", for purposes of this
-illustration, sent as shown in {{fig-handshake}}. As shown here, the client can
+illustration, as shown in {{fig-handshake}}. As shown here, the client can
 send 0-RTT data as soon as it has sent its Client Hello, and the server can send
 1-RTT data as soon as it has sent its Server Hello.
 
