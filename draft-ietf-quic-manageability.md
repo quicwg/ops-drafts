@@ -184,9 +184,7 @@ source and destionation connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
 ## The QUIC handshake {#handshake}
 
 New QUIC connections are established using a handshake, which is distinguishable
-on the wire and contains some information in the clear. The QUIC packets in the
-handshake are generally coalesced, as above, in order to reduce the number of
-UDP datagrams sent during the handshake.
+on the wire and contains some information that can be passively observed. 
 
 To illustrate the information visible in the QUIC wire image during the
 handshake, we first show the general communication pattern visible in the UDP
@@ -196,9 +194,17 @@ detail.
 In the nominal case, the QUIC handshake can be recognized on the wire through at
 least four datagrams we'll call "QUIC Client Hello", "QUIC Server Hello", and
 "Initial Completion", and "Handshake Completion", for purposes of this
-illustration, as shown in {{fig-handshake}}. As shown here, the client can
-send 0-RTT data as soon as it has sent its Client Hello, and the server can send
-1-RTT data as soon as it has sent its Server Hello.
+illustration, as shown in {{fig-handshake}}.
+
+Packets in the handshake belong to three separate cryptographic and transport
+contexts ("Initial", which contains observable payload, and "Handshake" and
+"1-RTT", which do not). QUIC packets in separate contexts during the handshake
+are generally coalesced (see {{coalesced}}) in order to reduce the number of UDP
+datagrams sent during the handshake.
+
+As shown here, the client can send 0-RTT data as soon as it has sent its Client
+Hello, and the server can send 1-RTT data as soon as it has sent its Server
+Hello.
 
 ~~~~~
 Client                                    Server
@@ -228,15 +234,16 @@ the server's side of the TLS handshake, and initial 1-RTT data, if present.
 The content of QUIC Initial packets are encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
 ID; they are therefore observable by any on-path device that knows the
-per-version constant; we therefore consider these as visible in our illustration. The
-content of QUIC Handshake packets are encrypted using keys established during
-the handshake, and are therefore not visible.
+per-version constant; we therefore consider these as visible in our
+illustration. The content of QUIC Handshake packets are encrypted using keys
+established during the initial handshake exchange, and are therefore not
+visible.
 
 Initial, Handshake, and the Short Header packets transmitted after the handshake
-each have their own cryptographic and transport contexts; the Initial Completion
+belong to cryptographic and transport contexts. The Initial Completion
 {{fig-init-complete}} and the Handshake Completion {{fig-hs-complete}} datagrams
-finish these first two contexts, by sending the final acknowledgment and closing
-the CRYPTO stream.
+finish these first two contexts, by sending the final acknowledgment and
+finishing the transmission of CRYPTO frames.
 
 ~~~~~
 +----------------------------------------------------------+
@@ -354,8 +361,10 @@ seen in the QUIC Client Hello datagram, as shown in {{fig-client-hello-0rtt}}.
 In a 0-RTT QUIC Client Hello datagram, the PADDING frame is only present if
 necessary to increase the size of the datagram with 0RTT data to at least 1200
 bytes. Additional datagrams containing only 0-RTT protected long header packets
-may be sent from the client to the server after the CLient Hello datagram,
-containing the rest of the 0-RTT data.
+may be sent from the client to the server after the Client Hello datagram,
+containing the rest of the 0-RTT data. The amount of 0-RTT protected data is
+limited by the initial congestion window, typically around 10 packets
+{{?RFC6928}}.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
