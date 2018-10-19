@@ -184,7 +184,7 @@ source and destionation connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
 ## The QUIC handshake {#handshake}
 
 New QUIC connections are established using a handshake, which is distinguishable
-on the wire and contains some information that can be passively observed. 
+on the wire and contains some information that can be passively observed.
 
 To illustrate the information visible in the QUIC wire image during the
 handshake, we first show the general communication pattern visible in the UDP
