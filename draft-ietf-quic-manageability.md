@@ -188,7 +188,7 @@ use the same port number for both services. However, as with
 TCP-based services, especially when application layer information is
 encrypted, there is no guarantee that a specific application will use the
 registered port, or the used port is carrying traffic belonging to the
-respective registered service. Respectively {{QUIC-TRANSPORT}} specifies
+respective registered service. For example, {{QUIC-TRANSPORT}} specifies
 the use of Alt-Svc for discovery of QUIC/HTTP services on other ports.
 
 Further, as QUIC has a connection ID, it is also possible to maintain multiple
