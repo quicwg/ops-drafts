@@ -231,7 +231,6 @@ Client                                    Server
   |<---------(1RTT encrypted data starts)----+
   |                                          |
   +----Initial Completion------------------->|
-  +----(optional 0RTT completion)----------->|
   +----(1RTT encrypted data starts)--------->|
   |                                          |
   |<-----------------Handshake Completion----+
@@ -278,8 +277,10 @@ finishing the transmission of CRYPTO frames.
 The Client Hello datagram exposes version number, source and destination
 connection IDs, and information in the TLS Client Hello message, including any
 TLS Server Name Indication (SNI) present, in the clear. The QUIC PADDING frame
-is present to ensure the Client Hello datagram has a minumum size of 1200
-octets, to mitigate the possibility of handshake amplification.
+shown here may be present to ensure the Client Hello datagram has a minumum size
+of 1200 octets, to mitigate the possibility of handshake amplification. Note
+that the location of PADDING is implementation-dependent, and PADDING frames may
+not appear in the Initial packet in a coalesced packet.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -362,8 +363,6 @@ seen in the QUIC Client Hello datagram, as shown in {{fig-client-hello-0rtt}}.
 | QUIC CRYPTO frame header                                 |  |
 +----------------------------------------------------------+  |
 | TLS Client Hello (incl. TLS SNI)                         |  |
-+----------------------------------------------------------+  |
-| QUIC PADDING frame                                       |  |
 +----------------------------------------------------------+<-+
 | QUIC long header (type = 0RTT, Version, DCID, SCID)    (Length)
 +----------------------------------------------------------+  |
