@@ -299,7 +299,7 @@ not behind a load balancer, and therefore it is unlikely that the addresses
 will be re-bound, may indicate to the transport that is wishes to not expose a
 Connection ID.
 
-Server-generated Connection IDs must not encode any information other that that
+Server-generated Connection IDs must not encode any information other than that
 needed to route packets to the appropriate backend server(s): typically the
 identity of the backend server or pool of servers, if the data-center’s load
 balancing system keeps "local" state of all flows itself.  Care must be
