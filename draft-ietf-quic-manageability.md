@@ -228,7 +228,7 @@ the server's side of the TLS handshake, and initial 1-RTT data, if present.
 The content of QUIC Initial packets are encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
 ID; they are therefore observable by any on-path device that knows the
-per-version constant; we therefore these as visible in our illustration. The
+per-version constant; we therefore consider these as visible in our illustration. The
 content of QUIC Handshake packets are encrypted using keys established during
 the handshake, and are therefore not visible.
 
