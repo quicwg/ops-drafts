@@ -143,9 +143,8 @@ the user that secure communication is unavailable.
 
 # Zero RTT {#zero-rtt}
 
-QUIC provides for 0-RTT connection establishment (see section 3.2 of
-{{!QUIC}}). This presents opportunities and challenges for applications using
-QUIC.
+QUIC provides for 0-RTT connection establishment. This presents opportunities
+and challenges for applications using QUIC.
 
 ## Thinking in Zero RTT
 
@@ -171,7 +170,7 @@ Data sent during 0-RTT resumption also cannot benefit from perfect forward
 secrecy (PFS).
 
 Data in the first flight sent by the client in a connection established with
-0-RTT MUST be idempotent (as specified in section 3.2 in {{!QUIC-TLS}}).
+0-RTT MUST be idempotent (as specified in section 2.1 in {{!QUIC-TLS}}).
 Applications MUST be designed, and their data MUST be framed, such that
 multiple reception of idempotent data is recognized as such by the
 receiverApplications that cannot treat data that may appear in a 0-RTT
@@ -241,15 +240,16 @@ QUIC provides an interface that provides multiple streams to the application;
 however, the application usually cannot control how data transmitted over one
 stream is mapped into frames or how those frames are bundled into packets.
 By default, QUIC will try to maximally pack packets with one or more stream
-data frames to minimize bandwidth consumption and computational costs. If
-there is not enough data available to fill a packet, QUIC may even wait for a
-short time, to optimize bandwidth efficiency instead of latency. This delay can
-either be pre-configured or dynamically adjusted based on the observed
-sending pattern of the application. If the application requires low latency,
-with only small chunks of data to send, it may be valuable to indicate to QUIC
-that all data should be send out immediately. Alternatively, if the application
-expects to use a specific sending pattern, it can also provide a suggested
-delay to QUIC for how long  to wait before bundle frames into a packet.
+data frames to minimize bandwidth consumption and computational costs (see
+section 8 of {{!QUIC}}). If there is not enough data available to fill a packet,
+QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
+latency. This delay can either be pre-configured or dynamically adjusted based
+on the observed sending pattern of the application. If the application requires
+low latency, with only small chunks of data to send, it may be valuable to
+indicate to QUIC that all data should be send out immediately. Alternatively,
+if the application expects to use a specific sending pattern, it can also
+provide a suggested delay to QUIC for how long to wait before bundle frames
+into a packet.
 
 ## Prioritization
 
@@ -302,7 +302,7 @@ Connection ID.
 ## Server-Generated Connection ID
 
 QUIC supports a server-generated Connection ID, transmitted to the client
-during connection establishment: see Section 5.7 of {{!QUIC}}. Servers behind
+during connection establishment (see Section 6.1 of {{!QUIC}}). Servers behind
 load balancers should propose a Connection ID during the handshake, encoding
 the identity of the server or information about its load balancing pool, in
 order to support stateless load balancing. Once the server generates a
@@ -336,6 +336,30 @@ forward the traffic based on the Connection ID. A server can choose the
 Connection ID in the Server Retry packet such that the load balancer will
 redirect the next Client Initial packet to a different server in that pool.
 
+## Mitigating Timing Linkability with Connection ID Migration
+
+QUIC provides for multiple Server and Client Connection IDs to be used
+simultaneously by a given connection, which allows seamless connection migration
+when one of the endpoints changes IP address and/or UDP port. Section 6.11.5 of
+{{QUIC}} describes how to use this facility to reduce the risk of exposing
+a link among these addresses to observers on the network. However, analysis of
+the lifetimes of six-tuples (source and destination addresses as well as the
+migrated CID) may expose these links anyway.
+
+In practice, a finite set of flows will be undergoing migration within any one
+time window as seen from any given observation point in the network, and any
+migration must keep at least one endpoint address constant during the migration.
+Because of this, a key insight here is that this finite set of flows represents
+the anonymity set for any one flow undergoing migration within it. For endpoints
+with low volume, this anonymity set will be necessarily small, so there remains
+a significant risk of linkage exposure through timing-based analysis.
+
+The most efficient mitigation for these attacks is operational, by increasing
+the size of the anonymity set as seen from a passive observer in the Internet,
+either by using a load balancing architecture that loads more flows onto a
+single server-side address, by coordinating the timing of migrations to attempt
+to increase the number of simultaneous migrations at a given time, or through
+other means.
 
 # Use of Versions and Cryptographic Handshake
 
