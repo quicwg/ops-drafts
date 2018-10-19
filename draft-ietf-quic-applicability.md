@@ -336,6 +336,30 @@ forward the traffic based on the Connection ID. A server can choose the
 Connection ID in the Server Retry packet such that the load balancer will
 redirect the next Client Initial packet to a different server in that pool.
 
+## Mitigating Timing Linkability with Connection ID Migration
+
+QUIC provides for multiple Server and Client Connection IDs to be used
+simultaneously by a given connection, which allows seamless connection migration
+when one of the endpoints changes IP address and/or UDP port. Section 6.11.5 of
+{{QUIC}} describes how to use this facility to reduce the risk of exposing
+a link among these addresses to observers on the network. However, analysis of
+the lifetimes of six-tuples (source and destination addresses as well as the
+migrated CID) may expose these links anyway.
+
+In practice, a finite set of flows will be undergoing migration within any one
+time window as seen from any given observation point in the network, and any
+migration must keep at least one endpoint address constant during the migration.
+Because of this, a key insight here is that this finite set of flows represents
+the anonymity set for any one flow undergoing migration within it. For endpoints
+with low volume, this anonymity set will be necessarily small, so there remains
+a significant risk of linkage exposure through timing-based analysis.
+
+The most efficient mitigation for these attacks is operational, by increasing
+the size of the anonymity set as seen from a passive observer in the Internet,
+either by using a load balancing architecture that loads more flows onto a
+single server-side address, by coordinating the timing of migrations to attempt
+to increase the number of simultaneous migrations at a given time, or through
+other means.
 
 # Use of Versions and Cryptographic Handshake
 
