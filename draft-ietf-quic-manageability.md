@@ -186,7 +186,7 @@ source and destionation connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
 New QUIC connections are established using a handshake, which is distinguishable
 on the wire and contains some information in the clear. The QUIC packets in the
 handshake are generally coalesced, as above, in order to reduce the number of
-UDP datagrams sent during the handshake. 
+UDP datagrams sent during the handshake.
 
 To illustrate the information visible in the QUIC wire image during the
 handshake, we first show the general communication pattern visible in the UDP
@@ -194,48 +194,62 @@ datagams containing the QUIC handshake, then examine each of the datagrams in
 detail.
 
 In the nominal case, the QUIC handshake can be recognized on the wire through at
-least three datagrams we'll call "QUIC Client Hello", "QUIC Server Hello", and
-"QUIC Handshake Completion" for purposes of this illustration, sent as shown in
-{{fig-handshake}}. As shown here, the client can send 0-RTT data as soon as it
-has sent its Client Hello, and the server can send 1-RTT data as soon as it has
-sent its Server Hello.
+least four datagrams we'll call "QUIC Client Hello", "QUIC Server Hello", and
+"Initial Completion", and "Handshake Completion", for purposes of this
+illustration, sent as shown in {{fig-handshake}}. As shown here, the client can
+send 0-RTT data as soon as it has sent its Client Hello, and the server can send
+1-RTT data as soon as it has sent its Server Hello.
 
 ~~~~~
 Client                                    Server
   |                                          |
-  +----Client Hello------------------------->|
+  +----QUIC Client Hello-------------------->|
   +----(zero or more 0RTT)------------------>|
   |                                          |
-  |<-------------------------Server Hello----+
+  |<--------------------QUIC Server Hello----+
   |<---------(1RTT encrypted data starts)----+
   |                                          |
-  +----Handshake Completion----------------->|
+  +----Initial Completion------------------->|
   +----(optional 0RTT completion)----------->|
   +----(1RTT encrypted data starts)--------->|
   |                                          |
+  |<-----------------Handshake Completion----+
+  |                                          |
 ~~~~~
-{: #fig-handshake title="General communication pattern visible in the QUIC handshake"}
+{: #fig-handshake
+   title="General communication pattern visible in the QUIC handshake"}
 
 A typical handshake starts with the client sending of a QUIC Client Hello
 datagram as shown in {{fig-client-hello}}, which elicits a QUIC Server Hello
-datagram as shown in {{fig-server-hello}} typically containing three packets: an
-Initial packet with the Server Hello, a Handshake packet with the rest of the
-server's side of the TLS handshake, and initial 1-RTT data, if present. The
-handshake is completed with a Handshake Completion datagram as shown in
-{{fig-hs-complete}}.
+datagram as shown in {{fig-server-hello}} typically containing three packets:
+an Initial packet with the Server Hello, a Handshake packet with the rest of
+the server's side of the TLS handshake, and initial 1-RTT data, if present.
+
+The content of QUIC Initial packets are encrypted using Initial Secrets, which
+are derived from a per-version constant and the client's destination connection
+ID; they are therefore observable by any on-path device that knows the
+per-version constant; we therefore these as visible in our illustration. The
+content of QUIC Handshake packets are encrypted using keys established during
+the handshake, and are therefore not visible.
+
+Initial, Handshake, and the Short Header packets transmitted after the handshake
+each have their own cryptographic and transport contexts; the Initial Completion
+{{fig-init-complete}} and the Handshake Completion {{fig-hs-complete}} datagrams
+finish these first two contexts, by sending the final acknowledgment and closing
+the CRYPTO stream.
 
 ~~~~~
-+---------------------------------------------------------------+
-| UDP header (source and destination UDP ports)                 |
-+---------------------------------------------------------------+
-| QUIC long header (type = Initial, Version, DCID, SCID)      (Length)-+
-+---------------------------------------------------------------+      |
-| QUIC CRYPTO frame header                                      |      |
-+---------------------------------------------------------------+      |
-| TLS Client Hello (TLS SNI)                                    |      |
-+---------------------------------------------------------------+      |
-| QUIC PADDING frame                                            |      |
-+---------------------------------------------------------------+<-----+
++----------------------------------------------------------+
+| UDP header (source and destination UDP ports)            |
++----------------------------------------------------------+
+| QUIC long header (type = Initial, Version, DCID, SCID) (Length)
++----------------------------------------------------------+  |
+| QUIC CRYPTO frame header                                 |  |
++----------------------------------------------------------+  |
+| TLS Client Hello (incl. TLS SNI)                         |  |
++----------------------------------------------------------+  |
+| QUIC PADDING frame                                       |  |
++----------------------------------------------------------+<-+
 ~~~~~
 {: #fig-client-hello title="Typical 1-RTT QUIC Client Hello datagram pattern"}
 
@@ -246,55 +260,102 @@ is present to ensure the Client Hello datagram has a minumum size of 1200
 octets, to mitigate the possibility of handshake amplification.
 
 ~~~~~
-+---------------------------------------------------------------+
-| UDP header (source and destination UDP ports)                 |
-+---------------------------------------------------------------+
-| QUIC long header (type = Initial, Version, DCID, SCID)      (Length)-+
-+---------------------------------------------------------------+      |
-| QUIC CRYPTO frame header                                      |      |
-+---------------------------------------------------------------+      |
-| TLS Server Hello                                              |      |
-+---------------------------------------------------------------+      |
-| QUIC ACK frame (acknowledging client hello)                   |      |
-+---------------------------------------------------------------+<-----+
-| QUIC long header (type = Handshake, Version, DCID, SCID)    (Length)---+
-+---------------------------------------------------------------+        |
-| encrypted payload (presumably CRYPTO frames)                  |        |
-+---------------------------------------------------------------+<-------+
-| QUIC short header                                             |
-+---------------------------------------------------------------+
-| encrypted payload                                             |
-+---------------------------------------------------------------+
++------------------------------------------------------------+
+| UDP header (source and destination UDP ports)              |
++------------------------------------------------------------+
+| QUIC long header (type = Initial, Version, DCID, SCID)   (Length)
++------------------------------------------------------------+  |
+| QUIC CRYPTO frame header                                   |  |
++------------------------------------------------------------+  |
+| TLS Server Hello                                           |  |
++------------------------------------------------------------+  |
+| QUIC ACK frame (acknowledging client hello)                |  |
++------------------------------------------------------------+<-+
+| QUIC long header (type = Handshake, Version, DCID, SCID) (Length)
++------------------------------------------------------------+  |
+| encrypted payload (presumably CRYPTO frames)               |  |
++------------------------------------------------------------+<-+
+| QUIC short header                                          |
++------------------------------------------------------------+
+| 1-RTT encrypted payload                                    |
++------------------------------------------------------------+
 ~~~~~
-{: #fig-server-hello title="Typical 1-RTT QUIC Server Hello datagram pattern"}
-~~~~~
+{: #fig-server-hello title="Typical QUIC Server Hello datagram pattern"}
 
 The Server Hello datagram exposes version number, source and destination
 connection IDs, and information in the TLS Server Hello message.
 
 ~~~~~
-+---------------------------------------------------------------+
-| UDP header (source and destination UDP ports)                 |
-+---------------------------------------------------------------+
-| QUIC long header (type = Initial, Version, DCID, SCID)      (Length)-+
-+---------------------------------------------------------------+      |
-| QUIC ACK frame (acknowledging Server Hello Initial)           |      |
-+---------------------------------------------------------------+<-----+
-| QUIC long header (type = Handshake, Version, DCID, SCID)    (Length)---+
-+---------------------------------------------------------------+        |
-| encrypted payload (presumably CRYPTO/ACK frames)              |        |
-+---------------------------------------------------------------+<-------+
-| QUIC short header                                             |
-+---------------------------------------------------------------+
-| encrypted payload                                             |
-+---------------------------------------------------------------+
++------------------------------------------------------------+
+| UDP header (source and destination UDP ports)              |
++------------------------------------------------------------+
+| QUIC long header (type = Initial, Version, DCID, SCID)   (Length)
++------------------------------------------------------------+  |
+| QUIC ACK frame (acknowledging Server Hello Initial)        |  |
++------------------------------------------------------------+<-+
+| QUIC long header (type = Handshake, Version, DCID, SCID) (Length)
++------------------------------------------------------------+  |
+| encrypted payload (presumably CRYPTO/ACK frames)           |  |
++------------------------------------------------------------+<-+
+| QUIC short header                                          |
++------------------------------------------------------------+
+| 1-RTT encrypted payload                                    |
++------------------------------------------------------------+
 ~~~~~
-{: #fig-hscomplete title="Typical 1-RTT QUIC Handshake Completion datagram pattern"}
+{: #fig-init-complete title="Typical QUIC Initial Completion datagram pattern"}
+
+The Initial Completion datagram does not expose any additional information;
+however, recognizing it can be used to determine that a handshake has completed
+(see {{sec-confirm}}), and for three-way handshake RTT estimation as in
+{{sec-rtt}}.
 
 ~~~~~
-The Handshake Complete datagram exposes only version number, source and destination
-connection IDs; the only information in the clear is an acknowledgment of the
-Initial packet in the Server Hello datagram.
++------------------------------------------------------------+
+| UDP header (source and destination UDP ports)              |
++------------------------------------------------------------+
+| QUIC long header (type = Handshake, Version, DCID, SCID) (Length)
++------------------------------------------------------------+  |
+| encrypted payload (presumably ACK frame)                   |  |
++------------------------------------------------------------+<-+
+| QUIC short header                                          |
++------------------------------------------------------------+
+| 1-RTT encrypted payload                                    |
++------------------------------------------------------------+
+~~~~~
+{: #fig-hs-complete title="Typical QUIC Handshake Completion datagram pattern"}
+
+Similar to Initial Competion, Handshake Completion also exposes no additional
+information; observing it serves only to determine that the handshake has
+completed.
+
+When the client uses 0-RTT connection resumption, 0-RTT data may also be
+seen in the QUIC Client Hello datagram, as shown in {{fig-client-hello-0rtt}}.
+
+~~~~~
++----------------------------------------------------------+
+| UDP header (source and destination UDP ports)            |
++----------------------------------------------------------+
+| QUIC long header (type = Initial, Version, DCID, SCID) (Length)
++----------------------------------------------------------+  |
+| QUIC CRYPTO frame header                                 |  |
++----------------------------------------------------------+  |
+| TLS Client Hello (incl. TLS SNI)                         |  |
++----------------------------------------------------------+  |
+| QUIC PADDING frame                                       |  |
++----------------------------------------------------------+<-+
+| QUIC long header (type = 0RTT, Version, DCID, SCID)    (Length)
++----------------------------------------------------------+  |
+| 0-rtt encrypted payload                                  |  |
++----------------------------------------------------------+<-+
+~~~~~
+{: #fig-client-hello-0rtt
+   title="Typical 0-RTT QUIC Client Hello datagram pattern"}
+
+In a 0-RTT QUIC Client Hello datagram, the PADDING frame is only present if
+necessary to increase the size of the datagram with 0RTT data to at least 1200
+bytes. Additional datagrams containing only 0-RTT protected long header packets
+may be sent from the client to the server after the CLient Hello datagram,
+containing the rest of the 0-RTT data.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
