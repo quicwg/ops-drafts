@@ -71,6 +71,22 @@ informative:
         ins: C. Paasch
     target: https://www.nanog.org/sites/default/files/Paasch_Network_Support.pdf
     date: 2016-06-13
+  Hatonen10:
+    title: An experimental study of home gateway characteristics (Proc. ACM IMC 2010)
+    date: 2010-10
+    author:
+      -
+        ins: S. Hatonen
+      -
+        ins: A. Nyrhinen
+      -
+        ins: L. Eggert
+      -
+        ins: S. Strowes
+      -
+        ins: P. Sarolahti
+      -
+        ins: M. Kojo
   I-D.nottingham-httpbis-retry:
 --- abstract
 
@@ -182,7 +198,46 @@ application.
 
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
-\[EDITOR'S NOTE: see https://github.com/quicwg/ops-drafts/issues/6]
+Because QUIC is encapsulated in UDP, applications using QUIC must deal with
+short idle timeouts. Deployed stateful middleboxes will generally establish
+state for UDP flows on the first packet state, and keep state for much shorter
+idle periods than for TCP. According to a 2010 study ({{Hatonen10}}), UDP
+applications can assume that any NAT binding or other state entry will be
+expired after just thirty seconds of inactivity.
+
+A QUIC application has three strategies to deal with this issue:
+
+- Ignore it, if the application-layer protocol consists only of interactions
+  with no or very short idle periods.
+- Ensure there are no long idle periods.
+- Resume the session after a long idle period, using 0-RTT resumption when
+  appropriate.
+
+The first strategy is the easiest, but it only applies to certain applications.
+
+Either the server or the client in a QUIC application can send PING frames as
+keep-alives, to prevent the connection and any on-path state from timing out.
+Recommendations for the use of keep-alives are application specific, mainly
+depending on the latency requirements and message frequency of the application.
+In this case, the application mapping must specify whether the client or server
+is responsible for keeping the application alive. Note that sending PING frames
+more frequently than every 30 seconds over long idle periods may result in a too
+much unproductive traffic and power usage for some situations.
+
+Alternatively, the client (but not the server) can use session resumption
+instead of sending keepalive traffic. In this case, a client that wants to send
+data to a server over a connection idle longer than the server's idle timeout
+(available from the idle_timeout transport parameter) can simply reconnect. When
+possible, this reconnection can use 0-RTT session resumption, reducing the
+latency involved with restarting the connection. This of course only applies in
+cases in which 0-RTT data is safe, when the client is the restarting peer, and
+when the data to be sent is idempotent.
+
+The tradeoffs between resumption and keepalive need to be evaluated on a
+per-application basis. However, in general applications should use keepalives
+only in circumstances where continued communication is highly likely;
+{{QUIC-HTTP}}, for instance, recommends using PING frames for keepalive only
+when a request is outstanding.
 
 # Use of Streams
 
