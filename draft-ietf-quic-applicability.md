@@ -287,40 +287,44 @@ information is intended to be used by the network. QUIC has a long header that
 is used during connection establishment and for other control processes, and a
 short header that may be used for data transmission in an established
 connection. While the long header always exposes some information (such as the
-version and Connection IDs), the short header only optionally exposes a single
-Connection ID.
-
-Given that exposing this information may make it possible to associate
-multiple addresses with a single client during rebinding, which has privacy
-implications, an application may indicate to not support exposure of certain
-information after the handshake. Specifically, an application that has
-additional information that the client is not behind a NAT and the server is
-not behind a load balancer, and therefore it is unlikely that the addresses
-will be re-bound, may indicate to the transport that is wishes to not expose a
+version and Connection IDs), the short header exposes at most only a single
 Connection ID.
 
 ## Server-Generated Connection ID
 
 QUIC supports a server-generated Connection ID, transmitted to the client
 during connection establishment (see Section 6.1 of {{!QUIC}}). Servers behind
-load balancers should propose a Connection ID during the handshake, encoding
-the identity of the server or information about its load balancing pool, in
-order to support stateless load balancing. Once the server generates a
+load balancers may need to  propose a Connection ID during the handshake,
+encoding the identity of the server or information about its load balancing pool,
+in order to support stateless load balancing. Once the server generates a
 Connection ID that encodes its identity, every CDN load balancer would be able
-to forward the packets to that server without needing information about every
-specific flow it is forwarding.
+to forward the packets to that server without retaining connection state.
 
-Server-generated Connection IDs must not encode any information other that
-that needed to route packets to the appropriate backend server(s): typically
-the identity of the backend server or pool of servers, if the data-center’s
-load balancing system keeps “local” state of all flows itself.  Care must be
-exercised to ensure that the information encoded in the Connection ID is not
-sufficient to identify unique end users. Note that by encoding routing
-information in the Connection ID, load balancers open up a new attack vector
-that allows bad actors to direct traffic at a specific backend server or pool.
-It is therefore recommended that Server-Generated Connection ID includes a
-cryptographic MAC that the load balancer pool server is able to identify and
-discard packets featuring an invalid MAC.
+Server-generated connection IDs should seek to obscure any encoding, of routing
+identities or any other information. Exposing the server mapping would allow
+linkage of multiple IP addresses to the same host if the server also supports
+migration. Furthermore, this opens an attack vector on specific servers or
+pools.
+
+The best way to obscure an encoding is to appear random to observers, which is
+most rigorously achieved with encryption.
+
+## Mitigating Timing Linkability with Connection ID Migration
+
+While sufficiently robust connection ID generation schemes will mitigate
+linkability issues, they do not provide full protection. Analysis of
+the lifetimes of six-tuples (source and destination addresses as well as the
+migrated CID) may expose these links anyway.
+
+In the limit where connection migration in a server pool is rare, it is trivial
+for an observer to associate two connection IDs. Conversely, in the opposite
+limit where every server handles multiple simultaneous migrations, even an
+exposed server mapping may be insufficient information.
+
+The most efficient mitigation for these attacks is operational, either by using
+a load balancing architecture that loads more flows onto a single server-side
+address, by coordinating the timing of migrations to attempt to increase the
+number of simultaneous migrations at a given time, or through other means.
 
 ## Using Server Retry for Redirection
 
@@ -335,31 +339,6 @@ belonging to a certain pool are served in cooperation with load balancers that
 forward the traffic based on the Connection ID. A server can choose the
 Connection ID in the Server Retry packet such that the load balancer will
 redirect the next Client Initial packet to a different server in that pool.
-
-## Mitigating Timing Linkability with Connection ID Migration
-
-QUIC provides for multiple Server and Client Connection IDs to be used
-simultaneously by a given connection, which allows seamless connection migration
-when one of the endpoints changes IP address and/or UDP port. Section 6.11.5 of
-{{QUIC}} describes how to use this facility to reduce the risk of exposing
-a link among these addresses to observers on the network. However, analysis of
-the lifetimes of six-tuples (source and destination addresses as well as the
-migrated CID) may expose these links anyway.
-
-In practice, a finite set of flows will be undergoing migration within any one
-time window as seen from any given observation point in the network, and any
-migration must keep at least one endpoint address constant during the migration.
-Because of this, a key insight here is that this finite set of flows represents
-the anonymity set for any one flow undergoing migration within it. For endpoints
-with low volume, this anonymity set will be necessarily small, so there remains
-a significant risk of linkage exposure through timing-based analysis.
-
-The most efficient mitigation for these attacks is operational, by increasing
-the size of the anonymity set as seen from a passive observer in the Internet,
-either by using a load balancing architecture that loads more flows onto a
-single server-side address, by coordinating the timing of migrations to attempt
-to increase the number of simultaneous migrations at a given time, or through
-other means.
 
 # Use of Versions and Cryptographic Handshake
 
