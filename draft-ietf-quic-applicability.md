@@ -31,7 +31,6 @@ author:
 
 normative:
   RFC2119:
-  RFC6335:
 
 informative:
   Trammell16:
@@ -288,12 +287,12 @@ use and announce a different port number.
 In general, port numbers serves two purposes: "first, they provide a
 demultiplexing identifier to differentiate transport sessions between the
 same pair of endpoints, and second, they may also identify the application
-protocol and associated service to which processes connect" {{RFC6335}}.
-However, {{RFC6335}} also acknowledges that the assumption that an application
+protocol and associated service to which processes connect" {{!RFC6335}}.
+However, {{!RFC6335}} also acknowledges that the assumption that an application
 can be identified in the network based on the port number is less true today,
 due to encapsulation, mechanisms for dynamic port assignments as well as NATs.
 
-However, whenever a none-standard port is used which does not enable easy
+However, whenever a non-standard port is used which does not enable easy
 mapping to a registered service name, this can lead to blocking by
 network elements such as firewalls that rely on the port number as a first order
 of filtering.
