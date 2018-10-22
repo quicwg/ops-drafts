@@ -288,7 +288,7 @@ In general, port numbers serves two purposes: "first, they provide a
 demultiplexing identifier to differentiate transport sessions between the
 same pair of endpoints, and second, they may also identify the application
 protocol and associated service to which processes connect" {{!RFC6335}}.
-However, {{!RFC6335}} also acknowledges that the assumption that an application
+Note that the assumption that an application
 can be identified in the network based on the port number is less true today,
 due to encapsulation, mechanisms for dynamic port assignments as well as NATs.
 
