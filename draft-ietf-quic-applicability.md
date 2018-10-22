@@ -212,8 +212,6 @@ A QUIC application has three strategies to deal with this issue:
 - Use 0-RTT session resumption after a long idle period.
 
 The first strategy is the easiest, but it only applies to certain applications.
-Sending data on a connection that has fallen idle may result in a stateless
-reset, and optionally restarted.
 
 Either the server or the client in a QUIC application can send PING frames as
 keep-alives, to prevent the connection and any on-path state from timing out.
@@ -225,11 +223,11 @@ some situations.
 
 Alternatively, the client (but not the server) can use 0-RTT resumption as a
 replacement for this keepalive traffic. In this case, a client that wants to
-send data to a server over a long-idle connection can simply assume it has
-already timed out, and reconnect with 0-RTT. This reduces the latency involved
-with restarting the connection, compared to the reset and restart strategy
-above. It is of course only applicable in cases in which 0-RTT data is safe:
-when the client is the restarting peer, and when the data to be sent is
+send data to a server over a connection idle longer than the server's idle
+timeout (available from the idle_timeout transport parameter) can simply
+reconnect with 0-RTT. This reduces the latency involved with restarting the
+connection. It is of course only applicable in cases in which 0-RTT data is
+safe, when the client is the restarting peer, and when the data to be sent is
 idempotent.
 
 # Use of Streams
