@@ -217,9 +217,10 @@ Either the server or the client in a QUIC application can send PING frames as
 keep-alives, to prevent the connection and any on-path state from timing out.
 Recommendations for the use of keep-alives are application specific, mainly
 depending on the latency requirements and message frequency of the application.
-However, sending PING frames more frequently than every 30 seconds over long
-idle periods may result in a too much unproductive traffic and power usage for
-some situations.
+In this case, the application mapping must specify whether the client or server
+is responsible for keeping the application alive. Note that sending PING frames
+more frequently than every 30 seconds over long idle periods may result in a too
+much unproductive traffic and power usage for some situations.
 
 Alternatively, the client (but not the server) can use 0-RTT resumption as a
 replacement for this keepalive traffic. In this case, a client that wants to
@@ -229,6 +230,12 @@ reconnect with 0-RTT. This reduces the latency involved with restarting the
 connection. It is of course only applicable in cases in which 0-RTT data is
 safe, when the client is the restarting peer, and when the data to be sent is
 idempotent.
+
+The tradeoffs between resumption and keepalive need to be evaluated on a
+per-application basis. However, in general applications should use keepalives
+only in circumstances where continued communication is highly likely;
+{{QUIC-HTTP}}, for instance, recommends using PING frames for keepalive only
+when a request is outstanding.
 
 # Use of Streams
 
