@@ -372,7 +372,7 @@ Connection ID.
 
 QUIC supports a server-generated Connection ID, transmitted to the client during
 connection establishment (see Section 6.1 of {{!QUIC}}). Servers behind load
-balancers may need to  propose a Connection ID during the handshake, encoding
+balancers may need to change the Connection ID during the handshake, encoding
 the identity of the server or information about its load balancing pool, in
 order to support stateless load balancing. Once the server generates a
 Connection ID that encodes its identity, every CDN load balancer would be able
