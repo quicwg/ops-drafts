@@ -465,8 +465,8 @@ accept new connections with the new version.  At this point, all servers can
 start sending the new version in Version Negotiation packets.
 
 During the second stage, the server still allows for the possibility that some
-clients believe the new version to be able and some do not.  This state will
-persist only for as long as any Version Negotiation packets take to be
+clients believe the new version to be available and some do not.  This state
+will persist only for as long as any Version Negotiation packets take to be
 transmitted and responded to.  So the third stage can follow after a relatively
 short delay.
 
