@@ -371,7 +371,7 @@ Suppose that data on one stream arrives before the data on a second stream on
 which it depends.  A deadlock can occur if the first stream is left unread,
 preventing the receiver from extending flow control credit for the second
 stream.  To reduce the likelihood of deadlock for interdependent data, the
-application sender should ensure that dependent data is not sent until the data
+sender should ensure that dependent data is not sent until the data
 it depends on has been accounted for in both stream- and connection- level flow
 control credit.
 
