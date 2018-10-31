@@ -329,6 +329,57 @@ might not be desirable. For such streams, QUIC could either provide an
 explicit interface to control prioritization, or derive the prioritization
 decision from the reliability level of the stream.
 
+
+## Flow Control Deadlocks {#flow-control-deadlocks}
+
+Flow control provides a means of managing access to the limited buffers
+endpoints have for incoming data.  This mechanism limits the amount of data that
+can be in buffers in endpoints or in transit on the network.  However, there are
+several ways in which limits can produce conditions that can cause a connection
+to either perform suboptimally or deadlock.
+
+Deadlocks in flow control are possible for any protocol that uses QUIC, though
+whether they become a problem depends on how implementations consume data and
+provide flow control credit.  Understanding what causes deadlocking might help
+implementations avoid deadlocks.
+
+Large messages can produce deadlocking if the recipient does not process the
+message incrementally.  If the message is larger than flow control credit
+available and the recipient does not release additional flow control credit
+until the entire message is received and delivered, a deadlock can occur.  This
+is possible even where stream flow control limits are not reached because
+connection flow control limits can be consumed by other streams.
+
+A common flow control implementation technique is for a receiver to extend
+credit to the sender as a the data consumer reads data. In this setting, a
+length-prefixed message format makes it easier for the data consumer to leave
+data unread in the receiver's buffers and thereby withhold flow control credit.
+If flow control limits prevent the remainder of a message from being sent, a
+deadlock will result.  A length prefix might also enable the detection of this
+sort of deadlock.  Where protocols have messages that might be processed as a
+single unit, reserving flow control credit for the entire message atomically
+ensures that this style of deadlock is less likely.
+
+A data consumer can read all data as it becomes available to cause the receiver
+to extend flow control credit to the sender and reduce the chances of a
+deadlock.  However, releasing flow control credit might mean that the data
+consumer might need other means for holding a peer accountable for the state it
+keeps for partially processed messages.
+
+Deadlocking can also occur if data on different streams is interdependent.
+Suppose that data on one stream arrives before the data on a second stream on
+which it depends.  A deadlock can occur if first stream is left unread,
+preventing the receiver from extending flow control credit for the second
+stream.  To reduce the likelihood of deadlock for interdependent data, the
+application sender should ensure that dependent data is not sent until the data
+it depends on has been accounted for in both stream- and connection- level flow
+control credit.
+
+Some deadlocking scenarios might be resolved by cancelling affected streams with
+STOP_SENDING or RST_STREAM.  Cancelling some streams results in the connection
+being terminated in some protocols.
+
+
 # Port Selection
 
 As QUIC is a general purpose transport protocol, there are no requirements that
