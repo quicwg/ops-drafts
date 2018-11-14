@@ -593,6 +593,9 @@ probabilistically mitigated by the observer also tracking the low-order bits
 of the packet number, and rejecting edges that appear out-of-order
 {{?RFC4737}}.
 
+The Spin bit MAY be disabled for servers and clients where the RTT would reveal
+the presence of a VPN or proxy.
+
 ## Flow symmetry measurement {#sec-symmetry}
 
 QUIC explicitly exposes which side of a connection is a client and which side is
