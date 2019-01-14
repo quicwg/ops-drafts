@@ -134,31 +134,31 @@ long header {{QUIC-INVARIANTS}}.
 Short headers are used after connection establishment, and contain only an
 optional destination connection ID and the spin bit for RTT measurement.
 
-As of draft version 18 of the QUIC transport document, the following
-information is exposed in QUIC packet headers:
+The following information is exposed in QUIC packet headers:
 
-- For demultiplexing purposes, the second most significant bit of
-  the first octet every QUIC packet of the current version is set to 1.
+- demux bit: the second most significant bit of the first octet every QUIC
+  packet of the current version is set to 1, for demultiplexing with other
+  UDP-encapsulated protocols.
 
 - header type: the long header has a 2 bit packet type field following the
   Header Form bit. Header types correspond to stages of the handshake; see
   Section 17.2 of {{QUIC-TRANSPORT}}.
 
-- version number: The version number is present in the long header, and
-  identifies the version used for that packet. Note that during Version
-  Negotiation (see {{version}}, and Section 17.2.1 of {{QUIC-TRANSPORT}}, the
-  version number field has a special value (0x00000000) that identifies the
-  packet as a Version Negotiation packet.
+- version number: the version number present in the long header, and identifies
+  the version used for that packet. Note that during Version Negotiation (see
+  {{version}}, and Section 17.2.1 of {{QUIC-TRANSPORT}}, the version number
+  field has a special value (0x00000000) that identifies the packet as a Version
+  Negotiation packet.
 
-- source and destination connection ID: The source and destination connection
-  IDs are variable-length fields that can be used to identify the connection
-  associated with a QUIC packet, for load-balancing and NAT rebinding
-  purposes; see {{sec-loadbalancing}} and {{rebinding}}. The source connection
-  ID corresponds to the destination connection ID the source would like to
-  have on packets sent to it, and is only present on long packet headers. The
-  destination connection ID, if present, is present on both long and short
-  header packets. On long header packets, the length of the connection IDs is
-  also present; on short header packets, the length of the destination
+- source and destination connection ID: short and long packet headers carry a
+  destination connection ID, a variable-length field that can be used to
+  identify the connection associated with a QUIC packet, for load-balancing and
+  NAT rebinding purposes; see {{sec-loadbalancing}} and {{rebinding}}. Long
+  packet headers additionally carry a source connection ID. The source
+  connection ID corresponds to the destination connection ID the source would
+  like to have on packets sent to it, and is only present on long packet
+  headers. On long header packets, the length of the connection
+  IDs is also present; on short header packets, the length of the destination
   connection ID is implicit.
 
 - length: the length of the remaining quic packet after the length field,
@@ -168,7 +168,15 @@ information is exposed in QUIC packet headers:
 - spin bit: the spin bit supports passive measurement of RTT, and is present on
   QUIC short packet headers. See {{sec-rtt}}.
 
-Other information in packet headers is cryptographically obfuscated:
+- token: Initial packets may contain a token, a variable-length opaque value
+  optionally sent from client to server, used for validating the client's
+  address. Retry packets also contain a token, which can be used by the client
+  in an Initial packet on a subsequent connection attempt. The length of the
+  token is explicit in both cases.
+
+Retry and Version Negotiation packets are not encrypted or obfuscated in any
+way. For other kinds of packets, other information in the packet headers is
+cryptographically obfuscated:
 
 - packet number: Most packets (with the exception of Version Negotiation and
   Retry packets) have an associated packet number; however, this packet number
@@ -500,8 +508,13 @@ heuristics similar to those used to detect TLS over TCP. A client using 0-RTT
 connection may also send data packets in 0-RTT Protected packets directly after
 the Initial packet containing the TLS Client Hello. Since these packets may be
 reordered in the network, note that 0-RTT Protected data packets may be seen
-before the Initial packet. Note that only clients send Initial packets, so the
-sides of a connection can be distinguished by QUIC packet type in the handshake.
+before the Initial packet.
+
+Note that clients send Initial packets before servers do, servers send Handshake
+packets before  clients do, and only clients send Initial packets with tokens,
+so the sides of a connection can be generally be confirmed by an on-path
+observer. An attempted connection after Retry can be detected by correlating the
+token on the Retry with the token on the subsequent Initial packet.
 
 ## Application Identification {#sec-server}
 
