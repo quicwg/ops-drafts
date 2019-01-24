@@ -124,53 +124,70 @@ QUIC packets may have either a long header, or a short header. The first bit
 of the QUIC header indicates which type of header is present.
 
 The long header exposes more information. It is used during connection
-establishment, including version negotiation, server retry, and 0-RTT data. It
+establishment, including version negotiation, retry, and 0-RTT data. It
 contains a version number, as well as source and destination connection IDs
 for grouping packets belonging to the same flow. The definition and location
 of these fields in the QUIC long header are invariant for future versions of
 QUIC, although future versions of QUIC may provide additional fields in the
 long header {{QUIC-INVARIANTS}}.
 
-Short headers are used after connection establishment. The only information
-they contain for inspection on the path is an optional, variable-length
-destination connection ID.
+Short headers are used after connection establishment, and contain only an
+optional destination connection ID and the spin bit for RTT measurement.
 
-As of draft version 13 of the QUIC transport document, the following
-information may be exposed in QUIC packet headers:
+The following information is exposed in QUIC packet headers:
 
-- header type: the long header has a 7-bit packet type field following the
+- demux bit: the second most significant bit of the first octet every QUIC
+  packet of the current version is set to 1, for demultiplexing with other
+  UDP-encapsulated protocols.
+
+- header type: the long header has a 2 bit packet type field following the
   Header Form bit. Header types correspond to stages of the handshake; see
-  Section 4.1 of {{QUIC-TRANSPORT}}.
+  Section 17.2 of {{QUIC-TRANSPORT}}.
 
-- version number: The version number is present in the long header, and
-  identifies the version used for that packet. Note that during Version
-  Negotiation (see {{version}}, and Section 4.3 of {{QUIC-TRANSPORT}}, the
-  version number field has a special value (0x00000000) that identifies the
-  packet as a Version Negotiation packet.
+- version number: the version number present in the long header, and identifies
+  the version used for that packet. Note that during Version Negotiation (see
+  {{version}}, and Section 17.2.1 of {{QUIC-TRANSPORT}}, the version number
+  field has a special value (0x00000000) that identifies the packet as a Version
+  Negotiation packet.
 
-- source and destination connection ID: The source and destination connection
-  IDs are variable-length fields that can be used to identify the connection
-  associated with a QUIC packet, for load-balancing and NAT rebinding
-  purposes; see {{sec-loadbalancing}} and {{rebinding}}. The source connection
-  ID corresponds to the destination connection ID the source would like to
-  have on packets sent to it, and is only present on long packet headers. The
-  destination connection ID, if present, is present on both long and short
-  header packets. On long header packets, the length of the connection IDs is
-  also present; on short header packets, the length of the destination
+- source and destination connection ID: short and long packet headers carry a
+  destination connection ID, a variable-length field that can be used to
+  identify the connection associated with a QUIC packet, for load-balancing and
+  NAT rebinding purposes; see {{sec-loadbalancing}} and {{rebinding}}. Long
+  packet headers additionally carry a source connection ID. The source
+  connection ID corresponds to the destination connection ID the source would
+  like to have on packets sent to it, and is only present on long packet
+  headers. On long header packets, the length of the connection
+  IDs is also present; on short header packets, the length of the destination
   connection ID is implicit.
 
 - length: the length of the remaining quic packet after the length field,
-  present on
-  long headers. This field is used to implement coalesced packets during the
-  handshake (see {{coalesced}}).
+  present on long headers. This field is used to implement coalesced packets
+  during the handshake (see {{coalesced}}).
 
-- packet number: Every packet has an associated packet number; however, this
-  packet number is encrypted, and therefore not of use to on-path observers.
-  This packet number has a fixed location and length in long headers, and an
-  implicit location and encrypted variable length in short headers.
+- spin bit: the spin bit supports passive measurement of RTT, and is present on
+  QUIC short packet headers. See {{sec-rtt}}.
 
-- key phase: The Key Phase bit, present in short headers identifies the key
-  used to encrypt the packet during key rotation.
+- token: Initial packets may contain a token, a variable-length opaque value
+  optionally sent from client to server, used for validating the client's
+  address. Retry packets also contain a token, which can be used by the client
+  in an Initial packet on a subsequent connection attempt. The length of the
+  token is explicit in both cases.
+
+Retry and Version Negotiation packets are not encrypted or obfuscated in any
+way. For other kinds of packets, other information in the packet headers is
+cryptographically obfuscated:
+
+- packet number: Most packets (with the exception of Version Negotiation and
+  Retry packets) have an associated packet number; however, this packet number
+  is encrypted, and therefore not of use to on-path observers. The offset of the
+  packet number is encoded in the header for packets with long headers, while it
+  is implicit (depending on Destination Connection ID length) in short header
+  packets. The length of the packet number is cryptographically obfuscated.
+
+- key phase: The Key Phase bit, present in short headers, specifies the keys
+  used to encrypt the packet, supporting key rotation. The Key Phase bit is
+  cryptographically obfuscated.
 
 ## Coalesced Packets {#coalesced}
 
@@ -401,7 +418,7 @@ client's, in the case of the HTTP binding. Client and server negotiate
 connection IDs during the handshake; typically, however, only the server will
 request a connection ID for the lifetime of the connection. Connection IDs for
 either endpoint may change during the lifetime of a connection, with the new
-connection ID being negotiated via encrypted frames. See Section 6.1 of
+connection ID being negotiated via encrypted frames. See Section 5.1 of
 {{QUIC-TRANSPORT}}.
 
 
@@ -451,6 +468,12 @@ alternate port numbers. Simple assumptions about whether a given flow is using
 QUIC based upon a UDP port number may therefore not hold; see also {{?RFC7605}}
 section 5.
 
+While the second most significant bit (0x40) of the first octet is always set to
+1 in QUIC packets of the current version, this is not a recommended method of
+recognizing QUIC traffic, as it only provides one bit of information and is
+quite prone to collide with UDP-based protocols other than those that this
+static bit is meant to allow multiplexing with.
+
 ### Identifying Negotiated Version
 
 An in-network observer assuming that a set of packets belongs to a QUIC flow
@@ -485,8 +508,13 @@ heuristics similar to those used to detect TLS over TCP. A client using 0-RTT
 connection may also send data packets in 0-RTT Protected packets directly after
 the Initial packet containing the TLS Client Hello. Since these packets may be
 reordered in the network, note that 0-RTT Protected data packets may be seen
-before the Initial packet. Note that only clients send Initial packets, so the
-sides of a connection can be distinguished by QUIC packet type in the handshake.
+before the Initial packet.
+
+Note that clients send Initial packets before servers do, servers send Handshake
+packets before  clients do, and only clients send Initial packets with tokens,
+so the sides of a connection can be generally be confirmed by an on-path
+observer. An attempted connection after Retry can be detected by correlating the
+token on the Retry with the token on the subsequent Initial packet.
 
 ## Application Identification {#sec-server}
 
@@ -515,11 +543,13 @@ can associate a connection ID with a given flow, and can associate a known flow
 with a new flow when when observing a packet sharing a connection ID and one
 endpoint address (IP address and port) with the known flow.
 
-The connection ID to be used for a long-running flow is chosen by the server
-(see {{QUIC-TRANSPORT}} section 5.6) during the handshake. This value should
-be treated
-as opaque; see {{sec-loadbalancing}} for caveats regarding connection ID
-selection at servers.
+However, since the connection ID may change multiple times during the lifetime
+of a flow, and the negotiation of connection ID changes is encrypted, packets
+with the same 5-tuple but different connection IDs may or may not belong to the
+same connection.
+
+The connection ID value should be treated as opaque; see {{sec-loadbalancing}}
+for caveats regarding connection ID selection at servers.
 
 ## Flow teardown {#sec-teardown}
 
@@ -537,7 +567,9 @@ https://github.com/quicwg/base-drafts/issues/602.
 Round-trip time of QUIC flows can be inferred by observation once per flow,
 during the handshake, as in passive TCP measurement; this requires parsing of
 the QUIC packet header and recognition of the handshake, as illustrated in
-{{handshake}}.
+{{handshake}}. It can also be inferred during the flow's lifetime, if the
+endpoints use the spin bit facility described below and in
+{{?QUIC-SPIN=I-D.ietf-quic-spin-exp}}.
 
 In the common case, the delay between the Initial packet containing the TLS
 Client Hello and the Handshake packet containing the TLS Server Hello
@@ -552,10 +584,10 @@ Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
 includes any transport and application layer delay at both sides.
 
-The spin bit experiment, detailed in {{?QUIC-SPIN=I-D.ietf-quic-spin-exp}},
+The spin bit
 provides an additional method to measure intraflow per-flow RTT.  When a QUIC
 flow is sending at full rate (i.e., neither application nor flow control
-limited), the latency spin bit described in that document changes value once
+limited), the latency spin bit on short header packets changes value once
 per round-trip time (RTT). An on-path observer can observe the time difference
 between edges in the spin bit signal in a single direction to measure one
 sample of end-to-end RTT. Note that this measurement, as with passive RTT
