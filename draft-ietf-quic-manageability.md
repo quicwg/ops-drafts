@@ -74,7 +74,7 @@ encrypted by default. The current version of QUIC integrates TLS
 information.
 
 Given that QUIC is an end-to-end transport protocol, all information in the
-protocol header, even that which can be inspected, is is not meant to be
+protocol header, even that which can be inspected, is not meant to be
 mutable by the network, and is therefore integrity-protected. While less
 information is visible to the network than for TCP, integrity protection can
 also simplify troubleshooting because none of the nodes on the network path
