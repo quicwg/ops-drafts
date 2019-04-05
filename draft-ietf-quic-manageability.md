@@ -71,10 +71,14 @@ support of semantics as needed for HTTP/2 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
 Based on current deployment practices, QUIC is encapsulated in UDP and
 encrypted by default. The current version of QUIC integrates TLS
 {{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all payload data and most control
-information. Given QUIC is an end-to-end transport protocol, all information
-in the protocol header, even that which can be inspected, is is not meant to
-be mutable by the network, and is therefore integrity-protected to the extent
-possible.
+information.
+
+Given that QUIC is an end-to-end transport protocol, all information in the
+protocol header, even that which can be inspected, is is not meant to be
+mutable by the network, and is therefore integrity-protected. While less
+information is visible to the network than for TCP, integrity protection can
+also simplify troubleshooting because none of the nodes on the network path
+can modify the transport layer information.
 
 This document provides guidance for network operation on the management of QUIC
 traffic. This includes guidance on how to interpret and utilize information that
