@@ -696,7 +696,11 @@ rely on the fast resumption mechanism provided by QUIC.
 Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
 from packets carrying upper-layer data in order to attempt to enhance
 performance, for example by queueing ACKs differently or manipulating ACK
-signaling. Distinguishing ACK packets is trivial in TCP, but not supported by QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload, and aACK manipulation is impossible. Specifically, heuristics attempting to distinguish ACK-only packets from payload-carrying packets based on packet size are likely to fail, and are emphatically NOT RECOMMENDED.
+signaling. Distinguishing ACK packets is trivial in TCP, but not supported by
+QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
+and aACK manipulation is impossible. Specifically, heuristics attempting to
+distinguish ACK-only packets from payload-carrying packets based on packet size
+are likely to fail, and are emphatically NOT RECOMMENDED.
 
 ## QoS support and ECMP
 
