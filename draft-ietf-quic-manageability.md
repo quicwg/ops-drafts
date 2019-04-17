@@ -101,9 +101,9 @@ issues and pull requests in GitHub current as of the time of writing.
 
 ## Notational Conventions
 
-The words "MUST", "MUST NOT", "SHOULD", and "MAY" are used in this document.
-It's not shouting; when these words are capitalized, they have a special meaning
-as defined in {{!RFC2119}}.
+The words "MUST", "MUST NOT", "SHOULD", "MAY", "RECOMMENDED", and "NOT
+RECOMMENDED" are used in this document. It's not shouting; when these words are
+capitalized, they have a special meaning as defined in {{!RFC2119}}.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
@@ -690,6 +690,13 @@ a DDOS attack. If the connection migration is not visible to the network that
 performs the DDoS detection, an active, migrated QUIC connection may be
 blocked by such a system under attack. However, a defense system might simply
 rely on the fast resumption mechanism provided by QUIC.
+
+## Distinguishing acknowledgment traffic
+
+Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
+from packets carrying upper-layer data in order to attempt to enhance
+performance, for example by queueing ACKs differently or manipulating ACK
+signaling. Distinguishing ACK packets is trivial in TCP, but not supported by QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload, and aACK manipulation is impossible. Specifically, heuristics attempting to distinguish ACK-only packets from payload-carrying packets based on packet size are likely to fail, and are emphatically NOT RECOMMENDED.
 
 ## QoS support and ECMP
 
