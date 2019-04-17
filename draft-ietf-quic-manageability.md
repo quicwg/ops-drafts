@@ -149,12 +149,12 @@ The following information is exposed in QUIC packet headers:
 - demux bit: the second most significant bit of the first octet every QUIC
   packet of the current version is set to 1, for demultiplexing with other
   UDP-encapsulated protocols.
-  
+
 - latency spin bit: the third most significant bit of first octet. However, the
   is only used in short packet headers. There it will be set alternatingly
-  to 0 or 1 by the endpoints such that tracking edge transistions can be used 
+  to 0 or 1 by the endpoints such that tracking edge transistions can be used
   to passively monitor the connection RTT, see {{spin-usage}} for further details.
-  
+
 - header type: the long header has a 2 bit packet type field following the
   Header Form bit. Header types correspond to stages of the handshake; see
   Section 17.2 of {{QUIC-TRANSPORT}}.
@@ -611,7 +611,7 @@ identifyable based on the usage of the spin bit, all endpoints are recommended
 to disable to spin randomly for at least one eighth of connections, even if
 otherwise enabled by default. If disable the connection would either use a
 fixed spin value for the while connection ("no spinning") or would set the
-spin bit randomly on each packet of the connection. 
+spin bit randomly on each packet of the connection.
 
 When in use and a QUIC flow sends data continuously, the latency spin bit in
 each direction changes value once per round-trip time (RTT). An on-path observer
