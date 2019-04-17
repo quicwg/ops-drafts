@@ -700,7 +700,7 @@ from packets carrying upper-layer data in order to attempt to enhance
 performance, for example by queueing ACKs differently or manipulating ACK
 signaling. Distinguishing ACK packets is trivial in TCP, but not supported by
 QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
-and aACK manipulation is impossible. Specifically, heuristics attempting to
+and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
 are likely to fail, and are emphatically NOT RECOMMENDED.
 
