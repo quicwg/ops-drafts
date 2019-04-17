@@ -53,6 +53,16 @@ informative:
         ins: M. Rabinovich
     target: http://www.sigcomm.org/sites/default/files/ccr/papers/2015/July/0000000-0000002.pdf
     date: 2015-07
+  TMA-QOF:
+    title: Inline Data Integrity Signals for Passive Measurement (in Proc. TMA 2014)
+    author:
+      -
+        ins: B. Trammell
+      -
+        ins: D. Gugelmann
+      -
+        ins: N. Brownlee
+    date: 2014-04
 
 --- abstract
 
