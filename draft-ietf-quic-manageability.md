@@ -602,16 +602,18 @@ includes any transport and application layer delay at both sides.
 
 The spin bit provides an additional method to measure per-flow RTT
 from observation points on the network path throughout the duration of a
-connection. Support of the spin bit is an optional feature in QUIC. Usage of
-the spin bit mechanism must be enabled by both endpoints in order to function.
-Some endpoints may disable use of the the spin bit by default, others only in
+connection. Endpoint participation in spin bit signaling is optional in QUIC.
+That is, while its location is fixed in this version of QUIC, an endpoint
+can unilaterally choose to not support "spinning" the bit. Use of the spin bit
+for RTT measurement by devices on path is only possible when both endpoints enable
+it. Some endpoints may disable use of the the spin bit by default, others only in
 specific deployment scenarios, e.g. for servers and clients where the RTT would
 reveal the presence of a VPN or proxy. In order to not make these connections
 identifiable based on the usage of the spin bit, it is recommended that all endpoints
 disable "spinning" randomly for at least one eighth of connections, even if
-otherwise enabled by default. If disable the connection would either use a
-fixed spin value for the while connection ("no spinning") or would set the
-spin bit randomly on each packet of the connection.
+otherwise enabled by default. An endpoint not participating in spin bit signaling
+for a given connection can use a fixed spin value for the duration of the connection,
+or can set the bit randomly on each packet sent.
 
 When in use and a QUIC flow sends data continuously, the latency spin bit in
 each direction changes value once per round-trip time (RTT). An on-path observer
