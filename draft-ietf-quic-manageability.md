@@ -600,15 +600,15 @@ includes any transport and application layer delay at both sides.
 
 # Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
-The spin bit provides an additional method to measure intraflow per-flow RTT
+The spin bit provides an additional method to measure per-flow RTT
 from observation points on the network path throughout the duration of a
 connection. Support of the spin bit is an optional feature in QUIC. Usage of
 the spin bit mechanism must be enabled by both endpoints in order to function.
 Some endpoints may disable use of the the spin bit by default, others only in
 specific deployment scenarios, e.g. for servers and clients where the RTT would
 reveal the presence of a VPN or proxy. In order to not make these connections
-identifyable based on the usage of the spin bit, all endpoints are recommended
-to disable to spin randomly for at least one eighth of connections, even if
+identifiable based on the usage of the spin bit, it is recommended that all endpoints
+disable "spinning" randomly for at least one eighth of connections, even if
 otherwise enabled by default. If disable the connection would either use a
 fixed spin value for the while connection ("no spinning") or would set the
 spin bit randomly on each packet of the connection.
@@ -621,7 +621,7 @@ end-to-end RTT.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
 any transport protocol delay (e.g., delayed sending of acknowledgements)
-and/or application layer delay (e.g., waiting for a request to complete). It
+and/or application layer delay (e.g., waiting for a response to be generated). It
 therefore provides devices on path a good instantaneous estimate of the RTT as
 experienced by the application. A simple linear smoothing or moving minimum
 filter can be applied to the stream of RTT information to get a more stable
@@ -634,11 +634,11 @@ small amount of periodic application traffic, where that period is longer than
 the RTT, measuring the spin bit provides information about the application
 period, not the network RTT.
 
-Since the spin bit logic at each endpoint considers only samples on packets
-that advance the largest packet number seen, signal generation itself is
+Since the spin bit logic at each endpoint considers only samples from packets
+that advance the largest packet number, signal generation itself is
 resistant to reordering. However, reordering can cause problems at an observer
 by causing spurious edge detection and therefore low RTT estimates, if
-reordering occurs across a spin bit flip in the stream.
+reordering occurs across a spin-bit flip in the stream.
 
 Simple heuristics based on the observed data rate per flow or changes in the RTT
 series can be used to reject bad RTT samples due to lost or reordered edges in
