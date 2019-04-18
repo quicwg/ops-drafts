@@ -581,7 +581,7 @@ during the handshake, as in passive TCP measurement; this requires parsing of
 the QUIC packet header and recognition of the handshake, as illustrated in
 {{handshake}}. It can also be inferred during the flow's lifetime, if the
 endpoints use the spin bit facility described below and in
-{{QUIC-TRANSPORT}}, section X.X.
+{{QUIC-TRANSPORT}}, section 17.3.1.
 
 ### Measuring initial RTT
 
