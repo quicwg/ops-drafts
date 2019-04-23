@@ -156,10 +156,10 @@ The following information is exposed in QUIC packet headers:
   packet of the current version is set to 1, for demultiplexing with other
   UDP-encapsulated protocols.
 
-- latency spin bit: the third most significant bit of first octet. However, the
-  is only used in short packet headers. There it will be set alternatingly
-  to 0 or 1 by the endpoints such that tracking edge transistions can be used
-  to passively monitor the connection RTT, see {{spin-usage}} for further details.
+- latency spin bit: the third most significant bit of first octet in the short
+  packet header. The spin bit is set by endpoints such that  tracking edge
+  transitions can be used to passively observe end-to-end RTT. See
+  {{spin-usage}} for further details.
 
 - header type: the long header has a 2 bit packet type field following the
   Header Form bit. Header types correspond to stages of the handshake; see
@@ -606,41 +606,41 @@ includes any transport and application layer delay at both sides.
 
 # Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
-The spin bit provides an additional method to measure per-flow RTT
-from observation points on the network path throughout the duration of a
-connection. Endpoint participation in spin bit signaling is optional in QUIC.
-That is, while its location is fixed in this version of QUIC, an endpoint
-can unilaterally choose to not support "spinning" the bit. Use of the spin bit
-for RTT measurement by devices on path is only possible when both endpoints enable
-it. Some endpoints may disable use of the the spin bit by default, others only in
+The spin bit provides an additional method to measure per-flow RTT from
+observation points on the network path throughout the duration of a connection.
+Endpoint participation in spin bit signaling is optional in QUIC. That is, while
+its location is fixed in this version of QUIC, an endpoint can unilaterally
+choose to not support "spinning" the bit. Use of the spin bit for RTT
+measurement by devices on path is only possible when both endpoints enable it.
+Some endpoints may disable use of the the spin bit by default, others only in
 specific deployment scenarios, e.g. for servers and clients where the RTT would
 reveal the presence of a VPN or proxy. In order to not make these connections
-identifiable based on the usage of the spin bit, it is recommended that all endpoints
-disable "spinning" randomly for at least one eighth of connections, even if
-otherwise enabled by default. An endpoint not participating in spin bit signaling
-for a given connection can use a fixed spin value for the duration of the connection,
-or can set the bit randomly on each packet sent.
+identifiable based on the usage of the spin bit, it is recommended that all
+endpoints disable "spinning" randomly for at least one eighth of connections,
+even if otherwise enabled by default. An endpoint not participating in spin bit
+signaling for a given connection can use a fixed spin value for the duration of
+the connection, or can set the bit randomly on each packet sent.
 
 When in use and a QUIC flow sends data continuously, the latency spin bit in
 each direction changes value once per round-trip time (RTT). An on-path observer
-can observe the time difference between edges (changes from 1 to 0 or 0 to 1)
-in the spin bit signal in a single direction to measure one sample of
-end-to-end RTT.
+can observe the time difference between edges (changes from 1 to 0 or 0 to 1) in
+the spin bit signal in a single direction to measure one sample of end-to-end
+RTT.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
-any transport protocol delay (e.g., delayed sending of acknowledgements)
-and/or application layer delay (e.g., waiting for a response to be generated). It
+any transport protocol delay (e.g., delayed sending of acknowledgements) and/or
+application layer delay (e.g., waiting for a response to be generated). It
 therefore provides devices on path a good instantaneous estimate of the RTT as
 experienced by the application. A simple linear smoothing or moving minimum
 filter can be applied to the stream of RTT information to get a more stable
 estimate.
 
 However, application-limited and flow-control-limited senders can have
-application and transport layer delay, respectively, that are much greater
-than network RTT. When the sender is application-limited and e.g. only sends
-small amount of periodic application traffic, where that period is longer than
-the RTT, measuring the spin bit provides information about the application
-period, not the network RTT.
+application and transport layer delay, respectively, that are much greater than
+network RTT. When the sender is application-limited and e.g. only sends small
+amount of periodic application traffic, where that period is longer than the
+RTT, measuring the spin bit provides information about the application period,
+not the network RTT.
 
 Since the spin bit logic at each endpoint considers only samples from packets
 that advance the largest packet number, signal generation itself is
