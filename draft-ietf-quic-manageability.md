@@ -53,6 +53,16 @@ informative:
         ins: M. Rabinovich
     target: http://www.sigcomm.org/sites/default/files/ccr/papers/2015/July/0000000-0000002.pdf
     date: 2015-07
+  TMA-QOF:
+    title: Inline Data Integrity Signals for Passive Measurement (in Proc. TMA 2014)
+    author:
+      -
+        ins: B. Trammell
+      -
+        ins: D. Gugelmann
+      -
+        ins: N. Brownlee
+    date: 2014-04
 
 --- abstract
 
@@ -146,6 +156,11 @@ The following information is exposed in QUIC packet headers:
   packet of the current version is set to 1, for demultiplexing with other
   UDP-encapsulated protocols.
 
+- latency spin bit: the third most significant bit of first octet. However, the
+  is only used in short packet headers. There it will be set alternatingly
+  to 0 or 1 by the endpoints such that tracking edge transistions can be used
+  to passively monitor the connection RTT, see {{spin-usage}} for further details.
+
 - header type: the long header has a 2 bit packet type field following the
   Header Form bit. Header types correspond to stages of the handshake; see
   Section 17.2 of {{QUIC-TRANSPORT}}.
@@ -170,9 +185,6 @@ The following information is exposed in QUIC packet headers:
 - length: the length of the remaining quic packet after the length field,
   present on long headers. This field is used to implement coalesced packets
   during the handshake (see {{coalesced}}).
-
-- spin bit: the spin bit supports passive measurement of RTT, and is present on
-  QUIC short packet headers. See {{sec-rtt}}.
 
 - token: Initial packets may contain a token, a variable-length opaque value
   optionally sent from client to server, used for validating the client's
@@ -568,14 +580,16 @@ Changes to this behavior have been discussed in the working group, but there
 is no current proposal to implement these changes:  see
 https://github.com/quicwg/base-drafts/issues/602.
 
-## Round-trip time measurement {#sec-rtt}
+## Round-Trip Time (RTT) Measurement {#sec-rtt}
 
 Round-trip time of QUIC flows can be inferred by observation once per flow,
 during the handshake, as in passive TCP measurement; this requires parsing of
 the QUIC packet header and recognition of the handshake, as illustrated in
 {{handshake}}. It can also be inferred during the flow's lifetime, if the
 endpoints use the spin bit facility described below and in
-{{?QUIC-SPIN=I-D.ietf-quic-spin-exp}}.
+{{QUIC-TRANSPORT}}, section 17.3.1.
+
+### Measuring initial RTT
 
 In the common case, the delay between the Initial packet containing the TLS
 Client Hello and the Handshake packet containing the TLS Server Hello
@@ -590,19 +604,57 @@ Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
 includes any transport and application layer delay at both sides.
 
-The spin bit
-provides an additional method to measure intraflow per-flow RTT.  When a QUIC
-flow is sending at full rate (i.e., neither application nor flow control
-limited), the latency spin bit on short header packets changes value once
-per round-trip time (RTT). An on-path observer can observe the time difference
-between edges in the spin bit signal in a single direction to measure one
-sample of end-to-end RTT. Note that this measurement, as with passive RTT
-measurement for TCP, includes any transport protocol delay (e.g., delayed
-sending of acknowledgements) and/or application layer delay (e.g., waiting for
-a request to complete). It therefore provides devices on path a good
-instantaneous estimate of the RTT as experienced by the application. A simple
-linear smoothing or moving minimum filter can be applied to the stream of RTT
-information to get a more stable estimate.
+# Using the Spin Bit for Passive RTT Measurement {#spin-usage}
+
+The spin bit provides an additional method to measure per-flow RTT
+from observation points on the network path throughout the duration of a
+connection. Endpoint participation in spin bit signaling is optional in QUIC.
+That is, while its location is fixed in this version of QUIC, an endpoint
+can unilaterally choose to not support "spinning" the bit. Use of the spin bit
+for RTT measurement by devices on path is only possible when both endpoints enable
+it. Some endpoints may disable use of the the spin bit by default, others only in
+specific deployment scenarios, e.g. for servers and clients where the RTT would
+reveal the presence of a VPN or proxy. In order to not make these connections
+identifiable based on the usage of the spin bit, it is recommended that all endpoints
+disable "spinning" randomly for at least one eighth of connections, even if
+otherwise enabled by default. An endpoint not participating in spin bit signaling
+for a given connection can use a fixed spin value for the duration of the connection,
+or can set the bit randomly on each packet sent.
+
+When in use and a QUIC flow sends data continuously, the latency spin bit in
+each direction changes value once per round-trip time (RTT). An on-path observer
+can observe the time difference between edges (changes from 1 to 0 or 0 to 1)
+in the spin bit signal in a single direction to measure one sample of
+end-to-end RTT.
+
+Note that this measurement, as with passive RTT measurement for TCP, includes
+any transport protocol delay (e.g., delayed sending of acknowledgements)
+and/or application layer delay (e.g., waiting for a response to be generated). It
+therefore provides devices on path a good instantaneous estimate of the RTT as
+experienced by the application. A simple linear smoothing or moving minimum
+filter can be applied to the stream of RTT information to get a more stable
+estimate.
+
+However, application-limited and flow-control-limited senders can have
+application and transport layer delay, respectively, that are much greater
+than network RTT. When the sender is application-limited and e.g. only sends
+small amount of periodic application traffic, where that period is longer than
+the RTT, measuring the spin bit provides information about the application
+period, not the network RTT.
+
+Since the spin bit logic at each endpoint considers only samples from packets
+that advance the largest packet number, signal generation itself is
+resistant to reordering. However, reordering can cause problems at an observer
+by causing spurious edge detection and therefore low RTT estimates, if
+reordering occurs across a spin-bit flip in the stream.
+
+Simple heuristics based on the observed data rate per flow or changes in the RTT
+series can be used to reject bad RTT samples due to lost or reordered edges in
+the spin signal, as well as application or flow control limitation; for example,
+QoF {{TMA-QOF}} rejects component RTTs significantly higher than RTTs over the
+history of the flow. These heuristics may use the handshake RTT as an initial
+RTT estimate for a given flow. Usually such heuristics would also detect if
+the spin is either constant or randomly set for a connection.
 
 An on-path observer that can see traffic in both directions (from client to
 server and from server to client) can also use the spin bit to measure
@@ -611,25 +663,6 @@ end-to-end RTT attributable to the paths between the observer and the server
 and the observer and the client, respectively. It does this by measuring the
 delay between a spin edge observed in the upstream direction and that observed
 in the downstream direction, and vice versa.
-
-Application-limited and flow-control-limited senders can have application and
-transport layer delay, respectively, that are much greater than network RTT.
-Therefore, the spin bit provides network latency information only when the
-sender is neither application nor flow control limited. When the sender is
-application-limited by periodic application traffic, where that period is
-longer than the RTT, measuring the spin bit provides information about the
-application period, not the RTT. Simple heuristics based on the observed data
-rate per flow or changes in the RTT series can be used to reject bad RTT
-samples due to application or flow control limitation.
-
-Since the spin bit logic at each endpoint considers only samples on packets
-that advance the largest packet number seen, signal generation itself is
-resistant to reordering. However, reordering can cause problems at an observer
-by causing spurious edge detection and therefore low RTT estimates, if
-reordering occurs across a spin bit flip in the stream. This can be
-probabilistically mitigated by the observer also tracking the low-order bits
-of the packet number, and rejecting edges that appear out-of-order
-{{?RFC4737}}.
 
 ## Flow symmetry measurement {#sec-symmetry}
 
