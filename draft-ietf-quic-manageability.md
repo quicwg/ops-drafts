@@ -580,6 +580,15 @@ Changes to this behavior have been discussed in the working group, but there
 is no current proposal to implement these changes:  see
 https://github.com/quicwg/base-drafts/issues/602.
 
+## Flow symmetry measurement {#sec-symmetry}
+
+QUIC explicitly exposes which side of a connection is a client and which side is
+a server during the handshake. In addition, the symmerty of a flow (whether
+primarily client-to-server, primarily server-to-client, or roughly
+bidirectional, as input to basic traffic classification techniques) can be
+inferred through the measurement of data rate in each direction. While QUIC
+traffic is protected and ACKS may be padded, padding is not required.
+
 ## Round-Trip Time (RTT) Measurement {#sec-rtt}
 
 Round-trip time of QUIC flows can be inferred by observation once per flow,
@@ -604,7 +613,7 @@ Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
 includes any transport and application layer delay at both sides.
 
-# Using the Spin Bit for Passive RTT Measurement {#spin-usage}
+### Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
 The spin bit provides an additional method to measure per-flow RTT from
 observation points on the network path throughout the duration of a connection.
@@ -663,15 +672,6 @@ end-to-end RTT attributable to the paths between the observer and the server
 and the observer and the client, respectively. It does this by measuring the
 delay between a spin edge observed in the upstream direction and that observed
 in the downstream direction, and vice versa.
-
-## Flow symmetry measurement {#sec-symmetry}
-
-QUIC explicitly exposes which side of a connection is a client and which side is
-a server during the handshake. In addition, the symmerty of a flow (whether
-primarily client-to-server, primarily server-to-client, or roughly
-bidirectional, as input to basic traffic classification techniques) can be
-inferred through the measurement of data rate in each direction. While QUIC
-traffic is protected and ACKS may be padded, padding is not required.
 
 # Specific Network Management Tasks
 
