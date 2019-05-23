@@ -500,8 +500,8 @@ packet with a given version from a client to which a server responds with an
 Initial packet with the same version implies acceptance of that version.
 
 Negotiated version cannot be identified for flows for which a handshake is not
-observed, such as in the case of connection migration; however, these flows can be
-associated with flows for which a version has been identified; see
+observed, such as in the case of connection migration; however, these flows can
+be associated with flows for which a version has been identified; see
 {{sec-flow-association}}.
 
 In the rest of this section, we discuss only packets belonging to Version 1 QUIC
@@ -610,7 +610,7 @@ re-establishment, these can be ignored for RTT measurement purposes.
 Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
 includes any transport and application layer delay (the latter mainly
-ascribable to the asymmetric crypto operations associated with the TLS
+caused by the asymmetric crypto operations associated with the TLS
 handshake) at both sides.
 
 ### Using the Spin Bit for Passive RTT Measurement {#spin-usage}
@@ -654,8 +654,8 @@ not the network RTT.
 Since the spin bit logic at each endpoint considers only samples from packets
 that advance the largest packet number, signal generation itself is
 resistant to reordering. However, reordering can cause problems at an observer
-by causing spurious edge detection and therefore inaccurate (i.e., lower) RTT estimates, if
-reordering occurs across a spin-bit flip in the stream.
+by causing spurious edge detection and therefore inaccurate (i.e., lower) RTT
+estimates, if reordering occurs across a spin-bit flip in the stream.
 
 Simple heuristics based on the observed data rate per flow or changes in the RTT
 series can be used to reject bad RTT samples due to lost or reordered edges in
@@ -680,7 +680,8 @@ techniques and how QUIC's design impacts them.
 
 ## Stateful treatment of QUIC traffic {#sec-stateful}
 
-Stateful treatment of QUIC traffic (e.g., at a firewall or NAT middlebox) is possible through QUIC traffic and version
+Stateful treatment of QUIC traffic (e.g., at a firewall or NAT middlebox) is
+possible through QUIC traffic and version
 identification ({{sec-identifying}}) and observation of the handshake for
 connection confirmation ({{sec-confirm}}). The lack of any visible end-of-flow
 signal ({{sec-teardown}}) means that this state must be purged either through
