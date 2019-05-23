@@ -623,9 +623,9 @@ choose to not support "spinning" the bit. Use of the spin bit for RTT
 measurement by devices on path is only possible when both endpoints enable it.
 Some endpoints may disable use of the spin bit by default, others only in
 specific deployment scenarios, e.g. for servers and clients where the RTT would
-reveal the presence of a VPN or proxy. In order to not make these connections
+reveal the presence of a VPN or proxy. To avoid making these connections
 identifiable based on the usage of the spin bit, it is recommended that all
-endpoints disable "spinning" randomly for at least one eighth of connections,
+endpoints randomly disable "spinning" for at least one eighth of connections,
 even if otherwise enabled by default. An endpoint not participating in spin bit
 signaling for a given connection can use a fixed spin value for the duration of
 the connection, or can set the bit randomly on each packet sent.
