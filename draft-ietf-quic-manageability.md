@@ -76,7 +76,7 @@ of QUIC-aware middleboxes, e.g. for load balancing.
 # Introduction
 
 QUIC {{?QUIC-TRANSPORT=I-D.ietf-quic-transport}} is a new transport protocol
-currently under development in the IETF quic working group, focusing on
+currently under development in the IETF QUIC working group, focusing on
 support of semantics as needed for HTTP/2 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
 Based on current deployment practices, QUIC is encapsulated in UDP and
 encrypted by default. The current version of QUIC integrates TLS
@@ -182,7 +182,7 @@ The following information is exposed in QUIC packet headers:
   IDs is also present; on short header packets, the length of the destination
   connection ID is implicit.
 
-- length: the length of the remaining quic packet after the length field,
+- length: the length of the remaining QUIC packet after the length field,
   present on long headers. This field is used to implement coalesced packets
   during the handshake (see {{coalesced}}).
 
@@ -214,7 +214,7 @@ carrying one or more long header packets followed by zero or one short header
 packets. When packets are coalesced, the Length fields in the long headers are
 used to separate QUIC packets. The length header field is variable length and
 its position in the header is also variable depending on the length of the
-source and destionation connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
+source and destination connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
 
 ## Use of Port Numbers
 
@@ -238,7 +238,7 @@ on the wire and contains some information that can be passively observed.
 
 To illustrate the information visible in the QUIC wire image during the
 handshake, we first show the general communication pattern visible in the UDP
-datagams containing the QUIC handshake, then examine each of the datagrams in
+datagrams containing the QUIC handshake, then examine each of the datagrams in
 detail.
 
 In the nominal case, the QUIC handshake can be recognized on the wire through at
@@ -312,7 +312,7 @@ finishing the transmission of CRYPTO frames.
 The Client Hello datagram exposes version number, source and destination
 connection IDs, and information in the TLS Client Hello message, including any
 TLS Server Name Indication (SNI) present, in the clear. The QUIC PADDING frame
-shown here may be present to ensure the Client Hello datagram has a minumum size
+shown here may be present to ensure the Client Hello datagram has a minimum size
 of 1200 octets, to mitigate the possibility of handshake amplification. Note
 that the location of PADDING is implementation-dependent, and PADDING frames may
 not appear in the Initial packet in a coalesced packet.
@@ -382,7 +382,7 @@ however, recognizing it can be used to determine that a handshake has completed
 ~~~~~
 {: #fig-hs-complete title="Typical QUIC Handshake Completion datagram pattern"}
 
-Similar to Initial Competion, Handshake Completion also exposes no additional
+Similar to Initial Completion, Handshake Completion also exposes no additional
 information; observing it serves only to determine that the handshake has
 completed.
 
@@ -583,11 +583,11 @@ https://github.com/quicwg/base-drafts/issues/602.
 ## Flow symmetry measurement {#sec-symmetry}
 
 QUIC explicitly exposes which side of a connection is a client and which side is
-a server during the handshake. In addition, the symmerty of a flow (whether
+a server during the handshake. In addition, the symmetry of a flow (whether
 primarily client-to-server, primarily server-to-client, or roughly
 bidirectional, as input to basic traffic classification techniques) can be
 inferred through the measurement of data rate in each direction. While QUIC
-traffic is protected and ACKS may be padded, padding is not required.
+traffic is protected and ACKs may be padded, padding is not required.
 
 ## Round-Trip Time (RTT) Measurement {#sec-rtt}
 
@@ -621,7 +621,7 @@ Endpoint participation in spin bit signaling is optional in QUIC. That is, while
 its location is fixed in this version of QUIC, an endpoint can unilaterally
 choose to not support "spinning" the bit. Use of the spin bit for RTT
 measurement by devices on path is only possible when both endpoints enable it.
-Some endpoints may disable use of the the spin bit by default, others only in
+Some endpoints may disable use of the spin bit by default, others only in
 specific deployment scenarios, e.g. for servers and clients where the RTT would
 reveal the presence of a VPN or proxy. In order to not make these connections
 identifiable based on the usage of the spin bit, it is recommended that all
