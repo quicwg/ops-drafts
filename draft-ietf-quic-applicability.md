@@ -258,7 +258,9 @@ for HTTP/s in {{QUIC-HTTP}}. In general data that can be processed
 independently, and therefore would suffer from head of line blocking, if
 forced to be received in order, should be transmitted over different streams.
 If there is a logical grouping of those data chunks or messages, stream can be
-reused, or a new stream can be opened for each chunk/message. If a QUIC
+reused, or a new stream can be opened for each chunk/message. If one message is
+mapped on a single stream, resetting the stream if the message is not needed
+anymore can be used to emulate partialreliability on a message basis. If a QUIC
 receiver has maximum allowed concurrent streams open and the sender on the
 other end indicates that more streams are needed, it doesn't automatically
 lead to an increase of the maximum number of streams by the receiver.
