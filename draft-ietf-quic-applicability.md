@@ -468,6 +468,11 @@ connection. While the long header always exposes some information (such as the
 version and Connection IDs), the short header exposes at most only a single
 Connection ID.
 
+Note that the Connection ID in the short header may be omitted, requested via
+the omit_connection_id transport parameter. However, even if requested, the
+Connection ID may be present on short header packets, e.g. for identification
+purposes during Path MTU Discovery. 
+
 ## Server-Generated Connection ID
 
 QUIC supports a server-generated Connection ID, transmitted to the client during
