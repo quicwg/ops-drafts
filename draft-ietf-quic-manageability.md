@@ -15,18 +15,15 @@ author:
   -
     ins: M. Kuehlewind
     name: Mirja Kuehlewind
-    org: ETH Zurich
-    email: mirja.kuehlewind@tik.ee.ethz.ch
-    street: Gloriastrasse 35
-    city: 8092 Zurich
-    country: Switzerland
+    org: Ericsson
+    email: mirja.kuehlewind@ericsson.com
   -
     ins: B. Trammell
     name: Brian Trammell
-    org: ETH Zurich
+    org: Google
     email: ietf@trammell.ch
-    street: Gloriastrasse 35
-    city: 8092 Zurich
+    street: Gustav-Gull-Platz 1
+    city: 8004 Zurich
     country: Switzerland
 
 
