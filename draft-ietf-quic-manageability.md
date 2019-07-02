@@ -444,7 +444,7 @@ it is always encrypted. The encryption key for packet number protection on
 handshake packets sent before cryptographic context establishment is specific
 to the QUIC version, while packet number protection on subsequent packets uses
 secrets derived from the end-to-end cryptographic context. Packet numbers are
-therefore not part of the wire image that is useful to on-path observers.
+therefore not part of the wire image that is visible to on-path observers.
 
 
 ## Version Negotiation and Greasing {#version}
@@ -497,8 +497,8 @@ packet with a given version from a client to which a server responds with an
 Initial packet with the same version implies acceptance of that version.
 
 Negotiated version cannot be identified for flows for which a handshake is not
-observed, such as in the case of NAT rebinding; however, these flows can be
-associated with flows for which a version has been identified; see
+observed, such as in the case of connection migration; however, these flows can
+be associated with flows for which a version has been identified; see
 {{sec-flow-association}}.
 
 In the rest of this section, we discuss only packets belonging to Version 1 QUIC
@@ -542,9 +542,7 @@ application-layer protocols it supports; an observer can deduce that one of
 those protocols will be used if the connection continues.
 
 Work is currently underway in the TLS working group to encrypt the SNI in TLS
-1.3 {{?TLS-ENCRYPT-SNI=I-D.ietf-tls-sni-encryption}}, reducing the information
-available in the SNI to the name of a fronting service, which can generally be
-identified by the IP address of the server anyway. If used with QUIC, this
+1.3 {{?TLS-ESNI=I-D.ietf-tls-esni}}. If used with QUIC, this
 would make SNI-based application identification impossible through passive
 measurement.
 
@@ -568,7 +566,7 @@ for caveats regarding connection ID selection at servers.
 
 ## Flow teardown {#sec-teardown}
 
-The QUIC does not expose the end of a connection; the only indication to on-path
+QUIC does not expose the end of a connection; the only indication to on-path
 devices that a flow has ended is that packets are no longer observed. Stateful
 devices on path such as NATs and firewalls must therefore use idle timeouts to
 determine when to drop state for QUIC flows.
@@ -608,7 +606,9 @@ re-establishment, these can be ignored for RTT measurement purposes.
 
 Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
-includes any transport and application layer delay at both sides.
+includes any transport and application layer delay (the latter mainly
+caused by the asymmetric crypto operations associated with the TLS
+handshake) at both sides.
 
 ### Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
@@ -620,9 +620,9 @@ choose to not support "spinning" the bit. Use of the spin bit for RTT
 measurement by devices on path is only possible when both endpoints enable it.
 Some endpoints may disable use of the spin bit by default, others only in
 specific deployment scenarios, e.g. for servers and clients where the RTT would
-reveal the presence of a VPN or proxy. In order to not make these connections
+reveal the presence of a VPN or proxy. To avoid making these connections
 identifiable based on the usage of the spin bit, it is recommended that all
-endpoints disable "spinning" randomly for at least one eighth of connections,
+endpoints randomly disable "spinning" for at least one eighth of connections,
 even if otherwise enabled by default. An endpoint not participating in spin bit
 signaling for a given connection can use a fixed spin value for the duration of
 the connection, or can set the bit randomly on each packet sent.
@@ -651,8 +651,8 @@ not the network RTT.
 Since the spin bit logic at each endpoint considers only samples from packets
 that advance the largest packet number, signal generation itself is
 resistant to reordering. However, reordering can cause problems at an observer
-by causing spurious edge detection and therefore low RTT estimates, if
-reordering occurs across a spin-bit flip in the stream.
+by causing spurious edge detection and therefore inaccurate (i.e., lower) RTT
+estimates, if reordering occurs across a spin-bit flip in the stream.
 
 Simple heuristics based on the observed data rate per flow or changes in the RTT
 series can be used to reject bad RTT samples due to lost or reordered edges in
@@ -672,12 +672,13 @@ in the downstream direction, and vice versa.
 
 # Specific Network Management Tasks
 
-In this section, we address specific network management and measurement
+In this section, we review specific network management and measurement
 techniques and how QUIC's design impacts them.
 
 ## Stateful treatment of QUIC traffic {#sec-stateful}
 
-Stateful treatment of QUIC traffic is possible through QUIC traffic and version
+Stateful treatment of QUIC traffic (e.g., at a firewall or NAT middlebox) is
+possible through QUIC traffic and version
 identification ({{sec-identifying}}) and observation of the handshake for
 connection confirmation ({{sec-confirm}}). The lack of any visible end-of-flow
 signal ({{sec-teardown}}) means that this state must be purged either through
