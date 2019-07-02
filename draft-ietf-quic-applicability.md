@@ -190,8 +190,8 @@ receiverApplications that cannot treat data that may appear in a 0-RTT
 connection establishment as idempotent MUST NOT use 0-RTT establishment. For
 this reason the QUIC transport SHOULD provide an interface for the application
 to indicate if 0-RTT support is in general desired or a way to indicate
-whether data is idempotent, and/or whether PFS is a hard requirement for the
-application.
+whether data is idempotent, whether PFS is a hard requirement for the
+application, and/or whether rejected 0-RTT data should be retransmitted or withdrawn. 
 
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
