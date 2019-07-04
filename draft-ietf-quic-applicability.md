@@ -468,10 +468,10 @@ connection. While the long header always exposes some information (such as the
 version and Connection IDs), the short header exposes at most only a single
 Connection ID.
 
-Note that the Connection ID in the short header may be omitted, requested via
-the omit_connection_id transport parameter. However, even if requested, the
-Connection ID may be present on short header packets, e.g. for identification
-purposes during Path MTU Discovery. 
+Note that the Connection ID in the short header may be omitted. This is a
+per-connection configuration option; if the Connection ID is not present, then
+the peer omitting the connection ID will use the same local address for the
+lifetime of the connection.
 
 ## Server-Generated Connection ID
 
