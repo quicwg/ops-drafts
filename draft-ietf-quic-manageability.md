@@ -94,6 +94,12 @@ assumptions that the QUIC protocol design takes toward the expected network
 treatment. It also discusses how common network management practices will be
 impacted by QUIC.
 
+Since QUIC's wire image {{?WIRE-IMAGE=RFC8546}} is integrity protected and not
+modifiable on path, in-network operations are not possible without terminating
+the QUIC connection, for instance using a back-to-back proxy. Proxy operations
+are not in scope for this document, as QUIC proxies must be fully-fledged QUIC
+endpoints.
+
 Of course, network management is not a one-size-fits-all endeavour: practices
 considered necessary or even mandatory within enterprise networks with certain
 compliance requirements, for example, would be impermissible on other networks
@@ -116,16 +122,16 @@ appear in all capitals, as shown here.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
-In this section, we discusses those aspects of the QUIC transport protocol
-that have an impact on the design and operation of devices that forward QUIC
-packets. Here, we are concerned primarily with QUIC's unencrypted wire image
-{{?WIRE-IMAGE=I-D.trammell-wire-image}}, which we define as the information
-available in the packet header in each QUIC packet, and the dynamics of that
-information. Since QUIC is a versioned protocol, the wire image of the header
-format can also change from version to version. However, at least the
-mechanism by which a receiver can determine which version is used and the
-meaning and location of fields used in the version negotiation process is
-invariant {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
+In this section, we discusses those aspects of the QUIC transport protocol that
+have an impact on the design and operation of devices that forward QUIC packets.
+Here, we are concerned primarily with the unencrypted part of QUIC's wire image
+{{WIRE-IMAGE}}, which we define as the information available in the packet
+header in each QUIC packet, and the dynamics of that information. Since QUIC is
+a versioned protocol, the wire image of the header format can also change from
+version to version. However, at least the mechanism by which a receiver can
+determine which version is used and the meaning and location of fields used in
+the version negotiation process is invariant
+{{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
 This document is focused on the protocol as presently defined in
 {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}, and will change to track
