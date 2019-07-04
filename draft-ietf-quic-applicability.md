@@ -288,22 +288,6 @@ the first RTT of a connection (if a previous connection to the same host has
 been successfully established to provide the respective credentials), the cost
 of establishing another connection is extremely low.
 
-## Packetization and latency
-
-QUIC provides an interface that provides multiple streams to the application;
-however, the application usually cannot control how data transmitted over one
-stream is mapped into frames or how those frames are bundled into packets.
-By default, QUIC will try to maximally pack packets with one or more stream
-data frames to minimize bandwidth consumption and computational costs (see
-section 8 of {{!QUIC}}). If there is not enough data available to fill a packet,
-QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
-latency. This delay can either be pre-configured or dynamically adjusted based
-on the observed sending pattern of the application. If the application requires
-low latency, with only small chunks of data to send, it may be valuable to
-indicate to QUIC that all data should be send out immediately. Alternatively,
-if the application expects to use a specific sending pattern, it can also
-provide a suggested delay to QUIC for how long to wait before bundle frames
-into a packet.
 
 ## Prioritization
 
@@ -378,6 +362,36 @@ Some deadlocking scenarios might be resolved by cancelling affected streams with
 STOP_SENDING or RST_STREAM.  Cancelling some streams results in the connection
 being terminated in some protocols.
 
+# Packetization and Latency
+
+QUIC provides an interface that provides multiple streams to the application;
+however, the application usually cannot control how data transmitted over one
+stream is mapped into frames or how those frames are bundled into packets.
+By default, QUIC will try to maximally pack packets with one or more stream
+data frames to minimize bandwidth consumption and computational costs (see
+section 8 of {{!QUIC}}). If there is not enough data available to fill a packet,
+QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
+latency. This delay can either be pre-configured or dynamically adjusted based
+on the observed sending pattern of the application. If the application requires
+low latency, with only small chunks of data to send, it may be valuable to
+indicate to QUIC that all data should be send out immediately. Alternatively,
+if the application expects to use a specific sending pattern, it can also
+provide a suggested delay to QUIC for how long to wait before bundle frames
+into a packet.
+
+Similarly, an appliaction has usually no control about the length of a QUIC
+packet on the wire. However, QUIC provides the ability to add a padding frame to
+impact the packet size. This is mainly used by QUIC itself in the first packet
+in order to ensure that the path is capable of transferring packets of at least
+a certain size. Additionally, a QUIC implementation can expose an application
+layer interface to specify a certain packet size. This can either be used by the
+application to force certian packet sizes in specific use cases/networks, or
+ensure that all packets are equally sized to conceal potential leakage of
+application layer information when the data sent by the application are not
+greedy. Note the initial packet must have a minimum size of 1200 bytes
+according to the QUIC specification. A receiver of a smaller initial packet may
+reject this packet in order to avoid amplification attacks.
+
 
 # Port Selection
 
@@ -402,6 +416,7 @@ mapping to a registered service name, this can lead to blocking by
 network elements such as firewalls that rely on the port number as a first order
 of filtering.
 
+
 # Connection Migration
 
 QUIC supports connection migration. Even if lower-layer addresses (usually the
@@ -414,10 +429,33 @@ time, and as soon as the new path is validated all traffic will be switched over
 to the next path.
 
 
-# Graceful connection closure
+# Connection closure
 
-\[EDITOR'S NOTE: give some guidance here about the steps an application should
-take; however this is still work in progress]
+QUIC connections are closed either by expiration of an idle timeout or by an
+explicit indication of the application that a connection should be closed
+(immediate close). While data could still be received after the immediate close
+has been initiated by one endpoint (for a limited time period), the expectation
+is that an immediate close was negotiated at the application layer and
+therefore no additional data is expected from both sides.
+
+An immidate close will emit an CONNECTION_CLOSE frame. This frames has two sets
+of types: one for QUIC internal problems that might lead to connection closure,
+and one for closures initiated by the application. An application using QUIC can
+define application-specific error codes, e.g. see {{QUIC-HTTP}} section 8.1. In
+the case of a grateful shut-down initiated by the application after application
+layer negotiation, a NO_ERROR code is expected. Further, the CONNECTION_CLOSE
+frame provides an optional reason field, that can be used to append
+human-readable information to an error code. Note that QUIC RESET_STREAM and
+STOP_SENDING frames provide similar capablities. Usually application error codes
+are defined to be applicabile to all three frames.
+
+Alternatively, a QUIC connection will be silently closed by each endpoint
+separately after an idle timeout. The idle timeout is announce for each
+endpoint during connection established and should be accessible by the
+application. If an application desires to keep the connection open for longer
+than the announced timeout, it can send keep-alives messages. See
+{#resumption-v-keepalive} for further guidance.
+
 
 # Information exposure and the Connection ID {#connid}
 
