@@ -381,15 +381,15 @@ into a packet.
 
 Similarly, an appliaction has usually no control about the length of a QUIC
 packet on the wire. However, QUIC provides the ability to add a padding frame to
-impact the packet size. QUIC internally, this is mainly used in the first packet
-in order to ensure that the path is capabable of transfering packets of at least
+impact the packet size. This is mainly used by QUIC itself in the first packet
+in order to ensure that the path is capable of transferring packets of at least
 a certain size. Additionally, a QUIC implementation can expose an application
 layer interface to specify a certain packet size. This can either be used by the
 application to force certian packet sizes in specific use cases/networks, or
 ensure that all packets are equally sized to conceal potential leakage of
 application layer information when the data sent by the application are not
-greedy. Note that for the initial packet a minium size of 1200 bytes is required
-by the QUIC specification. A receiver of a smaller initial packet may reject
+greedy. Note the initial packet must have a minimum size of 1200 bytes
+according to the QUIC specification. A receiver of a smaller initial packet may reject
 this packet in order to avoid amplification attacks.
 
 
