@@ -389,8 +389,8 @@ application to force certian packet sizes in specific use cases/networks, or
 ensure that all packets are equally sized to conceal potential leakage of
 application layer information when the data sent by the application are not
 greedy. Note the initial packet must have a minimum size of 1200 bytes
-according to the QUIC specification. A receiver of a smaller initial packet may reject
-this packet in order to avoid amplification attacks.
+according to the QUIC specification. A receiver of a smaller initial packet may
+reject this packet in order to avoid amplification attacks.
 
 
 # Port Selection
