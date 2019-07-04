@@ -427,8 +427,8 @@ information changes due to e.g. NAT rebinding or change of the local interface.
 Currently QUIC only supports failover cases. Only one "path" can be used at a
 time, and as soon as the new path is validated all traffic will be switched over
 to the next path. Of course if an endpoint decided to not use the Connection ID
-in short packets (Zero-length Conn ID) for a certain connection, migration is not
-supported for that direction of the connection.
+in short packets (Zero-length Conn ID) for a certain connection, migration is
+not supported for that direction of the connection.
 
 
 # Connection closure
