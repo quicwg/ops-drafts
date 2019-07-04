@@ -253,20 +253,21 @@ provide an interface to exceptional handling of any stream. There are special
 streams in QUIC that are used for control on the QUIC connection, however,
 these streams are not exposed to the application.
 
-Mapping of application data to streams is application-specific and described
-for HTTP/s in {{QUIC-HTTP}}. In general data that can be processed
-independently, and therefore would suffer from head of line blocking, if
-forced to be received in order, should be transmitted over different streams.
-If there is a logical grouping of those data chunks or messages, stream can be
-reused, or a new stream can be opened for each chunk/message. If one message is
-mapped on a single stream, resetting the stream if the message is not needed
-anymore can be used to emulate partialreliability on a message basis. If a QUIC
-receiver has maximum allowed concurrent streams open and the sender on the
-other end indicates that more streams are needed, it doesn't automatically
-lead to an increase of the maximum number of streams by the receiver.
-Therefore it can be valuable to expose maximum number of allowed, currently
-open and currently used streams to the application to make the mapping of
-data to streams dependent on this information.
+Mapping of application data to streams is application-specific and described for
+HTTP/s in {{QUIC-HTTP}}. In general data that can be processed independently,
+and therefore would suffer from head of line blocking, if forced to be received
+in order, should be transmitted over different streams. If the application,
+however, requires certain data to be received in order, the same stream should be
+used for that data. If there is a logical grouping of data chunks or
+messages, streams can be reused, or a new stream can be opened for each
+chunk/message. If one message is mapped on a single stream, resetting the stream
+if the message is not needed anymore, can be used to emulate partial reliability
+on a message basis. If a QUIC receiver has maximum allowed concurrent streams
+open and the sender on the other end indicates that more streams are needed, it
+doesn't automatically lead to an increase of the maximum number of streams by
+the receiver. Therefore it can be valuable to expose maximum number of allowed,
+currently open and currently used streams to the application to make the mapping
+of data to streams dependent on this information.
 
 Further, streams have a maximum number of bytes that can be sent on one
 stream. This number is high enough (2^64) that this will usually not be
