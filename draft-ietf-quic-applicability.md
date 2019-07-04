@@ -184,14 +184,14 @@ secrecy (PFS).
 
 Data in the first flight sent by the client in a connection established with
 0-RTT MUST be idempotent (as specified in section 2.1 in {{!QUIC-TLS}}).
-Applications MUST be designed, and their data MUST be framed, such that
-multiple reception of idempotent data is recognized as such by the
-receiverApplications that cannot treat data that may appear in a 0-RTT
-connection establishment as idempotent MUST NOT use 0-RTT establishment. For
-this reason the QUIC transport SHOULD provide an interface for the application
-to indicate if 0-RTT support is in general desired or a way to indicate
-whether data is idempotent, whether PFS is a hard requirement for the
-application, and/or whether rejected 0-RTT data should be retransmitted or withdrawn. 
+Applications MUST be designed, and their data MUST be framed, such that multiple
+reception of idempotent data is recognized as such by the receiverApplications
+that cannot treat data that may appear in a 0-RTT connection establishment as
+idempotent MUST NOT use 0-RTT establishment. For this reason the QUIC transport
+SHOULD provide an interface for the application to indicate if 0-RTT support is
+in general desired or a way to indicate whether data is idempotent, whether PFS
+is a hard requirement for the application, and/or whether rejected 0-RTT dgitata
+should be retransmitted or withdrawn.
 
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
