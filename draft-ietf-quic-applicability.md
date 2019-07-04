@@ -184,14 +184,14 @@ secrecy (PFS).
 
 Data in the first flight sent by the client in a connection established with
 0-RTT MUST be idempotent (as specified in section 2.1 in {{!QUIC-TLS}}).
-Applications MUST be designed, and their data MUST be framed, such that
-multiple reception of idempotent data is recognized as such by the
-receiverApplications that cannot treat data that may appear in a 0-RTT
-connection establishment as idempotent MUST NOT use 0-RTT establishment. For
-this reason the QUIC transport SHOULD provide an interface for the application
-to indicate if 0-RTT support is in general desired or a way to indicate
-whether data is idempotent, and/or whether PFS is a hard requirement for the
-application.
+Applications MUST be designed, and their data MUST be framed, such that multiple
+reception of idempotent data is recognized as such by the receiverApplications
+that cannot treat data that may appear in a 0-RTT connection establishment as
+idempotent MUST NOT use 0-RTT establishment. For this reason the QUIC transport
+SHOULD provide an interface for the application to indicate if 0-RTT support is
+in general desired or a way to indicate whether data is idempotent, whether PFS
+is a hard requirement for the application, and/or whether rejected 0-RTT dgitata
+should be retransmitted or withdrawn.
 
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
@@ -469,6 +469,11 @@ short header that may be used for data transmission in an established
 connection. While the long header always exposes some information (such as the
 version and Connection IDs), the short header exposes at most only a single
 Connection ID.
+
+Note that the Connection ID in the short header may be omitted. This is a
+per-connection configuration option; if the Connection ID is not present, then
+the peer omitting the connection ID will use the same local address for the
+lifetime of the connection.
 
 ## Server-Generated Connection ID
 
