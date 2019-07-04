@@ -405,29 +405,29 @@ of filtering.
 
 # Connection closure
 
-QUIC conncetion are closed either bei expiration of an idle timeout or by an
+QUIC connections are closed either by expiration of an idle timeout or by an
 explicit indication of the application that a connection should be closed
 (immediate close). While data could still be received after the immediate close
 has been initiated by one endpoint (for a limited time period), the expectation
-is that an immediate close was neegoatiated at the applicaton layer and
+is that an immediate close was negotiated at the application layer and
 therefore no additional data is expected from both sides.
 
 An immidate close will emit an CONNECTION_CLOSE frame. This frames has two sets
 of types: one for QUIC internal problems that might lead to connection closure,
 and one for closures initiated by the application. An application using QUIC can
-define application specific error codes, e.g. see {{QUIC-HTTP}} section 8.1. In
+define application-specific error codes, e.g. see {{QUIC-HTTP}} section 8.1. In
 the case of a grateful shut-down initiated by the application after application
-layer negoation a NO_ERROR code is expected. Further, the CONNECTION_CLOSE frame
-provide an optional reasoning field that can be used to append human-readable
-information to an error code. Note that QUIC RESET_STREAM and STOP_SENDING frame
+layer negotiation, a NO_ERROR code is expected. Further, the CONNECTION_CLOSE frame
+provides an optional reason field, that can be used to append human-readable
+information to an error code. Note that QUIC RESET_STREAM and STOP_SENDING frames
 provide similar capablities. Usually application error codes are defined to be
 applicabile to all three frames.
 
-Alternatively, a QUIC connection will be silently closed, from each endpoint
+Alternatively, a QUIC connection will be silently closed by each endpoint
 separately after an idle timeout. The idle timeout is announce for each
 endpoint during connection established and should be accessible by the
-application. If an appliaction desires to keep the connection open for longer
-than the announced timeout, it can send keep-alives messages. See section
+application. If an application desires to keep the connection open for longer
+than the announced timeout, it can send keep-alives messages. See
 {#resumption-v-keepalive} for further guidance.
 
 
