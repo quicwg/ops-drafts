@@ -404,14 +404,14 @@ of filtering.
 
 # Connection Migration
 
-QUIC supports connection migration. Even if lower-layer
-addresses (usually the 4-tuple of IP addresses and ports) changes,
-QUIC packets can still be associated with an existing connection based on the
-Connection ID (see also section {{#connid}}) in the QUIC header, if present.
-This supports cases where address information changes due to e.g. NAT
-rebinding or change of the local interface. Currently QUIC only supports
-failover cases. Only one "path" can be used at a time, and as soon
-as the new path is validated all traffic will be switched over to the next path.
+QUIC supports connection migration. Even if lower-layer addresses (usually the
+4-tuple of IP addresses and ports) changes, QUIC packets can still be associated
+with an existing connection based on the Connection ID (see also section
+{{connid}}) in the QUIC header, if present. This supports cases where address
+information changes due to e.g. NAT rebinding or change of the local interface.
+Currently QUIC only supports failover cases. Only one "path" can be used at a
+time, and as soon as the new path is validated all traffic will be switched over
+to the next path.
 
 
 # Graceful connection closure
