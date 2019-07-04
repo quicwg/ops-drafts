@@ -686,8 +686,8 @@ timers or through least-recently-used eviction, depending on application
 requirements.
 
 The QUIC header optionally contains a Connection ID which can be used as
-additional entropy besides the 5-tuple if needed. The QUIC handshake needs
-to be observed in order to understand if the Connection ID is present and
+additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
+to be observed in order to understand whether the Connection ID is present and
 what length it has.
 
 ## Passive network performance measurement and troubleshooting
