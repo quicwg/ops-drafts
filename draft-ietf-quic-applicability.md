@@ -288,22 +288,6 @@ the first RTT of a connection (if a previous connection to the same host has
 been successfully established to provide the respective credentials), the cost
 of establishing another connection is extremely low.
 
-## Packetization and latency
-
-QUIC provides an interface that provides multiple streams to the application;
-however, the application usually cannot control how data transmitted over one
-stream is mapped into frames or how those frames are bundled into packets.
-By default, QUIC will try to maximally pack packets with one or more stream
-data frames to minimize bandwidth consumption and computational costs (see
-section 8 of {{!QUIC}}). If there is not enough data available to fill a packet,
-QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
-latency. This delay can either be pre-configured or dynamically adjusted based
-on the observed sending pattern of the application. If the application requires
-low latency, with only small chunks of data to send, it may be valuable to
-indicate to QUIC that all data should be send out immediately. Alternatively,
-if the application expects to use a specific sending pattern, it can also
-provide a suggested delay to QUIC for how long to wait before bundle frames
-into a packet.
 
 ## Prioritization
 
@@ -377,6 +361,36 @@ control credit.
 Some deadlocking scenarios might be resolved by cancelling affected streams with
 STOP_SENDING or RST_STREAM.  Cancelling some streams results in the connection
 being terminated in some protocols.
+
+# Packetization and Latency
+
+QUIC provides an interface that provides multiple streams to the application;
+however, the application usually cannot control how data transmitted over one
+stream is mapped into frames or how those frames are bundled into packets.
+By default, QUIC will try to maximally pack packets with one or more stream
+data frames to minimize bandwidth consumption and computational costs (see
+section 8 of {{!QUIC}}). If there is not enough data available to fill a packet,
+QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
+latency. This delay can either be pre-configured or dynamically adjusted based
+on the observed sending pattern of the application. If the application requires
+low latency, with only small chunks of data to send, it may be valuable to
+indicate to QUIC that all data should be send out immediately. Alternatively,
+if the application expects to use a specific sending pattern, it can also
+provide a suggested delay to QUIC for how long to wait before bundle frames
+into a packet.
+
+Similarly, an appliaction has usually no control about the length of a QUIC
+packet on the wire. However, QUIC provides the ability to add a padding frame to
+impact the packet size. QUIC internally, this is mainly used in the first packet
+in order to ensure that the path is capabable of transfering packets of at least
+a certain size. Additionally, a QUIC implementation can expose an application
+layer interface to specify a certain packet size. This can either be used by the
+application to force certian packet sizes in specific use cases/networks, or
+ensure that all packets are equally sized to conceal potential leakage of
+application layer information when the data sent by the application are not
+greedy. Note that for the initial packet a minium size of 1200 bytes is required
+by the QUIC specification. A receiver of a smaller initial packet may reject
+this packet in order to avoid amplification attacks.
 
 
 # Port Selection
