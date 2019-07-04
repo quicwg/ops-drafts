@@ -97,13 +97,15 @@ impacted by QUIC.
 Since QUIC's wire image {{?WIRE-IMAGE=RFC8546}} is integrity protected and not
 modifiable on path, in-network operations are not possible without terminating
 the QUIC connection, for instance using a back-to-back proxy. Proxy operations
-are not in scope for this document, as QUIC proxies must be fully-fledged QUIC
-endpoints.
+are not in scope for this document. QUIC proxies must be fully-fledged QUIC
+endpoints, implementing the transport as defined in {{QUIC-TRANSPORT}} and
+{{QUIC-TLS}} as well as proxy-relevant semantics for the application(s) running
+over QUIC (e.g. HTTP/3 as defined in {{QUIC-HTTP}}).
 
-Of course, network management is not a one-size-fits-all endeavour: practices
-considered necessary or even mandatory within enterprise networks with certain
-compliance requirements, for example, would be impermissible on other networks
-without those requirements. This document therefore does not make any specific
+Network management is not a one-size-fits-all endeavour: practices considered
+necessary or even mandatory within enterprise networks with certain compliance
+requirements, for example, would be impermissible on other networks without
+those requirements. This document therefore does not make any specific
 recommendations as to which practices should or should not be applied; for each
 practice, it describes what is and is not possible with the QUIC transport
 protocol as defined.
