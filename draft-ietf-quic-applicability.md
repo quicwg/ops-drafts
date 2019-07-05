@@ -255,13 +255,13 @@ these streams are not exposed to the application.
 
 Mapping of application data to streams is application-specific and described for
 HTTP/s in {{QUIC-HTTP}}. In general data that can be processed independently,
-and therefore would suffer from head of line blocking, if forced to be received
-in order, should be transmitted over different streams. If the application,
-however, requires certain data to be received in order, the same stream should
+and therefore would suffer from head of line blocking if forced to be received
+in order, should be transmitted over different streams. If the application
+requires certain data to be received in order, the same stream should
 be used for that data. If there is a logical grouping of data chunks or
 messages, streams can be reused, or a new stream can be opened for each
-chunk/message. If one message is mapped on a single stream, resetting the stream
-if the message is not needed anymore, can be used to emulate partial reliability
+chunk/message. If one message is mapped to a single stream, resetting the stream
+to expire an unacknowledged message can be used to emulate partial reliability
 on a message basis. If a QUIC receiver has maximum allowed concurrent streams
 open and the sender on the other end indicates that more streams are needed, it
 doesn't automatically lead to an increase of the maximum number of streams by
