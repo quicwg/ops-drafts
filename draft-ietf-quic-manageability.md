@@ -696,7 +696,11 @@ requirements.
 The QUIC header optionally contains a Connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
 to be observed in order to understand whether the Connection ID is present and
-what length it has.
+what length it has. However, Connection IDs may be renegotiated during
+a connection, and this renegotiation is not visible to the path. Keying state 
+off the Connection ID may therefore cause undetectable and unrecoverable loss 
+of state in the middle of a connection. Use of Connection ID specifically 
+discouraged for NAT applications.
 
 ## Passive network performance measurement and troubleshooting
 
