@@ -586,10 +586,6 @@ devices that a flow has ended is that packets are no longer observed. Stateful
 devices on path such as NATs and firewalls must therefore use idle timeouts to
 determine when to drop state for QUIC flows.
 
-Changes to this behavior have been discussed in the working group, but there
-is no current proposal to implement these changes:  see
-https://github.com/quicwg/base-drafts/issues/602.
-
 ## Flow symmetry measurement {#sec-symmetry}
 
 QUIC explicitly exposes which side of a connection is a client and which side is
