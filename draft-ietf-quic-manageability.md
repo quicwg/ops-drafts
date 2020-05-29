@@ -744,6 +744,23 @@ performs the DDoS detection, an active, migrated QUIC connection may be
 blocked by such a system under attack. However, a defense system might simply
 rely on the fast resumption mechanism provided by QUIC.
 
+### UDP Policing
+
+UDP is the most prevalent DDoS vector, since it is easy for compromised
+non-admin applications to send a flood of large UDP packets (while with TCP the
+attacker gets throttled by the congestion controller). Networks should be
+prepared for UDP flood attacks that masquerade as QUIC traffic.
+
+If attack classification fails, a possible response is to police UDP traffic on
+the network, allocating a fixed portion of the network capacity to UDP. Blindly
+blocking a significant fraction of QUIC packets will allow many QUIC handshakes
+to complete, preventing a TCP failover, but the connections will suffer a severe
+packet loss. As long as all QUIC-capable applications can failover to TCP (at
+least applications using well-known UDP ports), the recommended way to drop QUIC
+packets is to either drop them all or to police them based on the hash of the
+UDP datagram's source and destination addresses, blocking a portion of the hash
+space that corresponds to the fraction of UDP traffic one wishes to drop.
+
 ## Distinguishing acknowledgment traffic
 
 Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
