@@ -733,16 +733,22 @@ tracking of QUIC traffic as in {{sec-stateful}} above can be used in this
 classification step.
 
 Note that the use of a connection ID to support connection migration renders
-5-tuple based filtering insufficient, and requires more state to be maintained
-by DDoS defense systems, and linkability resistance in connection ID update
-mechanisms means that a connection ID aware DDoS defense system must have the
-same information about flows as the load balancer.
+5-tuple based filtering insufficient and requires more state to be maintained by
+DDoS defense systems. For the common case of NAT rebinding, DDoS defense systems
+can detect a change in client's endpoint address by linking flows based on the
+first 8 bytes of the server's connection IDs, provided the server is using at
+least 8-bytes-long connection IDs. QUIC's linkability resistance ensures that a
+deliberate connection migration is accompanied by a change in the connection ID
+and necessitate that connection ID aware DDoS defense system must have the same
+information about connection IDs as the load balancer.
 
-However, it is questionable if connection migrations needs to be supported in
-a DDOS attack. If the connection migration is not visible to the network that
-performs the DDoS detection, an active, migrated QUIC connection may be
-blocked by such a system under attack. However, a defense system might simply
-rely on the fast resumption mechanism provided by QUIC.
+It is questionable if connection migrations must be supported during a DDoS
+attack. If the connection migration is not visible to the network that performs
+the DDoS detection, an active, migrated QUIC connection may be blocked by such a
+system under attack. As soon as the connection blocking is detected by the
+client, the client may rely on the fast resumption mechanism provided by
+QUIC. When clients migrate to a new path, they should be prepared for the
+migration to fail and attempt to reconnect quickly.
 
 ### UDP Policing
 
