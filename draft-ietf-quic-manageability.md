@@ -750,22 +750,26 @@ client, the client may rely on the fast resumption mechanism provided by
 QUIC. When clients migrate to a new path, they should be prepared for the
 migration to fail and attempt to reconnect quickly.
 
-### UDP Policing
+## UDP Policing {#sec-udp-1312}
 
-UDP is the most prevalent DDoS vector, since it is easy for compromised
+Today, UDP is the most prevalent DDoS vector, since it is easy for compromised
 non-admin applications to send a flood of large UDP packets (while with TCP the
-attacker gets throttled by the congestion controller). Networks should be
-prepared for UDP flood attacks that masquerade as QUIC traffic.
+attacker gets throttled by the congestion controller) or to craft reflection and
+amplification attacks. Networks should therefore be
+prepared for UDP flood attacks on ports used for QUIC traffic. One possible
+response to this threat is to police UDP traffic on the network, allocating a
+fixed portion of the network capacity to UDP and blocking UDP datagram over that
+cap.
 
-If attack classification fails, a possible response is to police UDP traffic on
-the network, allocating a fixed portion of the network capacity to UDP. Blindly
-blocking a significant fraction of QUIC packets will allow many QUIC handshakes
-to complete, preventing a TCP failover, but the connections will suffer a severe
-packet loss. As long as all QUIC-capable applications can failover to TCP (at
-least applications using well-known UDP ports), the recommended way to drop QUIC
-packets is to either drop them all or to police them based on the hash of the
+The recommended way to police QUIC
+packets is to either drop them all or to throttle them based on the hash of the
 UDP datagram's source and destination addresses, blocking a portion of the hash
 space that corresponds to the fraction of UDP traffic one wishes to drop.
+When then handshake is blocked, QUIC-capable applications may failover to TCP
+(at least applications using well-known UDP ports). However, blindly blocking a
+significant fraction of QUIC packets will allow many QUIC handshakes
+to complete, preventing a TCP failover, but the connections will suffer a severe
+packet loss.
 
 ## Distinguishing acknowledgment traffic
 
