@@ -138,7 +138,7 @@ the version negotiation process is invariant
 This document is focused on the protocol as presently defined in
 {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Non-invariant parts of the wire image
 as described herein and in those documents cannot be used to identify QUIC
-as a protocol, and cannot be relied upon to infer behavior of versions of
+as a protocol, and cannot be relied upon to infer behavior of
 future versions of QUIC.
 
 ## QUIC Packet Header Structure {#public-header}
