@@ -740,7 +740,8 @@ first 8 bytes of the server's connection IDs, provided the server is using at
 least 8-bytes-long connection IDs. QUIC's linkability resistance ensures that a
 deliberate connection migration is accompanied by a change in the connection ID
 and necessitate that connection ID aware DDoS defense system must have the same
-information about connection IDs as the load balancer {{?I-D.ietf-quic-load-balancers}}.
+information about connection IDs as the load balancer
+{{?I-D.ietf-quic-load-balancers}}.
 
 It is questionable if connection migrations must be supported during a DDoS
 attack. If the connection migration is not visible to the network that performs
