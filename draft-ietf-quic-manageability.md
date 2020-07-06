@@ -136,8 +136,10 @@ the version negotiation process is invariant
 {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
 This document is focused on the protocol as presently defined in
-{{QUIC-TRANSPORT}} and {{?QUIC-TLS}}, and will change to track
-those documents.
+{{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Non-invariant parts of the wire image
+as described herein and in those documents cannot be used to identify QUIC
+as a protocol, and cannot be relied upon to infer behavior of
+future versions of QUIC.
 
 ## QUIC Packet Header Structure {#public-header}
 
