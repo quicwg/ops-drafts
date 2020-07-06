@@ -133,11 +133,13 @@ a versioned protocol, the wire image of the header format can also change from
 version to version. However, at least the mechanism by which a receiver can
 determine which version is used and the meaning and location of fields used in
 the version negotiation process is invariant
-{{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
+{{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}. 
 
 This document is focused on the protocol as presently defined in
-{{QUIC-TRANSPORT}} and {{?QUIC-TLS}}, and will change to track
-those documents.
+{{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Non-invariant parts of the wire image 
+as described herein and in those documents cannot be used to identify QUIC 
+as a protocol, and cannot be relied upon to infer behavior of versions of
+future versions of QUIC. 
 
 ## QUIC Packet Header Structure {#public-header}
 
