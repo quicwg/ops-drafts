@@ -493,18 +493,23 @@ carried on the wire) unless noted.
 The QUIC wire image is not specifically designed to be distinguishable from
 other UDP traffic.
 
-The only application binding currently defined for QUIC is HTTP
-{{?QUIC-HTTP}}. HTTP over QUIC uses UDP port 443 by default,
+The only application binding defined by the IETF QUIC WG is HTTP/3
+{{?QUIC-HTTP}} at the time of this writing; however, work to run other
+applications over QUIC is ongoing, so an assumption that all QUIC traffic
+is HTTP/3 is not valid. HTTP over QUIC uses UDP port 443 by default,
 although URLs referring to resources available over HTTP over QUIC may specify
 alternate port numbers. Simple assumptions about whether a given flow is using
 QUIC based upon a UDP port number may therefore not hold; see also {{?RFC7605}}
 section 5.
 
-While the second most significant bit (0x40) of the first octet is always set to
-1 in QUIC packets of the current version, this is not a recommended method of
-recognizing QUIC traffic, as it only provides one bit of information and is
-quite prone to collide with UDP-based protocols other than those that this
-static bit is meant to allow multiplexing with.
+While the second most significant bit (0x40) of the first octet is set to
+1 in most QUIC packets of the current version (see {{public-header}}),
+this method of recognizing QUIC traffic is NOT RECOMMENDED. First, it only
+provides one bit of information and is quite prone to collide with
+UDP-based protocols other than those that this static bit is meant to allow
+multiplexing with. Second, this feature of the wire image is not invariant
+{{QUIC-INVARIANTS}} and may change in future versions of the protocol, or
+even be negotiated after handshake via future transport parameters.
 
 ### Identifying Negotiated Version
 
@@ -518,8 +523,9 @@ observed, such as in the case of connection migration; however, these flows can
 be associated with flows for which a version has been identified; see
 {{sec-flow-association}}.
 
-In the rest of this section, we discuss only packets belonging to Version 1 QUIC
-flows, and assume that these packets have been identified as such through the
+This document focuses on QUIC Version 1, and this section applies only to
+packets belonging to Version 1 QUIC flows; for purposes of on-path observation,
+it assumes that these packets have been identified as such through the
 observation of a version negotiation.
 
 ### Rejection of Garbage Traffic {#sec-garbage}
