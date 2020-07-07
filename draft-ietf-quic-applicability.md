@@ -460,7 +460,7 @@ connection is the minimum of these two advertised value. An application
 therefore should be able to configure its own maximum value as well as
 have access to the computed minimum value for this connection. An application
 may adjust the maximum idle timeout based on the number of open or expected
-connections as shorter timeout values may free-up memory more quickly. 
+connections as shorter timeout values may free-up memory more quickly.
 If an application desires to keep the connection open for longer
 than the announced timeout, it can send keep-alives messages, or a QUIC
 implementation may provide an option to defer the time-out to avoid unnesseary
