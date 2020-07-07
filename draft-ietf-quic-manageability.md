@@ -768,11 +768,11 @@ The recommended way to police QUIC
 packets is to either drop them all or to throttle them based on the hash of the
 UDP datagram's source and destination addresses, blocking a portion of the hash
 space that corresponds to the fraction of UDP traffic one wishes to drop.
-When then handshake is blocked, QUIC-capable applications may failover to TCP
+When the handshake is blocked, QUIC-capable applications may failover to TCP
 (at least applications using well-known UDP ports). However, blindly blocking a
 significant fraction of QUIC packets will allow many QUIC handshakes
-to complete, preventing a TCP failover, but the connections will suffer a severe
-packet loss.
+to complete, preventing a TCP failover, but the connections will suffer from
+severe packet loss.
 
 ## Distinguishing acknowledgment traffic
 
