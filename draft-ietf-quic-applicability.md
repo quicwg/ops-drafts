@@ -525,6 +525,12 @@ belonging to a certain pool are served in cooperation with load balancers that
 forward the traffic based on the Connection ID. A server can choose the
 Connection ID in the Server Retry packet such that the load balancer will
 redirect the next Client Initial packet to a different server in that pool.
+Alternatively the load balancer can directly offer a Retry services as further
+described in {{?QUIC-LB=I-D.ietf-quic-load-balancers}}.
+
+{{?RFC5077}} Section 4 describes an example approach for constructing
+TLS resumption tickets that can be also applied for validation tokens,
+however, the use of more modern crypto algorithms is highly recommended.
 
 # Use of Versions and Cryptographic Handshake
 
