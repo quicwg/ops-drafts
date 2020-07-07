@@ -586,7 +586,8 @@ for caveats regarding connection ID selection at servers.
 QUIC does not expose the end of a connection; the only indication to on-path
 devices that a flow has ended is that packets are no longer observed. Stateful
 devices on path such as NATs and firewalls must therefore use idle timeouts to
-determine when to drop state for QUIC flows, see further section {{sec-stateful}}.
+determine when to drop state for QUIC flows, see further section
+{{sec-stateful}}.
 
 ## Flow symmetry measurement {#sec-symmetry}
 
