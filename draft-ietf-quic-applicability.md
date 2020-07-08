@@ -394,15 +394,7 @@ according to the QUIC specification. A receiver of a smaller initial packet may
 reject this packet in order to avoid amplification attacks.
 
 
-# Port Selection
-
-As QUIC is a general purpose transport protocol, there are no requirements that
-servers use a particular UDP port for QUIC in general. Instead, the same port
-number is used as would be used for the same application over TCP. In the case
-of HTTP the expectation is that port 443 is used, which has already been
-registered for "http protocol over TLS/SSL". However, {{QUIC-HTTP}} also
-specifies the use of Alt-Svc for HTTP/QUIC discovery which allows the server to
-use and announce a different port number.
+# Port Selection and Application Endpoint Discovery {#ports}
 
 In general, port numbers serves two purposes: "first, they provide a
 demultiplexing identifier to differentiate transport sessions between the same
@@ -412,10 +404,24 @@ assumption that an application can be identified in the network based on the
 port number is less true today, due to encapsulation, mechanisms for dynamic
 port assignments as well as NATs.
 
-However, whenever a non-standard port is used which does not enable easy
-mapping to a registered service name, this can lead to blocking by
-network elements such as firewalls that rely on the port number as a first order
-of filtering.
+As QUIC is a general purpose transport protocol, there are no requirements that
+servers use a particular UDP port for QUIC in general. For applications with a 
+fallback to TCP which do not already have an alternate mapping to UDP, the 
+registration (if necessary) and use of the UDP port number corresponding to 
+the TCP port already registered for the application is RECOMMENDED. For example, 
+the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1 
+or HTTP/2 over TLS over TCP.
+
+Applications SHOULD define an alternate endpoint discovery mechanism to allow 
+the usage of ports other than the default. For example, HTTP/3 ({{QUIC-HTTP}} 
+sections 3.2 and 3.3) specifies the use of ALPN for servce discovery which 
+allows the server to use and announce a different port number.
+
+Note that given the prevalence of the assumption in network management 
+practice that a port number maps unambiguously to an application, the 
+use of ports that cannot easily be mapped to a registered service name 
+may lead to blocking or other interference by network elements such as 
+firewalls that rely on the port number for application identification.
 
 
 # Connection Migration
@@ -589,7 +595,9 @@ the old version is no longer accepted.
 
 # IANA Considerations
 
-This document has no actions for IANA.
+This document has no actions for IANA; however, note that {{ports}} 
+recommends that application bindings to QUIC for applications using 
+TCP register UDP ports analogous to their existing TCP registrations.
 
 # Security Considerations
 
