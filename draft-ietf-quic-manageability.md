@@ -737,14 +737,19 @@ assigning connection IDs is given in
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
 Current practices in detection and mitigation of Distributed Denial of Service
-(DDoS) attacks generally involve passive measurement using network flow data
-{{?RFC7011}}, classification of traffic into "good" (productive) and "bad" (DoS)
-flows, and filtering of these bad flows in a "scrubbing" environment. Key to
-successful DDoS mitigation is efficient classification of this traffic.
+(DDoS) attacks generally involves classification of incoming traffic (as
+packets, flows, or some other aggregate) into "good" (productive) and "bad"
+(DDoS) traffic, then differential treatment of this traffic to forward only
+good traffic, to the extent possible. This operation is often done in a separate
+specialized mitigation environment through which all traffic is filtered;
+a generalized architecture for separation of concerns in mitigation is given in
+{{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
 
+Key to successful DDoS mitigation
+is efficient classification of this traffic in the mitigation environment.
 Limited first-packet garbage detection as in {{sec-garbage}} and stateful
-tracking of QUIC traffic as in {{sec-stateful}} above can be used in this
-classification step.
+tracking of QUIC traffic as in {{sec-stateful}} above may be useful during
+classification.
 
 Note that the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient and requires more state to be maintained by
@@ -755,9 +760,10 @@ least 8-bytes-long connection IDs. QUIC's linkability resistance ensures that a
 deliberate connection migration is accompanied by a change in the connection ID
 and necessitate that connection ID aware DDoS defense system must have the same
 information about connection IDs as the load balancer
-{{?I-D.ietf-quic-load-balancers}}.
+{{?I-D.ietf-quic-load-balancers}}. This may be complicated where mitigation
+and load balancing environments are logically separate.
 
-It is questionable if connection migrations must be supported during a DDoS
+It is questionable whether connection migrations must be supported during a DDoS
 attack. If the connection migration is not visible to the network that performs
 the DDoS detection, an active, migrated QUIC connection may be blocked by such a
 system under attack. As soon as the connection blocking is detected by the
