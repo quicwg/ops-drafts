@@ -144,7 +144,8 @@ future versions of QUIC.
 ## QUIC Packet Header Structure {#public-header}
 
 QUIC packets may have either a long header, or a short header. The first bit
-of the QUIC header indicates which type of header is present.
+of the QUIC header us the Header Form bit, and indicates which type of header
+is present.
 
 The long header exposes more information. It is used during connection
 establishment, including version negotiation, retry, and 0-RTT data. It
@@ -159,9 +160,9 @@ optional destination connection ID and the spin bit for RTT measurement.
 
 The following information is exposed in QUIC packet headers:
 
-- demux bit: the second most significant bit of the first octet every QUIC
-  packet of the current version is set to 1, for demultiplexing with other
-  UDP-encapsulated protocols.
+- "fixed bit": the second most significant bit of the first octet most QUIC
+  packets of the current version is currently set to 1, for demultiplexing
+  with other UDP-encapsulated protocols.
 
 - latency spin bit: the third most significant bit of first octet in the short
   packet header. The spin bit is set by endpoints such that  tracking edge
@@ -169,8 +170,8 @@ The following information is exposed in QUIC packet headers:
   {{spin-usage}} for further details.
 
 - header type: the long header has a 2 bit packet type field following the
-  Header Form bit. Header types correspond to stages of the handshake; see
-  Section 17.2 of {{QUIC-TRANSPORT}}.
+  Header Form and fixed bits. Header types correspond to stages of the
+  handshake; see Section 17.2 of {{QUIC-TRANSPORT}} for details.
 
 - version number: the version number present in the long header, and identifies
   the version used for that packet. Note that during Version Negotiation (see
@@ -199,12 +200,13 @@ The following information is exposed in QUIC packet headers:
   in an Initial packet on a subsequent connection attempt. The length of the
   token is explicit in both cases.
 
-Retry and Version Negotiation packets are not encrypted or obfuscated in any
+Retry (Section 17.2.5 of {{QUIC-TRANSPORT}}) and Version Negotiation (Section
+17.2.1 of {{QUIC-TRANSPORT}}) packets are not encrypted or obfuscated in any
 way. For other kinds of packets, other information in the packet headers is
 cryptographically obfuscated:
 
-- packet number: Most packets (with the exception of Version Negotiation and
-  Retry packets) have an associated packet number; however, this packet number
+- packet number: All packets except Version Negotiation and
+  Retry packets have an associated packet number; however, this packet number
   is encrypted, and therefore not of use to on-path observers. The offset of the
   packet number is encoded in the header for packets with long headers, while it
   is implicit (depending on Destination Connection ID length) in short header
