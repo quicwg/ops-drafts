@@ -595,8 +595,8 @@ the old version is no longer accepted.
 
 # IANA Considerations
 
-This document has no actions for IANA; however, note that {{ports}} 
-recommends that application bindings to QUIC for applications using 
+This document has no actions for IANA; however, note that {{ports}}
+recommends that application bindings to QUIC for applications using
 TCP register UDP ports analogous to their existing TCP registrations.
 
 # Security Considerations
