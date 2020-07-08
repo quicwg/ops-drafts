@@ -494,13 +494,13 @@ The QUIC wire image is not specifically designed to be distinguishable from
 other UDP traffic.
 
 The only application binding defined by the IETF QUIC WG is HTTP/3
-{{?QUIC-HTTP}} at the time of this writing; however, work to run other
-applications over QUIC is ongoing, so an assumption that all QUIC traffic
-is HTTP/3 is not valid. HTTP over QUIC uses UDP port 443 by default,
-although URLs referring to resources available over HTTP over QUIC may specify
-alternate port numbers. Simple assumptions about whether a given flow is using
-QUIC based upon a UDP port number may therefore not hold; see also {{?RFC7605}}
-section 5.
+{{?QUIC-HTTP}} at the time of this writing; however, many other applications
+are currently being defined and deployed over QUIC, so an assumption that all
+QUIC traffic is HTTP/3 is not valid. HTTP over QUIC uses UDP port 443 by
+default, although URLs referring to resources available over HTTP over QUIC
+may specify alternate port numbers. Simple assumptions about whether a
+given flow is using QUIC based upon a UDP port number may therefore not hold;
+see also {{?RFC7605}} section 5.
 
 While the second most significant bit (0x40) of the first octet is set to
 1 in most QUIC packets of the current version (see {{public-header}}),
