@@ -702,8 +702,8 @@ requirements.
 {{?RFC4787}} recommends a 2 minute timeout interval for UDP, however,
 often timer are lower in the range of 15 to 30 second. In constrast
 {{?RFC5382}} recommends a timeout of more than 2 hours for TCP, given TCP is
-a connection-oriented protocol with well defined closure semantics. If QUIC
-traffic can identified (during the handshake), it is recommended to also use
+a connection-oriented protocol with well defined closure semantics. For network
+devices that are QUIC-aware, it is recommended to also use
 longer timeouts for QUIC traffic, as QUIC is connection-oriented and as such
 a handshake packet from the server indicates the willingness of the server to
 communicate with the client.
