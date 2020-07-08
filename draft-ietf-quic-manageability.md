@@ -725,16 +725,16 @@ assigning connection IDs is given in
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
 Current practices in detection and mitigation of Distributed Denial of Service
-(DDoS) attacks generally involves classification of incoming traffic (as 
-packets, flows, or some other aggregate) into "good" (productive) and "bad" 
+(DDoS) attacks generally involves classification of incoming traffic (as
+packets, flows, or some other aggregate) into "good" (productive) and "bad"
 (DDoS) traffic, then differential treatment of this traffic to forward only
 good traffic, to the extent possible. This operation is often done in a separate
-specialized mitigation environment through which all traffic is filteresd;
-a generalized architecture for separation of concerns in mitigation is given in 
-{{?DOTS-ARCH=I-D.ietf-dots-architecture}}. 
+specialized mitigation environment through which all traffic is filtered;
+a generalized architecture for separation of concerns in mitigation is given in
+{{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
 
-Key to successful DDoS mitigation 
-is efficient classification of this traffic in the mitigation environment. 
+Key to successful DDoS mitigation
+is efficient classification of this traffic in the mitigation environment.
 Limited first-packet garbage detection as in {{sec-garbage}} and stateful
 tracking of QUIC traffic as in {{sec-stateful}} above may be useful during
 classification.
@@ -747,8 +747,8 @@ first 8 bytes of the server's connection IDs, provided the server is using at
 least 8-bytes-long connection IDs. QUIC's linkability resistance ensures that a
 deliberate connection migration is accompanied by a change in the connection ID
 and necessitate that connection ID aware DDoS defense system must have the same
-information about connection IDs as the load balancer 
-{{?I-D.ietf-quic-load-balancers}}. This may be complicated where mitigation 
+information about connection IDs as the load balancer
+{{?I-D.ietf-quic-load-balancers}}. This may be complicated where mitigation
 and load balancing environments are logically separate.
 
 It is questionable whether connection migrations must be supported during a DDoS
