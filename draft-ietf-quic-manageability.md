@@ -161,7 +161,7 @@ optional destination connection ID and the spin bit for RTT measurement.
 The following information is exposed in QUIC packet headers:
 
 - "fixed bit": the second most significant bit of the first octet most QUIC
-  packets of the current version is currently set to 1, for demultiplexing 
+  packets of the current version is currently set to 1, for demultiplexing
   with other UDP-encapsulated protocols.
 
 - latency spin bit: the third most significant bit of first octet in the short
@@ -170,7 +170,7 @@ The following information is exposed in QUIC packet headers:
   {{spin-usage}} for further details.
 
 - header type: the long header has a 2 bit packet type field following the
-  Header Form and fixed bits. Header types correspond to stages of the 
+  Header Form and fixed bits. Header types correspond to stages of the
   handshake; see Section 17.2 of {{QUIC-TRANSPORT}} for details.
 
 - version number: the version number present in the long header, and identifies
@@ -200,7 +200,7 @@ The following information is exposed in QUIC packet headers:
   in an Initial packet on a subsequent connection attempt. The length of the
   token is explicit in both cases.
 
-Retry (Section 17.2.5 of {{QUIC-TRANSPORT}}) and Version Negotiation (Section 
+Retry (Section 17.2.5 of {{QUIC-TRANSPORT}}) and Version Negotiation (Section
 17.2.1 of {{QUIC-TRANSPORT}}) packets are not encrypted or obfuscated in any
 way. For other kinds of packets, other information in the packet headers is
 cryptographically obfuscated:
