@@ -586,7 +586,8 @@ for caveats regarding connection ID selection at servers.
 QUIC does not expose the end of a connection; the only indication to on-path
 devices that a flow has ended is that packets are no longer observed. Stateful
 devices on path such as NATs and firewalls must therefore use idle timeouts to
-determine when to drop state for QUIC flows.
+determine when to drop state for QUIC flows, see further section
+{{sec-stateful}}.
 
 ## Flow symmetry measurement {#sec-symmetry}
 
@@ -697,6 +698,15 @@ connection confirmation ({{sec-confirm}}). The lack of any visible end-of-flow
 signal ({{sec-teardown}}) means that this state must be purged either through
 timers or through least-recently-used eviction, depending on application
 requirements.
+
+{{?RFC4787}} recommends a 2 minute timeout interval for UDP, however,
+often timer are lower in the range of 15 to 30 second. In constrast
+{{?RFC5382}} recommends a timeout of more than 2 hours for TCP, given TCP is
+a connection-oriented protocol with well defined closure semantics. For network
+devices that are QUIC-aware, it is recommended to also use
+longer timeouts for QUIC traffic, as QUIC is connection-oriented and as such
+a handshake packet from the server indicates the willingness of the server to
+communicate with the client.
 
 The QUIC header optionally contains a Connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
