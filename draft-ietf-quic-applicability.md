@@ -405,22 +405,22 @@ port number is less true today, due to encapsulation, mechanisms for dynamic
 port assignments as well as NATs.
 
 As QUIC is a general purpose transport protocol, there are no requirements that
-servers use a particular UDP port for QUIC in general. For applications with a 
-fallback to TCP which do not already have an alternate mapping to UDP, the 
-registration (if necessary) and use of the UDP port number corresponding to 
-the TCP port already registered for the application is RECOMMENDED. For example, 
-the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1 
+servers use a particular UDP port for QUIC in general. For applications with a
+fallback to TCP which do not already have an alternate mapping to UDP, the
+registration (if necessary) and use of the UDP port number corresponding to
+the TCP port already registered for the application is RECOMMENDED. For example,
+the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
-Applications SHOULD define an alternate endpoint discovery mechanism to allow 
-the usage of ports other than the default. For example, HTTP/3 ({{QUIC-HTTP}} 
-sections 3.2 and 3.3) specifies the use of ALPN for servce discovery which 
+Applications SHOULD define an alternate endpoint discovery mechanism to allow
+the usage of ports other than the default. For example, HTTP/3 ({{QUIC-HTTP}}
+sections 3.2 and 3.3) specifies the use of ALPN for servce discovery which
 allows the server to use and announce a different port number.
 
-Note that given the prevalence of the assumption in network management 
-practice that a port number maps unambiguously to an application, the 
-use of ports that cannot easily be mapped to a registered service name 
-may lead to blocking or other interference by network elements such as 
+Note that given the prevalence of the assumption in network management
+practice that a port number maps unambiguously to an application, the
+use of ports that cannot easily be mapped to a registered service name
+may lead to blocking or other interference by network elements such as
 firewalls that rely on the port number for application identification.
 
 
