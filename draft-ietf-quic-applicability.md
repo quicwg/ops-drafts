@@ -453,19 +453,19 @@ STOP_SENDING frames provide similar capablities. Usually application error codes
 are defined to be applicabile to all three frames.
 
 Alternatively, a QUIC connection can be silently closed by each endpoint
-separately after an idle timeout. If enabled as indcated by a transport
+separately after an idle timeout. If enabled as indicated by a transport
 parameter in the handshake, the idle timeout is announced for each
 endpoint during connection establishment and the effective value for this
-connection is the minimum of these two advertised value. An application
+connection is the minimum of the two advertised values. An application
 therefore should be able to configure its own maximum value as well as
 have access to the computed minimum value for this connection. An application
 may adjust the maximum idle timeout based on the number of open or expected
 connections as shorter timeout values may free-up memory more quickly.
 If an application desires to keep the connection open for longer
 than the announced timeout, it can send keep-alives messages, or a QUIC
-implementation may provide an option to defer the time-out to avoid unnesseary
+implementation may provide an option to defer the time-out to avoid unnecessary
 load, as specified in Section 10.2.2 of {{QUIC}}.
-See {#resumption-v-keepalive} for further guidance on keep-alives.
+See {{resumption-v-keepalive}} for further guidance on keep-alives.
 
 
 # Information exposure and the Connection ID {#connid}
