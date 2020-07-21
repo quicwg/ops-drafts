@@ -530,7 +530,7 @@ described in {{?QUIC-LB=I-D.ietf-quic-load-balancers}}.
 
 {{?RFC5077}} Section 4 describes an example approach for constructing
 TLS resumption tickets that can be also applied for validation tokens,
-however, the use of more modern crypto algorithms is highly recommended.
+however, the use of more modern cryptographic algorithms is highly recommended.
 
 # Use of Versions and Cryptographic Handshake
 
