@@ -107,7 +107,8 @@ as HTTP/3.
 This document provides guidance for application developers that want to use
 the QUIC protocol without implementing it on their own. This includes general
 guidance for applications operating over HTTP/3 or directly over QUIC. For
-specific guidance on how to integrate HTTP/3 with QUIC, see {{QUIC-HTTP}}.
+specific guidance on how to integrate HTTP/3 with QUIC, see
+{{?QUIC-HTTP=I-D.ietf-quic-http}}.
 
 In the following sections we discuss specific caveats to QUIC's applicability,
 and issues that application developers must consider when using QUIC as a
