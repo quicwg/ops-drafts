@@ -390,7 +390,8 @@ however, the application usually cannot control how data transmitted over one
 stream is mapped into frames or how those frames are bundled into packets.
 By default, QUIC will try to maximally pack packets with one or more stream
 data frames to minimize bandwidth consumption and computational costs (see
-section 13 of {{!QUIC}}). If there is not enough data available to fill a packet,
+section 13 of {{!QUIC}}). If there is not enough data available to fill a 
+packet,
 QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
 latency. This delay can either be pre-configured or dynamically adjusted based
 on the observed sending pattern of the application. If the application requires
