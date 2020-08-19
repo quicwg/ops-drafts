@@ -216,7 +216,7 @@ expired after just thirty seconds of inactivity.
 By using a Connection ID, QUIC is designed to be robust to NAT address
 rebinding after a timeout. However, some QUIC connections may not be robust to
 rebinding because the routing infrastructure (in particular, load balancers)
-uses the address/port fourtuple to direct traffic. Furthermore, middleboxes
+uses the address/port four-tuple to direct traffic. Furthermore, middleboxes
 with functions other than address translation may still affect the path. In
 particular, firewalls will often not admit server traffic for which it has not
 kept state for corresponding packets from the client.
