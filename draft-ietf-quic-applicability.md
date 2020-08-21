@@ -96,20 +96,19 @@ to QUIC, and implementors of these application protocols.
 
 # Introduction
 
-QUIC {{!QUIC=I-D.ietf-quic-transport}} is a new transport protocol currently
-under development in the IETF quic working group, focusing on support of
-semantics as needed for HTTP/2 {{?QUIC-HTTP=I-D.ietf-quic-http}} such as
-stream-multiplexing to avoid head-of-line blocking. Based on current
-deployment practices, QUIC is encapsulated in UDP. The version of QUIC that is
-currently under development will integrate TLS 1.3
-{{!TLS13=I-D.ietf-quic-tls}} to encrypt all payload data and most control
-information.
+QUIC {{!QUIC=I-D.ietf-quic-transport}} is a new transport protocol providing a
+number of advanced features. While initially designed for the HTTP use case,
+like most transports it is intended for use with a much wider variety of
+applications. QUIC is encapsulated in UDP. The version of QUIC that is currently
+under development will integrate TLS 1.3 {{!TLS13=I-D.ietf-quic-tls}} to encrypt
+all payload data and most control information. HTTP operating over QUIC is known
+as HTTP/3.
 
 This document provides guidance for application developers that want to use
 the QUIC protocol without implementing it on their own. This includes general
-guidance for application use of HTTP/2 over QUIC as well as the use of other
-application layer protocols over QUIC. For specific guidance on how to
-integrate HTTP/2 with QUIC, see {{QUIC-HTTP}}.
+guidance for applications operating over HTTP/3 or directly over QUIC. For
+specific guidance on how to integrate HTTP/3 with QUIC, see
+{{?QUIC-HTTP=I-D.ietf-quic-http}}.
 
 In the following sections we discuss specific caveats to QUIC's applicability,
 and issues that application developers must consider when using QUIC as a
@@ -138,12 +137,15 @@ These applications must operate, perhaps with impaired functionality, in the
 absence of features provided by QUIC not present in the fallback protocol. For
 fallback to TLS over TCP, the most obvious difference is that TCP does not
 provide stream multiplexing and therefore stream multiplexing would need to be
-implemented in the application layer if needed. Further, TCP without the TCP
-Fast Open extension does not support 0-RTT session resumption. TCP Fast Open
-can be requested by the connection initiator but might no be supported by the
-far end or could be blocked on the network path. Note that there is some
-evidence of middleboxes blocking SYN data even if TFO was successfully
-negotiated (see {{PaaschNanog}}).
+implemented in the application layer if needed.
+
+Further, TCP implementations and network paths often do not support the Fast
+Open option, which is analogous to 0-RTT session resumption. Even if Fast Open
+successfully operates end-to-end, it is limited to a single packet of payload,
+unlike QUIC 0-RTT.
+
+Note that there is some evidence of middleboxes blocking SYN data even if TFO
+was successfully negotiated (see {{PaaschNanog}}).
 
 Any fallback mechanism is likely to impose a degradation of performance;
 however, fallback MUST not silently violate the application's expectation of
@@ -185,13 +187,22 @@ secrecy (PFS).
 Data in the first flight sent by the client in a connection established with
 0-RTT MUST be idempotent (as specified in section 2.1 in {{!QUIC-TLS}}).
 Applications MUST be designed, and their data MUST be framed, such that multiple
-reception of idempotent data is recognized as such by the receiverApplications
+reception of idempotent data is recognized as such by the receiver. Applications
 that cannot treat data that may appear in a 0-RTT connection establishment as
-idempotent MUST NOT use 0-RTT establishment. For this reason the QUIC transport
-SHOULD provide an interface for the application to indicate if 0-RTT support is
-in general desired or a way to indicate whether data is idempotent, whether PFS
-is a hard requirement for the application, and/or whether rejected 0-RTT dgitata
-should be retransmitted or withdrawn.
+idempotent MUST NOT use 0-RTT establishment. For these reason the QUIC transport
+SHOULD provide some or all of the following interfaces to applications:
+
+* indicate if 0-RTT support is in general desired, which implies that lack of
+PFS is acceptable for some data;
+
+* an indication when 0RTT data for both egress and ingress, so that both sender
+and receiver understand the properties of the communication channel when the
+data is sent; and/or
+
+* whether rejected 0-RTT data should be retransmitted or withdrawn.
+
+Some TLS implementations may offer replay protection, which may mitigate some
+of these issues.
 
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
@@ -202,10 +213,19 @@ idle periods than for TCP. According to a 2010 study ({{Hatonen10}}), UDP
 applications can assume that any NAT binding or other state entry will be
 expired after just thirty seconds of inactivity.
 
+By using a Connection ID, QUIC is designed to be robust to NAT address
+rebinding after a timeout. However, some QUIC connections may not be robust to
+rebinding because the routing infrastructure (in particular, load balancers)
+uses the address/port four-tuple to direct traffic. Furthermore, middleboxes
+with functions other than address translation may still affect the path. In
+particular, firewalls will often not admit server traffic for which it has not
+kept state for corresponding packets from the client.
+
 A QUIC application has three strategies to deal with this issue:
 
 - Ignore it, if the application-layer protocol consists only of interactions
-  with no or very short idle periods.
+  with no or very short idle periods, or the protocol's resistance to NAT
+  rebinding is sufficient.
 - Ensure there are no long idle periods.
 - Resume the session after a long idle period, using 0-RTT resumption when
   appropriate.
@@ -370,7 +390,8 @@ however, the application usually cannot control how data transmitted over one
 stream is mapped into frames or how those frames are bundled into packets.
 By default, QUIC will try to maximally pack packets with one or more stream
 data frames to minimize bandwidth consumption and computational costs (see
-section 8 of {{!QUIC}}). If there is not enough data available to fill a packet,
+section 13 of {{!QUIC}}). If there is not enough data available to fill a 
+packet,
 QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
 latency. This delay can either be pre-configured or dynamically adjusted based
 on the observed sending pattern of the application. If the application requires
