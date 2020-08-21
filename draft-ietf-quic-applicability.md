@@ -261,24 +261,32 @@ when a request is outstanding.
 QUIC's stream multiplexing feature allows applications to run multiple streams
 over a single connection, without head-of-line blocking between streams,
 associated at a point in time with a single five-tuple. Stream data is carried
-within Frames, where one (UDP) packet on the wire can carry one of multiple
+within Frames, where one QUIC packet on the wire can carry one or multiple
 stream frames.
 
-Stream can be independently open and closed, gracefully or by error. If a
-critical stream for the application is closed, the application can generate
-respective error messages on the application layer to inform the other end or
-the higher layer and eventually indicate QUIC to reset the connection. QUIC,
-however, does not need to know which streams are critical, and does not
-provide an interface to exceptional handling of any stream. There are special
-streams in QUIC that are used for control on the QUIC connection, however,
-these streams are not exposed to the application.
+Streams can be unidirectional or bidirectional, and a stream may be initiated
+either by client or server. Only the initiator of unidirectional stream can
+send data on it. Due to offset encoding limitations, a stream can carry a 
+maximum of 2^62-1 bytes in each direction.
+
+Stream can be independently opened and closed, gracefully or by error. A sender
+closes a stream gracefully by setting the FIN bit on a STREAM frame. The sender
+can close a stream abruptly in an error condition using the RESET_STREAM frame, 
+while the receiver can close a stream abruptly by sending a STOP_SENDING frame.
+
+If a stream that is critical for an applciation is closed, the application can 
+generate respective error messages on the application layer to inform the 
+other end and/or the higher layer, and eventually indicate QUIC to reset 
+the connection. QUIC, however, does not need to know which streams are 
+critical, and does not provide an interface for exceptional handling of 
+any stream. 
 
 Mapping of application data to streams is application-specific and described for
-HTTP/s in {{QUIC-HTTP}}. In general data that can be processed independently,
+HTTP/3 in {{QUIC-HTTP}}. In general, data that can be processed independently,
 and therefore would suffer from head of line blocking if forced to be received
-in order, should be transmitted over different streams. If the application
-requires certain data to be received in order, the same stream should
-be used for that data. If there is a logical grouping of data chunks or
+in order, should be transmitted over separate streams. If the application
+requires certain data to be received in order, that data should be sent on the 
+same stream. If there is a logical grouping of data chunks or
 messages, streams can be reused, or a new stream can be opened for each
 chunk/message. If one message is mapped to a single stream, resetting the stream
 to expire an unacknowledged message can be used to emulate partial reliability
@@ -289,12 +297,9 @@ the receiver. Therefore it can be valuable to expose maximum number of allowed,
 currently open and currently used streams to the application to make the mapping
 of data to streams dependent on this information.
 
-Further, streams have a maximum number of bytes that can be sent on one
-stream. This number is high enough (2^64) that this will usually not be
-reached with current applications. Applications that send chunks of data over
-a very long period of time (such as days, months, or years), should rather
-utilize the 0-RTT session resumption ability provided by QUIC, than trying to
-maintain one connection open.
+Streams can carry a maximum of 2^62-1 bytes in each direction due to offset 
+encoding limitations. In the presently unlikely event that this limit is reached 
+by an application, the stream can simply be closed and replaced with a new one.
 
 ## Stream versus Flow Multiplexing
 
