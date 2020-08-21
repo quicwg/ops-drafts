@@ -266,26 +266,26 @@ stream frames.
 
 Streams can be unidirectional or bidirectional, and a stream may be initiated
 either by client or server. Only the initiator of unidirectional stream can
-send data on it. Due to offset encoding limitations, a stream can carry a 
+send data on it. Due to offset encoding limitations, a stream can carry a
 maximum of 2^62-1 bytes in each direction.
 
 Stream can be independently opened and closed, gracefully or by error. A sender
 closes a stream gracefully by setting the FIN bit on a STREAM frame. The sender
-can close a stream abruptly in an error condition using the RESET_STREAM frame, 
+can close a stream abruptly in an error condition using the RESET_STREAM frame,
 while the receiver can close a stream abruptly by sending a STOP_SENDING frame.
 
-If a stream that is critical for an applciation is closed, the application can 
-generate respective error messages on the application layer to inform the 
-other end and/or the higher layer, and eventually indicate QUIC to reset 
-the connection. QUIC, however, does not need to know which streams are 
-critical, and does not provide an interface for exceptional handling of 
-any stream. 
+If a stream that is critical for an applciation is closed, the application can
+generate respective error messages on the application layer to inform the
+other end and/or the higher layer, and eventually indicate QUIC to reset
+the connection. QUIC, however, does not need to know which streams are
+critical, and does not provide an interface for exceptional handling of
+any stream.
 
 Mapping of application data to streams is application-specific and described for
 HTTP/3 in {{QUIC-HTTP}}. In general, data that can be processed independently,
 and therefore would suffer from head of line blocking if forced to be received
 in order, should be transmitted over separate streams. If the application
-requires certain data to be received in order, that data should be sent on the 
+requires certain data to be received in order, that data should be sent on the
 same stream. If there is a logical grouping of data chunks or
 messages, streams can be reused, or a new stream can be opened for each
 chunk/message. If one message is mapped to a single stream, resetting the stream
@@ -297,8 +297,8 @@ the receiver. Therefore it can be valuable to expose maximum number of allowed,
 currently open and currently used streams to the application to make the mapping
 of data to streams dependent on this information.
 
-Streams can carry a maximum of 2^62-1 bytes in each direction due to offset 
-encoding limitations. In the presently unlikely event that this limit is reached 
+Streams can carry a maximum of 2^62-1 bytes in each direction due to offset
+encoding limitations. In the presently unlikely event that this limit is reached
 by an application, the stream can simply be closed and replaced with a new one.
 
 ## Stream versus Flow Multiplexing
@@ -313,7 +313,6 @@ multiple QUIC connections). Given QUIC's ability to send application data in
 the first RTT of a connection (if a previous connection to the same host has
 been successfully established to provide the respective credentials), the cost
 of establishing another connection is extremely low.
-
 
 ## Prioritization
 
@@ -337,7 +336,6 @@ priority scheduling of retransmissions over data of higher-priority streams
 might not be desirable. For such streams, QUIC could either provide an
 explicit interface to control prioritization, or derive the prioritization
 decision from the reliability level of the stream.
-
 
 ## Flow Control Deadlocks {#flow-control-deadlocks}
 
