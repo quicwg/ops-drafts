@@ -271,10 +271,12 @@ maximum of 2^62-1 bytes in each direction. In the presently unlikely event
 that this limit is reached by an application, the stream can simply be closed 
 and replaced with a new one.
 
-Stream can be independently opened and closed, gracefully or by error. A sender
-closes a stream gracefully by setting the FIN bit on a STREAM frame. The sender
-can close a stream abruptly in an error condition using the RESET_STREAM frame,
-while the receiver can close a stream abruptly by sending a STOP_SENDING frame.
+Streams can be independently opened and closed, gracefully or by error. An 
+application can gracefully close the egress direction of a stream by instructing 
+QUIC to send a FIN bit in a STREAM frame. It cannot gracefully close the ingress 
+direction without a peer-generated FIN, much like in TCP. However, an endpoint 
+can abruptly close either the ingress or egress direction; these actions are 
+fully independent of each other.
 
 If a stream that is critical for an application is closed, the application can
 generate respective error messages on the application layer to inform the
@@ -298,6 +300,12 @@ doesn't automatically lead to an increase of the maximum number of streams by
 the receiver. Therefore it can be valuable to expose maximum number of allowed,
 currently open and currently used streams to the application to make the mapping
 of data to streams dependent on this information.
+
+While a QUIC implementation must necessarily provide a way for an application
+to send data on separate streams, it does not necessarily expose stream
+identifiers to the application (see e.g. {{QUIC-HTTP}} section 6) either at
+the sender or receiver end, so applications should not assume access to these
+identifiers.
 
 ## Stream versus Flow Multiplexing
 
