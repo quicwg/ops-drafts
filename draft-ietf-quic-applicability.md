@@ -452,7 +452,7 @@ firewalls that rely on the port number for application identification.
 # Connection Migration
 
 QUIC supports connection migration by the client. If a lower-layer address
-changes, a QUIC endpont can still associate packets with an existing connection
+changes, a QUIC endpoint can still associate packets with an existing connection
 based on the Connection ID (see also section {{connid}}) in the QUIC header,
 if present. This supports cases where address information changes due to e.g.
 NAT rebinding, intentional change of the local interface, or based on an
@@ -460,11 +460,11 @@ indication in the handshake of the server for a preferred address to be used.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
 time, and as soon as the new path is validated all traffic will be switched over
-to the next path. For intention migrations the client can send probing packets
+to the next path. For intentional migrations the client can send probing packets
 before switching over to measurement and eventually pre-heat the path. The other
 endpoint in required to validate the new path before use in order to avoid
 address spoofiing attacks. Path validation takes one RTT and congestion control
-will also be reset on path mitragtion. Therefore migration usual has a performance
+will also be reset on path miragtion. Therefore migration usually has a performance
 impact.
 
 
