@@ -265,16 +265,18 @@ within Frames, where one QUIC packet on the wire can carry one or multiple
 stream frames.
 
 Streams can be unidirectional or bidirectional, and a stream may be initiated
-either by client or server. Only the initiator of unidirectional stream can
+either by client or server. Only the initiator of a unidirectional stream can
 send data on it. Due to offset encoding limitations, a stream can carry a
-maximum of 2^62-1 bytes in each direction.
+maximum of 2^62-1 bytes in each direction. In the presently unlikely event 
+that this limit is reached by an application, the stream can simply be closed 
+and replaced with a new one.
 
 Stream can be independently opened and closed, gracefully or by error. A sender
 closes a stream gracefully by setting the FIN bit on a STREAM frame. The sender
 can close a stream abruptly in an error condition using the RESET_STREAM frame,
 while the receiver can close a stream abruptly by sending a STOP_SENDING frame.
 
-If a stream that is critical for an applciation is closed, the application can
+If a stream that is critical for an application is closed, the application can
 generate respective error messages on the application layer to inform the
 other end and/or the higher layer, and eventually indicate QUIC to reset
 the connection. QUIC, however, does not need to know which streams are
@@ -296,10 +298,6 @@ doesn't automatically lead to an increase of the maximum number of streams by
 the receiver. Therefore it can be valuable to expose maximum number of allowed,
 currently open and currently used streams to the application to make the mapping
 of data to streams dependent on this information.
-
-Streams can carry a maximum of 2^62-1 bytes in each direction due to offset
-encoding limitations. In the presently unlikely event that this limit is reached
-by an application, the stream can simply be closed and replaced with a new one.
 
 ## Stream versus Flow Multiplexing
 
