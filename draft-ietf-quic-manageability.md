@@ -603,7 +603,7 @@ the QUIC packet is set to 1, indicating a long header.
 
 Note, that proprietary QUIC versions, that have been deployed before standardization,
 might not set the first bit in a QUIC long header packets to 1. To parse these
-versions example code is provided in the appendix (see {{#sec:google-version}}),
+versions example code is provided in the appendix (see {{#sec-google-version}}),
 however, it is expected that these versions will gradually disappear over time.
 
 When the version has been identified as QUIC version 1, the packet type needs to be
@@ -922,7 +922,7 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.
 
 # Appendix
 
-## Handling of Google QUIC  {#sec:google-version} 
+## Handling of Google QUIC  {#sec-google-version} 
 
 This sections contains algorithms that allows parsing versions from both
 Google QUIC and IETF QUIC. These mechanisms will become
