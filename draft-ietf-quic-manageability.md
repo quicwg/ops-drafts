@@ -930,8 +930,8 @@ irrelevant when IETF QUIC is fully deployed and Google QUIC is deprecated.
 
 Conceptually, a Google QUIC version is an opaque 32bit field. When we refer to a
 version with four printable characters, we use its ASCII representation:
-for example, Q050 refers to {'Q', '0', '5', '0'} which is equal to
-{0x51, 0x30, 0x35, 0x30}. Otherwise, we use its hexadecimal representation:
+for example, Q050 refers to \{'Q', '0', '5', '0'\} which is equal to
+\{0x51, 0x30, 0x35, 0x30\}. Otherwise, we use its hexadecimal representation:
 for example, 0xff00001d refers to {0xff, 0x00, 0x00, 0x1d}.
 
 QUIC versions that start with 'Q' or 'T' followed by three digits are 
@@ -941,9 +941,9 @@ Versions Q046, Q050, T050, and T051 are not fully documented, but this appendix
 should contain enough information to allow parsing Client Hellos for those versions.
 
 This appendis uses the following conventions:
-array[i] – one byte at index i of array
-array[i:j] – subset of array starting with index i (inclusive) up to j-1 (inclusive)
-array[i:] – subset of array starting with index i (inclusive) up to the end of the array
+array\[i\] – one byte at index i of array
+array\[i:j\] – subset of array starting with index i (inclusive) up to j-1 (inclusive)
+array\[i:\] – subset of array starting with index i (inclusive) up to the end of the array
 
 ### Distinguishing IETF QUIC and Google QUIC Versions
 
