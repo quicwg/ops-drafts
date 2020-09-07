@@ -267,15 +267,15 @@ stream frames.
 Streams can be unidirectional or bidirectional, and a stream may be initiated
 either by client or server. Only the initiator of a unidirectional stream can
 send data on it. Due to offset encoding limitations, a stream can carry a
-maximum of 2^62-1 bytes in each direction. In the presently unlikely event 
-that this limit is reached by an application, the stream can simply be closed 
+maximum of 2^62-1 bytes in each direction. In the presently unlikely event
+that this limit is reached by an application, the stream can simply be closed
 and replaced with a new one.
 
-Streams can be independently opened and closed, gracefully or by error. An 
-application can gracefully close the egress direction of a stream by instructing 
-QUIC to send a FIN bit in a STREAM frame. It cannot gracefully close the ingress 
-direction without a peer-generated FIN, much like in TCP. However, an endpoint 
-can abruptly close either the ingress or egress direction; these actions are 
+Streams can be independently opened and closed, gracefully or by error. An
+application can gracefully close the egress direction of a stream by instructing
+QUIC to send a FIN bit in a STREAM frame. It cannot gracefully close the ingress
+direction without a peer-generated FIN, much like in TCP. However, an endpoint
+can abruptly close either the ingress or egress direction; these actions are
 fully independent of each other.
 
 If a stream that is critical for an application is closed, the application can
