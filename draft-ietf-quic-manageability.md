@@ -589,7 +589,7 @@ Work is currently underway in the TLS working group to encrypt the SNI in TLS
 would make SNI-based application identification impossible through passive
 measurement.
 
-### Extracting the Server Name Indication (SNI) information
+### Extracting Server Name Indication (SNI) Information
 
 If the SNI is not encrypted it can be derived form the QUIC Initial packet 
 by calculating the Initial Secret to decrypt the packet payload and parse the 
@@ -603,7 +603,7 @@ the QUIC packet is set to 1, indicating a long header.
 
 Note, that proprietary QUIC versions, that have been deployed before standardization,
 might not set the first bit in a QUIC long header packets to 1. To parse these
-versions example code is provided in the appendix (see {{#sec-google-version}}),
+versions example code is provided in the appendix (see {{sec-google-version}}),
 however, it is expected that these versions will gradually disappear over time.
 
 When the version has been identified as QUIC version 1, the packet type needs to be
