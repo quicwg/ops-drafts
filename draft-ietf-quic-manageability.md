@@ -324,8 +324,8 @@ including any TLS Server Name Indication (SNI) present, is obfuscated using the
 Initial secrect. The QUIC PADDING frame shown here may be present to ensure the
 Client Hello datagram has a minimum size of 1200 octets, to mitigate the
 possibility of handshake amplification. Note that the location of PADDING is
-implementation-dependent, and PADDING frames may not appear in the Initial packet
-in a coalesced packet.
+implementation-dependent, and PADDING frames may not appear in the Initial
+packet in a coalesced packet.
 
 ~~~~~
 +------------------------------------------------------------+
