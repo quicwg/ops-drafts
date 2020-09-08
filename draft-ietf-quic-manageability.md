@@ -912,7 +912,7 @@ pseudo provided in the appendix is based on input provided by David Schinazi.
 
 # Acknowledgments
 
-Thanks to Martin Thomas and Martin Duke for contributing by reviewing and 
+Thanks to Martin Thomson and Martin Duke for contributing by reviewing and 
 providing text proposals.
 
 This work is partially supported by the European Commission under Horizon 2020
