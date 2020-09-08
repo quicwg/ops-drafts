@@ -920,9 +920,14 @@ grant agreement no. 688421 Measurement and Architecture for a Middleboxed
 Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and
 Innovation under contract no. 15.0268. This support does not imply endorsement.
 
-# Appendix
+# Appendix 
 
-## Handling of Google QUIC  {#sec-google-version} 
+This appendix uses the following conventions:
+array\[i\] – one byte at index i of array
+array\[i:j\] – subset of array starting with index i (inclusive) up to j-1 (inclusive)
+array\[i:\] – subset of array starting with index i (inclusive) up to the end of the array
+
+## Distinguishing IETF QUIC and Google QUIC Versions {#sec-google-version}
 
 This sections contains algorithms that allows parsing versions from both
 Google QUIC and IETF QUIC. These mechanisms will become
@@ -939,13 +944,6 @@ Google QUIC versions. Versions up to and including 43 are documented by
 <https://docs.google.com/document/d/1WJvyZflAO2pq77yOLbp9NsGjC1CHetAXV8I0fQe-B_U/preview>.
 Versions Q046, Q050, T050, and T051 are not fully documented, but this appendix
 should contain enough information to allow parsing Client Hellos for those versions.
-
-This appendix uses the following conventions:
-array\[i\] – one byte at index i of array
-array\[i:j\] – subset of array starting with index i (inclusive) up to j-1 (inclusive)
-array\[i:\] – subset of array starting with index i (inclusive) up to the end of the array
-
-### Distinguishing IETF QUIC and Google QUIC Versions
 
 To extract the version number itself, one needs to look at the first byte of
 the QUIC packet, in other words the first byte of the UDP payload.
@@ -976,35 +974,7 @@ the QUIC packet, in other words the first byte of the UDP payload.
   }
 ~~~
 
-### Initial salt value for Google versions
-
-Q043 and Q046 do not encrypt the Initial packet.  
-
-~~~
-  if (version == Q050) {
-      initial_salt = {0x50, 0x45, 0x74, 0xef, 0xd0, 0x66, 0xfe,
-                      0x2f, 0x9d, 0x94, 0x5c, 0xfc, 0xdb, 0xd3,
-                      0xa7, 0xf0, 0xd3, 0xb5, 0x6b, 0x45}
-    } else if (version == T050) {
-      initial_salt = {0x7f, 0xf5, 0x79, 0xe5, 0xac, 0xd0, 0x72,
-                      0x91, 0x55, 0x80, 0x30, 0x4c, 0x43, 0xa2,
-                      0x36, 0x7c, 0x60, 0x48, 0x83, 0x10}
-    } else if (version == T051) {
-      initial_salt = {0x7a, 0x4e, 0xde, 0xf4, 0xe7, 0xcc, 0xee,
-                      0x5f, 0xa4, 0x50, 0x6c, 0x19, 0x12, 0x4f,
-                      0xc8, 0xcc, 0xda, 0x6e, 0x03, 0x3d}
-    } else if (version == 0xff00001b) {
-      initial_salt = {0xc3, 0xee, 0xf7, 0x12, 0xc7, 0x2e, 0xbb,
-                      0x5a, 0x11, 0xa7, 0xd2, 0x43, 0x2b, 0xb4,
-                      0x63, 0x65, 0xbe, 0xf9, 0xf5, 0x02}
-    } else if (version == 0xff00001d) {
-      initial_salt = {0xaf, 0xbf, 0xec, 0x28, 0x99, 0x93, 0xd2,
-                      0x4c, 0x9e, 0x97, 0x86, 0xf1, 0x9c, 0x61,
-                      0x11, 0xe0, 0x43, 0x90, 0xa8, 0x99}
-    }
-~~~
-
-### Extracting the CRYPTO frame for different versions
+## Extracting the CRYPTO frame
 
 ~~~
   counter = 0
@@ -1013,61 +983,21 @@ Q043 and Q046 do not encrypt the Initial packet.
   }
   first_nonzero_payload_byte = payload[counter]
   fnz_payload_byte_bit3 = ((first_nonzero_payload_byte & 0x20) != 0)
-  if (version == Q043 || version == Q046) {
-    if ((first_nonzero_payload_byte & 0x9f) != 0) {
-      abort("Unexpected frame")
-    }
-    if (payload[counter+1] != 0x01) {
-      abort("Unexpected stream ID")
-    }
-    counter += 2
-    if (fnz_payload_byte_bit3) {
-      stream_data_length = payload[counter:counter+2]
-      crypto_data = payload[counter+2:counter+2+stream_data_length]
-    } else {
-      crypto_data = payload[counter:]
-    }
-  } else if (version == Q050 || version == T050 || version == T051) {
-    if (first_nonzero_payload_byte != 0x08) {
-      abort("Unexpected frame")
-    }
-    if (payload[counter+1] != 0x00) {
-      abort("Unexpected crypto stream offset")
-    }
-    counter += 2
-    if ((payload[counter] & 0xc0) == 0) {
-      crypto_data_length = payload[counter]
-      counter += 1
-    } else {
-      crypto_data_length = payload[counter:counter+2]
-      counter += 2
-    }
-    crypto_data = payload[counter:counter+crypto_data_length]
-  } else {  // All other versions
-    if (first_nonzero_payload_byte != 0x06) {
-      abort("Unexpected frame")
-    }
-    if (payload[counter+1] != 0x00) {
-      abort("Unexpected crypto stream offset")
-    }
-    counter += 2
-    if ((payload[counter] & 0xc0) == 0) {
-      crypto_data_length = payload[counter]
-      counter += 1
-    } else {
-      crypto_data_length = payload[counter:counter+2]
-      counter += 2
-    }
-    crypto_data = payload[counter:counter+crypto_data_length]
+ 
+  if (first_nonzero_payload_byte != 0x06) {
+    abort("Unexpected frame")
   }
-  
-  // Extracting the Client Hello from the Crypto Data
-    if (version == Q043 || version == Q046 || version == Q050) {
-    if (crypto_data[0:4] != "CHLO") {
-      abort("Unexpected handshake message")
-    }
-    ParseQuicCrypto(crypto_data)
+  if (payload[counter+1] != 0x00) {
+    abort("Unexpected crypto stream offset")
+  }
+  counter += 2
+  if ((payload[counter] & 0xc0) == 0) {
+    crypto_data_length = payload[counter]
+    counter += 1
   } else {
-    ParseTLS(crypto_data)
+    crypto_data_length = payload[counter:counter+2]
+    counter += 2
   }
+  crypto_data = payload[counter:counter+crypto_data_length]
+  ParseTLS(crypto_data)
 ~~~
