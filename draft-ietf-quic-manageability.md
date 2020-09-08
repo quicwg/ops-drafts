@@ -591,9 +591,9 @@ measurement.
 
 ### Extracting Server Name Indication (SNI) Information
 
-If the SNI is not encrypted it can be derived form the QUIC Initial packet 
+If the SNI is not encrypted it can be derived from the QUIC Initial packet 
 by calculating the Initial Secret to decrypt the packet payload and parse the 
-QUIC CRYPTO Frame with the TLS ClientHello.
+QUIC CRYPTO Frame containing the TLS ClientHello.
 
 As both the initial salt for the Initial Secret as well as CRYPTO frame itself
 are version-specific, the first step is always to parse the version number
@@ -627,9 +627,9 @@ CRYPTO frame that contains the TLS Client Hello, which then can be respectively
 parsed similar as for all other TLS connections. The Initial client packet may
 contain other frames, so the first byte of each frame need to be checked to identify
 the frame type and the skip over the frame. Note that the length of the frames is 
-depended on the frame type. Usually for QUIC version 1, the packet is expected 
+dependent on the frame type. Usually for QUIC version 1, the packet is expected 
 to only carry the CRYPTO frame and optionally padding frames. However, padding
-which is one byte of zeros, may occur after or also before the CRYPO frame.
+which is one byte of zeros, may also occur before or after the CRYPTO frame.
 
 ## Flow association {#sec-flow-association}
 
@@ -940,7 +940,7 @@ Google QUIC versions. Versions up to and including 43 are documented by
 Versions Q046, Q050, T050, and T051 are not fully documented, but this appendix
 should contain enough information to allow parsing Client Hellos for those versions.
 
-This appendis uses the following conventions:
+This appendix uses the following conventions:
 array\[i\] – one byte at index i of array
 array\[i:j\] – subset of array starting with index i (inclusive) up to j-1 (inclusive)
 array\[i:\] – subset of array starting with index i (inclusive) up to the end of the array
