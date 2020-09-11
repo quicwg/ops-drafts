@@ -618,10 +618,11 @@ connection ID itself.
 To determine the end of the header and find the start of the payload further
 the packet number length, the source connection ID length, as well as the token
 length need to be extracted. The packet number length is defined by the seventh
-and eight bits of the header as described in section 17.2. of {{QUIC-TRANSPORT}}.
-The source connection ID length is specified in the byte after the destination
-connection ID. And the token length, which follows the source connection ID,
-is a variable length integer as specified in section 16 of {{QUIC-TRANSPORT}}.
+and eight bits of the header as described in section 17.2. of
+{{QUIC-TRANSPORT}}. The source connection ID length is specified in the byte
+after the destination connection ID. And the token length, which follows the
+source connection ID, is a variable length integer as specified in section 16
+of {{QUIC-TRANSPORT}}.
 
 Finally after decryption, the Initial Client packet can be parsed to detect the
 CRYPTO frame that contains the TLS Client Hello, which then can be respectively
