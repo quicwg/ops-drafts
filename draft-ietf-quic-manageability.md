@@ -601,18 +601,19 @@ are version-specific, the first step is always to parse the version number
 carry the version number, so it is necessary to also check the if first bit of
 the QUIC packet is set to 1, indicating a long header.
 
-Note, that proprietary QUIC versions, that have been deployed before standardization,
-might not set the first bit in a QUIC long header packets to 1. To parse these
-versions example code is provided in the appendix (see {{sec-google-version}}),
-however, it is expected that these versions will gradually disappear over time.
+Note, that proprietary QUIC versions, that have been deployed before
+standardization, might not set the first bit in a QUIC long header packets to
+1. To parse these versions example code is provided in the appendix (see
+{{sec-google-version}}), however, it is expected that these versions will
+gradually disappear over time.
 
-When the version has been identified as QUIC version 1, the packet type needs to be
-verified as an Initial packet by checking that the third and fourth bit of the header
-are both set to 0. Then the Client Destination Connection ID
-needs to be extracted to calculate the Initial Secret together with
-the version specific initial salt, as described in {{QUIC-TLS}}. The length of the
-connection ID is indicated in the 6th byte of the header followed by the connection
-ID itself.
+When the version has been identified as QUIC version 1, the packet type needs
+to be verified as an Initial packet by checking that the third and fourth bit
+of the header are both set to 0. Then the Client Destination Connection ID
+needs to be extracted to calculate the Initial Secret together with the
+version specific initial salt, as described in {{QUIC-TLS}}. The length of
+the connection ID is indicated in the 6th byte of the header followed by the
+connection ID itself.
 
 To determine the end of the header and find the start of the payload further
 the packet number length, the source connection ID length, as well as the token
@@ -625,11 +626,12 @@ is a variable length integer as specified in section 16 of {{QUIC-TRANSPORT}}.
 Finally after decryption, the Initial Client packet can be parsed to detect the
 CRYPTO frame that contains the TLS Client Hello, which then can be respectively
 parsed similar as for all other TLS connections. The Initial client packet may
-contain other frames, so the first byte of each frame need to be checked to identify
-the frame type and the skip over the frame. Note that the length of the frames is
-dependent on the frame type. Usually for QUIC version 1, the packet is expected
-to only carry the CRYPTO frame and optionally padding frames. However, padding
-which is one byte of zeros, may also occur before or after the CRYPTO frame.
+contain other frames, so the first byte of each frame need to be checked to
+identify the frame type and the skip over the frame. Note that the length of the
+frames is dependent on the frame type. Usually for QUIC version 1, the packet is
+expected to only carry the CRYPTO frame and optionally padding frames. However,
+padding which is one byte of zeros, may also occur before or after the CRYPTO
+frame.
 
 ## Flow association {#sec-flow-association}
 
@@ -924,8 +926,10 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.
 
 This appendix uses the following conventions:
 array\[i\] – one byte at index i of array
-array\[i:j\] – subset of array starting with index i (inclusive) up to j-1 (inclusive)
-array\[i:\] – subset of array starting with index i (inclusive) up to the end of the array
+array\[i:j\] – subset of array starting with index i (inclusive) up to j-1
+(inclusive)
+array\[i:\] – subset of array starting with index i (inclusive) up to the
+end of the array
 
 ## Distinguishing IETF QUIC and Google QUIC Versions {#sec-google-version}
 
@@ -941,9 +945,11 @@ for example, 0xff00001d refers to {0xff, 0x00, 0x00, 0x1d}.
 
 QUIC versions that start with 'Q' or 'T' followed by three digits are
 Google QUIC versions. Versions up to and including 43 are documented by
-<https://docs.google.com/document/d/1WJvyZflAO2pq77yOLbp9NsGjC1CHetAXV8I0fQe-B_U/preview>.
+<https://docs.google.com/document/d/
+1WJvyZflAO2pq77yOLbp9NsGjC1CHetAXV8I0fQe-B_U/preview>.
 Versions Q046, Q050, T050, and T051 are not fully documented, but this appendix
-should contain enough information to allow parsing Client Hellos for those versions.
+should contain enough information to allow parsing Client Hellos for those
+versions.
 
 To extract the version number itself, one needs to look at the first byte of
 the QUIC packet, in other words the first byte of the UDP payload.
