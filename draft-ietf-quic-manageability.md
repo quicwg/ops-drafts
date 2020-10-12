@@ -939,7 +939,8 @@ Google QUIC and IETF QUIC. These mechanisms will become
 irrelevant when IETF QUIC is fully deployed and Google QUIC is deprecated.
 
 Note that other than this appendix, nothing in this document applies to
-Google QUIC.
+Google QUIC. And the purpose of this appendix is merely to distinguish IETF QUIC 
+from any versions of Google QUIC.
 
 Conceptually, a Google QUIC version is an opaque 32bit field. When we refer to a
 version with four printable characters, we use its ASCII representation:
