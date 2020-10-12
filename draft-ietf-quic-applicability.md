@@ -462,10 +462,10 @@ Currently QUIC only supports failover cases. Only one "path" can be used at a
 time, and as soon as the new path is validated all traffic will be switched over
 to the next path. For intentional migrations the client can send probing packets
 before switching over to measure the path characteristics and eventually pre-heat
-the congestion controller. The other endpoint in required to validate the new path
-before use in order to avoid address spoofing attacks. Path validation takes at least one
-RTT and congestion control will also be reset on path migration. Therefore
-migration usually has a performance impact.
+the congestion controller. The other endpoint in required to validate the new
+path before use in order to avoid address spoofing attacks. Path validation takes
+at least one RTT and congestion control will also be reset on path migration.
+Therefore migration usually has a performance impact.
 
 
 # Connection closure
