@@ -517,7 +517,7 @@ Connection ID.
 
 Note that the Connection ID in the short header may be omitted. This is a
 per-connection configuration option; if the Connection ID is not present, then
-the peer omitting the connection ID will use the same local address for the
+the peer omitting the connection ID needs to use the same local address for the
 lifetime of the connection and connection migration is
 not supported for that direction of the connection.
 
