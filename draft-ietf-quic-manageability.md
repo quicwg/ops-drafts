@@ -934,7 +934,7 @@ end of the array
 
 ## Distinguishing IETF QUIC and Google QUIC Versions {#sec-google-version}
 
-This sections contains algorithms that allows parsing versions from both
+This section contains algorithms that allows parsing versions from both
 Google QUIC and IETF QUIC. These mechanisms will become
 irrelevant when IETF QUIC is fully deployed and Google QUIC is deprecated.
 
