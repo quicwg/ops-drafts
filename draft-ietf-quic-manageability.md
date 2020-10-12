@@ -321,7 +321,7 @@ finishing the transmission of CRYPTO frames.
 The Client Hello datagram exposes version number, source and destination
 connection IDs in the clear. Information in the TLS Client Hello frame,
 including any TLS Server Name Indication (SNI) present, is obfuscated using the
-Initial secrect. The QUIC PADDING frame shown here may be present to ensure the
+Initial secret. The QUIC PADDING frame shown here may be present to ensure the
 Client Hello datagram has a minimum size of 1200 octets, to mitigate the
 possibility of handshake amplification. Note that the location of PADDING is
 implementation-dependent, and PADDING frames may not appear in the Initial
