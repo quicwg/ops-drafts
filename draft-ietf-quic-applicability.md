@@ -460,17 +460,23 @@ firewalls that rely on the port number for application identification.
 
 # Connection Migration
 
-QUIC supports connection migration. Even if lower-layer addresses (usually the
-4-tuple of IP addresses and ports) changes, QUIC packets can still be associated
-with an existing connection based on the Connection ID (see also section
-{{connid}}) in the QUIC header, if present. This supports cases where address
-information changes due to e.g. NAT rebinding or change of the local interface.
-Currently QUIC only supports failover cases. Only one "path" can be used at a
-time, and as soon as the new path is validated all traffic will be switched over
-to the next path. Of course if an endpoint decided to not use the Connection ID
-in short packets (Zero-length Conn ID) for a certain connection, migration is
-not supported for that direction of the connection.
+QUIC supports connection migration by the client. If a lower-layer address
+changes, a QUIC endpoint can still associate packets with an existing connection
+based on the Connection ID (see also {{connid}}) in the QUIC header,
+if present. This supports cases where address information changes, such as
+NAT rebinding, intentional change of the local interface, or based on an
+indication in the handshake of the server for a preferred address to be used.
 
+Currently QUIC only supports failover cases. Only one "path" can be used at a
+time, and only when the new path is validated all traffic can be switched over
+to that new path. Path validation means that the other endpoint in required to
+validate the new path before use in order to avoid address spoofing attacks.
+Path validation takes at least one RTT and congestion control will also be reset
+on path migration. Therefore migration usually has a performance impact.
+
+As long as the new path is not validated only probing packets can be sent.
+However, the probing packets can be used measure path characteristics as
+input for the switching decision or the congestion controller on the new path.
 
 # Connection closure
 
@@ -521,8 +527,9 @@ Connection ID.
 
 Note that the Connection ID in the short header may be omitted. This is a
 per-connection configuration option; if the Connection ID is not present, then
-the peer omitting the connection ID will use the same local address for the
-lifetime of the connection.
+the peer omitting the connection ID needs to use the same local address for the
+lifetime of the connection and connection migration is
+not supported for that direction of the connection.
 
 ## Server-Generated Connection ID
 
