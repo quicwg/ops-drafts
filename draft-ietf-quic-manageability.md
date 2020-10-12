@@ -352,7 +352,7 @@ packet in a coalesced packet.
 
 The Server Hello datagram also exposes version number, source and
 destination connection IDs and information in the TLS Server Hello message
-which is obfuscated using the Initial secrect.
+which is obfuscated using the Initial secret.
 
 ~~~~~
 +------------------------------------------------------------+
