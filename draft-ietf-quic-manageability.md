@@ -319,12 +319,13 @@ finishing the transmission of CRYPTO frames.
 {: #fig-client-hello title="Typical 1-RTT QUIC Client Hello datagram pattern"}
 
 The Client Hello datagram exposes version number, source and destination
-connection IDs, and information in the TLS Client Hello message, including any
-TLS Server Name Indication (SNI) present, in the clear. The QUIC PADDING frame
-shown here may be present to ensure the Client Hello datagram has a minimum size
-of 1200 octets, to mitigate the possibility of handshake amplification. Note
-that the location of PADDING is implementation-dependent, and PADDING frames may
-not appear in the Initial packet in a coalesced packet.
+connection IDs in the clear. Information in the TLS Client Hello frame,
+including any TLS Server Name Indication (SNI) present, is obfuscated using the
+Initial secret. The QUIC PADDING frame shown here may be present to ensure the
+Client Hello datagram has a minimum size of 1200 octets, to mitigate the
+possibility of handshake amplification. Note that the location of PADDING is
+implementation-dependent, and PADDING frames may not appear in the Initial
+packet in a coalesced packet.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -349,8 +350,9 @@ not appear in the Initial packet in a coalesced packet.
 ~~~~~
 {: #fig-server-hello title="Typical QUIC Server Hello datagram pattern"}
 
-The Server Hello datagram exposes version number, source and destination
-connection IDs, and information in the TLS Server Hello message.
+The Server Hello datagram also exposes version number, source and
+destination connection IDs and information in the TLS Server Hello message
+which is obfuscated using the Initial secret.
 
 ~~~~~
 +------------------------------------------------------------+
