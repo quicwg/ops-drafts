@@ -938,6 +938,9 @@ This section contains algorithms that allows parsing versions from both
 Google QUIC and IETF QUIC. These mechanisms will become
 irrelevant when IETF QUIC is fully deployed and Google QUIC is deprecated.
 
+Note that other than this appendix, nothing in this document applies to
+Google QUIC.
+
 Conceptually, a Google QUIC version is an opaque 32bit field. When we refer to a
 version with four printable characters, we use its ASCII representation:
 for example, Q050 refers to \{'Q', '0', '5', '0'\} which is equal to
