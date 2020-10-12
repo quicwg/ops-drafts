@@ -454,7 +454,7 @@ firewalls that rely on the port number for application identification.
 QUIC supports connection migration by the client. If a lower-layer address
 changes, a QUIC endpoint can still associate packets with an existing connection
 based on the Connection ID (see also {{connid}}) in the QUIC header,
-if present. This supports cases where address information changes due to e.g.
+if present. This supports cases where address information changes, such as
 NAT rebinding, intentional change of the local interface, or based on an
 indication in the handshake of the server for a preferred address to be used.
 
