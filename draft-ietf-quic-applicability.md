@@ -467,7 +467,7 @@ on path migration. Therefore migration usually has a performance impact.
 
 As long as the new path is not validated only probing packets can be sent.
 However, the probing packets can be used measure path characteristics as
-input for the switching decision or the congestion controller on the new path. 
+input for the switching decision or the congestion controller on the new path.
 
 # Connection closure
 
