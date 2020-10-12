@@ -459,14 +459,15 @@ NAT rebinding, intentional change of the local interface, or based on an
 indication in the handshake of the server for a preferred address to be used.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
-time, and as soon as the new path is validated all traffic will be switched over
-to the next path. For intentional migrations the client can send probing packets
-before switching over to measure the path characteristics and eventually
-pre-heat the congestion controller. The other endpoint in required to validate
-the new path before use in order to avoid address spoofing attacks. Path
-validation takes at least one RTT and congestion control will also be reset on
-path migration. Therefore migration usually has a performance impact.
+time, and only when the new path is validated all traffic can be switched over
+to that new path. Path validation means that the other endpoint in required to
+validate the new path before use in order to avoid address spoofing attacks.
+Path validation takes at least one RTT and congestion control will also be reset
+on path migration. Therefore migration usually has a performance impact.
 
+As long as the new path is not validated only probing packets can be sent.
+However, the probing packets can be used measure path characteristics as
+input for the switching decision or the congestion controller on the new path. 
 
 # Connection closure
 
