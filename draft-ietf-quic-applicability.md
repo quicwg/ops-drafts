@@ -207,11 +207,11 @@ of these issues.
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
 Because QUIC is encapsulated in UDP, applications using QUIC must deal with
-short idle timeouts. Deployed stateful middleboxes will generally establish
-state for UDP flows on the first packet state, and keep state for much shorter
-idle periods than for TCP. According to a 2010 study ({{Hatonen10}}), UDP
-applications can assume that any NAT binding or other state entry will be
-expired after just thirty seconds of inactivity.
+short network idle timeouts. Deployed stateful middleboxes will generally
+establish state for UDP flows on the first packet state, and keep state for
+much shorter idle periods than for TCP. According to a 2010 study
+({{Hatonen10}}), UDP applications can assume that any NAT binding or other
+state entry will be expired after just thirty seconds of inactivity.
 
 By using a Connection ID, QUIC is designed to be robust to NAT address
 rebinding after a timeout. However, some QUIC connections may not be robust to
@@ -221,7 +221,10 @@ with functions other than address translation may still affect the path. In
 particular, firewalls will often not admit server traffic for which it has not
 kept state for corresponding packets from the client.
 
-A QUIC application has three strategies to deal with this issue:
+A QUIC application has three strategies to deal with this issue by adjusting idle
+periods (noting that idle periods and the network idle timeout is distinct from the
+connection idle timeout, defined as the minimum of the idle timeout parameter 
+in Section 10.1 of {{QUIC-TRANSPORT}}):
 
 - Ignore it, if the application-layer protocol consists only of interactions
   with no or very short idle periods, or the protocol's resistance to NAT
@@ -480,7 +483,8 @@ input for the switching decision or the congestion controller on the new path.
 
 # Connection closure
 
-QUIC connections are closed either by expiration of an idle timeout or by an
+QUIC connections are closed either by expiration of an idle timeout, set by
+connection parameters, or by an
 explicit indication of the application that a connection should be closed
 (immediate close). While data could still be received after the immediate close
 has been initiated by one endpoint (for a limited time period), the expectation
