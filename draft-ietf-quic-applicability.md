@@ -224,7 +224,7 @@ kept state for corresponding packets from the client.
 A QUIC application has three strategies to deal with this issue by adjusting idle
 periods (noting that idle periods and the network idle timeout is distinct from the
 connection idle timeout, defined as the minimum of the idle timeout parameter 
-in Section 10.1 of {{QUIC-TRANSPORT}}):
+in Section 10.1 of {{QUIC}}):
 
 - Ignore it, if the application-layer protocol consists only of interactions
   with no or very short idle periods, or the protocol's resistance to NAT
