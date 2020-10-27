@@ -240,9 +240,15 @@ keep-alives, to prevent the connection and any on-path state from timing out.
 Recommendations for the use of keep-alives are application specific, mainly
 depending on the latency requirements and message frequency of the application.
 In this case, the application mapping must specify whether the client or server
-is responsible for keeping the application alive. Note that sending PING frames
+is responsible for keeping the application alive.  While {{Hatonen10}} suggests
+that 30 seconds might be a suitable value for the public Internet when a NAT
+is on path, larger values are preferable if the deployment can consistently
+survive NAT rebinds or is known to be in a controlled environments like e.g.
+data centres in order to lower network and computational load. Sending PING frames
 more frequently than every 30 seconds over long idle periods may result in a too
-much unproductive traffic and power usage for some situations.
+much unproductive traffic and power usage for some situations. Further short
+time-outs can make it harder to handle short network interrupts, like VM
+mitragtion or coverage loss during mobilty.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
