@@ -466,6 +466,9 @@ based on the Connection ID (see also {{connid}}) in the QUIC header,
 if present. This supports cases where address information changes, such as
 NAT rebinding, intentional change of the local interface, or based on an
 indication in the handshake of the server for a preferred address to be used.
+As such if the client knows or is likely to sit behind a NAT, use of the 
+Connection ID is strongly recommended. Further use of the Connection ID is
+generally recommendated when mitragtion is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
 time, and only when the new path is validated all traffic can be switched over
