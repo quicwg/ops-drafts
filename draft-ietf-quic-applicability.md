@@ -485,8 +485,8 @@ Only the client can actively migrate, however, servers can indicate during the
 handshake that they prefer to transfer the connection to a different address
 after the handshake, e.g. to move from an address that is shared by multiple
 servers to an unicast address. The server can provide an IPv4 and an IPv6
-address as transport paramenter during the TLS and the client can select
-between the two if both are provided. See also Section 9.6 of {{!QUIC}}.
+address as transport parameter during the TLS handshake and the client can 
+select between the two if both are provided. See also Section 9.6 of {{!QUIC}}.
 
 # Connection closure
 
