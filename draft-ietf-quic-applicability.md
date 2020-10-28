@@ -467,7 +467,7 @@ if present. This supports cases where address information changes, such as
 NAT rebinding, intentional change of the local interface, or based on an
 indication in the handshake of the server for a preferred address to be used.
 As such if the client knows or is likely to sit behind a NAT, use of the
-Connection ID is strongly recommended. A non-empty Connection ID is
+connection ID is strongly recommended. A non-empty connection ID is
 generally recommended when migration is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
