@@ -207,11 +207,17 @@ of these issues.
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
 Because QUIC is encapsulated in UDP, applications using QUIC must deal with
-short idle timeouts. Deployed stateful middleboxes will generally establish
-state for UDP flows on the first packet state, and keep state for much shorter
-idle periods than for TCP. According to a 2010 study ({{Hatonen10}}), UDP
-applications can assume that any NAT binding or other state entry will be
-expired after just thirty seconds of inactivity.
+short network idle timeouts. Deployed stateful middleboxes will generally
+establish state for UDP flows on the first packet state, and keep state for
+much shorter idle periods than for TCP. {{?RFC5382}} suggests a TCP idle
+period of at least 124 minutes, though there is not evidence of widespread
+implementation of this guideline in the literature. Short network timeout for
+UDP, however, is well-documented. According to a 2010 study
+({{Hatonen10}}), UDP applications can assume that any NAT binding or other
+state entry can expire after just thirty seconds of inactivity.  Section 3.5
+of {{?RFC8085}} further discusses keep-alive intervals for UDP: it
+requires a minimum value of 15 seconds, but recommends larger values, or
+omitting keepalive entirely.
 
 By using a Connection ID, QUIC is designed to be robust to NAT address
 rebinding after a timeout. However, some QUIC connections may not be robust to
@@ -221,7 +227,10 @@ with functions other than address translation may still affect the path. In
 particular, firewalls will often not admit server traffic for which it has not
 kept state for corresponding packets from the client.
 
-A QUIC application has three strategies to deal with this issue:
+A QUIC application has three strategies to deal with this issue by
+adjusting idle periods (noting that idle periods and the network idle
+timeout is distinct from the connection idle timeout, defined as the
+minimum of the idle timeout parameter in Section 10.1 of {{QUIC}}):
 
 - Ignore it, if the application-layer protocol consists only of interactions
   with no or very short idle periods, or the protocol's resistance to NAT
@@ -237,9 +246,16 @@ keep-alives, to prevent the connection and any on-path state from timing out.
 Recommendations for the use of keep-alives are application specific, mainly
 depending on the latency requirements and message frequency of the application.
 In this case, the application mapping must specify whether the client or server
-is responsible for keeping the application alive. Note that sending PING frames
-more frequently than every 30 seconds over long idle periods may result in a too
-much unproductive traffic and power usage for some situations.
+is responsible for keeping the application alive.  While {{Hatonen10}} suggests
+that 30 seconds might be a suitable value for the public Internet when a NAT
+is on path, larger values are preferable if the deployment can consistently
+survive NAT rebinding, or is known to be in a controlled environments like e.g.
+data centres in order to lower network and computational load. Sending PING
+frames more frequently than every 30 seconds over long idle periods may result
+in excessive unproductive traffic in some situations, and to unacceptable
+power usage for power-constrained (mobile) devices. Additionally, time-outs
+shorter than 30 seconds can make it harder to handle trasient network
+interruptions, such as VM migration or coverage loss during mobilty.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
@@ -480,7 +496,8 @@ input for the switching decision or the congestion controller on the new path.
 
 # Connection closure
 
-QUIC connections are closed either by expiration of an idle timeout or by an
+QUIC connections are closed either by expiration of an idle timeout, as
+determined by transport parameters, or by an
 explicit indication of the application that a connection should be closed
 (immediate close). While data could still be received after the immediate close
 has been initiated by one endpoint (for a limited time period), the expectation
