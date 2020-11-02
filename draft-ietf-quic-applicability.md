@@ -249,13 +249,13 @@ In this case, the application mapping must specify whether the client or server
 is responsible for keeping the application alive.  While {{Hatonen10}} suggests
 that 30 seconds might be a suitable value for the public Internet when a NAT
 is on path, larger values are preferable if the deployment can consistently
-survive NAT rebinds or is known to be in a controlled environments like e.g.
+survive NAT rebinding, or is known to be in a controlled environments like e.g.
 data centres in order to lower network and computational load. Sending PING
 frames more frequently than every 30 seconds over long idle periods may result
-in a too much unproductive traffic and power usage for some situations.
-Additionally, time-outs shorter than 30 seconds can make it harder to handle
-short network interruptions, such as VM migration or coverage loss during
-mobilty.
+in excessive unproductive traffic in some situations, and to unacceptable
+power usage for power-constrained (mobile) devices. Additionally, time-outs
+shorter than 30 seconds can make it harder to handle trasient network
+interruptions, such as VM migration or coverage loss during mobilty.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
