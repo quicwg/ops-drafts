@@ -135,11 +135,13 @@ determine which version is used and the meaning and location of fields used in
 the version negotiation process is invariant
 {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
-This document is focused on the protocol as presently defined in
-{{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Non-invariant parts of the wire image
-as described herein and in those documents cannot be used to identify QUIC
-as a protocol, and cannot be relied upon to infer behavior of
-future versions of QUIC.
+This document describes only version 1 the QUIC protocol, whose wire image
+is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Note that features
+of the wire image described herein and in those documents may change in future
+versions of the protocol, and cannot be used to identify QUIC as a protocol or
+to infer the behavior of future versions of QUIC. {{sec-google-version}}
+provides non-normative guidance on the identification of QUIC version 1
+packets compared to other deployed versions at the date if publication.
 
 ## QUIC Packet Header Structure {#public-header}
 
