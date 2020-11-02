@@ -209,7 +209,10 @@ of these issues.
 Because QUIC is encapsulated in UDP, applications using QUIC must deal with
 short network idle timeouts. Deployed stateful middleboxes will generally
 establish state for UDP flows on the first packet state, and keep state for
-much shorter idle periods than for TCP. According to a 2010 study
+much shorter idle periods than for TCP. {{?RFC5382}} suggests a TCP idle 
+period of at least 124 minutes, though there is not evidence of widespread
+implementation of this guideline in the literature. Short network timeout for
+UDP, however, is well-documented. According to a 2010 study
 ({{Hatonen10}}), UDP applications can assume that any NAT binding or other
 state entry can expire after just thirty seconds of inactivity.
 
