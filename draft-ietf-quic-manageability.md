@@ -139,9 +139,9 @@ This document describes only version 1 the QUIC protocol, whose wire image
 is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Note that features
 of the wire image described herein and in those documents may change in future
 versions of the protocol, and cannot be used to identify QUIC as a protocol or
-to infer the behavior of future versions of QUIC. {{sec-google-quic}} provides
-non-normative guidance on the identification of QUIC version 1 packets compared
-to other deployed versions at the date if publication.
+to infer the behavior of future versions of QUIC. {{sec-google-version}}
+provides non-normative guidance on the identification of QUIC version 1
+packets compared to other deployed versions at the date if publication.
 
 ## QUIC Packet Header Structure {#public-header}
 
