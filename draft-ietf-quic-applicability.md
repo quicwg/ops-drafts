@@ -214,7 +214,10 @@ period of at least 124 minutes, though there is not evidence of widespread
 implementation of this guideline in the literature. Short network timeout for
 UDP, however, is well-documented. According to a 2010 study
 ({{Hatonen10}}), UDP applications can assume that any NAT binding or other
-state entry can expire after just thirty seconds of inactivity.
+state entry can expire after just thirty seconds of inactivity.  Section 3.5 
+of {{?RFC8085}} further discusses keep-alive intervals for UDP: it 
+requires a minimum value of 15 seconds, but recommends larger values, or
+omitting keepalive entirely.
 
 By using a Connection ID, QUIC is designed to be robust to NAT address
 rebinding after a timeout. However, some QUIC connections may not be robust to
