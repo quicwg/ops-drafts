@@ -482,6 +482,9 @@ based on the Connection ID (see also {{connid}}) in the QUIC header,
 if present. This supports cases where address information changes, such as
 NAT rebinding, intentional change of the local interface, or based on an
 indication in the handshake of the server for a preferred address to be used.
+As such if the client is known or likely to sit behind a NAT, use of a
+connection ID for the server is strongly recommended. A non-empty connection ID
+for the server is also strongly recommended when migration is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
 time, and only when the new path is validated all traffic can be switched over
@@ -493,6 +496,14 @@ on path migration. Therefore migration usually has a performance impact.
 As long as the new path is not validated only probing packets can be sent.
 However, the probing packets can be used measure path characteristics as
 input for the switching decision or the congestion controller on the new path.
+
+Only the client can actively migrate. However, servers can indicate during the
+handshake that they prefer to transfer the connection to a different address
+after the handshake, e.g. to move from an address that is shared by multiple
+servers to an address that is unique to the server instance. The server can
+provide an IPv4 and an IPv6 address in a transport parameter during the TLS
+handshake and the client can select between the two if both are provided.
+See also Section 9.6 of {{!QUIC}}.
 
 # Connection closure
 
