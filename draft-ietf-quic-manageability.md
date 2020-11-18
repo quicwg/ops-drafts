@@ -114,14 +114,6 @@ QUIC is at the moment very much a moving target. This document refers the state
 of the QUIC working group drafts as well as to changes under discussion, via
 issues and pull requests in GitHub current as of the time of writing.
 
-## Notational Conventions
-
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
-NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
-"MAY", and "OPTIONAL" in this document are to be interpreted as
-described in BCP 14 {{!RFC2119}} {{!RFC8174}} when, and only when, they
-appear in all capitals, as shown here.
-
 # Features of the QUIC Wire Image {#sec-wire-image}
 
 In this section, we discusses those aspects of the QUIC transport protocol that
@@ -436,7 +428,7 @@ As soon as the cryptographic context is established, all information in the QUIC
 header, including information exposed in the packet header, is integrity
 protected. Further, information that was sent and exposed in handshake packets
 sent before the cryptographic context was established are validated later during
-the cryptographic handshake.  Therefore, devices on path MUST NOT change any
+the cryptographic handshake.  Therefore, devices on path cannot alter any
 information or bits in QUIC packet headers, since alteration of header
 information will lead to a failed integrity check at the receiver, and can even
 lead to connection termination.
@@ -889,7 +881,7 @@ by the same congestion controller. If differential network treatment is desired,
 multiple QUIC connections to the same server might be used, given that
 establishing a new connection using 0-RTT support is cheap and fast.
 
-QoS mechanisms in the network MAY also use the connection ID for service
+QoS mechanisms in the network could also use the connection ID for service
 differentiation, as a change of connection ID is bound to a change of address
 which anyway is likely to lead to a re-route on a different path with different
 network characteristics.
