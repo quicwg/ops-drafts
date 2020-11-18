@@ -114,12 +114,6 @@ In the following sections we discuss specific caveats to QUIC's applicability,
 and issues that application developers must consider when using QUIC as a
 transport for their application.
 
-## Notational Conventions
-
-The words "MUST", "MUST NOT", "SHOULD", and "MAY" are used in this document.
-It's not shouting; when these words are capitalized, they have a special
-meaning as defined in {{RFC2119}}.
-
 # The Necessity of Fallback {#fallback}
 
 QUIC uses UDP as a substrate for userspace implementation and port numbers for
@@ -129,7 +123,7 @@ systematic disadvantage of UDP traffic compared to TCP in the Internet
 percent of networks simply block UDP traffic. All applications running on top
 of QUIC must therefore either be prepared to accept connectivity failure on
 such networks, or be engineered to fall back to some other transport protocol.
-This fallback SHOULD provide TLS 1.3 or equivalent cryptographic protection,
+This fallback needs to provide equivalent cryptographic protection to TLS 1.3,
 if available, in order to keep fallback from being exploited as a downgrade
 attack. In the case of HTTP, this fallback is TLS 1.3 over TCP.
 
@@ -148,7 +142,7 @@ Note that there is some evidence of middleboxes blocking SYN data even if TFO
 was successfully negotiated (see {{PaaschNanog}}).
 
 Any fallback mechanism is likely to impose a degradation of performance;
-however, fallback MUST not silently violate the application's expectation of
+however, fallback must not silently violate the application's expectation of
 confidentiality or integrity of its payload data.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
@@ -185,12 +179,12 @@ Data sent during 0-RTT resumption also cannot benefit from perfect forward
 secrecy (PFS).
 
 Data in the first flight sent by the client in a connection established with
-0-RTT MUST be idempotent (as specified in section 2.1 in {{!QUIC-TLS}}).
-Applications MUST be designed, and their data MUST be framed, such that multiple
+0-RTT must be idempotent as specified in section 2.1 in {{!QUIC-TLS}}.
+Applications must be designed, and their data must be framed, such that multiple
 reception of idempotent data is recognized as such by the receiver. Applications
 that cannot treat data that may appear in a 0-RTT connection establishment as
-idempotent MUST NOT use 0-RTT establishment. For these reason the QUIC transport
-SHOULD provide some or all of the following interfaces to applications:
+idempotent cannot use 0-RTT establishment. For these reason the QUIC transport
+should provide some or all of the following interfaces to applications:
 
 * indicate if 0-RTT support is in general desired, which implies that lack of
 PFS is acceptable for some data;
@@ -330,7 +324,7 @@ carried inside QUIC's encryption boundary, no information about the stream(s)
 whose frames are carried by a given packet is visible to the network.
 Therefore stream multiplexing is not intended to be used for differentiating
 streams in terms of network treatment. Application traffic requiring different
-network treatment SHOULD therefore be carried over different five-tuples (i.e.
+network treatment should therefore be carried over different five-tuples (i.e.
 multiple QUIC connections). Given QUIC's ability to send application data in
 the first RTT of a connection (if a previous connection to the same host has
 been successfully established to provide the respective credentials), the cost
@@ -458,7 +452,7 @@ the TCP port already registered for the application is RECOMMENDED. For example,
 the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
-Applications SHOULD define an alternate endpoint discovery mechanism to allow
+Applications should define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{QUIC-HTTP}}
 sections 3.2 and 3.3) specifies the use of ALPN {{?RFC7301}} for service
 discovery which allows the server to use and announce a different
@@ -680,8 +674,8 @@ considerations for the underlying transport protocol are relevant for
 applications using QUIC, as well.
 
 Application developers should note that any fallback they use when QUIC cannot
-be used due to network blocking of UDP SHOULD guarantee the same security
-properties as QUIC; if this is not possible, the connection SHOULD fail to
+be used due to network blocking of UDP should guarantee the same security
+properties as QUIC; if this is not possible, the connection should fail to
 allow the application to explicitly handle fallback to a less-secure
 alternative. See {{fallback}}.
 
