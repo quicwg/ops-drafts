@@ -185,7 +185,7 @@ Data sent during 0-RTT resumption also cannot benefit from perfect forward
 secrecy (PFS).
 
 Data in the first flight sent by the client in a connection established with
-0-RTT MUST be idempotent (as specified in section 5.6 in {{!QUIC-TLS}}).
+0-RTT MUST be idempotent (as specified in Section 5.6 in {{!QUIC-TLS}}).
 Applications MUST be designed, and their data MUST be framed, such that multiple
 reception of idempotent data is recognized as such by the receiver. Applications
 that cannot treat data that may appear in a 0-RTT connection establishment as
@@ -319,7 +319,7 @@ of data to streams dependent on this information.
 
 While a QUIC implementation must necessarily provide a way for an application
 to send data on separate streams, it does not necessarily expose stream
-identifiers to the application (see, for example, {{QUIC-HTTP}} section 6)
+identifiers to the application (see, for example, {{QUIC-HTTP}}, Section 6)
 either at the sender or receiver end, so applications should not assume access
 to these identifiers.
 
@@ -518,8 +518,8 @@ therefore no additional data is expected from both sides.
 An immidate close will emit an CONNECTION_CLOSE frame. This frames has two sets
 of types: one for QUIC internal problems that might lead to connection closure,
 and one for closures initiated by the application. An application using QUIC can
-define application-specific error codes (see, for example, {{QUIC-HTTP}}
-section 8.1). In the case of a grateful shut-down initiated by the application
+define application-specific error codes (see, for example, {{QUIC-HTTP}},
+Section 8.1). In the case of a grateful shut-down initiated by the application
 after application layer negotiation, a NO_ERROR code is expected. Further,
 the CONNECTION_CLOSE frame provides an optional reason field, that can be used
 to append human-readable information to an error code. Note that QUIC
