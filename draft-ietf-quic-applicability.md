@@ -522,9 +522,9 @@ define application-specific error codes (see, for example, {{QUIC-HTTP}}
 section 8.1). In the case of a grateful shut-down initiated by the application
 after application layer negotiation, a NO_ERROR code is expected. Further,
 the CONNECTION_CLOSE frame provides an optional reason field, that can be used
-to append human-readable information to an error code. Note that QUIC RESET_STREAM
-and STOP_SENDING frames provide similar capablities. Usually application error
-codes are defined to be applicabile to all three frames.
+to append human-readable information to an error code. Note that QUIC
+RESET_STREAM and STOP_SENDING frames provide similar capablities. Usually
+application error codes are defined to be applicabile to all three frames.
 
 Alternatively, a QUIC connection can be silently closed by each endpoint
 separately after an idle timeout. If enabled as indicated by a transport
