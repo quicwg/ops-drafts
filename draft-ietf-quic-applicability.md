@@ -185,7 +185,7 @@ Data sent during 0-RTT resumption also cannot benefit from perfect forward
 secrecy (PFS).
 
 Data in the first flight sent by the client in a connection established with
-0-RTT MUST be idempotent (as specified in section 2.1 in {{!QUIC-TLS}}).
+0-RTT MUST be idempotent (as specified in section 5.6 in {{!QUIC-TLS}}).
 Applications MUST be designed, and their data MUST be framed, such that multiple
 reception of idempotent data is recognized as such by the receiver. Applications
 that cannot treat data that may appear in a 0-RTT connection establishment as
@@ -319,9 +319,9 @@ of data to streams dependent on this information.
 
 While a QUIC implementation must necessarily provide a way for an application
 to send data on separate streams, it does not necessarily expose stream
-identifiers to the application (see e.g. {{QUIC-HTTP}} section 6) either at
-the sender or receiver end, so applications should not assume access to these
-identifiers.
+identifiers to the application (see, for example, {{QUIC-HTTP}} section 6)
+either at the sender or receiver end, so applications should not assume access
+to these identifiers.
 
 ## Stream versus Flow Multiplexing
 
@@ -518,13 +518,13 @@ therefore no additional data is expected from both sides.
 An immidate close will emit an CONNECTION_CLOSE frame. This frames has two sets
 of types: one for QUIC internal problems that might lead to connection closure,
 and one for closures initiated by the application. An application using QUIC can
-define application-specific error codes, e.g. see {{QUIC-HTTP}} section 8.1. In
-the case of a grateful shut-down initiated by the application after application
-layer negotiation, a NO_ERROR code is expected. Further, the CONNECTION_CLOSE
-frame provides an optional reason field, that can be used to append
-human-readable information to an error code. Note that QUIC RESET_STREAM and
-STOP_SENDING frames provide similar capablities. Usually application error codes
-are defined to be applicabile to all three frames.
+define application-specific error codes (see, for example, {{QUIC-HTTP}}
+section 8.1). In the case of a grateful shut-down initiated by the application
+after application layer negotiation, a NO_ERROR code is expected. Further,
+the CONNECTION_CLOSE frame provides an optional reason field, that can be used
+to append human-readable information to an error code. Note that QUIC RESET_STREAM
+and STOP_SENDING frames provide similar capablities. Usually application error
+codes are defined to be applicabile to all three frames.
 
 Alternatively, a QUIC connection can be silently closed by each endpoint
 separately after an idle timeout. If enabled as indicated by a transport
@@ -536,9 +536,9 @@ have access to the computed minimum value for this connection. An application
 may adjust the maximum idle timeout based on the number of open or expected
 connections as shorter timeout values may free-up memory more quickly.
 If an application desires to keep the connection open for longer
-than the announced timeout, it can send keep-alives messages, or a QUIC
-implementation may provide an option to defer the time-out to avoid unnecessary
-load, as specified in Section 10.2.2 of {{QUIC}}.
+than the announced timeout, it can send keep-alive messages, or a QUIC
+implementation may provide an option to defer the time-out to avoid
+unnecessary load, as specified in Section 10.1.2 of {{QUIC}}.
 See {{resumption-v-keepalive}} for further guidance on keep-alives.
 
 
@@ -562,7 +562,7 @@ not supported for that direction of the connection.
 ## Server-Generated Connection ID
 
 QUIC supports a server-generated Connection ID, transmitted to the client during
-connection establishment (see Section 6.1 of {{!QUIC}}). Servers behind load
+connection establishment (see Section 7.2 of {{!QUIC}}). Servers behind load
 balancers may need to change the Connection ID during the handshake, encoding
 the identity of the server or information about its load balancing pool, in
 order to support stateless load balancing. Once the server generates a
