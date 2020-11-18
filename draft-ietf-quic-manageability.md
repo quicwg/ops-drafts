@@ -217,9 +217,10 @@ cryptographically obfuscated:
 Multiple QUIC packets may be coalesced into a UDP datagram, with a datagram
 carrying one or more long header packets followed by zero or one short header
 packets. When packets are coalesced, the Length fields in the long headers are
-used to separate QUIC packets. The length header field is variable length and
-its position in the header is also variable depending on the length of the
-source and destination connection ID. See Section 4.6 of {{QUIC-TRANSPORT}}.
+used to separate QUIC packets; see Section 12.2 of {{QUIC-TRANSPORT}}.
+The length header field is variable length, and its position in the header is
+also variable depending on the length of the source and destination connection
+ID; see Section 17.2 of {{QUIC-TRANSPORT}}.
 
 ## Use of Port Numbers
 
