@@ -877,30 +877,6 @@ and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
 are likely to fail, and are emphatically NOT RECOMMENDED.
 
-## QoS support and ECMP
-
-\[EDITOR'S NOTE: this is a bit speculative; keep?]
-
-QUIC does not provide any additional information on requirements on Quality of
-Service (QoS) provided from the network. QUIC assumes that all packets with the
-same 5-tuple {dest addr, source addr, protocol, dest port, source port} will
-receive similar network treatment.  That means all stream that are multiplexed
-over the same QUIC connection require the same network treatment and are handled
-by the same congestion controller. If differential network treatment is desired,
-multiple QUIC connections to the same server might be used, given that
-establishing a new connection using 0-RTT support is cheap and fast.
-
-QoS mechanisms in the network MAY also use the connection ID for service
-differentiation, as a change of connection ID is bound to a change of address
-which anyway is likely to lead to a re-route on a different path with different
-network characteristics.
-
-Given that QUIC is more tolerant of packet re-ordering than TCP (see
-{{packetnumber}}), Equal-cost multi-path routing (ECMP) does not necessarily
-need to be flow based.  However, 5-tuple (plus eventually connection ID if
-present) matching is still beneficial for QoS given all packets are handled by
-the same congestion controller.
-
 # IANA Considerations
 
 This document has no actions for IANA.
