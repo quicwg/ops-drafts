@@ -115,9 +115,7 @@ transport for their application.
 
 ## Notational Conventions
 
-The words "MUST", "MUST NOT", "SHOULD", and "MAY" are used in this document.
-It's not shouting; when these words are capitalized, they have a special
-meaning as defined in {{RFC2119}}.
+{::boilerplate bcp14}
 
 # The Necessity of Fallback {#fallback}
 
