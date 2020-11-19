@@ -127,11 +127,15 @@ traffic compared to TCP in the Internet {{Edeline16}}, somewhere between three
 {{Trammell16}} and five {{Swett16}} percent of networks simply block UDP
 traffic. All applications running on top of QUIC must therefore either be
 prepared to accept connectivity failure on such networks, or be engineered to
-fall back to some other transport protocol.
+fall back to some other transport protocol. In the case of HTTP, this fallback
+is TLS 1.3 over TCP.
 
-This fallback SHOULD provide TLS 1.3 or equivalent cryptographic protection,
-if available, in order to keep fallback from being exploited as a downgrade
-attack. In the case of HTTP, this fallback is TLS 1.3 over TCP.
+An application that implements fallback needs to consider the security
+consequences. A fallback to TCP and TLS 1.3 exposes control information to
+modification and manipulation in the network. Further downgrades to older TLS
+versions might result in significantly weaker cryptographic protection. For
+example, the results of protocol negotiation {{?ALPN=RFC7301}} only have
+confidentiality protection if TLS 1.3 is used.
 
 These applications must operate, perhaps with impaired functionality, in the
 absence of features provided by QUIC not present in the fallback protocol. For
