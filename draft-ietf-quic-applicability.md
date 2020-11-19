@@ -256,11 +256,12 @@ is responsible for keeping the application alive.  While {{Hatonen10}} suggests
 that 30 seconds might be a suitable value for the public Internet when a NAT
 is on path, larger values are preferable if the deployment can consistently
 survive NAT rebinding, or is known to be in a controlled environments like e.g.
-data centres in order to lower network and computational load. Sending PING
-frames more frequently than every 30 seconds over long idle periods may result
-in excessive unproductive traffic in some situations, and to unacceptable
-power usage for power-constrained (mobile) devices. Additionally, time-outs
-shorter than 30 seconds can make it harder to handle trasient network
+data centres in order to lower network and computational load.
+
+Sending PING frames more frequently than every 30 seconds over long idle
+periods may result in excessive unproductive traffic in some situations, and to
+unacceptable power usage for power-constrained (mobile) devices. Additionally,
+time-outs shorter than 30 seconds can make it harder to handle transient network
 interruptions, such as VM migration or coverage loss during mobilty.
 
 Alternatively, the client (but not the server) can use session resumption
@@ -270,7 +271,10 @@ data to a server over a connection idle longer than the server's idle timeout
 possible, this reconnection can use 0-RTT session resumption, reducing the
 latency involved with restarting the connection. This of course only applies in
 cases in which 0-RTT data is safe, when the client is the restarting peer, and
-when the data to be sent is idempotent.
+when the data to be sent is idempotent.  Using resumption in this way also
+assumes that the protocol does not accumulate any non-persistent state in
+association with a connection.  State bound to a connection cannot reliably be
+transferred to a resumed connection.
 
 The tradeoffs between resumption and keepalive need to be evaluated on a
 per-application basis. However, in general applications should use keepalives
