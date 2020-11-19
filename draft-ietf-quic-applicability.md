@@ -223,17 +223,21 @@ requires a minimum value of 15 seconds, but recommends larger values, or
 omitting keepalive entirely.
 
 By using a Connection ID, QUIC is designed to be robust to NAT address
-rebinding after a timeout. However, some QUIC connections may not be robust to
-rebinding because the routing infrastructure (in particular, load balancers)
-uses the address/port four-tuple to direct traffic. Furthermore, middleboxes
-with functions other than address translation may still affect the path. In
-particular, firewalls will often not admit server traffic for which it has not
-kept state for corresponding packets from the client.
+rebinding after a timeout. However, this only helps if one endpoint maintains
+availability at the address its peer uses, and the peer is the one to send
+after the timeout occurs.
 
-A QUIC application has three strategies to deal with this issue by
-adjusting idle periods (noting that idle periods and the network idle
-timeout is distinct from the connection idle timeout, defined as the
-minimum of the idle timeout parameter in Section 10.1 of {{QUIC}}):
+Some QUIC connections may not be robust to rebinding because the routing
+infrastructure (in particular, load balancers) uses the address/port four-tuple
+to direct traffic. Furthermore, middleboxes with functions other than address
+translation could still affect the path. In particular, firewalls will often
+not admit server traffic for which it has not kept state for corresponding
+packets from the client.
+
+A QUIC application can adjust idle periods to manage the risk of timeout
+(noting that idle periods and the network idle timeout is distinct from the
+connection idle timeout, defined as the minimum of the idle timeout parameter
+in Section 10.1 of {{QUIC}}), but then there are three options:
 
 - Ignore it, if the application-layer protocol consists only of interactions
   with no or very short idle periods, or the protocol's resistance to NAT
