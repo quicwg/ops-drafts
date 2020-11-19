@@ -119,13 +119,16 @@ transport for their application.
 
 # The Necessity of Fallback {#fallback}
 
-QUIC uses UDP as a substrate for userspace implementation and port numbers for
-NAT and middlebox traversal. While there is no evidence of widespread,
-systematic disadvantage of UDP traffic compared to TCP in the Internet
-{{Edeline16}}, somewhere between three {{Trammell16}} and five {{Swett16}}
-percent of networks simply block UDP traffic. All applications running on top
-of QUIC must therefore either be prepared to accept connectivity failure on
-such networks, or be engineered to fall back to some other transport protocol.
+QUIC uses UDP as a substrate. This enables both userspace implementation
+traversal of middleboxes and NAT without requiring updates.
+
+While there is no evidence of widespread, systematic disadvantage of UDP
+traffic compared to TCP in the Internet {{Edeline16}}, somewhere between three
+{{Trammell16}} and five {{Swett16}} percent of networks simply block UDP
+traffic. All applications running on top of QUIC must therefore either be
+prepared to accept connectivity failure on such networks, or be engineered to
+fall back to some other transport protocol.
+
 This fallback SHOULD provide TLS 1.3 or equivalent cryptographic protection,
 if available, in order to keep fallback from being exploited as a downgrade
 attack. In the case of HTTP, this fallback is TLS 1.3 over TCP.
