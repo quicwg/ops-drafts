@@ -167,11 +167,11 @@ and challenges for applications using QUIC.
 
 ## Thinking in Zero RTT
 
-A transport protocol that provides 0-RTT connection establishment to recently
-contacted servers is qualitatively different than one that does not from the
-point of view of the application using it. Relative trade-offs between the cost
-of closing and reopening a connection and trying to keep it open are
-different; see {{resumption-v-keepalive}}.
+A transport protocol that provides 0-RTT connection establishment is
+qualitatively different than one that does not from the point of view of the
+application using it. Relative trade-offs between the cost of closing and
+reopening a connection and trying to keep it open are different; see
+{{resumption-v-keepalive}}.
 
 Applications must be slightly rethought in order to make best use of 0-RTT
 resumption. Using 0-RTT requires an understanding of the implication of sending
@@ -183,30 +183,29 @@ of information that can be safely sent. For HTTP, this profile is described in
 
 ## Here There Be Dragons
 
-Retransmission or (malicious) replay of data contained in 0-RTT resumption
-packets could cause the server side to receive two copies of the same data.
-Data sent during 0-RTT resumption also cannot benefit from perfect forward
-secrecy (PFS).
+Retransmission or (malicious) replay of data contained in 0-RTT packets could
+cause the server side to receive two copies of the same data.
 
-Data in the first flight sent by the client in a connection established with
-0-RTT MUST be idempotent (as specified in Section 5.6 in {{!QUIC-TLS}}).
-Applications MUST be designed, and their data MUST be framed, such that multiple
-reception of idempotent data is recognized as such by the receiver. Applications
-that cannot treat data that may appear in a 0-RTT connection establishment as
-idempotent MUST NOT use 0-RTT establishment. For these reason the QUIC transport
-SHOULD provide some or all of the following interfaces to applications:
+Application data sent by the client in 0-RTT packets could be processed more
+than once if it is replayed. Applications need to be aware of what is safe to
+send in 0-RTT. Application protocols that seek to enable the use of 0-RTT need
+a careful analysis and a description of what can be sent in 0-RTT; see Section
+5.6 of {{!QUIC-TLS}}.
 
-* indicate if 0-RTT support is in general desired, which implies that lack of
-PFS is acceptable for some data;
+In some cases, it might be sufficient to limit application data sent in 0-RTT
+to that which only causes actions at a server that are known to be free of
+lasting effect. Initiating data retrieval or establishing configuration are
+examples of actions that could be safe. Idempotent operations - those for which
+repetition has the same net effect as a single operation - might be safe.
+However, it is also possible to combine individually idempotent operations into
+a non-idempotent sequence of operations.
 
-* an indication when 0RTT data for both egress and ingress, so that both sender
-and receiver understand the properties of the communication channel when the
-data is sent; and/or
+Once a server accepts 0-RTT data there is no means of selectively discarding
+data that is received. However, protocols can define ways to reject individual
+actions that might be unsafe if replayed.
 
-* whether rejected 0-RTT data should be retransmitted or withdrawn.
-
-Some TLS implementations may offer replay protection, which may mitigate some
-of these issues.
+Some TLS implementations and deployments might be able to provide partial or
+even complete replay protection, which could be used to manage replay risk.
 
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
