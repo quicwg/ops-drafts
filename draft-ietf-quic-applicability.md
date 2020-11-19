@@ -97,12 +97,11 @@ to QUIC, and implementors of these application protocols.
 # Introduction
 
 QUIC {{!QUIC=I-D.ietf-quic-transport}} is a new transport protocol providing a
-number of advanced features. While initially designed for the HTTP use case,
-like most transports it is intended for use with a much wider variety of
-applications. QUIC is encapsulated in UDP. The version of QUIC that is currently
-under development will integrate TLS 1.3 {{!TLS13=I-D.ietf-quic-tls}} to encrypt
-all payload data and most control information. HTTP operating over QUIC is known
-as HTTP/3.
+number of advanced features. While initially designed for the HTTP use case, it
+provides capabilities that can be used with a much wider variety of
+applications. QUIC is encapsulated in UDP. QUIC version 1 integrate TLS 1.3
+{{!TLS13=RFC8446}} to encrypt all payload data and most control information.
+HTTP operating over QUIC is known as HTTP/3.
 
 This document provides guidance for application developers that want to use
 the QUIC protocol without implementing it on their own. This includes general
