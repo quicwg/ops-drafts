@@ -174,17 +174,17 @@ of closing and reopening a connection and trying to keep it open are
 different; see {{resumption-v-keepalive}}.
 
 Applications must be slightly rethought in order to make best use of 0-RTT
-resumption. Most importantly, application operations must be divided into
-idempotent and non-idempotent operations, as only idempotent operations may
-appear in 0-RTT packets. This implies that the interface between the
-application and transport layer exposes idempotence either explicitly or
-implicitly.
+resumption. Using 0-RTT requires an understanding of the implication of sending
+application data that might be replayed by an attacker.
+
+Application protocols that use 0-RTT require a profile that describes the types
+of information that can be safely sent. For HTTP, this profile is described in
+{{?HTTP-REPLAY=RFC8470}}.
 
 ## Here There Be Dragons
 
 Retransmission or (malicious) replay of data contained in 0-RTT resumption
 packets could cause the server side to receive two copies of the same data.
-This is further described in {{?HTTP-RETRY=I-D.nottingham-httpbis-retry}}.
 Data sent during 0-RTT resumption also cannot benefit from perfect forward
 secrecy (PFS).
 
