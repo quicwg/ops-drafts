@@ -27,7 +27,6 @@ author:
     country: Switzerland
 
 normative:
-  RFC2119:
 
 informative:
   Trammell16:
