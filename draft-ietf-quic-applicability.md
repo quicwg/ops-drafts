@@ -112,10 +112,6 @@ In the following sections we discuss specific caveats to QUIC's applicability,
 and issues that application developers must consider when using QUIC as a
 transport for their application.
 
-## Notational Conventions
-
-{::boilerplate bcp14}
-
 # The Necessity of Fallback {#fallback}
 
 QUIC uses UDP as a substrate. This enables both userspace implementation
@@ -151,7 +147,7 @@ Note that there is some evidence of middleboxes blocking SYN data even if TFO
 was successfully negotiated (see {{PaaschNanog}}).
 
 Any fallback mechanism is likely to impose a degradation of performance;
-however, fallback MUST not silently violate the application's expectation of
+however, fallback must not silently violate the application's expectation of
 confidentiality or integrity of its payload data.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
@@ -340,7 +336,7 @@ carried inside QUIC's encryption boundary, no information about the stream(s)
 whose frames are carried by a given packet is visible to the network.
 Therefore stream multiplexing is not intended to be used for differentiating
 streams in terms of network treatment. Application traffic requiring different
-network treatment SHOULD therefore be carried over different five-tuples (i.e.
+network treatment should therefore be carried over different five-tuples (i.e.
 multiple QUIC connections). Given QUIC's ability to send application data in
 the first RTT of a connection (if a previous connection to the same host has
 been successfully established to provide the respective credentials), the cost
@@ -468,7 +464,7 @@ the TCP port already registered for the application is RECOMMENDED. For example,
 the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
-Applications SHOULD define an alternate endpoint discovery mechanism to allow
+Applications should define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{QUIC-HTTP}}
 sections 3.2 and 3.3) specifies the use of ALPN {{?RFC7301}} for service
 discovery which allows the server to use and announce a different
@@ -690,8 +686,8 @@ considerations for the underlying transport protocol are relevant for
 applications using QUIC, as well.
 
 Application developers should note that any fallback they use when QUIC cannot
-be used due to network blocking of UDP SHOULD guarantee the same security
-properties as QUIC; if this is not possible, the connection SHOULD fail to
+be used due to network blocking of UDP should guarantee the same security
+properties as QUIC; if this is not possible, the connection should fail to
 allow the application to explicitly handle fallback to a less-secure
 alternative. See {{fallback}}.
 
