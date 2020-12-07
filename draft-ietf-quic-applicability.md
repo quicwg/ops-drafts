@@ -27,7 +27,6 @@ author:
     country: Switzerland
 
 normative:
-  RFC2119:
 
 informative:
   Trammell16:
@@ -97,12 +96,11 @@ to QUIC, and implementors of these application protocols.
 # Introduction
 
 QUIC {{!QUIC=I-D.ietf-quic-transport}} is a new transport protocol providing a
-number of advanced features. While initially designed for the HTTP use case,
-like most transports it is intended for use with a much wider variety of
-applications. QUIC is encapsulated in UDP. The version of QUIC that is currently
-under development will integrate TLS 1.3 {{!TLS13=I-D.ietf-quic-tls}} to encrypt
-all payload data and most control information. HTTP operating over QUIC is known
-as HTTP/3.
+number of advanced features. While initially designed for the HTTP use case, it
+provides capabilities that can be used with a much wider variety of
+applications. QUIC is encapsulated in UDP. QUIC version 1 integrate TLS 1.3
+{{!TLS13=RFC8446}} to encrypt all payload data and most control information.
+HTTP operating over QUIC is known as HTTP/3.
 
 This document provides guidance for application developers that want to use
 the QUIC protocol without implementing it on their own. This includes general
@@ -116,16 +114,23 @@ transport for their application.
 
 # The Necessity of Fallback {#fallback}
 
-QUIC uses UDP as a substrate for userspace implementation and port numbers for
-NAT and middlebox traversal. While there is no evidence of widespread,
-systematic disadvantage of UDP traffic compared to TCP in the Internet
-{{Edeline16}}, somewhere between three {{Trammell16}} and five {{Swett16}}
-percent of networks simply block UDP traffic. All applications running on top
-of QUIC must therefore either be prepared to accept connectivity failure on
-such networks, or be engineered to fall back to some other transport protocol.
-This fallback needs to provide equivalent cryptographic protection to TLS 1.3,
-if available, in order to keep fallback from being exploited as a downgrade
-attack. In the case of HTTP, this fallback is TLS 1.3 over TCP.
+QUIC uses UDP as a substrate. This enables both userspace implementation
+traversal of middleboxes and NAT without requiring updates.
+
+While there is no evidence of widespread, systematic disadvantage of UDP
+traffic compared to TCP in the Internet {{Edeline16}}, somewhere between three
+{{Trammell16}} and five {{Swett16}} percent of networks simply block UDP
+traffic. All applications running on top of QUIC must therefore either be
+prepared to accept connectivity failure on such networks, or be engineered to
+fall back to some other transport protocol. In the case of HTTP, this fallback
+is TLS 1.3 over TCP.
+
+An application that implements fallback needs to consider the security
+consequences. A fallback to TCP and TLS 1.3 exposes control information to
+modification and manipulation in the network. Further downgrades to older TLS
+versions might result in significantly weaker cryptographic protection. For
+example, the results of protocol negotiation {{?ALPN=RFC7301}} only have
+confidentiality protection if TLS 1.3 is used.
 
 These applications must operate, perhaps with impaired functionality, in the
 absence of features provided by QUIC not present in the fallback protocol. For
@@ -157,46 +162,45 @@ and challenges for applications using QUIC.
 
 ## Thinking in Zero RTT
 
-A transport protocol that provides 0-RTT connection establishment to recently
-contacted servers is qualitatively different than one that does not from the
-point of view of the application using it. Relative trade-offs between the cost
-of closing and reopening a connection and trying to keep it open are
-different; see {{resumption-v-keepalive}}.
+A transport protocol that provides 0-RTT connection establishment is
+qualitatively different than one that does not from the point of view of the
+application using it. Relative trade-offs between the cost of closing and
+reopening a connection and trying to keep it open are different; see
+{{resumption-v-keepalive}}.
 
 Applications must be slightly rethought in order to make best use of 0-RTT
-resumption. Most importantly, application operations must be divided into
-idempotent and non-idempotent operations, as only idempotent operations may
-appear in 0-RTT packets. This implies that the interface between the
-application and transport layer exposes idempotence either explicitly or
-implicitly.
+resumption. Using 0-RTT requires an understanding of the implication of sending
+application data that might be replayed by an attacker.
+
+Application protocols that use 0-RTT require a profile that describes the types
+of information that can be safely sent. For HTTP, this profile is described in
+{{?HTTP-REPLAY=RFC8470}}.
 
 ## Here There Be Dragons
 
-Retransmission or (malicious) replay of data contained in 0-RTT resumption
-packets could cause the server side to receive two copies of the same data.
-This is further described in {{?HTTP-RETRY=I-D.nottingham-httpbis-retry}}.
-Data sent during 0-RTT resumption also cannot benefit from perfect forward
-secrecy (PFS).
+Retransmission or (malicious) replay of data contained in 0-RTT packets could
+cause the server side to receive two copies of the same data.
 
-Data in the first flight sent by the client in a connection established with
-0-RTT MUST be idempotent (as specified in Section 5.6 in {{!QUIC-TLS}}).
-Applications must be designed, and their data must be framed, such that multiple
-reception of idempotent data is recognized as such by the receiver. Applications
-that cannot treat data that may appear in a 0-RTT connection establishment as
-idempotent cannot use 0-RTT establishment. For these reason the QUIC transport
-should provide some or all of the following interfaces to applications:
+Application data sent by the client in 0-RTT packets could be processed more
+than once if it is replayed. Applications need to be aware of what is safe to
+send in 0-RTT. Application protocols that seek to enable the use of 0-RTT need
+a careful analysis and a description of what can be sent in 0-RTT; see Section
+5.6 of {{!QUIC-TLS}}.
 
-* indicate if 0-RTT support is in general desired, which implies that lack of
-PFS is acceptable for some data;
+In some cases, it might be sufficient to limit application data sent in 0-RTT
+to that which only causes actions at a server that are known to be free of
+lasting effect. Initiating data retrieval or establishing configuration are
+examples of actions that could be safe. Idempotent operations - those for which
+repetition has the same net effect as a single operation - might be safe.
+However, it is also possible to combine individually idempotent operations into
+a non-idempotent sequence of operations.
 
-* an indication when 0RTT data for both egress and ingress, so that both sender
-and receiver understand the properties of the communication channel when the
-data is sent; and/or
+Once a server accepts 0-RTT data there is no means of selectively discarding
+data that is received. However, protocols can define ways to reject individual
+actions that might be unsafe if replayed.
 
-* whether rejected 0-RTT data should be retransmitted or withdrawn.
-
-Some TLS implementations may offer replay protection, which may mitigate some
-of these issues.
+Some TLS implementations and deployments might be able to provide partial or
+even complete replay protection, which could be used to manage replay risk.
 
 ## Session resumption versus Keep-alive {#resumption-v-keepalive}
 
@@ -214,17 +218,21 @@ requires a minimum value of 15 seconds, but recommends larger values, or
 omitting keepalive entirely.
 
 By using a Connection ID, QUIC is designed to be robust to NAT address
-rebinding after a timeout. However, some QUIC connections may not be robust to
-rebinding because the routing infrastructure (in particular, load balancers)
-uses the address/port four-tuple to direct traffic. Furthermore, middleboxes
-with functions other than address translation may still affect the path. In
-particular, firewalls will often not admit server traffic for which it has not
-kept state for corresponding packets from the client.
+rebinding after a timeout. However, this only helps if one endpoint maintains
+availability at the address its peer uses, and the peer is the one to send
+after the timeout occurs.
 
-A QUIC application has three strategies to deal with this issue by
-adjusting idle periods (noting that idle periods and the network idle
-timeout is distinct from the connection idle timeout, defined as the
-minimum of the idle timeout parameter in Section 10.1 of {{QUIC}}):
+Some QUIC connections may not be robust to rebinding because the routing
+infrastructure (in particular, load balancers) uses the address/port four-tuple
+to direct traffic. Furthermore, middleboxes with functions other than address
+translation could still affect the path. In particular, firewalls will often
+not admit server traffic for which it has not kept state for corresponding
+packets from the client.
+
+A QUIC application can adjust idle periods to manage the risk of timeout
+(noting that idle periods and the network idle timeout is distinct from the
+connection idle timeout, defined as the minimum of the idle timeout parameter
+in Section 10.1 of {{QUIC}}), but then there are three options:
 
 - Ignore it, if the application-layer protocol consists only of interactions
   with no or very short idle periods, or the protocol's resistance to NAT
@@ -244,11 +252,12 @@ is responsible for keeping the application alive.  While {{Hatonen10}} suggests
 that 30 seconds might be a suitable value for the public Internet when a NAT
 is on path, larger values are preferable if the deployment can consistently
 survive NAT rebinding, or is known to be in a controlled environments like e.g.
-data centres in order to lower network and computational load. Sending PING
-frames more frequently than every 30 seconds over long idle periods may result
-in excessive unproductive traffic in some situations, and to unacceptable
-power usage for power-constrained (mobile) devices. Additionally, time-outs
-shorter than 30 seconds can make it harder to handle trasient network
+data centres in order to lower network and computational load.
+
+Sending PING frames more frequently than every 30 seconds over long idle
+periods may result in excessive unproductive traffic in some situations, and to
+unacceptable power usage for power-constrained (mobile) devices. Additionally,
+time-outs shorter than 30 seconds can make it harder to handle transient network
 interruptions, such as VM migration or coverage loss during mobilty.
 
 Alternatively, the client (but not the server) can use session resumption
@@ -258,7 +267,10 @@ data to a server over a connection idle longer than the server's idle timeout
 possible, this reconnection can use 0-RTT session resumption, reducing the
 latency involved with restarting the connection. This of course only applies in
 cases in which 0-RTT data is safe, when the client is the restarting peer, and
-when the data to be sent is idempotent.
+when the data to be sent is idempotent.  Using resumption in this way also
+assumes that the protocol does not accumulate any non-persistent state in
+association with a connection.  State bound to a connection cannot reliably be
+transferred to a resumed connection.
 
 The tradeoffs between resumption and keepalive need to be evaluated on a
 per-application basis. However, in general applications should use keepalives
