@@ -86,7 +86,7 @@ information is visible to the network than for TCP, integrity protection can
 also simplify troubleshooting, because none of the nodes on the network path
 can modify the transport layer information.
 
-This document provides guidance for network operations that manage of QUIC
+This document provides guidance for network operations that manage QUIC
 traffic. This includes guidance on how to interpret and utilize information that
 is exposed by QUIC to the network, requirements and assumptions that the QUIC
 design with respect to network treatment, and a description of how common
