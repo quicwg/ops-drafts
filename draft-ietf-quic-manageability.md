@@ -73,11 +73,10 @@ of QUIC-aware middleboxes, e.g. for load balancing.
 # Introduction
 
 QUIC {{?QUIC-TRANSPORT=I-D.ietf-quic-transport}} is a new transport protocol
-focusing on support of semantics as needed for HTTP
-{{?QUIC-HTTP=I-D.ietf-quic-http}}.  QUIC is encapsulated in UDP and encrypted
-by default. QUIC integrates TLS {{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all
-payload data and most control information. The version of HTTP that operates
-over QUIC is HTTP/3.
+encapsulated in UDP and encrypted by default. QUIC integrates TLS
+{{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all payload data and most control
+information. The design focused on support of semantics for HTTP, which required
+changes to HTTP known as HTTP/3 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
 
 Given that QUIC is an end-to-end transport protocol, all information in the
 protocol header, even that which can be inspected, is not meant to be
@@ -153,8 +152,7 @@ The following information is exposed in QUIC packet headers:
 - "fixed bit": the second most significant bit of the first octet most QUIC
   packets of the current version is currently set to 1, for demultiplexing
   with other UDP-encapsulated protocols. Endpoints that do not need this
-  demultiplexing function might assign arbitrary values. See
-  {{I-D.thomson-quic-bit-grease}} for more details.
+  demultiplexing function might negotiate the use of arbitrary values.
 
 - latency spin bit: the third most significant bit of first octet in the short
   packet header. The spin bit is set by endpoints such that  tracking edge
