@@ -640,7 +640,7 @@ PADDING frames, which are each one byte of zeros, may also occur before or after
 the CRYPTO frame.
 
 Note that client Initial packets that do not contain the Client Hello message
-generally also do not always use the Destination Connection ID that was used to
+do not always use the Destination Connection ID that was used to
 generate the Initial keys. Therefore, attempts to decrypt these packets using
 the procedure above will fail.
 
