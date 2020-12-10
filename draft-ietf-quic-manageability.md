@@ -129,7 +129,7 @@ and cannot be used to identify QUIC as a protocol or
 to infer the behavior of future versions of QUIC.
 
 {{sec-google-version}} provides non-normative guidance on the identification of
-QUIC version 1 packets compared to pre-standard versions.
+QUIC version 1 packets compared to some pre-standard versions.
 
 ## QUIC Packet Header Structure {#public-header}
 
