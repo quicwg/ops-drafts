@@ -482,7 +482,7 @@ therefore not part of the wire image that is visible to on-path observers.
 
 ## Version Negotiation and Greasing {#version}
 
-Version negotiation packets are not intrinsically protected, but QUIC versions
+Version Negotiation packets are not intrinsically protected, but QUIC versions
 can use later encrypted messages to verify that they were authentic.
 Therefore any manipulation of this list will be detected and will cause the
 endpoints to terminate the connection.
