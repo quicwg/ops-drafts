@@ -627,7 +627,7 @@ and eight bits of the header as described in section 17.2. of
 {{QUIC-TRANSPORT}}, but is obfuscated as described in {{QUIC-TLS}}. The source
 connection ID length is specified in the byte after the destination connection
 ID. And the token length, which follows the source connection ID, is a variable
-length integer as specified in section 16 of {{QUIC-TRANSPORT}}.
+length integer as specified in Section 16 of {{QUIC-TRANSPORT}}.
 
 After decryption, the Initial Client packet can be parsed to detect the
 CRYPTO frame that contains the TLS Client Hello, which then can be parsed
