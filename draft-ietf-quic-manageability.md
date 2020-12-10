@@ -566,7 +566,7 @@ future versions of the protocol.
 
 Connection establishment uses Initial and Handshake packets containing a
 TLS handshake. Connection establishment can therefore be detected using
-heuristics similar to those used to detect TLS over TCP. A client initiating
+heuristics similar to those used to detect TLS over TCP. A client initiating a
 0-RTT connection may also send data packets in 0-RTT Protected packets directly
 after the Initial packet containing the TLS Client Hello. Since these packets
 may be reordered in the network, 0-RTT Protected data packets could be
