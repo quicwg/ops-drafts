@@ -171,7 +171,7 @@ The following information is exposed in QUIC packet headers:
   field has a special value (0x00000000) that identifies the packet as a Version
   Negotiation packet. QUIC versions that start with 0xff are IETF drafts. QUIC
   versions that start with 0x0000 are reserved for IETF consensus documents,
-  for example the QUIC version 1 is expected to use version 0x00000001. Operators
+  For example the QUIC version 1 uses version 0x00000001. Operators
   should expect to observe packets with other version numbers as a result of
   various internet experiments and future standards.
 
