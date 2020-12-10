@@ -163,15 +163,15 @@ The following information is exposed in QUIC packet headers:
   Header Form and fixed bits. Header types correspond to stages of the
   handshake; see Section 17.2 of {{QUIC-TRANSPORT}} for details.
 
-- version number: the version number is present in the long header, and identifies
-  the version used for that packet. Note that during Version Negotiation (see
-  {{version}} and Section 17.2.1 of {{QUIC-TRANSPORT}}), the version number
-  field has a special value (0x00000000) that identifies the packet as a Version
-  Negotiation packet. QUIC versions that start with 0xff are IETF drafts. QUIC
-  versions that start with 0x0000 are reserved for IETF consensus documents,
-  For example the QUIC version 1 uses version 0x00000001. Operators
-  should expect to observe packets with other version numbers as a result of
-  various internet experiments and future standards.
+- version number: the version number is present in the long header, and
+  identifies the version used for that packet. Note that during Version
+  Negotiation (see {{version}} and Section 17.2.1 of {{QUIC-TRANSPORT}}), the
+  version number field has a special value (0x00000000) that identifies the
+  packet as a Version Negotiation packet. QUIC versions that start with 0xff are
+  IETF drafts. QUIC versions that start with 0x0000 are reserved for IETF
+  consensus documents. For example, QUIC version 1 uses version 0x00000001.
+  Operators should expect to observe packets with other version numbers as a
+  result of various internet experiments and future standards.
 
 - source and destination connection ID: short and long packet headers carry a
   destination connection ID, a variable-length field that can be used to
@@ -284,12 +284,12 @@ datagram as shown in {{fig-server-hello}} typically containing three packets:
 an Initial packet with the Server Hello, a Handshake packet with the rest of
 the server's side of the TLS handshake, and initial 1-RTT data, if present.
 
-The Client Hello datagram, Server Hello datagram, and Initial Completion datagram,
-which all contain a QUIC Initial Packet, must be at least 1200 octets long. This
-protects against amplification attacks and verify the network path meets minimum
-Maximum Transmission Unit (MTU) requirements. This is usually accomplished with
-either the addition of PADDING frames to the Initial packet, or coalescing of
-the Initial Packet with packets from other encryption contexts.
+The Client Hello datagram, Server Hello datagram, and Initial Completion
+datagram, which all contain a QUIC Initial Packet, must be at least 1200 octets
+long. This protects against amplification attacks and verify the network path
+meets minimum Maximum Transmission Unit (MTU) requirements. This is usually
+accomplished with either the addition of PADDING frames to the Initial packet,
+or coalescing of the Initial Packet with packets from other encryption contexts.
 
 The content of QUIC Initial packets are encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
@@ -323,9 +323,8 @@ finishing the transmission of CRYPTO frames.
 The Client Hello datagram exposes version number, source and destination
 connection IDs in the clear. Information in the TLS Client Hello frame,
 including any TLS Server Name Indication (SNI) present, is obfuscated using the
-Initial secret. Note that the location of PADDING is
-implementation-dependent, and PADDING frames may not appear in a coalesced Initial
-packet.
+Initial secret. Note that the location of PADDING is implementation-dependent,
+and PADDING frames may not appear in a coalesced Initial packet.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -833,13 +832,13 @@ Note that the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient and requires more state to be maintained by
 DDoS defense systems. For the common case of NAT rebinding, DDoS defense systems
 can detect a change in the client's endpoint address by linking flows based on
-the first 8 bytes of the server's connection IDs, provided the server is using at
-least 8-bytes-long connection IDs. QUIC's linkability resistance ensures that a
-deliberate connection migration is accompanied by a change in the connection ID
-and necessitates that connection ID-aware DDoS defense system must have the same
-information about connection IDs as the load balancer
-{{?I-D.ietf-quic-load-balancers}}. This may be complicated where mitigation
-and load balancing environments are logically separate.
+the first 8 bytes of the server's connection IDs, provided the server is using
+at least 8-bytes-long connection IDs. QUIC's linkability resistance ensures that
+a deliberate connection migration is accompanied by a change in the connection
+ID and necessitates that connection ID-aware DDoS defense system must have the
+same information about connection IDs as the load balancer
+{{?I-D.ietf-quic-load-balancers}}. This may be complicated where mitigation and
+load balancing environments are logically separate.
 
 It is questionable whether connection migrations must be supported during a DDoS
 attack. If the connection migration is not visible to the network that performs
