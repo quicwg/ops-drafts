@@ -73,34 +73,33 @@ of QUIC-aware middleboxes, e.g. for load balancing.
 # Introduction
 
 QUIC {{?QUIC-TRANSPORT=I-D.ietf-quic-transport}} is a new transport protocol
-currently under development in the IETF QUIC working group, focusing on
-support of semantics as needed for HTTP/2 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
-Based on current deployment practices, QUIC is encapsulated in UDP and
-encrypted by default. The current version of QUIC integrates TLS
-{{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all payload data and most control
-information.
+focusing on support of semantics as needed for HTTP
+{{?QUIC-HTTP=I-D.ietf-quic-http}}.  QUIC is encapsulated in UDP and encrypted
+by default. QUIC integrates TLS {{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all
+payload data and most control information. The version of HTTP that operates
+over QUIC is HTTP/3.
 
 Given that QUIC is an end-to-end transport protocol, all information in the
 protocol header, even that which can be inspected, is not meant to be
 mutable by the network, and is therefore integrity-protected. While less
 information is visible to the network than for TCP, integrity protection can
-also simplify troubleshooting because none of the nodes on the network path
+also simplify troubleshooting, because none of the nodes on the network path
 can modify the transport layer information.
 
-This document provides guidance for network operation on the management of QUIC
+This document provides guidance for network operations that manage of QUIC
 traffic. This includes guidance on how to interpret and utilize information that
-is exposed by QUIC to the network as well as explaining requirement and
-assumptions that the QUIC protocol design takes toward the expected network
-treatment. It also discusses how common network management practices will be
-impacted by QUIC.
+is exposed by QUIC to the network, requirements and assumptions that the QUIC
+design with respect to network treatment, and a description of how common
+network management practices will be impacted by QUIC.
 
 Since QUIC's wire image {{?WIRE-IMAGE=RFC8546}} is integrity protected and not
 modifiable on path, in-network operations are not possible without terminating
 the QUIC connection, for instance using a back-to-back proxy. Proxy operations
 are not in scope for this document. QUIC proxies must be fully-fledged QUIC
 endpoints, implementing the transport as defined in {{QUIC-TRANSPORT}} and
-{{QUIC-TLS}} as well as proxy-relevant semantics for the application(s) running
-over QUIC (e.g. HTTP/3 as defined in {{QUIC-HTTP}}).
+{{QUIC-TLS}}, proxy-relevant semantics for the application(s) running over QUIC
+(e.g. HTTP/3 as defined in {{QUIC-HTTP}}), and have the TLS credentials to
+authenticate as the server and (in some cases) client.
 
 Network management is not a one-size-fits-all endeavour: practices considered
 necessary or even mandatory within enterprise networks with certain compliance
@@ -110,36 +109,33 @@ recommendations as to which practices should or should not be applied; for each
 practice, it describes what is and is not possible with the QUIC transport
 protocol as defined.
 
-QUIC is at the moment very much a moving target. This document refers the state
-of the QUIC working group drafts as well as to changes under discussion, via
-issues and pull requests in GitHub current as of the time of writing.
-
 # Features of the QUIC Wire Image {#sec-wire-image}
 
-In this section, we discusses those aspects of the QUIC transport protocol that
+In this section, we discuss those aspects of the QUIC transport protocol that
 have an impact on the design and operation of devices that forward QUIC packets.
 Here, we are concerned primarily with the unencrypted part of QUIC's wire image
 {{WIRE-IMAGE}}, which we define as the information available in the packet
 header in each QUIC packet, and the dynamics of that information. Since QUIC is
 a versioned protocol, the wire image of the header format can also change from
-version to version. However, at least the mechanism by which a receiver can
-determine which version is used and the meaning and location of fields used in
-the version negotiation process is invariant
-{{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
+version to version. However, the field that identifies the QUIC version in some
+packets, and the format of the Version Negotiation Packet, are both inspectable
+and invariant {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
-This document describes only version 1 the QUIC protocol, whose wire image
-is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Note that features
-of the wire image described herein and in those documents may change in future
-versions of the protocol, and cannot be used to identify QUIC as a protocol or
-to infer the behavior of future versions of QUIC. {{sec-google-version}}
-provides non-normative guidance on the identification of QUIC version 1
-packets compared to other deployed versions at the date if publication.
+This document describes version 1 of the QUIC protocol, whose wire image
+is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Features of the wire
+ image described herein may change in future versions of the protocol, except
+when specified as an invariant {{QUIC-INVARIANTS}},
+and cannot be used to identify QUIC as a protocol or
+to infer the behavior of future versions of QUIC.
+
+{{sec-google-version}} provides non-normative guidance on the identification of
+QUIC version 1 packets compared to pre-standard versions.
 
 ## QUIC Packet Header Structure {#public-header}
 
 QUIC packets may have either a long header, or a short header. The first bit
-of the QUIC header us the Header Form bit, and indicates which type of header
-is present.
+of the QUIC header is the Header Form bit, and indicates which type of header
+is present. The purpose of this bit is invariant across QUIC versions.
 
 The long header exposes more information. It is used during connection
 establishment, including version negotiation, retry, and 0-RTT data. It
@@ -156,7 +152,9 @@ The following information is exposed in QUIC packet headers:
 
 - "fixed bit": the second most significant bit of the first octet most QUIC
   packets of the current version is currently set to 1, for demultiplexing
-  with other UDP-encapsulated protocols.
+  with other UDP-encapsulated protocols. Endpoints that do not need this
+  demultiplexing function might assign arbitrary values. See
+  {{I-D.thomson-quic-bit-grease}} for more details.
 
 - latency spin bit: the third most significant bit of first octet in the short
   packet header. The spin bit is set by endpoints such that  tracking edge
@@ -167,13 +165,15 @@ The following information is exposed in QUIC packet headers:
   Header Form and fixed bits. Header types correspond to stages of the
   handshake; see Section 17.2 of {{QUIC-TRANSPORT}} for details.
 
-- version number: the version number present in the long header, and identifies
+- version number: the version number is present in the long header, and identifies
   the version used for that packet. Note that during Version Negotiation (see
-  {{version}}, and Section 17.2.1 of {{QUIC-TRANSPORT}}, the version number
+  {{version}} and Section 17.2.1 of {{QUIC-TRANSPORT}}), the version number
   field has a special value (0x00000000) that identifies the packet as a Version
   Negotiation packet. QUIC versions that start with 0xff are IETF drafts. QUIC
   versions that start with 0x0000 are reserved for IETF consensus documents,
-  for example the QUIC version 1 is expected to use version 0x00000001.
+  for example the QUIC version 1 is expected to use version 0x00000001. Operators
+  should expect to observe packets with other version numbers as a result of
+  various internet experiments and future standards.
 
 - source and destination connection ID: short and long packet headers carry a
   destination connection ID, a variable-length field that can be used to
@@ -204,12 +204,12 @@ cryptographically obfuscated:
 - packet number: All packets except Version Negotiation and
   Retry packets have an associated packet number; however, this packet number
   is encrypted, and therefore not of use to on-path observers. The offset of the
-  packet number is encoded in the header for packets with long headers, while it
-  is implicit (depending on Destination Connection ID length) in short header
-  packets. The length of the packet number is cryptographically obfuscated.
+  packet number is encoded in long headers, while it
+  is implicit (depending on Destination Connection ID length) in short headers.
+  The length of the packet number is cryptographically obfuscated.
 
 - key phase: The Key Phase bit, present in short headers, specifies the keys
-  used to encrypt the packet, supporting key rotation. The Key Phase bit is
+  used to encrypt the packet to support key rotation. The Key Phase bit is
   cryptographically obfuscated.
 
 ## Coalesced Packets {#coalesced}
@@ -230,7 +230,7 @@ TCP-based services, especially when application layer information is
 encrypted, there is no guarantee that a specific application will use the
 registered port, or the used port is carrying traffic belonging to the
 respective registered service. For example, {{QUIC-TRANSPORT}} specifies
-the use of Alt-Svc for discovery of QUIC/HTTP services on other ports.
+the use of Alt-Svc for discovery of QUIC/HTTP3 services on other ports.
 
 Further, as QUIC has a connection ID, it is also possible to maintain multiple
 QUIC connections over one 5-tuple. However, if the connection ID is not present
@@ -286,10 +286,17 @@ datagram as shown in {{fig-server-hello}} typically containing three packets:
 an Initial packet with the Server Hello, a Handshake packet with the rest of
 the server's side of the TLS handshake, and initial 1-RTT data, if present.
 
+The Client Hello datagram, Server Hello datagram, and Initial Completion datagram,
+which all contain a QUIC Initial Packet, must be at least 1200 octets long. This
+protects against amplification attacks and verify the network path meets minimum
+Maximum Transmission Unit (MTU) requirements. This is usually accomplished with
+either the addition of PADDING frames to the Initial packet, or coalescing of
+the Initial Packet with packets from other encryption contexts.
+
 The content of QUIC Initial packets are encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
 ID; they are therefore observable by any on-path device that knows the
-per-version constant; we therefore consider these as visible in our
+per-version constant. We therefore consider these as visible in our
 illustration. The content of QUIC Handshake packets are encrypted using keys
 established during the initial handshake exchange, and are therefore not
 visible.
@@ -310,19 +317,17 @@ finishing the transmission of CRYPTO frames.
 +----------------------------------------------------------+  |
 | TLS Client Hello (incl. TLS SNI)                         |  |
 +----------------------------------------------------------+  |
-| QUIC PADDING frame                                       |  |
+| QUIC PADDING frames                                      |  |
 +----------------------------------------------------------+<-+
 ~~~~~
-{: #fig-client-hello title="Typical 1-RTT QUIC Client Hello datagram pattern"}
+{: #fig-client-hello title="Typical QUIC Client Hello datagram pattern with no 0-RTT"}
 
 The Client Hello datagram exposes version number, source and destination
 connection IDs in the clear. Information in the TLS Client Hello frame,
 including any TLS Server Name Indication (SNI) present, is obfuscated using the
-Initial secret. The QUIC PADDING frame shown here may be present to ensure the
-Client Hello datagram has a minimum size of 1200 octets, to mitigate the
-possibility of handshake amplification. Note that the location of PADDING is
-implementation-dependent, and PADDING frames may not appear in the Initial
-packet in a coalesced packet.
+Initial secret. Note that the location of PADDING is
+implementation-dependent, and PADDING frames may not appear in a coalesced Initial
+packet.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -426,7 +431,7 @@ limited by the initial congestion window, typically around 10 packets
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
 As soon as the cryptographic context is established, all information in the QUIC
-header, including information exposed in the packet header, is integrity
+header, including exposed information, is integrity
 protected. Further, information that was sent and exposed in handshake packets
 sent before the cryptographic context was established are validated later during
 the cryptographic handshake.  Therefore, devices on path cannot alter any
@@ -440,12 +445,13 @@ The connection ID in the QUIC packet headers allows routing of QUIC packets at
 load balancers on other than five-tuple information, ensuring that related
 flows are appropriately balanced together; and to allow rebinding of a
 connection after one of the endpoint's addresses changes - usually the
-client's, in the case of the HTTP binding. Client and server negotiate
+client's. Client and server negotiate
 connection IDs during the handshake; typically, however, only the server will
 request a connection ID for the lifetime of the connection. Connection IDs for
 either endpoint may change during the lifetime of a connection, with the new
 connection ID being negotiated via encrypted frames. See Section 5.1 of
-{{QUIC-TRANSPORT}}.
+{{QUIC-TRANSPORT}}. Therefore, observing a new Connection ID does not
+necessary indicate a new connection.
 
 Server-generated connection IDs should seek to obscure any encoding, of routing
 identities or any other information. Exposing the server mapping would allow
@@ -476,11 +482,10 @@ therefore not part of the wire image that is visible to on-path observers.
 
 ## Version Negotiation and Greasing {#version}
 
-Version negotiation is not protected, given the used protection mechanism can
-change with the version.  However, the choices provided in the list of version
-in the Version Negotiation packet will be validated as soon as the cryptographic
-context has been established. Therefore any manipulation of this list will be
-detected and will cause the endpoints to terminate the connection.
+Version negotiation packets are not intrinsically protected, but QUIC versions
+can use later encrypted messages to verify that they were authentic.
+Therefore any manipulation of this list will be detected and will cause the
+endpoints to terminate the connection.
 
 Also note that the list of versions in the Version Negotiation packet may
 contain reserved versions. This mechanism is used to avoid ossification in the
@@ -488,14 +493,15 @@ implementation on the selection mechanism. Further, a client may send a Initial
 Client packet with a reserved version number to trigger version negotiation. In
 the Version Negotiation packet the connection ID and packet number of the Client
 Initial packet are reflected to provide a proof of return-routability. Therefore
-changing these information will also cause the connection to fail.
+changing this information will also cause the connection to fail.
 
 QUIC is expected to evolve rapidly, so new versions, both experimental and IETF
 standard versions, will be deployed in the Internet more often than with
 traditional Internet- and transport-layer protocols. Using a particular version
 number to recognize valid QUIC traffic is likely to persistently miss a fraction
-of QUIC flows and completely fail in the multi-year timeframe so therefore not
-recommended.
+of QUIC flows and completely fail in the multi-year timeframe, and is therefore
+not recommended.
+
 
 # Network-visible information about QUIC flows
 
@@ -504,6 +510,7 @@ can be made about QUIC flows by a passive observer in the network based on the
 wire image in {{sec-wire-image}}. Here we assume a bidirectional observer (one
 that can see packets in both directions in the sequence in which they are
 carried on the wire) unless noted.
+
 
 ## Identifying QUIC traffic {#sec-identifying}
 
@@ -514,7 +521,7 @@ The only application binding defined by the IETF QUIC WG is HTTP/3
 {{?QUIC-HTTP}} at the time of this writing; however, many other applications
 are currently being defined and deployed over QUIC, so an assumption that all
 QUIC traffic is HTTP/3 is not valid. HTTP over QUIC uses UDP port 443 by
-default, although URLs referring to resources available over HTTP over QUIC
+default, although URLs referring to resources available over HTTP/3
 may specify alternate port numbers. Simple assumptions about whether a
 given flow is using QUIC based upon a UDP port number may therefore not hold;
 see also {{?RFC7605}} section 5.
@@ -526,7 +533,7 @@ provides one bit of information and is quite prone to collide with
 UDP-based protocols other than those that this static bit is meant to allow
 multiplexing with. Second, this feature of the wire image is not invariant
 {{QUIC-INVARIANTS}} and may change in future versions of the protocol, or
-even be negotiated after handshake via future transport parameters.
+even be negotiated during the handshake via proposed transport parameters.
 
 ### Identifying Negotiated Version
 
@@ -543,12 +550,12 @@ be associated with flows for which a version has been identified; see
 This document focuses on QUIC Version 1, and this section applies only to
 packets belonging to Version 1 QUIC flows; for purposes of on-path observation,
 it assumes that these packets have been identified as such through the
-observation of a version negotiation.
+observation of a version number exchange as described above.
 
 ### Rejection of Garbage Traffic {#sec-garbage}
 
-A related question is whether a first packet of a given flow on known
-QUIC-associated port is a valid QUIC packet, in order to support in-network
+A related question is whether a first packet of a given flow on a known
+QUIC-associated port is a valid QUIC packet, to support in-network
 filtering of garbage UDP packets (reflection attacks, random backscatter). While
 heuristics based on the first byte of the packet (packet type) could be used to
 separate valid from invalid first packet types, the deployment of such
@@ -557,19 +564,20 @@ future versions of the protocol.
 
 ## Connection confirmation {#sec-confirm}
 
-Connection establishment uses Initial, Handshake, and Retry packets containing a
+Connection establishment uses Initial and Handshake packets containing a
 TLS handshake. Connection establishment can therefore be detected using
-heuristics similar to those used to detect TLS over TCP. A client using 0-RTT
-connection may also send data packets in 0-RTT Protected packets directly after
-the Initial packet containing the TLS Client Hello. Since these packets may be
-reordered in the network, note that 0-RTT Protected data packets may be seen
-before the Initial packet.
+heuristics similar to those used to detect TLS over TCP. A client initiating
+0-RTT connection may also send data packets in 0-RTT Protected packets directly
+after the Initial packet containing the TLS Client Hello. Since these packets
+may be reordered in the network, note that 0-RTT Protected data packets may be
+seen before the Initial packet.
 
 Note that clients send Initial packets before servers do, servers send Handshake
-packets before  clients do, and only clients send Initial packets with tokens,
-so the sides of a connection can be generally be confirmed by an on-path
-observer. An attempted connection after Retry can be detected by correlating the
-token on the Retry with the token on the subsequent Initial packet.
+packets before clients do, and only clients send Initial packets with tokens.
+Therefore, identity as a client or server can generally be confirmed by an on-
+path observer. An attempted connection after Retry can be detected by
+correlating the token on the Retry with the token on the subsequent Initial
+packet and the Destination Connection ID of the new Initial packet.
 
 ## Application Identification {#sec-server}
 
@@ -582,9 +590,9 @@ application-layer protocols it supports; an observer can deduce that one of
 those protocols will be used if the connection continues.
 
 Work is currently underway in the TLS working group to encrypt the SNI in TLS
-1.3 {{?TLS-ESNI=I-D.ietf-tls-esni}}. If used with QUIC, this
-would make SNI-based application identification impossible through passive
-measurement.
+1.3 {{?TLS-ESNI=I-D.ietf-tls-esni}}. This would make SNI-based application
+identification impossible through passive measurement for QUIC and other
+ protocols that use TLS.
 
 ### Extracting Server Name Indication (SNI) Information
 
@@ -598,9 +606,9 @@ are version-specific, the first step is always to parse the version number
 carry the version number, so it is necessary to also check the if first bit of
 the QUIC packet is set to 1, indicating a long header.
 
-Note, that proprietary QUIC versions, that have been deployed before
+Note that proprietary QUIC versions, that have been deployed before
 standardization, might not set the first bit in a QUIC long header packets to
-1. To parse these versions example code is provided in the appendix (see
+1. To parse these versions, example code is provided in the appendix (see
 {{sec-google-version}}), however, it is expected that these versions will
 gradually disappear over time.
 
@@ -612,24 +620,29 @@ version specific initial salt, as described in {{QUIC-TLS}}. The length of
 the connection ID is indicated in the 6th byte of the header followed by the
 connection ID itself.
 
-To determine the end of the header and find the start of the payload further
-the packet number length, the source connection ID length, as well as the token
+To determine the end of the header and find the start of the payload,
+the packet number length, the source connection ID length, and the token
 length need to be extracted. The packet number length is defined by the seventh
 and eight bits of the header as described in section 17.2. of
-{{QUIC-TRANSPORT}}. The source connection ID length is specified in the byte
-after the destination connection ID. And the token length, which follows the
-source connection ID, is a variable length integer as specified in section 16
-of {{QUIC-TRANSPORT}}.
+{{QUIC-TRANSPORT}}, but is obfuscated as described in {{QUIC-TLS}}. The source
+connection ID length is specified in the byte after the destination connection
+ID. And the token length, which follows the source connection ID, is a variable
+length integer as specified in section 16 of {{QUIC-TRANSPORT}}.
 
-Finally after decryption, the Initial Client packet can be parsed to detect the
-CRYPTO frame that contains the TLS Client Hello, which then can be respectively
-parsed similar as for all other TLS connections. The Initial client packet may
-contain other frames, so the first byte of each frame need to be checked to
-identify the frame type and the skip over the frame. Note that the length of the
-frames is dependent on the frame type. Usually for QUIC version 1, the packet is
+After decryption, the Initial Client packet can be parsed to detect the
+CRYPTO frame that contains the TLS Client Hello, which then can be parsed
+similarly to TLS over TCP connections. The Initial client packet may
+contain other frames, so the first bytes of each frame need to be checked to
+identify the frame type, and if needed skip over it. Note that the length of the
+frames is dependent on the frame type. In QUIC version 1, the packet is
 expected to only carry the CRYPTO frame and optionally padding frames. However,
-padding which is one byte of zeros, may also occur before or after the CRYPTO
-frame.
+PADDING frames, which are each one byte of zeros, may also occur before or after
+the CRYPTO frame.
+
+Note that client Initial packets that do not contain the Client Hello message
+generally also do not always use the Destination Connection ID that was used to
+generate the Initial keys. Therefore, attempts to decrypt these packets using
+the procedure above will fail.
 
 ## Flow association {#sec-flow-association}
 
@@ -656,6 +669,7 @@ devices that a flow has ended is that packets are no longer observed. Stateful
 devices on path such as NATs and firewalls must therefore use idle timeouts to
 determine when to drop state for QUIC flows, see further section
 {{sec-stateful}}.
+
 
 ## Flow symmetry measurement {#sec-symmetry}
 
@@ -767,12 +781,12 @@ signal ({{sec-teardown}}) means that this state must be purged either through
 timers or through least-recently-used eviction, depending on application
 requirements.
 
-{{?RFC4787}} recommends a 2 minute timeout interval for UDP, however,
-often timer are lower in the range of 15 to 30 second. In constrast
-{{?RFC5382}} recommends a timeout of more than 2 hours for TCP, given TCP is
-a connection-oriented protocol with well defined closure semantics. For network
-devices that are QUIC-aware, it is recommended to also use
-longer timeouts for QUIC traffic, as QUIC is connection-oriented and as such
+{{?RFC4787}} recommends a 2 minute timeout interval for UDP. However,
+timers are often lower, in the range of 15 to 30 seconds. In contrast,
+{{?RFC5382}} recommends a timeout of more than 2 hours for TCP, given that TCP
+is a connection-oriented protocol with well-defined closure semantics. For
+network devices that are QUIC-aware, it is recommended to also use
+longer timeouts for QUIC traffic, as QUIC is connection-oriented. As such,
 a handshake packet from the server indicates the willingness of the server to
 communicate with the client.
 
@@ -803,28 +817,27 @@ assigning connection IDs is given in
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
 Current practices in detection and mitigation of Distributed Denial of Service
-(DDoS) attacks generally involves classification of incoming traffic (as
+(DDoS) attacks generally involve classification of incoming traffic (as
 packets, flows, or some other aggregate) into "good" (productive) and "bad"
-(DDoS) traffic, then differential treatment of this traffic to forward only
-good traffic, to the extent possible. This operation is often done in a separate
-specialized mitigation environment through which all traffic is filtered;
-a generalized architecture for separation of concerns in mitigation is given in
-{{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
+(DDoS) traffic, and then differential treatment of this traffic to forward only
+good traffic. This operation is often done in a separate specialized mitigation
+environment through which all traffic is filtered; a generalized architecture
+for separation of concerns in mitigation is given in
+ {{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
 
-Key to successful DDoS mitigation
-is efficient classification of this traffic in the mitigation environment.
-Limited first-packet garbage detection as in {{sec-garbage}} and stateful
-tracking of QUIC traffic as in {{sec-stateful}} above may be useful during
-classification.
+Key to successful DDoS mitigation is efficient classification of this traffic in
+the mitigation environment.  Limited first-packet garbage detection as in
+{{sec-garbage}} and stateful tracking of QUIC traffic as in {{sec-stateful}}
+above may be useful during classification.
 
 Note that the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient and requires more state to be maintained by
 DDoS defense systems. For the common case of NAT rebinding, DDoS defense systems
-can detect a change in client's endpoint address by linking flows based on the
-first 8 bytes of the server's connection IDs, provided the server is using at
+can detect a change in the client's endpoint address by linking flows based on
+the first 8 bytes of the server's connection IDs, provided the server is using at
 least 8-bytes-long connection IDs. QUIC's linkability resistance ensures that a
 deliberate connection migration is accompanied by a change in the connection ID
-and necessitate that connection ID aware DDoS defense system must have the same
+and necessitates that connection ID-aware DDoS defense system must have the same
 information about connection IDs as the load balancer
 {{?I-D.ietf-quic-load-balancers}}. This may be complicated where mitigation
 and load balancing environments are logically separate.
@@ -876,7 +889,7 @@ are likely to fail, and are emphatically NOT RECOMMENDED.
 QUIC does not provide any additional information on requirements on Quality of
 Service (QoS) provided from the network. QUIC assumes that all packets with the
 same 5-tuple {dest addr, source addr, protocol, dest port, source port} will
-receive similar network treatment.  That means all stream that are multiplexed
+receive similar network treatment.  That means all streams that are multiplexed
 over the same QUIC connection require the same network treatment and are handled
 by the same congestion controller. If differential network treatment is desired,
 multiple QUIC connections to the same server might be used, given that
