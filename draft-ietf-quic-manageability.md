@@ -569,7 +569,7 @@ TLS handshake. Connection establishment can therefore be detected using
 heuristics similar to those used to detect TLS over TCP. A client initiating
 0-RTT connection may also send data packets in 0-RTT Protected packets directly
 after the Initial packet containing the TLS Client Hello. Since these packets
-may be reordered in the network, note that 0-RTT Protected data packets may be
+may be reordered in the network, 0-RTT Protected data packets could be
 seen before the Initial packet.
 
 Note that clients send Initial packets before servers do, servers send Handshake
