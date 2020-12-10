@@ -782,7 +782,7 @@ timers or through least-recently-used eviction, depending on application
 requirements.
 
 {{?RFC4787}} recommends a 2 minute timeout interval for UDP. However,
-timers are often lower, in the range of 15 to 30 seconds. In contrast,
+timers can be lower, in the range of 15 to 30 seconds. In contrast,
 {{?RFC5382}} recommends a timeout of more than 2 hours for TCP, given that TCP
 is a connection-oriented protocol with well-defined closure semantics. For
 network devices that are QUIC-aware, it is recommended to also use
