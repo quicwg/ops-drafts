@@ -524,7 +524,7 @@ has been initiated by one endpoint (for a limited time period), the expectation
 is that an immediate close was negotiated at the application layer and
 therefore no additional data is expected from both sides.
 
-An immidate close will emit an CONNECTION_CLOSE frame. This frames has two sets
+An immediate close will emit an CONNECTION_CLOSE frame. This frames has two sets
 of types: one for QUIC internal problems that might lead to connection closure,
 and one for closures initiated by the application. An application using QUIC can
 define application-specific error codes (see, for example, {{QUIC-HTTP}},
