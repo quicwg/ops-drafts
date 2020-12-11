@@ -538,13 +538,14 @@ that applies to all three frame types.
 
 Alternatively, a QUIC connection can be silently closed by each endpoint
 separately after an idle timeout. If enabled as indicated by a transport
-parameter in the handshake, the idle timeout is announced for each
-endpoint during connection establishment and the effective value for this
-connection is the minimum of the two advertised values. An application
-therefore should be able to configure its own maximum value as well as
-have access to the computed minimum value for this connection. An application
-may adjust the maximum idle timeout based on the number of open or expected
+parameter in the handshake, the idle timeout is announced for each endpoint
+during connection establishment and the effective value for this connection is
+the minimum of the two values advertised by client and server. An application
+therefore should be able to configure its own maximum value as well as have
+access to the computed minimum value for this connection. An application may
+adjust the maximum idle timeout based on the number of open or expected
 connections as shorter timeout values may free-up memory more quickly.
+
 If an application desires to keep the connection open for longer
 than the announced timeout, it can send keep-alive messages, or a QUIC
 implementation may provide an option to defer the time-out to avoid
