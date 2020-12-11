@@ -419,18 +419,20 @@ being terminated in some protocols.
 QUIC provides an interface that provides multiple streams to the application;
 however, the application usually cannot control how data transmitted over one
 stream is mapped into frames or how those frames are bundled into packets.
-By default, QUIC will try to maximally pack packets with one or more stream
-data frames to minimize bandwidth consumption and computational costs (see
-section 13 of {{!QUIC}}). If there is not enough data available to fill a
-packet,
-QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
-latency. This delay can either be pre-configured or dynamically adjusted based
-on the observed sending pattern of the application. If the application requires
-low latency, with only small chunks of data to send, it may be valuable to
-indicate to QUIC that all data should be send out immediately. Alternatively,
-if the application expects to use a specific sending pattern, it can also
-provide a suggested delay to QUIC for how long to wait before bundle frames
-into a packet.
+
+By default, many QUIC implementations will try to maximally pack packets with
+one or more stream data frames to minimize bandwidth consumption and
+computational costs (see section 13 of {{!QUIC}}). If there is not enough data
+available to fill a packet, an implementation might wait for a short time, to
+optimize bandwidth efficiency instead of latency. This delay can either be
+pre-configured or dynamically adjusted based on the observed sending pattern of
+the application.
+
+If the application requires low latency, with only small chunks of data to
+send, it may be valuable to indicate to QUIC that all data should be send out
+immediately. Alternatively, if the application expects to use a specific
+sending pattern, it can also provide a suggested delay to QUIC for how long to
+wait before bundle frames into a packet.
 
 Similarly, an appliaction has usually no control about the length of a QUIC
 packet on the wire. However, QUIC provides the ability to add a padding frame to
