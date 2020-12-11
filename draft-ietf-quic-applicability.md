@@ -501,9 +501,10 @@ validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
 on path migration. Therefore migration usually has a performance impact.
 
-As long as the new path is not validated only probing packets can be sent.
-However, the probing packets can be used measure path characteristics as
-input for the switching decision or the congestion controller on the new path.
+Probing packets, which cannot carry application data, can be sent on multiple
+paths at once. Probing packets can be used perform address validation, measure
+path characteristics as input for the switching decision, or prime the
+congestion controller in preparation for switching to the new path.
 
 Only the client can actively migrate. However, servers can indicate during the
 handshake that they prefer to transfer the connection to a different address
