@@ -508,11 +508,11 @@ congestion controller in preparation for switching to the new path.
 
 Only the client can actively migrate. However, servers can indicate during the
 handshake that they prefer to transfer the connection to a different address
-after the handshake, e.g. to move from an address that is shared by multiple
-servers to an address that is unique to the server instance. The server can
-provide an IPv4 and an IPv6 address in a transport parameter during the TLS
-handshake and the client can select between the two if both are provided.
-See also Section 9.6 of {{!QUIC}}.
+after the handshake. For instance, this could be used to move from an address
+that is shared by multiple servers to an address that is unique to the server
+instance. The server can provide an IPv4 and an IPv6 address in a transport
+parameter during the TLS handshake and the client can select between the two if
+both are provided. See also Section 9.6 of {{!QUIC}}.
 
 # Connection closure
 
