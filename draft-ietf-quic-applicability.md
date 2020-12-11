@@ -577,13 +577,19 @@ datagrams to connections successfully if these values change.
 
 ## Server-Generated Connection ID
 
-QUIC supports a server-generated Connection ID, transmitted to the client during
+QUIC supports a server-generated connection ID, transmitted to the client during
 connection establishment (see Section 7.2 of {{!QUIC}}). Servers behind load
-balancers may need to change the Connection ID during the handshake, encoding
+balancers may need to change the connection ID during the handshake, encoding
 the identity of the server or information about its load balancing pool, in
-order to support stateless load balancing. Once the server generates a
-Connection ID that encodes its identity, every CDN load balancer would be able
-to forward the packets to that server without retaining connection state.
+order to support stateless load balancing.
+
+Server deployments with load balancers and other routing infrastructure need to
+ensure that this infrastructure consistently routes packets to the correct
+server instance. This might require coordination between servers and
+infrastructure. One method of achieving this involves encoding routing
+information into the connection ID. This ensures that there is no need to for
+servers and infrastructure to coordinate routing information for each
+connection. <!-- TODO quic-lb reference? -->
 
 ## Mitigating Timing Linkability with Connection ID Migration
 
