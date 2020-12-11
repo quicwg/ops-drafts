@@ -318,7 +318,8 @@ finishing the transmission of CRYPTO frames.
 | QUIC PADDING frames                                      |  |
 +----------------------------------------------------------+<-+
 ~~~~~
-{: #fig-client-hello title="Typical QUIC Client Hello datagram pattern with no 0-RTT"}
+{: #fig-client-hello title="Typical QUIC Client Hello datagram pattern with no
+ 0-RTT"}
 
 The Client Hello datagram exposes version number, source and destination
 connection IDs in the clear. Information in the TLS Client Hello frame,
