@@ -561,14 +561,19 @@ information is intended to be used by the network. QUIC has a long header that
 is used during connection establishment and for other control processes, and a
 short header that may be used for data transmission in an established
 connection. While the long header always exposes some information (such as the
-version and Connection IDs), the short header exposes at most only a single
-Connection ID.
+version and connection IDs), the short header exposes at most only a single
+connection ID.
 
-Note that the Connection ID in the short header may be omitted. This is a
-per-connection configuration option; if the Connection ID is not present, then
-the peer omitting the connection ID needs to use the same local address for the
-lifetime of the connection and connection migration is
-not supported for that direction of the connection.
+Aside from the Destination Connection ID field of the first packets sent by
+clients, the connection ID can be zero length. This is a choice that is made by
+each endpoint individually.
+
+An endpoint that selects a zero-length connection ID will receive packets with
+a zero-length Destination Connection ID. The endpoint needs to use other
+information, such as its IP address and port number to identify which
+connection is referred to. An endpoint can choose to use the source IP address
+and port on datagrams, but this could mean that the endpoint is unable to match
+datagrams to connections successfully if these values change.
 
 ## Server-Generated Connection ID
 
