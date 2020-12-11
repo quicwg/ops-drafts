@@ -483,14 +483,16 @@ firewalls that rely on the port number for application identification.
 # Connection Migration
 
 QUIC supports connection migration by the client. If a lower-layer address
-changes, a QUIC endpoint can still associate packets with an existing connection
-based on the Connection ID (see also {{connid}}) in the QUIC header,
-if present. This supports cases where address information changes, such as
-NAT rebinding, intentional change of the local interface, or based on an
-indication in the handshake of the server for a preferred address to be used.
-As such if the client is known or likely to sit behind a NAT, use of a
-connection ID for the server is strongly recommended. A non-empty connection ID
-for the server is also strongly recommended when migration is supported.
+changes, a QUIC endpoint can still associate packets with an existing
+connection using the Destination Connection ID field (see also {{connid}}) in
+the QUIC header, unless a zero-length value is used. This supports cases where
+address information changes, such as NAT rebinding, intentional change of the
+local interface, or based on an indication in the handshake of the server for a
+preferred address to be used.
+
+Use of a non-empty connection ID for the server is strongly recommended if any
+clients are behind a NAT or could be. A non-empty connection ID is also
+strongly recommended when migration is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
 time, and only when the new path is validated all traffic can be switched over
