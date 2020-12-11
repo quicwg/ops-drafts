@@ -434,18 +434,16 @@ immediately. Alternatively, if the application expects to use a specific
 sending pattern, it can also provide a suggested delay to QUIC for how long to
 wait before bundle frames into a packet.
 
-Similarly, an appliaction has usually no control about the length of a QUIC
-packet on the wire. However, QUIC provides the ability to add a padding frame to
-impact the packet size. This is mainly used by QUIC itself in the first packet
-in order to ensure that the path is capable of transferring packets of at least
-a certain size. Additionally, a QUIC implementation can expose an application
-layer interface to specify a certain packet size. This can either be used by the
-application to force certian packet sizes in specific use cases/networks, or
-ensure that all packets are equally sized to conceal potential leakage of
-application layer information when the data sent by the application are not
-greedy. Note the initial packet must have a minimum size of 1200 bytes
-according to the QUIC specification. A receiver of a smaller initial packet may
-reject this packet in order to avoid amplification attacks.
+Similarly, an application has usually no control about the length of a QUIC
+packet on the wire. QUIC provides the ability to add a PADDING frame to
+arbitrarily increase the size of packets.
+
+Padding is used by QUIC to ensure that the path is capable of transferring
+datagrams of at least a certain size, both during the handshake and for
+connection migration. Padding can also be used by an application to reduce
+leakage of information about the data that is sent. A QUIC implementation can
+expose an interface that allows an application layer to specify how to apply
+padding.
 
 
 # Port Selection and Application Endpoint Discovery {#ports}
