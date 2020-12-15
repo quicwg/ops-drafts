@@ -284,12 +284,15 @@ datagram as shown in {{fig-server-hello}} typically containing three packets:
 an Initial packet with the Server Hello, a Handshake packet with the rest of
 the server's side of the TLS handshake, and initial 1-RTT data, if present.
 
-The Client Hello datagram, Server Hello datagram, and Initial Completion
-datagram, which all contain a QUIC Initial Packet, must be at least 1200 octets
-long. This protects against amplification attacks and verify the network path
-meets minimum Maximum Transmission Unit (MTU) requirements. This is usually
-accomplished with either the addition of PADDING frames to the Initial packet,
-or coalescing of the Initial Packet with packets from other encryption contexts.
+The Initial Completion datagram contains at least one Handshake packet and
+some also include an Initial packet.
+
+Datagrams that contain a QUIC Initial Packet (Client Hello, Server Hello, and
+some Initial Completion) must be at least 1200 octets long. This protects
+against amplification attacks and verifies the network path meets minimum
+Maximum Transmission Unit (MTU) requirements. This is usually accomplished with
+either the addition of PADDING frames to the Initial packet, or coalescing of
+the Initial Packet with packets from other encryption contexts.
 
 The content of QUIC Initial packets are encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
@@ -638,10 +641,9 @@ expected to only carry the CRYPTO frame and optionally padding frames. However,
 PADDING frames, which are each one byte of zeros, may also occur before or after
 the CRYPTO frame.
 
-Note that client Initial packets that do not contain the Client Hello message
-do not always use the Destination Connection ID that was used to
-generate the Initial keys. Therefore, attempts to decrypt these packets using
-the procedure above will fail.
+Note that client Initial packets after the first do not always use the
+Destination Connection ID that was used to generate the Initial keys. Therefore,
+attempts to decrypt these packets using the procedure above might fail.
 
 ## Flow association {#sec-flow-association}
 
