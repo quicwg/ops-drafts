@@ -289,7 +289,7 @@ some also include an Initial packet.
 
 Datagrams that contain a QUIC Initial Packet (Client Hello, Server Hello, and
 some Initial Completion) must be at least 1200 octets long. This protects
-against amplification attacks and verifies the network path meets minimum
+against amplification attacks and verifies that the network path meets minimum
 Maximum Transmission Unit (MTU) requirements. This is usually accomplished with
 either the addition of PADDING frames to the Initial packet, or coalescing of
 the Initial Packet with packets from other encryption contexts.
