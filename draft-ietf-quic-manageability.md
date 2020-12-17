@@ -485,7 +485,7 @@ therefore not part of the wire image that is visible to on-path observers.
 
 Version Negotiation packets are not intrinsically protected, but QUIC versions
 can use later encrypted messages to verify that they were authentic.
-Therefore any manipulation of this list will be detected and will cause the
+Therefore any manipulation of this list will be detected and may cause the
 endpoints to terminate the connection attempt.
 
 Also note that the list of versions in the Version Negotiation packet may
