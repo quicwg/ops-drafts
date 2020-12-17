@@ -122,7 +122,7 @@ and invariant {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
 This document describes version 1 of the QUIC protocol, whose wire image
 is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Features of the wire
- image described herein may change in future versions of the protocol, except
+image described herein may change in future versions of the protocol, except
 when specified as an invariant {{QUIC-INVARIANTS}},
 and cannot be used to identify QUIC as a protocol or
 to infer the behavior of future versions of QUIC.
