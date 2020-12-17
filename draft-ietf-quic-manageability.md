@@ -94,11 +94,12 @@ network management practices will be impacted by QUIC.
 Since QUIC's wire image {{?WIRE-IMAGE=RFC8546}} is integrity protected and not
 modifiable on path, in-network operations are not possible without terminating
 the QUIC connection, for instance using a back-to-back proxy. Proxy operations
-are not in scope for this document. QUIC proxies must be fully-fledged QUIC
-endpoints, implementing the transport as defined in {{QUIC-TRANSPORT}} and
-{{QUIC-TLS}}, proxy-relevant semantics for the application(s) running over QUIC
-(e.g. HTTP/3 as defined in {{QUIC-HTTP}}), and have the TLS credentials to
-authenticate as the server and (in some cases) client.
+are not in scope for this document. Transparent QUIC proxies must be fully-
+fledged QUIC endpoints, implementing the transport as defined in
+{{QUIC-TRANSPORT}} and {{QUIC-TLS}}, proxy-relevant semantics for the
+application(s) running over QUIC (e.g. HTTP/3 as defined in {{QUIC-HTTP}}), and
+have the TLS credentials to authenticate as the server and (in some cases)
+ client.
 
 Network management is not a one-size-fits-all endeavour: practices considered
 necessary or even mandatory within enterprise networks with certain compliance
@@ -151,8 +152,7 @@ The following information is exposed in QUIC packet headers:
 
 - "fixed bit": the second most significant bit of the first octet most QUIC
   packets of the current version is currently set to 1, for demultiplexing
-  with other UDP-encapsulated protocols. Endpoints that do not need this
-  demultiplexing function might negotiate the use of arbitrary values.
+  with other UDP-encapsulated protocols.
 
 - latency spin bit: the third most significant bit of first octet in the short
   packet header. The spin bit is set by endpoints such that  tracking edge
@@ -167,11 +167,11 @@ The following information is exposed in QUIC packet headers:
   identifies the version used for that packet. During Version
   Negotiation (see {{version}} and Section 17.2.1 of {{QUIC-TRANSPORT}}), the
   version number field has a special value (0x00000000) that identifies the
-  packet as a Version Negotiation packet. QUIC versions that start with 0xff are
-  IETF drafts. QUIC versions that start with 0x0000 are reserved for IETF
-  consensus documents. For example, QUIC version 1 uses version 0x00000001.
-  Operators should expect to observe packets with other version numbers as a
-  result of various internet experiments and future standards.
+  packet as a Version Negotiation packet. Many QUIC versions that start with
+  0xff implement IETF drafts. QUIC versions that start with 0x0000 are reserved
+  for IETF consensus documents. For example, QUIC version 1 uses version
+  0x00000001.  Operators should expect to observe packets with other version
+  numbers as a result of various internet experiments and future standards.
 
 - source and destination connection ID: short and long packet headers carry a
   destination connection ID, a variable-length field that can be used to
