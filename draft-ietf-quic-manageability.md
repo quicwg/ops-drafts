@@ -534,7 +534,7 @@ provides one bit of information and is quite prone to collide with
 UDP-based protocols other than those that this static bit is meant to allow
 multiplexing with. Second, this feature of the wire image is not invariant
 {{QUIC-INVARIANTS}} and may change in future versions of the protocol, or
-even be negotiated during the handshake via proposed transport parameters.
+even be negotiated during the handshake via the use of transport parameters.
 
 ### Identifying Negotiated Version
 
