@@ -164,7 +164,7 @@ The following information is exposed in QUIC packet headers:
   handshake; see Section 17.2 of {{QUIC-TRANSPORT}} for details.
 
 - version number: the version number is present in the long header, and
-  identifies the version used for that packet. Note that during Version
+  identifies the version used for that packet. During Version
   Negotiation (see {{version}} and Section 17.2.1 of {{QUIC-TRANSPORT}}), the
   version number field has a special value (0x00000000) that identifies the
   packet as a Version Negotiation packet. QUIC versions that start with 0xff are
