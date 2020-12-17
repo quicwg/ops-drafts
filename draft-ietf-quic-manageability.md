@@ -576,7 +576,7 @@ packet.
 
 Note that clients send Initial packets before servers do, servers send Handshake
 packets before clients do, and only clients send Initial packets with tokens.
-Therefore, identity as a client or server can generally be confirmed by an on-
+Therefore, the role as a client or server can generally be confirmed by an on-
 path observer. An attempted connection after Retry can be detected by
 correlating the token on the Retry with the token on the subsequent Initial
 packet and the Destination Connection ID of the new Initial packet.
