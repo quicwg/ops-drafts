@@ -149,8 +149,11 @@ optional destination connection ID and the spin bit for RTT measurement.
 The following information is exposed in QUIC packet headers:
 
 - "fixed bit": the second most significant bit of the first octet most QUIC
-  packets of the current version is currently set to 1, for demultiplexing
-  with other UDP-encapsulated protocols.
+  packets of the current version is currently set to 1, for endpoints to
+  demultiplex with other UDP-encapsulated protocols. Even thought this bit is
+  fixed in the QUICv1 specification, endpoints may use a version or extension
+  that varies the bit. Therefore, observers cannot reliably use it as an
+  identifier for QUIC.
 
 - latency spin bit: the third most significant bit of first octet in the short
   packet header. The spin bit is set by endpoints such that  tracking edge
