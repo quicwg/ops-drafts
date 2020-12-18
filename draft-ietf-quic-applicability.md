@@ -502,8 +502,8 @@ Path validation takes at least one RTT and congestion control will also be reset
 on path migration. Therefore migration usually has a performance impact.
 
 Probing packets, which cannot carry application data, can be sent on multiple
-paths at once. Probing packets can be used to perform address validation, measure
-path characteristics as input for the switching decision, or prime the
+paths at once. Probing packets can be used to perform address validation,
+measure path characteristics as input for the switching decision, or prime the
 congestion controller in preparation for switching to the new path.
 
 Only the client can actively migrate. However, servers can indicate during the
