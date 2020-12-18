@@ -502,7 +502,7 @@ Path validation takes at least one RTT and congestion control will also be reset
 on path migration. Therefore migration usually has a performance impact.
 
 Probing packets, which cannot carry application data, can be sent on multiple
-paths at once. Probing packets can be used perform address validation, measure
+paths at once. Probing packets can be used to perform address validation, measure
 path characteristics as input for the switching decision, or prime the
 congestion controller in preparation for switching to the new path.
 
@@ -589,7 +589,7 @@ server instance. This might require coordination between servers and
 infrastructure. One method of achieving this involves encoding routing
 information into the connection ID. This ensures that there is no need to for
 servers and infrastructure to coordinate routing information for each
-connection. <!-- TODO quic-lb reference? -->
+connection. See further {{QUIC-LB}}.
 
 ## Mitigating Timing Linkability with Connection ID Migration
 
