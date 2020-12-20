@@ -573,7 +573,8 @@ a zero-length Destination Connection ID. The endpoint needs to use other
 information, such as its IP address and port number to identify which
 connection is referred to. An endpoint can choose to use the source IP address
 and port on datagrams, but this could mean that the endpoint is unable to match
-datagrams to connections successfully if these values change.
+datagrams to connections successfully if these values change, making migration
+effectively impossible.
 
 ## Server-Generated Connection ID
 
