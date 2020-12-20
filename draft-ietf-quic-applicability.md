@@ -681,7 +681,7 @@ will persist only for as long as any Version Negotiation packets take to be
 transmitted and responded to.  So the third stage can follow after a relatively
 short delay.
 
-The third stage completes the process by enabling validation of the negotiated
+The third stage completes the process by enabling authentication of the negotiated
 version with the assumption that the new version is fully available.
 
 The process for disabling an old version or rolling back the introduction of a
