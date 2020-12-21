@@ -419,31 +419,31 @@ being terminated in some protocols.
 QUIC provides an interface that provides multiple streams to the application;
 however, the application usually cannot control how data transmitted over one
 stream is mapped into frames or how those frames are bundled into packets.
-By default, QUIC will try to maximally pack packets with one or more stream
-data frames to minimize bandwidth consumption and computational costs (see
-section 13 of {{!QUIC}}). If there is not enough data available to fill a
-packet,
-QUIC may even wait for a short time, to optimize bandwidth efficiency instead of
-latency. This delay can either be pre-configured or dynamically adjusted based
-on the observed sending pattern of the application. If the application requires
-low latency, with only small chunks of data to send, it may be valuable to
-indicate to QUIC that all data should be send out immediately. Alternatively,
-if the application expects to use a specific sending pattern, it can also
-provide a suggested delay to QUIC for how long to wait before bundle frames
-into a packet.
 
-Similarly, an appliaction has usually no control about the length of a QUIC
-packet on the wire. However, QUIC provides the ability to add a padding frame to
-impact the packet size. This is mainly used by QUIC itself in the first packet
-in order to ensure that the path is capable of transferring packets of at least
-a certain size. Additionally, a QUIC implementation can expose an application
-layer interface to specify a certain packet size. This can either be used by the
-application to force certian packet sizes in specific use cases/networks, or
-ensure that all packets are equally sized to conceal potential leakage of
-application layer information when the data sent by the application are not
-greedy. Note the initial packet must have a minimum size of 1200 bytes
-according to the QUIC specification. A receiver of a smaller initial packet may
-reject this packet in order to avoid amplification attacks.
+By default, many QUIC implementations will try to maximally pack packets with
+one or more stream data frames to minimize bandwidth consumption and
+computational costs (see section 13 of {{!QUIC}}). If there is not enough data
+available to fill a packet, an implementation might wait for a short time, to
+optimize bandwidth efficiency instead of latency. This delay can either be
+pre-configured or dynamically adjusted based on the observed sending pattern of
+the application.
+
+If the application requires low latency, with only small chunks of data to
+send, it may be valuable to indicate to QUIC that all data should be send out
+immediately. Alternatively, if the application expects to use a specific
+sending pattern, it can also provide a suggested delay to QUIC for how long to
+wait before bundle frames into a packet.
+
+Similarly, an application has usually no control about the length of a QUIC
+packet on the wire. QUIC provides the ability to add a PADDING frame to
+arbitrarily increase the size of packets.
+
+Padding is used by QUIC to ensure that the path is capable of transferring
+datagrams of at least a certain size, both during the handshake and for
+connection migration. Padding can also be used by an application to reduce
+leakage of information about the data that is sent. A QUIC implementation can
+expose an interface that allows an application layer to specify how to apply
+padding.
 
 
 # Port Selection and Application Endpoint Discovery {#ports}
@@ -451,46 +451,48 @@ reject this packet in order to avoid amplification attacks.
 In general, port numbers serves two purposes: "first, they provide a
 demultiplexing identifier to differentiate transport sessions between the same
 pair of endpoints, and second, they may also identify the application protocol
-and associated service to which processes connect" {{!RFC6335}}. Note that the
-assumption that an application can be identified in the network based on the
-port number is less true today, due to encapsulation, mechanisms for dynamic
-port assignments as well as NATs.
+and associated service to which processes connect" {{!RFC6335}}. The assumption
+that an application can be identified in the network based on the port number
+is less true today due to encapsulation, mechanisms for dynamic port
+assignments, and NATs.
 
 As QUIC is a general purpose transport protocol, there are no requirements that
-servers use a particular UDP port for QUIC in general. For applications with a
-fallback to TCP which do not already have an alternate mapping to UDP, the
-registration (if necessary) and use of the UDP port number corresponding to
-the TCP port already registered for the application is RECOMMENDED. For example,
-the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
-or HTTP/2 over TLS over TCP.
+servers use a particular UDP port for QUIC. For applications with a fallback to
+TCP that do not already have an alternate mapping to UDP, the registration (if
+necessary) and use of the UDP port number corresponding to the TCP port already
+registered for the application is RECOMMENDED. For example, the default port
+for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1 or HTTP/2 over
+TLS over TCP.
 
-Applications should define an alternate endpoint discovery mechanism to allow
+Applications could define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{QUIC-HTTP}}
-sections 3.2 and 3.3) specifies the use of ALPN {{?RFC7301}} for service
+Sections 3.2 and 3.3) specifies the use of ALPN {{?RFC7301}} for service
 discovery which allows the server to use and announce a different
 port number. Note that HTTP/3's ALPN token ("h3") identifies not only the
 version of the application protocol, but also the binding to QUIC as well
 as the version of QUIC itself; this approach allows unambiguous agreement
 between the endpoints on the protocol stack in use.
 
-Note that given the prevalence of the assumption in network management
+Given the prevalence of the assumption in network management
 practice that a port number maps unambiguously to an application, the
 use of ports that cannot easily be mapped to a registered service name
-may lead to blocking or other interference by network elements such as
+might lead to blocking or other interference by network elements such as
 firewalls that rely on the port number for application identification.
 
 
 # Connection Migration
 
 QUIC supports connection migration by the client. If a lower-layer address
-changes, a QUIC endpoint can still associate packets with an existing connection
-based on the Connection ID (see also {{connid}}) in the QUIC header,
-if present. This supports cases where address information changes, such as
-NAT rebinding, intentional change of the local interface, or based on an
-indication in the handshake of the server for a preferred address to be used.
-As such if the client is known or likely to sit behind a NAT, use of a
-connection ID for the server is strongly recommended. A non-empty connection ID
-for the server is also strongly recommended when migration is supported.
+changes, a QUIC endpoint can still associate packets with an existing
+connection using the Destination Connection ID field (see also {{connid}}) in
+the QUIC header, unless a zero-length value is used. This supports cases where
+address information changes, such as NAT rebinding, intentional change of the
+local interface, or based on an indication in the handshake of the server for a
+preferred address to be used.
+
+Use of a non-empty connection ID for the server is strongly recommended if any
+clients are behind a NAT or could be. A non-empty connection ID is also
+strongly recommended when migration is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
 time, and only when the new path is validated all traffic can be switched over
@@ -499,17 +501,18 @@ validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
 on path migration. Therefore migration usually has a performance impact.
 
-As long as the new path is not validated only probing packets can be sent.
-However, the probing packets can be used measure path characteristics as
-input for the switching decision or the congestion controller on the new path.
+Probing packets, which cannot carry application data, can be sent on multiple
+paths at once. Probing packets can be used to perform address validation,
+measure path characteristics as input for the switching decision, or prime the
+congestion controller in preparation for switching to the new path.
 
 Only the client can actively migrate. However, servers can indicate during the
 handshake that they prefer to transfer the connection to a different address
-after the handshake, e.g. to move from an address that is shared by multiple
-servers to an address that is unique to the server instance. The server can
-provide an IPv4 and an IPv6 address in a transport parameter during the TLS
-handshake and the client can select between the two if both are provided.
-See also Section 9.6 of {{!QUIC}}.
+after the handshake. For instance, this could be used to move from an address
+that is shared by multiple servers to an address that is unique to the server
+instance. The server can provide an IPv4 and an IPv6 address in a transport
+parameter during the TLS handshake and the client can select between the two if
+both are provided. See also Section 9.6 of {{!QUIC}}.
 
 # Connection closure
 
@@ -521,26 +524,28 @@ has been initiated by one endpoint (for a limited time period), the expectation
 is that an immediate close was negotiated at the application layer and
 therefore no additional data is expected from both sides.
 
-An immidate close will emit an CONNECTION_CLOSE frame. This frames has two sets
-of types: one for QUIC internal problems that might lead to connection closure,
-and one for closures initiated by the application. An application using QUIC can
-define application-specific error codes (see, for example, {{QUIC-HTTP}},
-Section 8.1). In the case of a grateful shut-down initiated by the application
-after application layer negotiation, a NO_ERROR code is expected. Further,
-the CONNECTION_CLOSE frame provides an optional reason field, that can be used
+An immediate close will emit an CONNECTION_CLOSE frame. This frames has two
+sets of types: one for QUIC internal problems that might lead to connection
+closure, and one for closures initiated by the application. An application
+using QUIC can define application-specific error codes (see, for example,
+{{QUIC-HTTP}}, Section 8.1).
+
+The CONNECTION_CLOSE frame provides an optional reason field, that can be used
 to append human-readable information to an error code. Note that QUIC
-RESET_STREAM and STOP_SENDING frames provide similar capablities. Usually
-application error codes are defined to be applicabile to all three frames.
+RESET_STREAM and STOP_SENDING frames also include an error code, but no reason
+string. Application error codes are expected to be defined from a single space
+that applies to all three frame types.
 
 Alternatively, a QUIC connection can be silently closed by each endpoint
 separately after an idle timeout. If enabled as indicated by a transport
-parameter in the handshake, the idle timeout is announced for each
-endpoint during connection establishment and the effective value for this
-connection is the minimum of the two advertised values. An application
-therefore should be able to configure its own maximum value as well as
-have access to the computed minimum value for this connection. An application
-may adjust the maximum idle timeout based on the number of open or expected
+parameter in the handshake, the idle timeout is announced for each endpoint
+during connection establishment and the effective value for this connection is
+the minimum of the two values advertised by client and server. An application
+therefore should be able to configure its own maximum value as well as have
+access to the computed minimum value for this connection. An application may
+adjust the maximum idle timeout based on the number of open or expected
 connections as shorter timeout values may free-up memory more quickly.
+
 If an application desires to keep the connection open for longer
 than the announced timeout, it can send keep-alive messages, or a QUIC
 implementation may provide an option to defer the time-out to avoid
@@ -556,24 +561,36 @@ information is intended to be used by the network. QUIC has a long header that
 is used during connection establishment and for other control processes, and a
 short header that may be used for data transmission in an established
 connection. While the long header always exposes some information (such as the
-version and Connection IDs), the short header exposes at most only a single
-Connection ID.
+version and connection IDs), the short header exposes at most only a single
+connection ID.
 
-Note that the Connection ID in the short header may be omitted. This is a
-per-connection configuration option; if the Connection ID is not present, then
-the peer omitting the connection ID needs to use the same local address for the
-lifetime of the connection and connection migration is
-not supported for that direction of the connection.
+Aside from the Destination Connection ID field of the first packets sent by
+clients, the connection ID can be zero length. This is a choice that is made by
+each endpoint individually.
+
+An endpoint that selects a zero-length connection ID will receive packets with
+a zero-length Destination Connection ID. The endpoint needs to use other
+information, such as its IP address and port number to identify which
+connection is referred to. An endpoint can choose to use the source IP address
+and port on datagrams, but this could mean that the endpoint is unable to match
+datagrams to connections successfully if these values change, making migration
+effectively impossible.
 
 ## Server-Generated Connection ID
 
-QUIC supports a server-generated Connection ID, transmitted to the client during
+QUIC supports a server-generated connection ID, transmitted to the client during
 connection establishment (see Section 7.2 of {{!QUIC}}). Servers behind load
-balancers may need to change the Connection ID during the handshake, encoding
+balancers may need to change the connection ID during the handshake, encoding
 the identity of the server or information about its load balancing pool, in
-order to support stateless load balancing. Once the server generates a
-Connection ID that encodes its identity, every CDN load balancer would be able
-to forward the packets to that server without retaining connection state.
+order to support stateless load balancing.
+
+Server deployments with load balancers and other routing infrastructure need to
+ensure that this infrastructure consistently routes packets to the correct
+server instance. This might require coordination between servers and
+infrastructure. One method of achieving this involves encoding routing
+information into the connection ID. This ensures that there is no need to for
+servers and infrastructure to coordinate routing information for each
+connection. See further {{QUIC-LB}}.
 
 ## Mitigating Timing Linkability with Connection ID Migration
 
@@ -664,8 +681,8 @@ will persist only for as long as any Version Negotiation packets take to be
 transmitted and responded to.  So the third stage can follow after a relatively
 short delay.
 
-The third stage completes the process by enabling validation of the negotiation
-version as though the new version were disabled.
+The third stage completes the process by enabling authentication of the
+negotiated version with the assumption that the new version is fully available.
 
 The process for disabling an old version or rolling back the introduction of a
 new version uses the same process in reverse.  Servers disable validation of the
