@@ -596,6 +596,11 @@ connection. See further {{QUIC-LB}}.
 
 ## Mitigating Timing Linkability with Connection ID Migration
 
+QUIC requires that endpoints generate fresh connection IDs for use on new
+network paths. Choosing values that are unlinkable to an outside observer
+ensures that activity on different paths cannot be trivially correlated
+using the connection ID.
+
 While sufficiently robust connection ID generation schemes will mitigate
 linkability issues, they do not provide full protection. Analysis of
 the lifetimes of six-tuples (source and destination addresses as well as the
