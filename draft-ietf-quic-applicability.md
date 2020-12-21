@@ -288,10 +288,10 @@ stream frames.
 
 Streams can be unidirectional or bidirectional, and a stream may be initiated
 either by client or server. Only the initiator of a unidirectional stream can
-send data on it. Due to offset encoding limitations, a stream can carry a
-maximum of 2^62-1 bytes in each direction. In the presently unlikely event
-that this limit is reached by an application, the stream can simply be closed
-and replaced with a new one.
+send data on it. Due to encoding limitations on stream offsets and connection
+flow control limits, both streams and connections can carry a maximum of
+2^62-1 bytes in each direction. In the presently unlikely event that this limit
+is reached by an application, a new connection would need to be established.
 
 Streams can be independently opened and closed, gracefully or by error. An
 application can gracefully close the egress direction of a stream by instructing
