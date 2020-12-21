@@ -437,9 +437,9 @@ header, including exposed information, is integrity
 protected. Further, information that was sent and exposed in handshake packets
 sent before the cryptographic context was established are validated later during
 the cryptographic handshake.  Therefore, devices on path cannot alter any
-information or bits in QUIC packet headers, since alteration of header
-information will lead to a failed integrity check at the receiver, and can even
-lead to connection termination.
+information or bits in QUIC packet headers, except specific parts of Initial
+packets, since alteration of header information  will lead to a failed integrity
+check at the receiver, and can even lead to connection termination.
 
 ## Connection ID and Rebinding {#rebinding}
 
