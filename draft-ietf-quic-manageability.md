@@ -464,9 +464,7 @@ pools.
 The best way to obscure an encoding is to appear random to observers, which is
 most rigorously achieved with encryption. Even when encrypted, a scheme could
 embed the unencrypted length of the Connection ID in the Connection ID itself,
-instead of remembering it, e.g. by using the first few bits to indicate a
-certain size of a well-known set of possible sizes with multiple values that
-indicate the same size but are selected randomly.
+instead of remembering it.
 
 {{?QUIC_LB=I-D.ietf-quic-load-balancers}} further specified possible algorithms
 to generate Connection IDs at load balancers.
