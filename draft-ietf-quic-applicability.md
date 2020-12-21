@@ -302,12 +302,10 @@ direction without a peer-generated FIN, much like in TCP. However, an endpoint
 can abruptly close either the ingress or egress direction; these actions are
 fully independent of each other.
 
+QUIC does not provide an interface for exceptional handling of any stream.
 If a stream that is critical for an application is closed, the application can
-generate respective error messages on the application layer to inform the
-other end and/or the higher layer, and eventually indicate QUIC to reset
-the connection. QUIC, however, does not need to know which streams are
-critical, and does not provide an interface for exceptional handling of
-any stream.
+generate error messages on the application layer to inform the other end and/or
+the higher layer, which can eventually indicate QUIC to reset the connection. 
 
 Mapping of application data to streams is application-specific and described for
 HTTP/3 in {{QUIC-HTTP}}. In general, data that can be processed independently,
