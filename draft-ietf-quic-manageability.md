@@ -499,8 +499,11 @@ QUIC is expected to evolve rapidly, so new versions, both experimental and IETF
 standard versions, will be deployed in the Internet more often than with
 traditional Internet- and transport-layer protocols. Using a particular version
 number to recognize valid QUIC traffic is likely to persistently miss a fraction
-of QUIC flows and completely fail in the multi-year timeframe, and is therefore
-not recommended.
+of QUIC flows and completely fail in the near future, and is therefore
+not recommended. In addition, due to the speed of evolution of the protocol,
+devices that attempt to distinguish QUIC traffic from non-QUIC traffic for
+purposes of network admission control should admit all QUIC traffic regardless
+of version.
 
 
 # Network-visible information about QUIC flows
