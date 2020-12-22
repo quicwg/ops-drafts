@@ -299,8 +299,8 @@ Streams can be independently opened and closed, gracefully or by error. An
 application can gracefully close the egress direction of a stream by instructing
 QUIC to send a FIN bit in a STREAM frame. It cannot gracefully close the ingress
 direction without a peer-generated FIN, much like in TCP. However, an endpoint
-can abruptly close either the ingress or egress direction; these actions are
-fully independent of each other.
+can abruptly close the egress direction or request that its peer abruptly close
+the ingress direction; these actions are fully independent of each other.
 
 QUIC does not provide an interface for exceptional handling of any stream.
 If a stream that is critical for an application is closed, the application can
