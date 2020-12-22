@@ -204,7 +204,7 @@ cryptographically obfuscated:
   Retry packets have an associated packet number; however, this packet number
   is encrypted, and therefore not of use to on-path observers. The offset of the
   packet number is encoded in long headers, while it
-  is implicit (depending on Destination Connection ID length) in short headers.
+  is implicit (depending on destination connection ID length) in short headers.
   The length of the packet number is cryptographically obfuscated.
 
 - key phase: The Key Phase bit, present in short headers, specifies the keys
@@ -236,7 +236,7 @@ QUIC connections over one 5-tuple. However, if the connection ID is not present
 in the packet header, all packets of the 5-tuple belong to the same QUIC
 connection.
 
-## The QUIC handshake {#handshake}
+## The QUIC Handshake {#handshake}
 
 New QUIC connections are established using a handshake, which is distinguishable
 on the wire and contains some information that can be passively observed.
@@ -452,7 +452,7 @@ connection IDs during the handshake; typically, however, only the server will
 request a connection ID for the lifetime of the connection. Connection IDs for
 either endpoint may change during the lifetime of a connection, with the new
 connection ID being negotiated via encrypted frames. See Section 5.1 of
-{{QUIC-TRANSPORT}}. Therefore, observing a new Connection ID does not
+{{QUIC-TRANSPORT}}. Therefore, observing a new connection ID does not
 necessary indicate a new connection.
 
 Server-generated connection IDs should seek to obscure any encoding, of routing
@@ -463,11 +463,11 @@ pools.
 
 The best way to obscure an encoding is to appear random to observers, which is
 most rigorously achieved with encryption. Even when encrypted, a scheme could
-embed the unencrypted length of the Connection ID in the Connection ID itself,
+embed the unencrypted length of the connection ID in the connection ID itself,
 instead of remembering it.
 
 {{?QUIC_LB=I-D.ietf-quic-load-balancers}} further specified possible algorithms
-to generate Connection IDs at load balancers.
+to generate connection IDs at load balancers.
 
 
 ## Packet Numbers {#packetnumber}
@@ -506,7 +506,7 @@ purposes of network admission control should admit all QUIC traffic regardless
 of version.
 
 
-# Network-visible information about QUIC flows
+# Network-visible Information about QUIC Flows
 
 This section addresses the different kinds of observations and inferences that
 can be made about QUIC flows by a passive observer in the network based on the
@@ -515,7 +515,7 @@ that can see packets in both directions in the sequence in which they are
 carried on the wire) unless noted.
 
 
-## Identifying QUIC traffic {#sec-identifying}
+## Identifying QUIC Traffic {#sec-identifying}
 
 The QUIC wire image is not specifically designed to be distinguishable from
 other UDP traffic.
@@ -565,7 +565,7 @@ separate valid from invalid first packet types, the deployment of such
 heuristics is not recommended, as packet types may have different meanings in
 future versions of the protocol.
 
-## Connection confirmation {#sec-confirm}
+## Connection Confirmation {#sec-confirm}
 
 Connection establishment uses Initial and Handshake packets containing a
 TLS handshake, and Retry packets that do not contain parts of the handshake.
@@ -581,7 +581,7 @@ packets before clients do, and only clients send Initial packets with tokens.
 Therefore, the role as a client or server can generally be confirmed by an on-
 path observer. An attempted connection after Retry can be detected by
 correlating the token on the Retry with the token on the subsequent Initial
-packet and the Destination Connection ID of the new Initial packet.
+packet and the destination connection ID of the new Initial packet.
 
 ## Application Identification {#sec-server}
 
@@ -618,7 +618,7 @@ gradually disappear over time.
 
 When the version has been identified as QUIC version 1, the packet type needs
 to be verified as an Initial packet by checking that the third and fourth bit
-of the header are both set to 0. Then the Client Destination Connection ID
+of the header are both set to 0. Then the client destination connection ID
 needs to be extracted to calculate the Initial Secret together with the
 version specific initial salt, as described in {{QUIC-TLS}}. The length of
 the connection ID is indicated in the 6th byte of the header followed by the
@@ -644,12 +644,12 @@ PADDING frames, which are each one byte of zeros, may also occur before or after
 the CRYPTO frame.
 
 Note that client Initial packets after the first do not always use the
-Destination Connection ID that was used to generate the Initial keys. Therefore,
+destination connection ID that was used to generate the Initial keys. Therefore,
 attempts to decrypt these packets using the procedure above might fail.
 
-## Flow association {#sec-flow-association}
+## Flow Association {#sec-flow-association}
 
-The QUIC Connection ID (see {{rebinding}}) is designed to allow an on-path
+The QUIC connection ID (see {{rebinding}}) is designed to allow an on-path
 device such as a load-balancer to associate two flows as identified by
 five-tuple when the address and port of one of the endpoints changes; e.g. due
 to NAT rebinding or server IP address migration. An observer keeping flow state
@@ -674,7 +674,7 @@ determine when to drop state for QUIC flows, see further section
 {{sec-stateful}}.
 
 
-## Flow symmetry measurement {#sec-symmetry}
+## Flow Symmetry Measurement {#sec-symmetry}
 
 QUIC explicitly exposes which side of a connection is a client and which side is
 a server during the handshake. In addition, the symmetry of a flow (whether
@@ -692,7 +692,7 @@ the QUIC packet header and recognition of the handshake, as illustrated in
 endpoints use the spin bit facility described below and in
 {{QUIC-TRANSPORT}}, section 17.3.1.
 
-### Measuring initial RTT
+### Measuring Initial RTT
 
 In the common case, the delay between the Initial packet containing the TLS
 Client Hello and the Handshake packet containing the TLS Server Hello
@@ -774,7 +774,7 @@ in the downstream direction, and vice versa.
 In this section, we review specific network management and measurement
 techniques and how QUIC's design impacts them.
 
-## Stateful treatment of QUIC traffic {#sec-stateful}
+## Stateful Treatment of QUIC Traffic {#sec-stateful}
 
 Stateful treatment of QUIC traffic (e.g., at a firewall or NAT middlebox) is
 possible through QUIC traffic and version
@@ -793,23 +793,23 @@ longer timeouts for QUIC traffic, as QUIC is connection-oriented. As such,
 a handshake packet from the server indicates the willingness of the server to
 communicate with the client.
 
-The QUIC header optionally contains a Connection ID which can be used as
+The QUIC header optionally contains a connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
-to be observed in order to understand whether the Connection ID is present and
-what length it has. However, Connection IDs may be renegotiated during
+to be observed in order to understand whether the connection ID is present and
+what length it has. However, connection IDs may be renegotiated during
 a connection, and this renegotiation is not visible to the path. Keying state
-off the Connection ID may therefore cause undetectable and unrecoverable loss
-of state in the middle of a connection. Use of Connection ID specifically
+off the connection ID may therefore cause undetectable and unrecoverable loss
+of state in the middle of a connection. Use of connection ID specifically
 discouraged for NAT applications.
 
-## Passive network performance measurement and troubleshooting
+## Passive Network Performance Measurement and Troubleshooting
 
 Limited RTT measurement is possible by passive observation of QUIC traffic;
 see {{sec-rtt}}. No passive measurement of loss is possible with the present
 wire image. Extremely limited observation of upstream congestion may be
 possible via the observation of CE markings on ECN-enabled QUIC traffic.
 
-## Server cooperation with load balancers {#sec-loadbalancing}
+## Server Cooperation with Load Balancers {#sec-loadbalancing}
 
 In the case of content distribution networking architectures including load
 balancers, the connection ID provides a way for the server to signal information
@@ -870,7 +870,7 @@ significant fraction of QUIC packets will allow many QUIC handshakes
 to complete, preventing a TCP failover, but the connections will suffer from
 severe packet loss.
 
-## Distinguishing acknowledgment traffic
+## Distinguishing Acknowledgment traffic
 
 Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
 from packets carrying upper-layer data in order to attempt to enhance
@@ -881,7 +881,7 @@ and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
 are likely to fail, and are emphatically NOT RECOMMENDED.
 
-## QoS support and ECMP
+## QoS Support and ECMP
 
 \[EDITOR'S NOTE: this is a bit speculative; keep?]
 
