@@ -305,7 +305,7 @@ fully independent of each other.
 QUIC does not provide an interface for exceptional handling of any stream.
 If a stream that is critical for an application is closed, the application can
 generate error messages on the application layer to inform the other end and/or
-the higher layer, which can eventually indicate QUIC to reset the connection.
+the higher layer, which can eventually reset the QUIC connection.
 
 Mapping of application data to streams is application-specific and described for
 HTTP/3 in {{QUIC-HTTP}}. In general, data that can be processed independently,
