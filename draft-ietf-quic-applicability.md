@@ -714,8 +714,8 @@ allow the application to explicitly handle fallback to a less-secure
 alternative. See {{fallback}}.
 
 Further {{?QUIC-HTTP}} provides security considerations specific to HTTP. However,
-discussions such as on linkability, traffic analysis and padding, or migration
-might be relevant for other applications using QUIC as well.
+discussions such as on cross protocol attacks, traffic analysis and padding, or
+migration might be relevant for other applications using QUIC as well.
 
 # Contributors
 
