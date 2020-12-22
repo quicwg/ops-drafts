@@ -705,7 +705,9 @@ TCP register UDP ports analogous to their existing TCP registrations.
 
 See the security considerations in {{!QUIC}} and {{!QUIC-TLS}}; the security
 considerations for the underlying transport protocol are relevant for
-applications using QUIC, as well.
+applications using QUIC, as well. Especially discussions on linkability,
+replay attacks, and randomness in {{!QUIC-TLS}} should be considered when
+deploying and using QUIC.
 
 Application developers should note that any fallback they use when QUIC cannot
 be used due to network blocking of UDP should guarantee the same security
