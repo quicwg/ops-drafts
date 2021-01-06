@@ -887,7 +887,7 @@ QUIC assumes that all packets of a QUIC connection or at least with the
 same 5-tuple {dest addr, source addr, protocol, dest port, source port} will
 receive similar network treatment as feedback provided about loss or delay
 of each packet is used as input to the congestion controller. Therefore it is
-not recommend to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
+not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
 packets belonging to the same connection. If differential network treatment,
 e.g. by the use of different DSCPs, is desired, multiple QUIC 
 connections to the same server may be used. However, in general it is
