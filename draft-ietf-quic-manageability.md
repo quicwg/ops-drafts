@@ -927,8 +927,8 @@ on specific QUIC mechanism.
 Version Negotiation packets do not contain any mechanism to prevent version downgrade
 attacks. However, future versions of QUIC that use Version Negotiation packets are
 require to define a mechanism that is robust against version downgrade attacks.
-Therefore a network node can and should not attempt to impact version selection and
-as such version downgrade is considered an attack.
+Therefore a network node should not attempt to impact version selection, as version
+downgrade may result in connection failure.
 
 # Contributors
 
