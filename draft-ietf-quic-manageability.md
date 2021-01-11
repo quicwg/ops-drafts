@@ -720,7 +720,7 @@ measurement by devices on path is only possible when both endpoints enable it.
 Some endpoints may disable use of the spin bit by default, others only in
 specific deployment scenarios, e.g. for servers and clients where the RTT would
 reveal the presence of a VPN or proxy. To avoid making these connections
-identifiable based on the usage of the spin bit, it is recommended that all
+identifiable based on the usage of the spin bit, all
 endpoints randomly disable "spinning" for at least one eighth of connections,
 even if otherwise enabled by default. An endpoint not participating in spin bit
 signaling for a given connection can use a fixed spin value for the duration of
