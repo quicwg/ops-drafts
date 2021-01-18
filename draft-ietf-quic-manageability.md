@@ -881,24 +881,21 @@ and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
 are likely to fail, and are emphatically NOT RECOMMENDED.
 
-## DSCP and ECMP
+## Quality of Service handling and ECMP
 
-QUIC assumes that all packets of a QUIC connection or at least with the
-same 5-tuple {dest addr, source addr, protocol, dest port, source port} will
-receive similar network treatment as feedback provided about loss or delay
-of each packet is used as input to the congestion controller. Therefore it is
-not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
-packets belonging to the same connection. If differential network treatment,
-e.g. by the use of different DSCPs, is desired, multiple QUIC 
-connections to the same server may be used. However, in general it is
-recommended to minimize the number of QUIC connections to the same serve, as
-otherwise congestion controllers will compete against each other.
+It is expected that any QoS handling in the network, e.g. based on use of 
+DiffServ Code Points (DSCPs) {{?RFC2475}}, as well as Equal-Cost
+Multi-Path (ECMP) routing is applied on a per flow-basis (and not per-packet)
+and as such that all packets belonging to the
+same QUIC connection get uniform treatment. This is important as
+feedback about loss or delay of each packet is used as input to
+the congestion controller. 
 
-Depending of the loss recovery mechanism implemented, QUIC may be more tolerant
-of packet re-ordering than traditional TCP traffic (see
-{{packetnumber}}). However, currently it is still expected that Equal-Cost
-Multi-Path (ECMP) routing is flow-based and all packets belonging to the
-same QUIC connection get uniform treatment.
+Depending of the loss recovery mechanism implemented, QUIC may be
+more tolerant of packet re-ordering than traditional TCP traffic (see
+{{packetnumber}}). However, it cannot be known by the network which exact
+recovery mechanism is used and therefore reordering tolerance should be
+considered as unknown.
 
 # IANA Considerations
 

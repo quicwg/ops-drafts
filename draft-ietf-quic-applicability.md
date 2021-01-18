@@ -634,6 +634,19 @@ described in {{?QUIC-LB=I-D.ietf-quic-load-balancers}}.
 TLS resumption tickets that can be also applied for validation tokens,
 however, the use of more modern cryptographic algorithms is highly recommended.
 
+# Quality of Service (QoS) and DSCP
+
+QUIC assumes that all packets of a QUIC connection or at least with the
+same 5-tuple {dest addr, source addr, protocol, dest port, source port} will
+receive similar network treatment as feedback about loss or delay
+of each packet is used as input to the congestion controller. Therefore it is
+not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
+packets belonging to the same connection. If differential network treatment,
+e.g. by the use of different DSCPs, is desired, multiple QUIC 
+connections to the same server may be used. However, in general it is
+recommended to minimize the number of QUIC connections to the same serve, as
+otherwise congestion controllers will compete against each other.
+
 # Use of Versions and Cryptographic Handshake
 
 Versioning in QUIC may change the protocol's behavior completely, except
