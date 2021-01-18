@@ -642,7 +642,7 @@ receive similar network treatment as feedback about loss or delay
 of each packet is used as input to the congestion controller. Therefore it is
 not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
 packets belonging to the same connection. If differential network treatment,
-e.g. by the use of different DSCPs, is desired, multiple QUIC 
+e.g. by the use of different DSCPs, is desired, multiple QUIC
 connections to the same server may be used. However, in general it is
 recommended to minimize the number of QUIC connections to the same serve, as
 otherwise congestion controllers will compete against each other.
