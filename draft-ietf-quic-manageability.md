@@ -986,7 +986,7 @@ One problem in QUIC deployment is router and switch server infrastructures that
 direct traffic based on address-port 4-tuple rather than connection ID. The use
 of source IP address means that a NAT rebinding or address migration will
 deliver packets to the wrong server. For the reasons described above, routers
-and switches will not have access to negotiated CIDs. This is a particular
+and switches will not have access to negotiated but not-yet-in-use CIDs. This is a particular
 problem for low-state load balancers. {{QUIC_LB}} addresses this problem proposing a QUIC extension to
 allow some server-load balancer coordination for routable CIDs.
 
