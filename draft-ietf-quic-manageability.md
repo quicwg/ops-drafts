@@ -828,13 +828,6 @@ environment through which all traffic is filtered; a generalized architecture
 for separation of concerns in mitigation is given in
  {{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
 
-QUIC Retry packets are the functional analogue to TCP syncookies {{?RFC4937}},
-forcing clients to prove possession of their IP address before committing server
-state.  However, there are safeguards in QUIC against unsolicited injection of
-these packets by intermediaries who do not have consent of the end server. See
-{{QUIC_LB}} for standard ways for intermediaries to send Retry packets on
-behalf of consenting servers.
-
 Key to successful DDoS mitigation is efficient classification of this traffic in
 the mitigation environment.  Limited first-packet garbage detection as in
 {{sec-garbage}} and stateful tracking of QUIC traffic as in {{sec-stateful}}
@@ -855,6 +848,14 @@ system under attack. As soon as the connection blocking is detected by the
 client, the client may rely on the fast resumption mechanism provided by
 QUIC. When clients migrate to a new path, they should be prepared for the
 migration to fail and attempt to reconnect quickly.
+
+TCP syncookies {{?RFC4937}} are a well-established method of mitigating some
+kinds of TCP DDoS attacks. QUIC Retry packets are the functional analogue to
+syncookies, forcing clients to prove possession of their IP address before
+committing server state.  However, there are safeguards in QUIC against
+unsolicited injection of these packets by intermediaries who do not have consent
+of the end server. See {{QUIC_LB}} for standard ways for intermediaries to send
+Retry packets on behalf of consenting servers.
 
 ## UDP Policing {#sec-udp-1312}
 
