@@ -994,7 +994,7 @@ IP addresses to allow consistent routing by legacy devices.
 Unfortunately, the change of IP address or port is an important signal to QUIC
 endpoints. It requires a review of path-dependent variables like congestion
 control parameters. It can also signify various attacks that mislead one
-endpoint about the best peer address for the connection (see section 9 of 
+endpoint about the best peer address for the connection (see section 9 of
 {{QUIC-TRANSPORT}}). The QUIC PATH_CHALLENGE and PATH_RESPONSE frames are
 intended to detect and mitigate these attacks and verify connectivity to the
 new address. This mechanism cannot work if the NAT is bleaching peer address
