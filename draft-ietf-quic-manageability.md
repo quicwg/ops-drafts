@@ -952,7 +952,8 @@ There are a few reasons that CID-aware NATs could seemingly appear attractive.
 
 NATs sometimes hit an operational limit where they exhaust available public IP
 addresses and ports, and must evict flows from their address/port mapping. CIDs
-offer a way to multiplex many connections over a single address and port.
+might appear to offer a way to multiplex many connections over a single
+address and port.
 
 However, QUIC endpoints may negotiate new connection IDs inside
 cryptographically protected packets, and begin using them at will. Imagine two
