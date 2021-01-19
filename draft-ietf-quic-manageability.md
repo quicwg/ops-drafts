@@ -990,7 +990,7 @@ and switches will not have access to negotiated CIDs. This is a particular
 problem for low-state load balancers. {{QUIC_LB}} addresses this problem proposing a QUIC extension to
 allow some server-load balancer coordination for routable CIDs.
 
-A NAT at the front of this infrastructure might save the effort of converting
+It seems that a NAT anywhere in the front of such an infrastructure setup could save the effort of converting
 all these devices by decoding routable connection IDs and rewriting the packet
 IP addresses to allow consistent routing by legacy devices.
 
