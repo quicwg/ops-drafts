@@ -968,7 +968,9 @@ of NATs with this behavior would make it risky to change Connection IDs in the
 internet, which would thwart various important protocol properties.
 
 It is possible, in principle, to encode the client's identity in a connection ID
-using {{QUIC_LB}} and explicit coordination with the NAT. However, QUIC-LB makes assumptions about endpoint mobility and common configuration in server
+using {{QUIC_LB}} and explicit coordination with the NAT.
+However, QUIC-LB makes assumptions about endpoint mobility and
+common configuration in server
 infrastructure that are almost never valid in client/NAT architectures.
 Deploying such a system would include the administrative overhead while not
 solving the problem described in this section if the client changes
