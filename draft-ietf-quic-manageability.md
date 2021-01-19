@@ -987,7 +987,7 @@ direct traffic based on address-port 4-tuple rather than connection ID. The use
 of source IP address means that a NAT rebinding or address migration will
 deliver packets to the wrong server. For the reasons described above, routers
 and switches will not have access to negotiated CIDs. This is a particular
-problem for low-state load balancers, and a QUIC extension exists {{QUIC_LB}} to
+problem for low-state load balancers. {{QUIC_LB}} addresses this problem proposing a QUIC extension to
 allow some server-load balancer coordination for routable CIDs.
 
 A NAT at the front of this infrastructure might save the effort of converting
