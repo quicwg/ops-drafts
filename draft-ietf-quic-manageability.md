@@ -934,7 +934,7 @@ The conclusion of this section is that NATs should retain their existing
 connection IDs.
 
 {{?RFC4787}} contains some guidance on building NATs to interact constructively
-with a wide range of applications. This document extends the discussion to QUIC.
+with a wide range of applications. This section extends the discussion to QUIC.
 
 ### QUIC and NAT Rebinding
 
