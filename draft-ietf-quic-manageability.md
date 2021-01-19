@@ -907,36 +907,26 @@ the same congestion controller.
 
 ## QUIC and Network Address Translation (NAT)
 
-Network Address Translators (NATs) are a widely deployed means of multiplexing
-multiple private IP addresses over scarce IPv4 public address space by replacing
-those addresses and using ports to distinguish those connections. The new
-address can also guarantee that packets move through a proxy throughout the life
-of a connection, so that the connection can continue with the required state at
-that proxy.
+QUIC Connection IDs are opaque byte fields that are expressed consistently
+across all QUIC versions {{QUIC-INVARIANTS}}, see {{rebinding}}. This feature
+may appear to present opportunities to optimize NAT port usage and simplify the
+work of the QUIC server. In fact, NAT behavior that relies on CID may instead
+cause connection failure when endpoints change Connection ID, and disable
+important protocol security features. NATs should retain their existing
+4-tuple-based operation and refrain from parsing or otherwise using QUIC
+connection IDs.
 
 This section uses the colloquial term NAT to mean NAPT (section 2.2 of
 {{?RFC3022}}), which overloads several IP addresses to one IP address or to an
 IP address pool, as commonly deployed in carrier-grade NATs or residential NATs.
-QUIC Connection IDs are opaque byte fields that are expressed consistently
-across all QUIC versions {{QUIC-INVARIANTS}}. This feature may appear to present
-opportunities to optimize NAT port usage and simplify the work of the QUIC
-server. In fact, NAT behavior that relies on CID may instead cause connection
-failure when endpoints change Connection ID, and disable important protocol
-security features.
 
 The remainder of this section explains how QUIC supports NATs better than other
 connection-oriented protocols, why NAT use of Connection ID might appear
 attractive, and how NAT use of CID can create serious problems for the
 endpoints.
 
-The conclusion of this section is that NATs should retain their existing
-4-tuple-based operation and refrain from parsing or otherwise using QUIC
-connection IDs.
-
 {{?RFC4787}} contains some guidance on building NATs to interact constructively
 with a wide range of applications. This section extends the discussion to QUIC.
-
-### QUIC and NAT Rebinding
 
 By using the CID, QUIC connections can survive NAT rebindings as long as no
 routing function in the path is dependent on client IP address and port to
@@ -944,11 +934,7 @@ deliver packets between server and NAT. Reducing the timeout on UDP NATs might
 be tempting in light of this property, but not all QUIC server deployments will
 be robust to rebinding.
 
-### The Lure of the Connection ID
-
-There are a few reasons that CID-aware NATs could seemingly appear attractive.
-
-#### Resource Conservation
+### Resource Conservation
 
 NATs sometimes hit an operational limit where they exhaust available public IP
 addresses and ports, and must evict flows from their address/port mapping. CIDs
@@ -963,36 +949,45 @@ secretly changes its connection ID, there will be no mapping for the NAT, and
 the connection will suddenly break.
 
 While mid-connection failure in some cases may seem superior to rejecting QUIC
-outright, HTTP/3 over QUIC falls back to TCP. This is preferable to a
-connection suddenly black holing and timing out. Furthermore, wide deployment
-of NATs with this behavior would make it risky to change Connection IDs in the
-internet, which would thwart various important protocol properties.
+outright, HTTP/3 over QUIC falls back to TCP, and
+{{?I-D.ietf-quic-applicability}} recommends TCP fallback for other protocols
+that use QUIC . This is preferable to a connection suddenly black holing and
+timing out, as the recovery time is much longer for a black hole event.
+Furthermore, wide deployment of NATs with this behavior would make it risky to
+change Connection IDs in the internet, which would thwart various important
+protocol properties.
 
 It is possible, in principle, to encode the client's identity in a connection ID
-using {{QUIC_LB}} and explicit coordination with the NAT.
-However, QUIC-LB makes assumptions about endpoint mobility and
-common configuration in server
+using {{QUIC_LB}} and explicit coordination with the NAT. However, QUIC-LB
+makes assumptions about endpoint mobility and common configuration in server
 infrastructure that are almost never valid in client/NAT architectures.
 Deploying such a system would include the administrative overhead while not
 solving the problem described in this section if the client changes
 networks.
 
-Note that using connection IDs in this manner would anyway violate the best
-common practice to avoid "port overloading" as described in {{?RFC4787}}.
+Note that multiplexing connection IDs over a single port anyway violates the
+best common practice to avoid "port overloading" as described in {{?RFC4787}}.
 
-#### "Helping" with routing infrastructure issues
+### "Helping" with routing infrastructure issues
 
-One problem in QUIC deployment is router and switch server infrastructures that
-direct traffic based on address-port 4-tuple rather than connection ID. The use
-of source IP address means that a NAT rebinding or address migration will
-deliver packets to the wrong server. For the reasons described above, routers
-and switches will not have access to negotiated but not-yet-in-use CIDs. This is a particular
-problem for low-state load balancers. {{QUIC_LB}} addresses this problem proposing a QUIC extension to
-allow some server-load balancer coordination for routable CIDs.
+Concealing client address changes in order to simplify operational routing
+issues will mask important signals that drive security mechanisms, and
+therefore opens QUIC up to various attacks.
 
-It seems that a NAT anywhere in the front of such an infrastructure setup could save the effort of converting
-all these devices by decoding routable connection IDs and rewriting the packet
-IP addresses to allow consistent routing by legacy devices.
+One challenge in QUIC deployments that want to benefit from QUIC's migration
+capability is server infrastructures with routers and switches that direct
+traffic based on address-port 4-tuple rather than connection ID. The use of
+source IP address means that a NAT rebinding or address migration will deliver
+packets to the wrong server. As all QUIC payloads are encrypted, routers and
+switches will not have access to negotiated but not-yet-in-use CIDs. This is a
+particular problem for low-state load balancers. {{QUIC_LB}} addresses this
+problem proposing a QUIC extension to allow some server-load balancer
+coordination for routable CIDs.
+
+It seems that a NAT anywhere in the front of such an infrastructure setup could
+save the effort of converting all these devices by decoding routable connection
+IDs and rewriting the packet IP addresses to allow consistent routing by legacy
+devices.
 
 Unfortunately, the change of IP address or port is an important signal to QUIC
 endpoints. It requires a review of path-dependent variables like congestion
@@ -1011,7 +1006,7 @@ address, thus thwarting the attack. A bleaching NAT has no means of sending an
 encrypted PATH_CHALLENGE frame, so it might start redirecting all QUIC traffic
 to the attacker address and thus allow an observer to break the connection.
 
-### Filtering behavior
+## Filtering behavior
 
 {{?RFC4787}} describes possible packet filtering behaviors that relate to NATs.
 Though the guidance there holds, a particularly unwise behavior is to admit a
