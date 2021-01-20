@@ -951,7 +951,7 @@ the connection will suddenly break.
 While mid-connection failure in some cases may seem superior to rejecting QUIC
 outright, HTTP/3 over QUIC falls back to TCP, and
 {{?I-D.ietf-quic-applicability}} recommends TCP fallback for other protocols
-that use QUIC . This is preferable to a connection suddenly black holing and
+that use QUIC, this is preferable to a connection suddenly black holing and
 timing out, as the recovery time is much longer for a black hole event.
 Furthermore, wide deployment of NATs with this behavior would make it risky to
 change Connection IDs in the internet, which would thwart various important
