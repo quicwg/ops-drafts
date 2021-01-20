@@ -948,11 +948,11 @@ NAT is differentiating them using the incoming Connection ID. If one client
 secretly changes its connection ID, there will be no mapping for the NAT, and
 the connection will suddenly break.
 
-While mid-connection failure in some cases may seem superior to rejecting QUIC
-outright, HTTP/3 over QUIC falls back to TCP, and
-{{?I-D.ietf-quic-applicability}} recommends TCP fallback for other protocols
-that use QUIC, this is preferable to a connection suddenly black holing and
-timing out, as the recovery time is much longer for a black hole event.
+Some applications might prefer to risk mid-connection failure rather than
+not being able to use QUIC. HTTP/3 prefers reliability, recommending that
+TCP be used as a fallback and {{?I-D.ietf-quic-applicability}} recommends
+TCP fallback for other protocols on the basis that this is preferable to
+sudden connection errors and time outs.
 Furthermore, wide deployment of NATs with this behavior hinders the use of
 QUIC's migration function, which relies on the ability to change the connection
 ID any time during the lifetime of a QUIC connection.
