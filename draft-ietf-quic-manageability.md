@@ -953,17 +953,15 @@ outright, HTTP/3 over QUIC falls back to TCP, and
 {{?I-D.ietf-quic-applicability}} recommends TCP fallback for other protocols
 that use QUIC, this is preferable to a connection suddenly black holing and
 timing out, as the recovery time is much longer for a black hole event.
-Furthermore, wide deployment of NATs with this behavior would make it risky to
-change Connection IDs in the internet, which would thwart various important
-protocol properties.
+Furthermore, wide deployment of NATs with this behavior hinders the use of
+QUIC's migration function, which relies on the ability to change the connection
+ID any time during the lifetime of a QUIC connection.
 
 It is possible, in principle, to encode the client's identity in a connection ID
-using {{QUIC_LB}} and explicit coordination with the NAT. However, QUIC-LB
-makes assumptions about endpoint mobility and common configuration in server
-infrastructure that are almost never valid in client/NAT architectures.
-Deploying such a system would include the administrative overhead while not
-solving the problem described in this section if the client changes
-networks.
+using the techniques described in {{QUIC_LB}} and explicit coordination with the
+NAT. However, this implies that the client shares configuration with the NAT,
+which might be logistically difficult. This adds administrative overhead
+while not resolving the case where a client migrates to a point behind the NAT.
 
 Note that multiplexing connection IDs over a single port anyway violates the
 best common practice to avoid "port overloading" as described in {{?RFC4787}}.
