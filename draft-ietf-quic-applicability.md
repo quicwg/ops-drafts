@@ -217,7 +217,7 @@ of {{?RFC8085}} further discusses keep-alive intervals for UDP: it
 requires a minimum value of 15 seconds, but recommends larger values, or
 omitting keepalive entirely.
 
-By using a Connection ID, QUIC is designed to be robust to NAT address
+By using a connection ID, QUIC is designed to be robust to NAT address
 rebinding after a timeout. However, this only helps if one endpoint maintains
 availability at the address its peer uses, and the peer is the one to send
 after the timeout occurs.
@@ -484,7 +484,7 @@ firewalls that rely on the port number for application identification.
 
 QUIC supports connection migration by the client. If a lower-layer address
 changes, a QUIC endpoint can still associate packets with an existing
-connection using the Destination Connection ID field (see also {{connid}}) in
+connection using the Destination connection ID field (see also {{connid}}) in
 the QUIC header, unless a zero-length value is used. This supports cases where
 address information changes, such as NAT rebinding, intentional change of the
 local interface, or based on an indication in the handshake of the server for a
@@ -514,7 +514,7 @@ instance. The server can provide an IPv4 and an IPv6 address in a transport
 parameter during the TLS handshake and the client can select between the two if
 both are provided. See also Section 9.6 of {{!QUIC}}.
 
-# Connection closure
+# Connection Closure
 
 QUIC connections are closed either by expiration of an idle timeout, as
 determined by transport parameters, or by an
@@ -553,7 +553,7 @@ unnecessary load, as specified in Section 10.1.2 of {{QUIC}}.
 See {{resumption-v-keepalive}} for further guidance on keep-alives.
 
 
-# Information exposure and the Connection ID {#connid}
+# Information Exposure and the Connection ID {#connid}
 
 QUIC exposes some information to the network in the unencrypted part of the
 header, either before the encryption context is established, because the
@@ -564,12 +564,12 @@ connection. While the long header always exposes some information (such as the
 version and connection IDs), the short header exposes at most only a single
 connection ID.
 
-Aside from the Destination Connection ID field of the first packets sent by
+Aside from the destination connection ID field of the first packets sent by
 clients, the connection ID can be zero length. This is a choice that is made by
 each endpoint individually.
 
 An endpoint that selects a zero-length connection ID will receive packets with
-a zero-length Destination Connection ID. The endpoint needs to use other
+a zero-length destination connection ID. The endpoint needs to use other
 information, such as its IP address and port number to identify which
 connection is referred to. An endpoint can choose to use the source IP address
 and port on datagrams, but this could mean that the endpoint is unable to match
@@ -617,15 +617,15 @@ number of simultaneous migrations at a given time, or through other means.
 ## Using Server Retry for Redirection
 
 QUIC provides a Server Retry packet that can be sent by a server in response to
-the Client Initial packet. The server may choose a new Connection ID in that
+the Client Initial packet. The server may choose a new connection ID in that
 packet and the client will retry by sending another Client Initial packet with
-the server-selected Connection ID. This mechanism can be used to redirect a
+the server-selected connection ID. This mechanism can be used to redirect a
 connection to a different server, e.g. due to performance reasons or when
 servers in a server pool are upgraded gradually, and therefore may support
 different versions of QUIC. In this case, it is assumed that all servers
 belonging to a certain pool are served in cooperation with load balancers that
-forward the traffic based on the Connection ID. A server can choose the
-Connection ID in the Server Retry packet such that the load balancer will
+forward the traffic based on the connection ID. A server can choose the
+connection ID in the Server Retry packet such that the load balancer will
 redirect the next Client Initial packet to a different server in that pool.
 Alternatively the load balancer can directly offer a Retry services as further
 described in {{?QUIC-LB=I-D.ietf-quic-load-balancers}}.
@@ -718,7 +718,9 @@ TCP register UDP ports analogous to their existing TCP registrations.
 
 See the security considerations in {{!QUIC}} and {{!QUIC-TLS}}; the security
 considerations for the underlying transport protocol are relevant for
-applications using QUIC, as well.
+applications using QUIC, as well. Considerations on linkability, replay attacks,
+and randomness discussed in {{!QUIC-TLS}} should be taken into account when
+deploying and using QUIC.
 
 Application developers should note that any fallback they use when QUIC cannot
 be used due to network blocking of UDP should guarantee the same security
@@ -726,9 +728,14 @@ properties as QUIC; if this is not possible, the connection should fail to
 allow the application to explicitly handle fallback to a less-secure
 alternative. See {{fallback}}.
 
+Further {{?QUIC-HTTP}} provides security considerations specific to HTTP.
+However, discussions such as on cross protocol attacks, traffic analysis
+and padding, or migration might be relevant for other applications using QUIC
+as well.
+
 # Contributors
 
-Igor Lubashev contributed text to {{connid}} on server-selected Connection IDs.
+Igor Lubashev contributed text to {{connid}} on server-selected connection IDs.
 
 # Acknowledgments
 
