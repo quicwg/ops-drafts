@@ -538,6 +538,12 @@ multiplexing with. Second, this feature of the wire image is not invariant
 {{QUIC-INVARIANTS}} and may change in future versions of the protocol, or
 even be negotiated during the handshake via the use of transport parameters.
 
+Even though transport parameters, that transmitted in the client initial, are
+obserable by the network, they cannot be modified by the network without
+risking connection failure. Further, the negotiated reply from the server
+cannot not be observed, and therefore it is not known to the network which
+parameter are actually in use.
+
 ### Identifying Negotiated Version
 
 An in-network observer assuming that a set of packets belongs to a QUIC flow
