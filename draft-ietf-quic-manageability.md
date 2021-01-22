@@ -1029,15 +1029,18 @@ security-relevant.
 
 # Contributors
 
-Dan Druta contributed text to {{sec-ddos-dec}}. Igor Lubashev contributed text
-to {{sec-loadbalancing}} on the use of the connection ID for load balancing.
-Marcus Ilhar contributed text to {{sec-rtt}} on the use of the spin bit. The
-pseudo provided in the appendix is based on input provided by David Schinazi.
+The following people have contributed text to sections of this document:
+
+* Dan Druta
+* Martin Duke
+* Marcus Ilhar
+* Igor Lubashev
+* David Schinazi
 
 # Acknowledgments
 
-Thanks to Martin Thomson and Martin Duke for contributing by reviewing and
-providing text proposals.
+Special thanks to Martin Thomson and Martin Duke for the detailed reviews and
+feedback.
 
 This work is partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
