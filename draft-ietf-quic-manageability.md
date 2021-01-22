@@ -951,9 +951,9 @@ the connection will suddenly break.
 QUIC is deliberately designed to fail rather than persist when the network
 cannot support its operation. For HTTP/3, this extends to recommending a
 fallback to TCP-based versions of HTTP rather than persisting with a QUIC
-connection that might be unstable. And {{?I-D.ietf-quic-applicability}} recommends
-TCP fallback for other protocols on the basis that this is preferable to
-sudden connection errors and time outs.
+connection that might be unstable. And {{?I-D.ietf-quic-applicability}}
+recommends TCP fallback for other protocols on the basis that this is preferable
+to sudden connection errors and time outs.
 Furthermore, wide deployment of NATs with this behavior hinders the use of
 QUIC's migration function, which relies on the ability to change the connection
 ID any time during the lifetime of a QUIC connection.
