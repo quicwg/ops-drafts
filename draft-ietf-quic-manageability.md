@@ -889,29 +889,23 @@ and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
 are likely to fail, and are emphatically NOT RECOMMENDED.
 
-## QoS Support and ECMP
+## Quality of Service handling and ECMP
 
-\[EDITOR'S NOTE: this is a bit speculative; keep?]
+It is expected that any QoS handling in the network, e.g. based on use of
+DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
+Multi-Path (ECMP) routing, is applied on a per flow-basis (and not per-packet)
+and as such that all packets belonging to the same QUIC connection get uniform
+treatment. Using ECMP to distribute packets from a single flow across multiple
+network paths or any other non-uniform treatment of packets belong to the same
+connection could result in variations in order, delivery rate, and drop rate.
+As feedback about loss or delay of each packet is used as input to
+the congestion controller, these variations could adversely affect performance.
 
-QUIC does not provide any additional information on requirements on Quality of
-Service (QoS) provided from the network. QUIC assumes that all packets with the
-same 5-tuple {dest addr, source addr, protocol, dest port, source port} will
-receive similar network treatment.  That means all streams that are multiplexed
-over the same QUIC connection require the same network treatment and are handled
-by the same congestion controller. If differential network treatment is desired,
-multiple QUIC connections to the same server might be used, given that
-establishing a new connection using 0-RTT support is cheap and fast.
-
-QoS mechanisms in the network could also use the connection ID for service
-differentiation, as a change of connection ID is bound to a change of address
-which anyway is likely to lead to a re-route on a different path with different
-network characteristics.
-
-Given that QUIC is more tolerant of packet re-ordering than TCP (see
-{{packetnumber}}), Equal-cost multi-path routing (ECMP) does not necessarily
-need to be flow based.  However, 5-tuple (plus eventually connection ID if
-present) matching is still beneficial for QoS given all packets are handled by
-the same congestion controller.
+Depending of the loss recovery mechanism implemented, QUIC may be
+more tolerant of packet re-ordering than traditional TCP traffic (see
+{{packetnumber}}). However, it cannot be known by the network which exact
+recovery mechanism is used and therefore reordering tolerance should be
+considered as unknown.
 
 # IANA Considerations
 
