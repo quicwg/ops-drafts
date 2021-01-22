@@ -916,7 +916,7 @@ cryptographic handshake is complete, QUIC endpoints discard most packets that
 are not authenticated, greatly limiting the ability of an attacker to interfere
 with existing connections.
 
-However, some information are still observerable, as supporting manageability of
+However, some information is still observerable, as supporting manageability of
 QUIC traffic inherently involves tradeoffs with the confidentiality of QUIC's
 control information; this entire document is therefore security-relevant.
 
