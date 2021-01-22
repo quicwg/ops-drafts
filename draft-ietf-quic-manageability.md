@@ -1023,9 +1023,24 @@ This document has no actions for IANA.
 
 # Security Considerations
 
-Supporting manageability of QUIC traffic inherently involves tradeoffs with the
-confidentiality of QUIC's control information; this entire document is therefore
-security-relevant.
+QUIC is an encrypted and authenticated transport. That means, once the
+cryptographic handshake is complete, QUIC endpoints discard most packets that
+are not authenticated, greatly limiting the ability of an attacker to interfere
+with existing connections.
+
+However, some information is still observerable, as supporting manageability of
+QUIC traffic inherently involves tradeoffs with the confidentiality of QUIC's
+control information; this entire document is therefore security-relevant.
+
+More security considerations for QUIC are discussed in {{!QUIC-TRANSPORT}}
+and {{!QUIC-TLS}}, generally considering active or passive attackers in the
+network as well as attacks on specific QUIC mechanism.
+
+Version Negotiation packets do not contain any mechanism to prevent version
+downgrade attacks. However, future versions of QUIC that use Version Negotiation
+packets are require to define a mechanism that is robust against version
+downgrade attacks. Therefore a network node should not attempt to impact version
+selection, as version downgrade may result in connection failure.
 
 # Contributors
 
