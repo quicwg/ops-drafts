@@ -920,7 +920,8 @@ However, some information is still observerable, as supporting manageability of
 QUIC traffic inherently involves tradeoffs with the confidentiality of QUIC's
 control information; this entire document is therefore security-relevant.
 
-More security considerations for QUIC are discussed in {{!QUIC}} and {{!QUIC-TLS}},
+More security considerations for QUIC are discussed in {{!QUIC-TRANSPORT}}
+and {{!QUIC-TLS}},
 generally considering active or passive attackers in the network as well as attacks
 on specific QUIC mechanism.
 
