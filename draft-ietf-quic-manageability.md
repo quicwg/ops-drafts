@@ -894,7 +894,7 @@ QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
 and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
 are likely to fail, and are not recommended to use as a way to construe
-internals of QUIC's operator as those mechanisms can change, e.g., due to the
+internals of QUIC's operation as those mechanisms can change, e.g., due to the
 use of extensions.
 
 ## Quality of Service handling and ECMP
