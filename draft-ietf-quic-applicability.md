@@ -585,12 +585,12 @@ the identity of the server or information about its load balancing pool, in
 order to support stateless load balancing.
 
 Server deployments with load balancers and other routing infrastructure need to
-ensure that this infrastructure consistently routes packets to the correct
-server instance. This might require coordination between servers and
+ensure that this infrastructure consistently routes packets to the server
+instance that has the connection state, even if addresses, ports, and/or
+connection IDs change. This might require coordination between servers and
 infrastructure. One method of achieving this involves encoding routing
-information into the connection ID. This ensures that there is no need to for
-servers and infrastructure to coordinate routing information for each
-connection. See further {{QUIC-LB}}.
+information into the connection ID. For an example of this technique, see
+{{QUIC-LB}}.
 
 ## Mitigating Timing Linkability with Connection ID Migration
 
