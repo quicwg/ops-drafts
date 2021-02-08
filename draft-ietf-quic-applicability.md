@@ -476,8 +476,10 @@ between the endpoints on the protocol stack in use.
 Given the prevalence of the assumption in network management
 practice that a port number maps unambiguously to an application, the
 use of ports that cannot easily be mapped to a registered service name
-might lead to blocking or other interference by network elements such as
-firewalls that rely on the port number for application identification.
+might lead to blocking or other changes to the forwarding behavior by network
+elements such as firewalls that use the port number for application
+identification, often based on QoS policies or service level agreements
+(SLAs).
 
 
 # Connection Migration
