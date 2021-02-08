@@ -151,9 +151,10 @@ however, fallback must not silently violate the application's expectation of
 confidentiality or integrity of its payload data.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
-QUIC, TLS negotiation over TCP can be blocked. In case it is RECOMMENDED to
-abort the connection, allowing the application to present a suitable prompt to
-the user that secure communication is unavailable.
+QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
+supported, the connection should rather be aborted instead in order to enable
+the application to present a suitable prompt to the user that secure
+communication is unavailable.
 
 # Zero RTT {#zero-rtt}
 
