@@ -1023,6 +1023,36 @@ not arrive at their destination. Admitting a few packets allows the QUIC
 endpoint to determine that the path accepts QUIC. Sudden drops afterwards will
 result in slow and costly timeouts before abandoning the connection.
 
+## Guiding Path MTU
+
+Some networks are required to be able to carry 1500-byte packets but become
+inefficient at this size, because such packets require fragmentation and
+reassembly across a segment where the effective MTU is smaller (e.g. due to
+IPSEC overhead). This leads to a need to influence a majority of senders to
+use smaller packets, so that the limited reassembly capacity is not exceeded.
+
+If the majority use TCP this can be managed with MSS Clamping, but QUIC
+requires a different approach. Section 14 of {{QUIC-TRANSPORT}} advises senders
+to probe larger sizes using Datagram Packetization Layer PMTU Discovery
+({{?DPLPMTUD=RFC8899}}) or Path Maximum Transmission Unit Discovery
+(PMTUD: {{?RFC1191}} and {{?RFC8201}}). This mechanism will encourage senders to
+approach the maximum size, driving fragmentation that they may not be aware of.
+
+Networks can seek to avoid this by identifying probable QUIC packets
+({{sec-identifying}}) and taking action whenever packets exceed the desired
+size. For DPLPMTUD a sufficient action is to drop the packet. If it is
+genuinely QUIC, the packet should have been a probe and so its loss should not
+cause impact to the flow of data. It serves only to guide the discovery of an
+optimal Path MTU.
+
+DPLPMTUD can optionally make use of ICMP Packet Too Big messages (PTB, defined
+in section 1.1 of {{DPLPMTUD}}). PMTUD requires such PTB messages in order to
+work. Since the network cannot know in advance which discovery method the QUIC
+endpoints are using, it should send a PTB packet in addition to dropping the
+oversized probe packet. The generated PTB packet should be compliant with the
+validation requirements of section 14.2.1 of {{QUIC-TRANSPORT}} otherwise it
+is likely to be ignored.
+
 # IANA Considerations
 
 This document has no actions for IANA.
