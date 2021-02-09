@@ -1046,7 +1046,7 @@ cause impact to the flow of data. It serves only to guide the discovery of an
 optimal Path MTU.
 
 DPLPMTUD can optionally make use of ICMP Packet Too Big messages (PTB, defined
-in section 1.1 of {{DPLPMTUD}}). PMTUD requires such PTB messages in order to
+in {{Section 1.1 of DPLPMTUD}}). PMTUD requires such PTB messages in order to
 work. Since the network cannot know in advance which discovery method the QUIC
 endpoints are using, it should send a PTB packet in addition to dropping the
 oversized probe packet. The generated PTB packet should be compliant with the
