@@ -460,7 +460,7 @@ As QUIC is a general purpose transport protocol, there are no requirements that
 servers use a particular UDP port for QUIC. For applications with a fallback to
 TCP that do not already have an alternate mapping to UDP, usually the
 registration (if necessary) and use of the UDP port number corresponding to the
-TCP port already registered for the application is approrpiate. For example,
+TCP port already registered for the application is appropriate. For example,
 the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
