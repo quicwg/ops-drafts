@@ -1026,10 +1026,12 @@ result in slow and costly timeouts before abandoning the connection.
 ## Guiding Path MTU
 
 Some networks are required to be able to carry 1500-byte packets but become
-inefficient at this size, because such packets require fragmentation and
-reassembly across a segment where the effective MTU is smaller (e.g. due to
-IPSEC overhead). This leads to a need to influence a majority of senders to
-use smaller packets, so that the limited reassembly capacity is not exceeded.
+inefficient at this size, because such packets are fragmented and
+reassembled across a segment where the effective MTU is smaller (e.g. due to
+IPSEC overhead). They do this even when the encapsulated packet is not a
+candidate for fragmentation by routers (it's IPv6, or has DF bit set). In such
+networks this leads to a need to influence a majority of senders to use smaller
+packets, so that the limited reassembly capacity is not exceeded.
 
 If the majority use TCP this can be managed with MSS Clamping, but QUIC
 requires a different approach. Section 14 of {{QUIC-TRANSPORT}} advises senders
