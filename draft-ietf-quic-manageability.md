@@ -790,15 +790,21 @@ signal ({{sec-teardown}}) means that this state must be purged either through
 timers or through least-recently-used eviction, depending on application
 requirements.
 
-{{?RFC4787}} requires a timout that is not less than 2 minutes for most UDP
-traffic.
-However, in pratice, timers are often lower, in the range of 15 to 30 seconds.
-In contrast, {{?RFC5382}} recommends a timeout of more than 2 hours for TCP,
-given that TCP is a connection-oriented protocol with well-defined closure
-semantics. For network devices that are QUIC-aware, it is recommended to also
-use longer timeouts for QUIC traffic, as QUIC is connection-oriented. As such,
-a handshake packet from the server indicates the willingness of the server to
-communicate with the client.
+{{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP
+traffic.  However, in pratice, timers are often lower, in the range of 15 to 30
+seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2 hours for
+TCP, given that TCP is a connection-oriented protocol with well-defined closure
+semantics.
+
+As QUIC has features to improve robustness to NAT rebinding, and has no
+observable end-of-connection semantics, devices might choose to further reduce
+the UDP timeout to avoid unnecessary state. However, this has two drawbacks.
+First, not all servers inhabit routing architectures where connections will
+survive a port or address change. Second, an intermediary might require one
+endpoint to re-instantiate the connection for security reasons, further
+reducing the likelihood of successful revival. For these reasons, devices that
+can distinguish QUIC traffic from other UDP payloads should retain the
+{{?RFC4787}} limits.
 
 The QUIC header optionally contains a connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
@@ -807,7 +813,7 @@ what length it has. However, connection IDs may be renegotiated during
 a connection, and this renegotiation is not visible to the path. Keying state
 off the connection ID may therefore cause undetectable and unrecoverable loss
 of state in the middle of a connection. Use of connection ID specifically
-discouraged for NAT applications.
+discouraged for NAT applications (see {{quic-nat}}).
 
 ## Passive Network Performance Measurement and Troubleshooting
 
@@ -914,7 +920,7 @@ more tolerant of packet re-ordering than traditional TCP traffic (see
 recovery mechanism is used and therefore reordering tolerance should be
 considered as unknown.
 
-## QUIC and Network Address Translation (NAT)
+## QUIC and Network Address Translation (NAT) {#quic-nat}
 
 QUIC Connection IDs are opaque byte fields that are expressed consistently
 across all QUIC versions {{QUIC-INVARIANTS}}, see {{rebinding}}. This feature
@@ -934,14 +940,11 @@ connection-oriented protocols, why NAT use of Connection ID might appear
 attractive, and how NAT use of CID can create serious problems for the
 endpoints.
 
+See {{sec-stateful}} for a discussion of the proper timeout for NAT connection
+state.
+
 {{?RFC4787}} contains some guidance on building NATs to interact constructively
 with a wide range of applications. This section extends the discussion to QUIC.
-
-By using the CID, QUIC connections can survive NAT rebindings as long as no
-routing function in the path is dependent on client IP address and port to
-deliver packets between server and NAT. Reducing the timeout on UDP NATs might
-be tempting in light of this property, but not all QUIC server deployments will
-be robust to rebinding.
 
 ### Resource Conservation
 
