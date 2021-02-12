@@ -478,8 +478,7 @@ practice that a port number maps unambiguously to an application, the
 use of ports that cannot easily be mapped to a registered service name
 might lead to blocking or other changes to the forwarding behavior by network
 elements such as firewalls that use the port number for application
-identification, often based on QoS policies or service level agreements
-(SLAs).
+identification.
 
 
 # Connection Migration
