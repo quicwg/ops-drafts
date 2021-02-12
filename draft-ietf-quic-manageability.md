@@ -41,15 +41,6 @@ informative:
         ins: B. Trammell
     target: https://arxiv.org/abs/1612.02902
     date: 2016-12-09
-  Ding2015:
-    title: TCP Stretch Acknowledgments and Timestamps - Findings and Impliciations for Passive RTT Measurement (ACM Computer Communication Review)
-    author:
-      -
-        ins: H. Ding
-      -
-        ins: M. Rabinovich
-    target: http://www.sigcomm.org/sites/default/files/ccr/papers/2015/July/0000000-0000002.pdf
-    date: 2015-07
   TMA-QOF:
     title: Inline Data Integrity Signals for Passive Measurement (in Proc. TMA 2014)
     author:
@@ -531,7 +522,7 @@ see also {{?RFC7605}} section 5.
 
 While the second most significant bit (0x40) of the first octet is set to
 1 in most QUIC packets of the current version (see {{public-header}}),
-this method of recognizing QUIC traffic is NOT RECOMMENDED. First, it only
+this method of recognizing QUIC traffic is not recommended. First, it only
 provides one bit of information and is quite prone to collide with
 UDP-based protocols other than those that this static bit is meant to allow
 multiplexing with. Second, this feature of the wire image is not invariant
@@ -718,7 +709,8 @@ handshake) at both sides.
 ### Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
 The spin bit provides an additional method to measure per-flow RTT from
-observation points on the network path throughout the duration of a connection.
+observation points on the network path throughout the duration of a connection,
+following the principles of protocol measurability laid out in {{IPIM}}.
 Endpoint participation in spin bit signaling is optional in QUIC. That is, while
 its location is fixed in this version of QUIC, an endpoint can unilaterally
 choose to not support "spinning" the bit. Use of the spin bit for RTT
@@ -894,7 +886,7 @@ signaling. Distinguishing ACK packets is trivial in TCP, but not supported by
 QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
 and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
-are likely to fail, and are emphatically NOT RECOMMENDED.
+are very likely to fail.
 
 ## Quality of Service handling and ECMP
 
@@ -960,7 +952,8 @@ the connection will suddenly break.
 QUIC is deliberately designed to fail rather than persist when the network
 cannot support its operation. For HTTP/3, this extends to recommending a
 fallback to TCP-based versions of HTTP rather than persisting with a QUIC
-connection that might be unstable. And {{?I-D.ietf-quic-applicability}}
+connection that might be unstable. And
+{{QUIC-APPLICABILITY}}
 recommends TCP fallback for other protocols on the basis that this is preferable
 to sudden connection errors and time outs.
 Furthermore, wide deployment of NATs with this behavior hinders the use of
