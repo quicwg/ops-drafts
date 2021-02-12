@@ -310,7 +310,7 @@ the higher layer, which can eventually reset the QUIC connection.
 
 Mapping of application data to streams is application-specific and described for
 HTTP/3 in {{QUIC-HTTP}}. There are a few general principles to apply when
-designing an application's use of streams.
+designing an application's use of streams:
 
 - A single stream provides ordering. If the application requires certain data to
 be received in order, that data should be sent on the same stream.
