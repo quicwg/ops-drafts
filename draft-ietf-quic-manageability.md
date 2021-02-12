@@ -777,9 +777,9 @@ Raw RTT samples generated using these techniques can be processed in various
 ways to generate useful network performance metrics. A simple linear smoothing
 or moving minimum filter can be applied to the stream of RTT samples to get a
 more stable estimate of application-experienced RTT. RTT samples measured from
-the spin bit can also be used to generate RTT distribution information, including
-minimum RTT (which approximates network RTT over longer time windows) and RTT
-variance (which approximates jitter as seen by the application).
+the spin bit can also be used to generate RTT distribution information,
+including minimum RTT (which approximates network RTT over longer time windows)
+and RTT variance (which approximates jitter as seen by the application).
 
 # Specific Network Management Tasks
 
