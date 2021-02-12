@@ -719,7 +719,8 @@ handshake) at both sides.
 
 The spin bit provides an additional method to measure per-flow RTT from
 observation points on the network path throughout the duration of a connection.
-Endpoint participation in spin bit signaling is optional in QUIC. That is, while
+Endpoint participation in spin bit signaling is optional and version-specific
+(see section 17.4 of {{?QUIC-TRANSPORT}}). That is, while
 its location is fixed in this version of QUIC, an endpoint can unilaterally
 choose to not support "spinning" the bit. Use of the spin bit for RTT
 measurement by devices on path is only possible when both endpoints enable it.
