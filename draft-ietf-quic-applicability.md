@@ -152,7 +152,7 @@ confidentiality or integrity of its payload data.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
-supported, the connection should rather be aborted instead in order to enable
+supported, the connection should be aborted instead, in order to enable
 the application to present a suitable prompt to the user that secure
 communication is unavailable.
 
