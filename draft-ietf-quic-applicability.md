@@ -119,7 +119,7 @@ traversal of middleboxes and NAT without requiring updates.
 While recent measurements have shown no evidence of widespread, systematic
 disadvantage of UDP traffic compared to TCP in the Internet {{Edeline16}},
 somewhere between three {{Trammell16}} and five {{Swett16}} percent of networks
-simply block UDP traffic. All applications running on top of QUIC must 
+simply block UDP traffic. All applications running on top of QUIC must
 therefore either be prepared to accept connectivity failure on such networks,
 or be engineered to fall back to some other transport protocol. In the case of
 HTTP, this fallback is TLS 1.3 over TCP.
@@ -315,19 +315,19 @@ designing an application's use of streams:
 - A single stream provides ordering. If the application requires certain data to
 be received in order, that data should be sent on the same stream.
 
-- Multiple streams provide concurrency. Data that can be processed independently,
-and therefore would suffer from head of line blocking if forced to be received
-in order, should be transmitted over separate streams.  
+- Multiple streams provide concurrency. Data that can be processed
+independently, and therefore would suffer from head of line blocking if forced
+to be received in order, should be transmitted over separate streams.
 
 - Streams can provide message orientation, and allow messages to be cancelled.
 If one message is mapped to a single stream, resetting the stream to expire an
 unacknowledged message can be used to emulate partial reliability
-on a message basis. 
+on a message basis.
 
 If a QUIC receiver has opened the maximum allowed concurrent
 streams, and the sender indicates that more streams are needed, it
 doesn't automatically lead to an increase of the maximum number of streams by
-the receiver. Therefore it can be valuable to expose the maximum number of 
+the receiver. Therefore it can be valuable to expose the maximum number of
 allowed, currently open, and currently used streams to the application to make
 the mapping of data to streams dependent on this information.
 
@@ -493,7 +493,7 @@ identification.
 
 QUIC supports connection migration by the client. If an IP address
 changes, a QUIC endpoint can still associate packets with an existing
-transport connection using the Destination Connection ID field 
+transport connection using the Destination Connection ID field
 (see also {{connid}}) in the QUIC header, unless a zero-length value is used.
 This supports cases where address information changes, such as NAT rebinding,
 intentional change of the local interface, or based on an indication in the
@@ -510,7 +510,7 @@ validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
 after path migration. Therefore migration usually has a performance impact.
 
-QUIC probing packets, which cannot carry application data, can be sent on 
+QUIC probing packets, which cannot carry application data, can be sent on
 multiple paths at once. Probing packets can be used to perform address
 validation, measure path characteristics as input for the switching decision,
 or prime the congestion controller in preparation for switching to the new path.
