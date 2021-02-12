@@ -742,9 +742,7 @@ Note that this measurement, as with passive RTT measurement for TCP, includes
 any transport protocol delay (e.g., delayed sending of acknowledgements) and/or
 application layer delay (e.g., waiting for a response to be generated). It
 therefore provides devices on path a good instantaneous estimate of the RTT as
-experienced by the application. A simple linear smoothing or moving minimum
-filter can be applied to the stream of RTT information to get a more stable
-estimate.
+experienced by the application.
 
 However, application-limited and flow-control-limited senders can have
 application and transport layer delay, respectively, that are much greater than
@@ -774,6 +772,14 @@ end-to-end RTT attributable to the paths between the observer and the server
 and the observer and the client, respectively. It does this by measuring the
 delay between a spin edge observed in the upstream direction and that observed
 in the downstream direction, and vice versa.
+
+Raw RTT samples generated using these techniques can be processed in various
+ways to generate useful network performance metrics. A simple linear smoothing
+or moving minimum filter can be applied to the stream of RTT samples to get a
+more stable estimate of application-experienced RTT. RTT samples measured from
+the spin bit can also be used to generate RTT distribution information, including
+minimum RTT (which approximates network RTT over longer time windows) and RTT
+variance (which approximates jitter as seen by the application).
 
 # Specific Network Management Tasks
 
