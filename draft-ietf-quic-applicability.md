@@ -309,15 +309,22 @@ generate error messages on the application layer to inform the other end and/or
 the higher layer, which can eventually reset the QUIC connection.
 
 Mapping of application data to streams is application-specific and described for
-HTTP/3 in {{QUIC-HTTP}}. In general, data that can be processed independently,
+HTTP/3 in {{QUIC-HTTP}}. There are a few general principles to apply when
+designing an application's use of streams.
+
+- A single stream provides ordering. If the application requires certain data to
+be received in order, that data should be sent on the same stream.
+
+- Multiple streams provide concurrency. Data that can be processed independently,
 and therefore would suffer from head of line blocking if forced to be received
-in order, should be transmitted over separate streams. If the application
-requires certain data to be received in order, that data should be sent on the
-same stream. If there is a logical grouping of data chunks or
-messages, streams can be reused, or a new stream can be opened for each
-chunk/message. If one message is mapped to a single stream, resetting the stream
-to expire an unacknowledged message can be used to emulate partial reliability
-on a message basis. If a QUIC receiver has opened the maximum allowed concurrent
+in order, should be transmitted over separate streams.  
+
+- Streams can provide message orientation, and allow messages to be cancelled.
+If one message is mapped to a single stream, resetting the stream to expire an
+unacknowledged message can be used to emulate partial reliability
+on a message basis. 
+
+If a QUIC receiver has opened the maximum allowed concurrent
 streams, and the sender indicates that more streams are needed, it
 doesn't automatically lead to an increase of the maximum number of streams by
 the receiver. Therefore it can be valuable to expose the maximum number of 
