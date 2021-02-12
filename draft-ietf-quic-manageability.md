@@ -428,7 +428,7 @@ bytes. Additional datagrams containing only 0-RTT protected long header packets
 may be sent from the client to the server after the Client Hello datagram,
 containing the rest of the 0-RTT data. The amount of 0-RTT protected data is
 limited by the initial congestion window, typically around 10 packets
-(see Section 7.2 of {{?QUIC-RECOVERY=I.D-ietf-quic-recovery}}).
+(see Section 7.2 of {{?QUIC-RECOVERY=I-D.ietf-quic-recovery}}).
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
