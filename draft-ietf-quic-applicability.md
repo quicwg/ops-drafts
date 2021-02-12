@@ -428,7 +428,7 @@ QUIC provides an interface that provides multiple streams to the application;
 however, the application usually cannot control how data transmitted over one
 stream is mapped into frames or how those frames are bundled into packets.
 
-By default, many QUIC implementations will try to maximally pack QUIC packets
+By default, many implementations will try to maximally pack QUIC packets
 with one or more stream data frames to minimize bandwidth consumption and
 computational costs (see section 13 of {{!QUIC}}). If there is not enough data
 available to fill a packet, an implementation might wait for a short time, to
