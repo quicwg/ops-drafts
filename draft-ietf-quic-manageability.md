@@ -224,11 +224,11 @@ ID; see Section 17.2 of {{QUIC-TRANSPORT}}.
 ## Use of Port Numbers
 
 Applications that have a mapping for TCP as well as QUIC are expected to
-use the same port number for both services. However, as with
-TCP-based services, especially when application layer information is
-encrypted, there is no guarantee that a specific application will use the
-registered port, or the used port is carrying traffic belonging to the
-respective registered service. For example, {{QUIC-HTTP}} specifies
+use the same port number for both services. However, as all other IETF
+transports {{?RFC7605}}, there is no guarantee that a specific application
+will use a given registered port, or that a given port carries traffic belonging
+to the respective registered service, especially when application layer
+information is encrypted. For example, {{QUIC-HTTP}} specifies
 the use of Alt-Svc for discovery of HTTP/3 services on other ports.
 
 Further, as QUIC has a connection ID, it is also possible to maintain multiple
