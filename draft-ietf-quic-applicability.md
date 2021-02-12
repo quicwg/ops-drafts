@@ -267,7 +267,7 @@ data to a server over a connection idle longer than the server's idle timeout
 (available from the idle_timeout transport parameter) can simply reconnect. When
 possible, this reconnection can use 0-RTT session resumption, reducing the
 latency involved with restarting the connection. This approach is only valid in
-cases in which 0-RTT data is safe, when the client is the restarting peer,
+cases in which 0-RTT data is safe, when the client is the restarting peer, and
 when the data to be sent is idempotent. It is also not applicable when the
 application binds external state to the connection, as this state cannot
 reliably be transferred to a resumed connection.
