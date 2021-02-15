@@ -446,7 +446,7 @@ leakage of information about the data that is sent. A QUIC implementation can
 expose an interface that allows an application layer to specify how to apply
 padding.
 
-# ACKing on constraint links
+# ACK-only packets on constrained links
 
 On network paths where there is significant asymmetry,
 the transmission of QUIC ACKs can reduce the efficient use of network
