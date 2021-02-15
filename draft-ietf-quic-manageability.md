@@ -73,10 +73,10 @@ of QUIC-aware middleboxes, e.g. for load balancing.
 # Introduction
 
 QUIC {{?QUIC-TRANSPORT=I-D.ietf-quic-transport}} is a new transport protocol
-encapsulated in UDP and encrypted by default. QUIC integrates TLS
+that is encapsulated in UDP. QUIC integrates TLS
 {{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all payload data and most control
-information. The design focused on support of semantics for HTTP, which required
-changes to HTTP known as HTTP/3 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
+information. QUIC version 1 was designed primarily as a transport for HTTP, with
+the resulting protocol being known as HTTP/3 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
 
 Given that QUIC is an end-to-end transport protocol, all information in the
 protocol header, even that which can be inspected, is not meant to be
