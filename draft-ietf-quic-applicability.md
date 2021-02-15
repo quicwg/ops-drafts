@@ -446,6 +446,17 @@ leakage of information about the data that is sent. A QUIC implementation can
 expose an interface that allows an application layer to specify how to apply
 padding.
 
+# ACKing on constraint links
+
+On network paths where there is significant asymmetry,
+the transmission of QUIC ACKs can reduce the efficient use of network
+capacity or transmission opportunities. This effect occurs
+when the return capacity is significantly more constrained than the
+forward capacity, or the cost of transmission per packet is a
+significant component of the total transmission cost. Reducing
+the ratio of acknowledgements to data at the QUIC receiver can improve
+link utilization and reduce link transmission costs.
+
 
 # Port Selection and Application Endpoint Discovery {#ports}
 
