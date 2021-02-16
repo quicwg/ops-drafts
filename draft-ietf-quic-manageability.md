@@ -953,7 +953,7 @@ providded in {#sec-stateful}.
 Use of QUIC's connecction ID for NAT mappings is not a viable approach to
 extend operational limits of deployed NATs as the connection ID is not
 guaranteed to be constant over the lifetime of a connection. Endpoints may 
-begin using new connection IDs at will at any time during the connection
+begin using new connection IDs at will at any time during the connection.
 As such, the use of the connection ID
 to multiplex connections over a single address and port would cause the
 connectivity to break when the connection ID changes to a value that does not have
