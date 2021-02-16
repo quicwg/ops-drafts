@@ -426,9 +426,9 @@ In a 0-RTT QUIC Client Hello datagram, the PADDING frame is only present if
 necessary to increase the size of the datagram with 0RTT data to at least 1200
 bytes. Additional datagrams containing only 0-RTT protected long header packets
 may be sent from the client to the server after the Client Hello datagram,
-containing the rest of the 0-RTT data. The amount of 0-RTT protected data is
-limited by the initial congestion window, typically around 10 packets
-{{?RFC6928}}.
+containing the rest of the 0-RTT data. The amount of 0-RTT protected data
+that can be send in the first round is limited by the initial congestion window,
+typically around 10 packets {{?QUIC-RECOVERY=I-D.ietf-quic-recovery}}.
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
