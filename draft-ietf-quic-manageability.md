@@ -797,7 +797,7 @@ TCP, given that TCP is a connection-oriented protocol with well-defined closure
 semantics.
 
 As QUIC has features to improve robustness to NAT rebinding, and has no
-observable end-of-connection semantics, devices might choose to further reduce
+observable end-of-connection semantics, devices might be tempted to further reduce
 the UDP timeout to avoid unnecessary state. However, this has two drawbacks.
 First, not all servers inhabit routing architectures where connections will
 survive a port or address change. Second, an intermediary might require one
