@@ -918,7 +918,11 @@ considered as unknown.
 
 ## QUIC and Network Address Translation (NAT)
 
-Devices that perform Network Address Translation (NAT) should refrain from
+This section explains how QUIC supports devices that perform Network Address
+Translation (NAT) better than other connection-oriented protocols and
+also how the use of QUIC's connection ID for NAT can create serious problems
+for the endpoints even though it might appear attractive to simplify network
+management. In summary, devices that perform NAT should refrain from
 parsing or otherwise using QUIC connection IDs but retain their existing
 4-tuple-based operation instead.
 
@@ -926,21 +930,17 @@ As explained in section {{rebinding}},
 QUIC connection IDs are opaque byte fields that are expressed consistently
 across all QUIC versions {{QUIC-INVARIANTS}} and used by the endpoints to
 survive address rebindings. While this may appear as an opportunities to
-minimize NAT port usage or to support the work of the QUIC server by
-hinding path changes, use of the connection ID by NAT to intentify flows
-will cause connection failure when the connection ID changes.
+minimize NAT port usage (see section {{nat-resource}}) or to support the
+work of the QUIC server (see section {{nat-help}}) by
+hinding path changes, use of the connection ID by a NAT device to intentify
+flows will cause connection failure when the connection ID changes.
 Wrongly assuming a fixed connection ID for each connection can disable
-important protocol security features that require connection IDs to be
-changeable.
+important protocol features that require connection IDs to be
+changeable and even impact security but facilitate amplification attacks.
 
 This section uses the colloquial term NAT to mean NAPT (section 2.2 of
 {{?RFC3022}}), which overloads several IP addresses to one IP address or to an
 IP address pool, as commonly deployed in carrier-grade NATs or residential NATs.
-
-The remainder of this section explains how QUIC supports NATs better than other
-connection-oriented protocols, why NAT use of Connection ID might appear
-attractive, and how NAT use of CID can create serious problems for the
-endpoints.
 
 {{?RFC4787}} contains some guidance on building NATs to interact constructively
 with a wide range of applications. This section extends the discussion to QUIC.
@@ -951,7 +951,7 @@ deliver packets between server and NAT. Reducing the timeout on UDP NATs might
 be tempting in light of this property, but not all QUIC server deployments will
 be robust to rebinding.
 
-### Resource Conservation
+### Resource Conservation {#nat-resource}
 
 NATs sometimes hit an operational limit where they exhaust available public IP
 addresses and ports, and must evict flows from their address/port mapping. CIDs
@@ -984,7 +984,7 @@ while not resolving the case where a client migrates to a point behind the NAT.
 Note that multiplexing connection IDs over a single port anyway violates the
 best common practice to avoid "port overloading" as described in {{?RFC4787}}.
 
-### "Helping" with routing infrastructure issues
+### "Helping" with routing infrastructure issues {#nat-help}
 
 Concealing client address changes in order to simplify operational routing
 issues will mask important signals that drive security mechanisms, and
