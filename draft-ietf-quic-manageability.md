@@ -946,12 +946,12 @@ be tempting in light of this property, but not all QUIC server deployments will
 be robust to rebinding.
 
 Recommendations on time-outs for stateful network functions such as NATs is
-providded in {#sec-stateful}.
+provided in {#sec-stateful}.
 
 ### Resource Conservation
 
-Use of QUIC's connecction ID for NAT mappings is not a viable approach to
-extend operational limits of deployed NATs as the connection ID is not
+Use of QUIC's connection ID for NAT mappings is not a viable approach to
+extend operational limits of deployed NATs, as the connection ID is not
 guaranteed to be constant over the lifetime of a connection. Endpoints may 
 begin using new connection IDs at will at any time during the connection.
 As such, the use of the connection ID
@@ -960,11 +960,11 @@ connectivity to break when the connection ID changes to a value that does not ha
 an active mapping.
 
 Not-yet-used connection IDs are unknown to in-network devices and cannot
-be easily associated with a connection ID is use as new connections ID are
+be easily associated with a connection ID in use, as new connection IDs are
 negotiated inside cryptographically protected packets between the endpoints
-and as such are not obserable in the network. Alternatively, sharing
-confgurations between the client and NAT might be logistically challenging
-to impossible, especially when client migrates with an existing connection to
+and as such are not observable in the network. Alternatively, sharing
+configurations between the client and NAT might be logistically challenging
+or impossible, especially when client migrates with an existing connection to
 a point behind the NAT. {{QUIC_LB}} described mechanisms to encode the client's
 identity in
 a connection ID to be used for load balancing. However, the described approach
@@ -981,12 +981,12 @@ ID any time during the lifetime of a QUIC connection.
 
 If a NAT hits an operational limit where the available public IP addresses and
 ports are
-exhausted, it should rather drop the initial packets of a connecton than
-risking to break it later. As QUIC is based on UDP and there are known blockings of
-UDP, QUIC deplyoments are recommended to implemenet a fallback to TCP
+exhausted, it should drop the initial packets of a connection rather than
+risking breakage later. As QUIC is based on UDP and some devices are known to block
+UDP, QUIC deployments are recommended to implement a fallback to TCP
 {{?I-D.ietf-quic-applicability}}. Therefore it is often preferable for QUIC
-to fail and fallback during connectiion establishment rather persisting with a
-connection that might be unstable or expierencing
+to fail and fallback during connection establishment rather than persist with a
+connection that might be unstable or experiencing
 sudden connection errors and time outs later during the connection.
 
 ### "Helping" with routing infrastructure issues
@@ -1002,10 +1002,10 @@ migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}
 addresses this problem proposing a QUIC extension to allow server-load balancer
 coordination to routable CIDs.
 
-An alternative, potentially simpler approach seem to be the use of NAT in front
-of such an infrastructure setup, however, hinding information about the change
+An alternative, potentially simpler approach would seem to be the use of NAT in front
+of such an infrastructure setup. However, hiding information about the change
 of the IP address or port conceals important, and security relevant information
-from QUIC enpoints and as such would facilitate amplification attacks (see
+from QUIC endpoints, and as such would facilitate amplification attacks (see
 section 9 of {{QUIC-TRANSPORT}}).
 
 An NAT that bleaches peer address changes, hinders the other end
