@@ -996,7 +996,7 @@ issues will mask important signals that drive security mechanisms, and
 therefore opens QUIC up to various attacks.
 
 While QUIC's migration capability makes it possible for an server to survive
-address changes, this does not work if the routers or swtches in the server
+address changes, this does not work if the routers or switches in the server
 infrastructures reply on address-port 4-tuple as a NAT rebinding or address
 migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}
 addresses this problem proposing a QUIC extension to allow server-load balancer
