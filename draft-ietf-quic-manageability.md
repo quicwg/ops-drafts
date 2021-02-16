@@ -796,15 +796,15 @@ seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2 hours for
 TCP, given that TCP is a connection-oriented protocol with well-defined closure
 semantics.
 
-As QUIC has features to improve robustness to NAT rebinding, and has no
-observable end-of-connection semantics, devices might be tempted to further reduce
-the UDP timeout to avoid unnecessary state. However, this has two drawbacks.
+As QUIC has features to improve robustness to NAT rebinding, devices might be
+tempted to further reduce the UDP timeout to avoid unnecessary state. However,
+this has two drawbacks.
+
 First, not all servers inhabit routing architectures where connections will
-survive a port or address change. Second, applications which allow either peer to send after a
-period of quiescence will experience black-holing until the peer re-initializes the NAT binding.
-For these reasons, devices that
-can distinguish QUIC traffic from other UDP payloads should retain the
-{{?RFC4787}} limits.
+survive a port or address change. Second, applications which allow either peer
+to send after a period of quiescence will experience black-holing until the peer
+re-initializes the NAT binding. For these reasons, devices that can distinguish
+QUIC traffic from other UDP payloads should retain the {{?RFC4787}} limits.
 
 The QUIC header optionally contains a connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
