@@ -800,9 +800,9 @@ As QUIC has features to improve robustness to NAT rebinding, and has no
 observable end-of-connection semantics, devices might be tempted to further reduce
 the UDP timeout to avoid unnecessary state. However, this has two drawbacks.
 First, not all servers inhabit routing architectures where connections will
-survive a port or address change. Second, an intermediary might require one
-endpoint to re-instantiate the connection for security reasons, further
-reducing the likelihood of successful revival. For these reasons, devices that
+survive a port or address change. Second, applications which allow either peer to send after a
+period of quiescence will experience black-holing until the peer re-initializes the NAT binding.
+For these reasons, devices that
 can distinguish QUIC traffic from other UDP payloads should retain the
 {{?RFC4787}} limits.
 
