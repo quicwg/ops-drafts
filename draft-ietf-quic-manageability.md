@@ -947,36 +947,42 @@ be robust to rebinding.
 
 ### Resource Conservation
 
-NATs sometimes hit an operational limit where they exhaust available public IP
-addresses and ports, and must evict flows from their address/port mapping. CIDs
-might appear to offer a way to multiplex many connections over a single
-address and port.
+Use of QUIC's connecction ID for NAT mappings is not a viable approach to
+extend operational limits of deployed NATs given the connection ID is not
+guaranteed to be constant over the lifetime of a connection.
 
-However, QUIC endpoints may negotiate new connection IDs inside
-cryptographically protected packets, and begin using them at will. Imagine two
-clients behind a NAT that are sharing the same public IP address and port. The
-NAT is differentiating them using the incoming Connection ID. If one client
-secretly changes its connection ID, there will be no mapping for the NAT, and
-the connection will suddenly break.
+New connections ID are negotiated
+inside cryptographically protected packets between the endpoints and as such
+not obserable in the network. Endpoints may begin using them at will.
+As such, use of the connection ID to multiplex connections over
+a single address and port would cause the connection to break when the 
+connection ID changes.
 
-QUIC is deliberately designed to fail rather than persist when the network
-cannot support its operation. For HTTP/3, this extends to recommending a
-fallback to TCP-based versions of HTTP rather than persisting with a QUIC
-connection that might be unstable. And {{?I-D.ietf-quic-applicability}}
-recommends TCP fallback for other protocols on the basis that this is preferable
-to sudden connection errors and time outs.
 Furthermore, wide deployment of NATs with this behavior hinders the use of
 QUIC's migration function, which relies on the ability to change the connection
 ID any time during the lifetime of a QUIC connection.
 
-It is possible, in principle, to encode the client's identity in a connection ID
-using the techniques described in {{QUIC_LB}} and explicit coordination with the
-NAT. However, this implies that the client shares configuration with the NAT,
-which might be logistically difficult. This adds administrative overhead
-while not resolving the case where a client migrates to a point behind the NAT.
-
 Note that multiplexing connection IDs over a single port anyway violates the
 best common practice to avoid "port overloading" as described in {{?RFC4787}}.
+
+If a NAT hits
+an operational limit where the available public IP addresses and ports are
+exhausted, to should rather drop the initial packets of a connecton than
+breaking it later. As QUIC is based on UDP and there are known blockings of
+UDP, QUIC deplyoments are recommended to implemenet a fallback to TCP
+{{?I-D.ietf-quic-applicability}}. Therefore it is often preferable for QUIC
+to fail and fallback during connectiion establishment rather persisting with a
+connection that might be unstable or expierencing
+sudden connection errors and time outs later during the connection.
+
+{{QUIC_LB}} described mechansms to encode the client's identity in a connection ID
+to be used for load balancing. However the described approach requires explicit
+coordination between the endpoint and network devices using the connection ID
+Sharing confgurations might be logistically challenging to impossible to achive
+between the clent and NAT, especally when client migrates with an existing
+connection to a point behind the NAT.
+
+
 
 ### "Helping" with routing infrastructure issues
 
@@ -984,20 +990,21 @@ Concealing client address changes in order to simplify operational routing
 issues will mask important signals that drive security mechanisms, and
 therefore opens QUIC up to various attacks.
 
-One challenge in QUIC deployments that want to benefit from QUIC's migration
-capability is server infrastructures with routers and switches that direct
-traffic based on address-port 4-tuple rather than connection ID. The use of
-source IP address means that a NAT rebinding or address migration will deliver
-packets to the wrong server. As all QUIC payloads are encrypted, routers and
-switches will not have access to negotiated but not-yet-in-use CIDs. This is a
-particular problem for low-state load balancers. {{QUIC_LB}} addresses this
-problem proposing a QUIC extension to allow some server-load balancer
+While QUIC's migration capability makes it possible for an server to survive
+address changes, this does not work if the routers or swtches of the server
+infrastructures reply on address-port 4-tuple as a NAT rebinding or address
+migration will cause packets to be delivered to the wrong server. The
+forwarding function within the server intrastructure would also need to be
+connection ID aware and would need to have access to negotiated but
+not-yet-in-use CIDs as all QUIc payload is encrypted. {{QUIC_LB}} addresses
+this problem proposing a QUIC extension to allow some server-load balancer
 coordination for routable CIDs.
 
-It seems that a NAT anywhere in the front of such an infrastructure setup could
-save the effort of converting all these devices by decoding routable connection
-IDs and rewriting the packet IP addresses to allow consistent routing by legacy
-devices.
+An alternative, potentially simpler approach seem to be the use of NAT in front
+of such an infrastructure setup, however, hinding information about the change
+of the IP address or port conceals important, and security relevant information
+from QUIC enpoint and should therefore be avoided.
+
 
 Unfortunately, the change of IP address or port is an important signal to QUIC
 endpoints. It requires a review of path-dependent variables like congestion
