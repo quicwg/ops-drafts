@@ -140,8 +140,8 @@ implemented in the application layer if needed. Further, TCP implementations
 and network paths often do not support the Fast Open option, which is analogous
 to 0-RTT session resumption. Note that there is some evidence of middleboxes
 blocking SYN data even if TFO was successfully negotiated (see {{PaaschNanog}}).
-And even if Fast Open successfully operates end-to-end, it is limited to a single
-packet of payload, unlike QUIC 0-RTT. 
+And even if Fast Open successfully operates end-to-end, it is limited to a
+single packet of payload, unlike QUIC 0-RTT.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
