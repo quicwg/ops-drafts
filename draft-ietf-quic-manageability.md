@@ -1005,7 +1005,7 @@ coordination to routable CIDs.
 An alternative, potentially simpler approach seem to be the use of NAT in front
 of such an infrastructure setup, however, hinding information about the change
 of the IP address or port conceals important, and security relevant information
-from QUIC enpoint and as such would facilitate amplification attacks (see
+from QUIC enpoints and as such would facilitate amplification attacks (see
 section 9 of {{QUIC-TRANSPORT}}).
 
 An NAT that blleaches peer address changes, hinders the other end
