@@ -369,7 +369,7 @@ decision from the reliability level of the stream.
 ## Ordered and Reliable Delivery
 
 QUIC streams enable ordered and reliable delivery.  Though it is possible for an
-implementation to provide some options that use streams for partial reliability
+implementation to provide options that use streams for partial reliability
 or out-of-order delivery, most implementations will assume that data is
 reliably delivered in order.
 
