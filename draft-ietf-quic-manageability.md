@@ -919,9 +919,9 @@ considered as unknown.
 ## QUIC and Network Address Translation (NAT)
 
 This section explains how QUIC supports devices that perform Network Address
-Translation (NAT) better than other connection-oriented protocols and
+Translation (NAT) better than other connection-oriented protocols, and
 also how the use of QUIC's connection ID for NAT can create serious problems
-for the endpoints even though it might appear attractive to simplify network
+for the endpoints even though it might appear to simplify network
 management. In summary, devices that perform NAT should refrain from
 parsing or otherwise using QUIC connection IDs but retain their existing
 4-tuple-based operation instead.
@@ -936,7 +936,7 @@ hinding path changes, use of the connection ID by a NAT device to intentify
 flows will cause connection failure when the connection ID changes.
 Wrongly assuming a fixed connection ID for each connection can disable
 important protocol features that require connection IDs to be
-changeable and even impact security but facilitate amplification attacks.
+changeable and even impact security by facilitating amplification attacks.
 
 This section uses the colloquial term NAT to mean NAPT (section 2.2 of
 {{?RFC3022}}), which overloads several IP addresses to one IP address or to an
