@@ -1008,7 +1008,7 @@ of the IP address or port conceals important, and security relevant information
 from QUIC enpoints and as such would facilitate amplification attacks (see
 section 9 of {{QUIC-TRANSPORT}}).
 
-An NAT that blleaches peer address changes, hinders the other end
+An NAT that bleaches peer address changes, hinders the other end
 to detect and mitigate these attacks and verify connectivity to the
 new address based on QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
 
