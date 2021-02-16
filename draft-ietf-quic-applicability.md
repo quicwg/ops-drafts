@@ -467,7 +467,7 @@ or HTTP/2 over TLS over TCP.
 
 Applications could define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{QUIC-HTTP}}
-Sections 3.2 and 3.3) specifies the use of ALPN {{?RFC7301}} for service
+Sections 3.1.1 and 3.1.2) specifies the use of ALPN {{?RFC7301}} for service
 discovery which allows the server to use and announce a different
 port number. Note that HTTP/3's ALPN token ("h3") identifies not only the
 version of the application protocol, but also the binding to QUIC as well
