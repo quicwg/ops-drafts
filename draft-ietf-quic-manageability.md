@@ -965,7 +965,7 @@ negotiated inside cryptographically protected packets between the endpoints
 and as such are not obserable in the network. Alternatively, sharing
 confgurations between the client and NAT might be logistically challenging
 to impossible, especially when client migrates with an existing connection to
-a point behind the NAT. {{QUIC_LB}} described mechansms to encode the client's
+a point behind the NAT. {{QUIC_LB}} described mechanisms to encode the client's
 identity in
 a connection ID to be used for load balancing. However, the described approach
 requires explicit coordination between the endpoint and network devices using the
