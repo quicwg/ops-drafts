@@ -791,10 +791,10 @@ timers or through least-recently-used eviction, depending on application
 requirements.
 
 {{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP
-traffic.  However, in pratice, timers are often lower, in the range of 15 to 30
-seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2 hours for
-TCP, given that TCP is a connection-oriented protocol with well-defined closure
-semantics.
+traffic.  However, in pratice, timers are sometimes lower, in the range of 30 to
+60 seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2 hours
+for TCP, given that TCP is a connection-oriented protocol with well-defined
+closure semantics.
 
 As QUIC has features to improve robustness to NAT rebinding, devices might be
 tempted to further reduce the UDP timeout to avoid unnecessary state. However,
