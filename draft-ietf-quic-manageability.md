@@ -918,14 +918,20 @@ considered as unknown.
 
 ## QUIC and Network Address Translation (NAT)
 
-QUIC Connection IDs are opaque byte fields that are expressed consistently
-across all QUIC versions {{QUIC-INVARIANTS}}, see {{rebinding}}. This feature
-may appear to present opportunities to optimize NAT port usage and simplify the
-work of the QUIC server. In fact, NAT behavior that relies on CID may instead
-cause connection failure when endpoints change Connection ID, and disable
-important protocol security features. NATs should retain their existing
-4-tuple-based operation and refrain from parsing or otherwise using QUIC
-connection IDs.
+Devices that perform Network Address Translation (NAT) should refrain from
+parsing or otherwise using QUIC connection IDs but retain their existing
+4-tuple-based operation instead.
+
+As explained in section {{rebinding}},
+QUIC connection IDs are opaque byte fields that are expressed consistently
+across all QUIC versions {{QUIC-INVARIANTS}} and used by the endpoints to
+survive address rebindings. While this may appear as an opportunities to
+minimiize NAT port usage or to support the work of the QUIC server by
+hinding path changes, use of the connection ID by NAT to intentify flows
+will cause connection failure when the connection ID changes.
+Wrongly assuming a fixed connection ID for each connection can disable
+important protocol security features that require connection IDs to be
+changeable.
 
 This section uses the colloquial term NAT to mean NAPT (section 2.2 of
 {{?RFC3022}}), which overloads several IP addresses to one IP address or to an
