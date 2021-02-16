@@ -123,38 +123,36 @@ traffic compared to TCP in the Internet {{Edeline16}}, somewhere between three
 traffic. All applications running on top of QUIC must therefore either be
 prepared to accept connectivity failure on such networks, or be engineered to
 fall back to some other transport protocol. In the case of HTTP, this fallback
-is TLS 1.3 over TCP.
+is TLS over TCP.
 
 An application that implements fallback needs to consider the security
-consequences. A fallback to TCP and TLS 1.3 exposes control information to
+consequences. A fallback to TCP and TLS exposes control information to
 modification and manipulation in the network. Further downgrades to older TLS
-versions might result in significantly weaker cryptographic protection. For
-example, the results of protocol negotiation {{?ALPN=RFC7301}} only have
-confidentiality protection if TLS 1.3 is used.
+versions than used in QUIC, which is 1.3, might result in significantly weaker
+cryptographic protection. For example, the results of protocol negotiation
+{{?ALPN=RFC7301}} only have confidentiality protection if TLS 1.3 is used.
 
 These applications must operate, perhaps with impaired functionality, in the
 absence of features provided by QUIC not present in the fallback protocol. For
 fallback to TLS over TCP, the most obvious difference is that TCP does not
 provide stream multiplexing and therefore stream multiplexing would need to be
-implemented in the application layer if needed.
-
-Further, TCP implementations and network paths often do not support the Fast
-Open option, which is analogous to 0-RTT session resumption. Even if Fast Open
-successfully operates end-to-end, it is limited to a single packet of payload,
-unlike QUIC 0-RTT.
-
-Note that there is some evidence of middleboxes blocking SYN data even if TFO
-was successfully negotiated (see {{PaaschNanog}}).
-
-Any fallback mechanism is likely to impose a degradation of performance;
-however, fallback must not silently violate the application's expectation of
-confidentiality or integrity of its payload data.
+implemented in the application layer if needed. Further, TCP implementations
+and network paths often do not support the Fast Open option, which is analogous
+to 0-RTT session resumption. Note that there is some evidence of middleboxes
+blocking SYN data even if TFO was successfully negotiated (see {{PaaschNanog}}).
+And even if Fast Open successfully operates end-to-end, it is limited to a single
+packet of payload, unlike QUIC 0-RTT. 
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
 supported, the connection should be aborted instead, in order to enable
 the application to present a suitable prompt to the user that secure
 communication is unavailable.
+
+In summary, any fallback mechanism is likely to impose a degradation of
+performance and can degrade security; however, fallback must not silently
+violate the application's expectation of confidentiality or integrity of its
+payload data.
 
 # Zero RTT {#zero-rtt}
 
