@@ -945,44 +945,49 @@ deliver packets between server and NAT. Reducing the timeout on UDP NATs might
 be tempting in light of this property, but not all QUIC server deployments will
 be robust to rebinding.
 
+Recommendations on time-outs for stateful network functions such as NATs is
+providded in {#sec-stateful}.
+
 ### Resource Conservation
 
 Use of QUIC's connecction ID for NAT mappings is not a viable approach to
-extend operational limits of deployed NATs given the connection ID is not
-guaranteed to be constant over the lifetime of a connection.
+extend operational limits of deployed NATs as the connection ID is not
+guaranteed to be constant over the lifetime of a connection. Endpoints may 
+begin using new connection IDs at will at any time during the connection
+As such, the use of the connection ID
+to multiplex connections over a single address and port would cause the
+connectivity to break when the connection ID changes to a value that does not have
+an active mapping.
 
-New connections ID are negotiated
-inside cryptographically protected packets between the endpoints and as such
-not obserable in the network. Endpoints may begin using them at will.
-As such, use of the connection ID to multiplex connections over
-a single address and port would cause the connection to break when the 
-connection ID changes.
+Not-yet-used connection IDs are unknown to in-network devices and cannot
+be easily associated with a connection ID is use as new connections ID are
+negotiated inside cryptographically protected packets between the endpoints
+and as such are not obserable in the network. Alternatively, sharing
+confgurations between the client and NAT might be logistically challenging
+to impossible, especially when client migrates with an existing connection to
+a point behind the NAT. {{QUIC_LB}} described mechansms to encode the client's
+identity in
+a connection ID to be used for load balancing. However, the described approach
+requires explicit coordination between the endpoint and network devices using the
+connection ID under the assumption that servers and load balancers are deployed
+by the same entity or cooperating entities.
+
+Note that multiplexing connection IDs over a single port anyway violates the
+best common practice to avoid "port overloading" as described in {{?RFC4787}}.
 
 Furthermore, wide deployment of NATs with this behavior hinders the use of
 QUIC's migration function, which relies on the ability to change the connection
 ID any time during the lifetime of a QUIC connection.
 
-Note that multiplexing connection IDs over a single port anyway violates the
-best common practice to avoid "port overloading" as described in {{?RFC4787}}.
-
-If a NAT hits
-an operational limit where the available public IP addresses and ports are
-exhausted, to should rather drop the initial packets of a connecton than
-breaking it later. As QUIC is based on UDP and there are known blockings of
+If a NAT hits an operational limit where the available public IP addresses and
+ports are
+exhausted, it should rather drop the initial packets of a connecton than
+risking to break it later. As QUIC is based on UDP and there are known blockings of
 UDP, QUIC deplyoments are recommended to implemenet a fallback to TCP
 {{?I-D.ietf-quic-applicability}}. Therefore it is often preferable for QUIC
 to fail and fallback during connectiion establishment rather persisting with a
 connection that might be unstable or expierencing
 sudden connection errors and time outs later during the connection.
-
-{{QUIC_LB}} described mechansms to encode the client's identity in a connection ID
-to be used for load balancing. However the described approach requires explicit
-coordination between the endpoint and network devices using the connection ID
-Sharing confgurations might be logistically challenging to impossible to achive
-between the clent and NAT, especally when client migrates with an existing
-connection to a point behind the NAT.
-
-
 
 ### "Helping" with routing infrastructure issues
 
@@ -991,29 +996,21 @@ issues will mask important signals that drive security mechanisms, and
 therefore opens QUIC up to various attacks.
 
 While QUIC's migration capability makes it possible for an server to survive
-address changes, this does not work if the routers or swtches of the server
+address changes, this does not work if the routers or swtches in the server
 infrastructures reply on address-port 4-tuple as a NAT rebinding or address
-migration will cause packets to be delivered to the wrong server. The
-forwarding function within the server intrastructure would also need to be
-connection ID aware and would need to have access to negotiated but
-not-yet-in-use CIDs as all QUIc payload is encrypted. {{QUIC_LB}} addresses
-this problem proposing a QUIC extension to allow some server-load balancer
-coordination for routable CIDs.
+migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}
+addresses this problem proposing a QUIC extension to allow server-load balancer
+coordination to routable CIDs.
 
 An alternative, potentially simpler approach seem to be the use of NAT in front
 of such an infrastructure setup, however, hinding information about the change
 of the IP address or port conceals important, and security relevant information
-from QUIC enpoint and should therefore be avoided.
+from QUIC enpoint and as such would facilitate amplification attacks (see
+section 9 of {{QUIC-TRANSPORT}}).
 
-
-Unfortunately, the change of IP address or port is an important signal to QUIC
-endpoints. It requires a review of path-dependent variables like congestion
-control parameters. It can also signify various attacks that mislead one
-endpoint about the best peer address for the connection (see section 9 of
-{{QUIC-TRANSPORT}}). The QUIC PATH_CHALLENGE and PATH_RESPONSE frames are
-intended to detect and mitigate these attacks and verify connectivity to the
-new address. This mechanism cannot work if the NAT is bleaching peer address
-changes.
+An NAT that blleaches peer address changes, hinders the other end
+to detect and mitigate these attacks and verify connectivity to the
+new address based on QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
 
 For example, an attacker might copy a legitimate QUIC packet and change the
 source address to match its own. In the absence of a bleaching NAT, the
@@ -1022,6 +1019,11 @@ PATH_CHALLENGE frame to prove that the peer endpoint is not truly at the new
 address, thus thwarting the attack. A bleaching NAT has no means of sending an
 encrypted PATH_CHALLENGE frame, so it might start redirecting all QUIC traffic
 to the attacker address and thus allow an observer to break the connection.
+
+In addition, change of IP address or port is also an input signal to other
+internal mechanisms in QUIC. E.g. when a path change is detected, path-dependent
+variables like congestion control parameters will be reset protecting
+the new path from overload. 
 
 ## Filtering behavior
 
