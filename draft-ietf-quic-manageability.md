@@ -800,7 +800,7 @@ As QUIC has features to improve robustness to NAT rebinding, devices might be
 tempted to further reduce the UDP timeout to avoid unnecessary state. However,
 this has two drawbacks.
 
-First, not all servers inhabit routing architectures where connections will
+First, not all endpoints use routing architectures where connections will
 survive a port or address change. Second, applications which allow either peer
 to send after a period of quiescence will experience black-holing until the peer
 re-initializes the NAT binding. For these reasons, devices that can distinguish
