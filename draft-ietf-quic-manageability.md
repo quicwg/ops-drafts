@@ -589,6 +589,19 @@ path observer. An attempted connection after Retry can be detected by
 correlating the token on the Retry with the token on the subsequent Initial
 packet and the destination connection ID of the new Initial packet.
 
+## Distinguishing Acknowledgment traffic
+
+Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
+from packets carrying upper-layer data in order to attempt to enhance
+performance, for example by queueing ACKs differently or manipulating ACK
+signaling. Distinguishing ACK packets is trivial in TCP, but not supported by
+QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
+and ACK manipulation is impossible. Specifically, heuristics attempting to
+distinguish ACK-only packets from payload-carrying packets based on packet size
+are likely to fail, and are not recommended to use as a way to construe
+internals of QUIC's operation as those mechanisms can change, e.g., due to the
+use of extensions.
+
 ## Application Identification {#sec-server}
 
 The cleartext TLS handshake may contain Server Name Indication (SNI)
@@ -884,19 +897,6 @@ When the handshake is blocked, QUIC-capable applications may failover to TCP
 significant fraction of QUIC packets will allow many QUIC handshakes
 to complete, preventing a TCP failover, but the connections will suffer from
 severe packet loss.
-
-## Distinguishing Acknowledgment traffic
-
-Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
-from packets carrying upper-layer data in order to attempt to enhance
-performance, for example by queueing ACKs differently or manipulating ACK
-signaling. Distinguishing ACK packets is trivial in TCP, but not supported by
-QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
-and ACK manipulation is impossible. Specifically, heuristics attempting to
-distinguish ACK-only packets from payload-carrying packets based on packet size
-are likely to fail, and are not recommended to use as a way to construe
-internals of QUIC's operation as those mechanisms can change, e.g., due to the
-use of extensions.
 
 ## Quality of Service handling and ECMP
 
