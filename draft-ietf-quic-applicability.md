@@ -158,10 +158,9 @@ communication is unavailable.
 
 # Zero RTT {#zero-rtt}
 
-QUIC provides for 0-RTT connection establishment. This presents opportunities
-and challenges for applications using QUIC.
-
-## Thinking in Zero RTT
+QUIC provides for 0-RTT connection establishment. Though the same facility
+exists in TLS 1.3 with TCP, 0-RTT presents opportunities and challenges for
+applications using QUIC.
 
 A transport protocol that provides 0-RTT connection establishment is
 qualitatively different than one that does not from the point of view of the
@@ -169,15 +168,12 @@ application using it. Relative trade-offs between the cost of closing and
 reopening a connection and trying to keep it open are different; see
 {{resumption-v-keepalive}}.
 
-Applications must be slightly rethought in order to make best use of 0-RTT
-resumption. Using 0-RTT requires an understanding of the implication of sending
-application data that might be replayed by an attacker.
+An application needs to deliberately choose to use 0-RTT, as 0-RTT carries a
+risk of replay attack.  Application protocols that use 0-RTT require a profile
+that describes the types of information that can be safely sent. For HTTP, this
+profile is described in {{?HTTP-REPLAY=RFC8470}}.
 
-Application protocols that use 0-RTT require a profile that describes the types
-of information that can be safely sent. For HTTP, this profile is described in
-{{?HTTP-REPLAY=RFC8470}}.
-
-## Here There Be Dragons
+## Replay Attacks
 
 Retransmission or (malicious) replay of data contained in 0-RTT packets could
 cause the server side to receive two copies of the same data.
