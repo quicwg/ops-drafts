@@ -289,11 +289,13 @@ The Initial Completion datagram contains at least one Handshake packet and
 some also include an Initial packet.
 
 Datagrams that contain a QUIC Initial Packet (Client Hello, Server Hello, and
-some Initial Completion) must be at least 1200 octets long. This protects
-against amplification attacks and verifies that the network path meets minimum
-Maximum Transmission Unit (MTU) requirements. This is usually accomplished with
-either the addition of PADDING frames to the Initial packet, or coalescing of
-the Initial Packet with packets from other encryption contexts.
+some Initial Completion) contain at least 1200 octets of UDP payload. This protects
+against amplification attacks and verifies that the network path meets the
+requirements for the minimum QUIC IP packet size, see Section 14 of
+{{QUIC-TRANSPORT}}. This is usually accomplished with
+either the addition of PADDING frames to the Initial packet, or by coalescing of
+the Initial Packet with packets from other encryption contexts. A network path 
+needs to be able to forward at least this size of packet for QUIC to be used.
 
 The content of QUIC Initial packets are encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
