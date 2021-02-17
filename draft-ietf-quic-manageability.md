@@ -791,7 +791,7 @@ timers or through least-recently-used eviction, depending on application
 requirements.
 
 {{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP
-traffic.  However, in pratice, timers are sometimes lower, in the range of 30 to
+traffic.  However, in practice, timers are sometimes lower, in the range of 30 to
 60 seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2 hours
 for TCP, given that TCP is a connection-oriented protocol with well-defined
 closure semantics.
