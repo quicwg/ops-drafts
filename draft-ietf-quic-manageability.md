@@ -783,18 +783,17 @@ techniques and how QUIC's design impacts them.
 ## Stateful Treatment of QUIC Traffic {#sec-stateful}
 
 Stateful treatment of QUIC traffic (e.g., at a firewall or NAT middlebox) is
-possible through QUIC traffic and version
-identification ({{sec-identifying}}) and observation of the handshake for
-connection confirmation ({{sec-confirm}}). The lack of any visible end-of-flow
-signal ({{sec-teardown}}) means that this state must be purged either through
-timers or through least-recently-used eviction, depending on application
-requirements.
+possible through QUIC traffic and version identification ({{sec-identifying}})
+and observation of the handshake for connection confirmation ({{sec-confirm}}).
+The lack of any visible end-of-flow signal ({{sec-teardown}}) means that this
+state must be purged either through timers or through least-recently-used
+eviction, depending on application requirements.
 
 {{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP
-traffic.  However, in practice, timers are sometimes lower, in the range of 30 to
-60 seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2 hours
-for TCP, given that TCP is a connection-oriented protocol with well-defined
-closure semantics.
+traffic.  However, in practice, timers are sometimes lower, in the range of 30
+to 60 seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2
+hours for TCP, given that TCP is a connection-oriented protocol with well-
+defined closure semantics.
 
 As QUIC has features to improve robustness to NAT rebinding, devices might be
 tempted to further reduce the UDP timeout to avoid unnecessary state. However,
@@ -803,8 +802,9 @@ this has two drawbacks.
 First, not all endpoints use routing architectures where connections will
 survive a port or address change. Second, applications which allow either peer
 to send after a period of quiescence will experience black-holing until the peer
-re-initializes the NAT binding. For these reasons, retain the {{?RFC4787}} limits is
-useful, even where devices are able to distinguish QUIC traffic from other UDP payloads.
+re-initializes the NAT binding. For these reasons, retaining the {{?RFC4787}}
+limits is useful, even where devices are able to distinguish QUIC traffic from
+other UDP payloads.
 
 The QUIC header optionally contains a connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
