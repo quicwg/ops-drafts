@@ -27,6 +27,7 @@ author:
     country: Switzerland
 
 normative:
+  QUIC: I-D.ietf-quic-transport
 
 informative:
   Trammell16:
@@ -85,6 +86,7 @@ informative:
         ins: M. Kojo
   I-D.nottingham-httpbis-retry:
   RFC5077:
+  QUIC-HTTP: I-D.ietf-quic-http
 
 --- abstract
 
@@ -97,13 +99,12 @@ to QUIC, and implementors of these application protocols.
 
 # Introduction
 
-QUIC {{!QUIC=I-D.ietf-quic-transport}} is a new transport protocol providing a
-number of advanced features. While initially designed for the HTTP use case, it
-provides capabilities that can be used with a much wider variety of
-applications. QUIC is encapsulated in UDP. QUIC version 1 integrate TLS 1.3
-{{!TLS13=RFC8446}} to encrypt all payload data and most control information. The
-version of HTTP which uses QUIC is known as HTTP/3
-{{?QUIC-HTTP=I-D.ietf-quic-http}}.
+QUIC {{QUIC}} is a new transport protocol providing a number of advanced
+features. While initially designed for the HTTP use case, it provides
+capabilities that can be used with a much wider variety of applications. QUIC is
+encapsulated in UDP. QUIC version 1 integrate TLS 1.3 {{!TLS13=RFC8446}} to
+encrypt all payload data and most control information. The version of HTTP which
+uses QUIC is known as HTTP/3 {{QUIC-HTTP}}.
 
 This document provides guidance for application developers that want to use
 the QUIC protocol without implementing it on their own. This includes general
@@ -235,7 +236,7 @@ packets from the client.
 A QUIC application can adjust idle periods to manage the risk of timeout (noting
 that idle periods and the network idle timeout is distinct from the connection
 idle timeout, defined as the minimum of either endpoint's idle timeout
-parameter; see Section 10.1 of {{QUIC}}), but then there are three options:
+parameter; see {{Section 10.1 of QUIC}}), but then there are three options:
 
 - Ignore the issue, if the application-layer protocol consists only of
   interactions with no or very short idle periods, or the protocol's resistance
@@ -329,7 +330,7 @@ dependent on this information.
 
 While a QUIC implementation must necessarily provide a way for an application
 to send data on separate streams, it does not necessarily expose stream
-identifiers to the application (see, for example, {{QUIC-HTTP}}, Section 6)
+identifiers to the application (see, for example, {{Section 6 of QUIC-HTTP}})
 either at the sender or receiver end, so applications should not assume access
 to these identifiers.
 
@@ -350,7 +351,7 @@ of establishing another connection is extremely low.
 
 Stream prioritization is not exposed to either the network or the receiver.
 Prioritization is managed by the sender, and the QUIC transport should
-provide an interface for applications to prioritize streams {{!QUIC}}.
+provide an interface for applications to prioritize streams {{QUIC}}.
 Applications can implement their own prioritization scheme on top of QUIC: an
 application protocol that runs on top of QUIC can define explicit messages
 for signaling priority, such as those defined for HTTP/2; it can define rules
@@ -426,7 +427,7 @@ streams is mapped into frames or how those frames are bundled into packets.
 
 By default, many QUIC implementations will try to maximally pack packets with
 DATA frames from one or more streams to minimize bandwidth consumption and
-computational costs (see section 13 of {{!QUIC}}). If there is not enough data
+computational costs (see {{Section 13 of QUIC}}). If there is not enough data
 available to fill a packet, an implementation might wait for a short time, to
 optimize bandwidth efficiency instead of latency. This delay can either be
 pre-configured or dynamically adjusted based on the observed sending pattern of
@@ -516,7 +517,7 @@ different address after the handshake. For instance, this could be used to move
 from an address that is shared by multiple servers to an address that is unique
 to the server instance. The server can provide an IPv4 and an IPv6 address in a
 transport parameter during the TLS handshake and the client can select between
-the two if both are provided. See also Section 9.6 of {{!QUIC}}.
+the two if both are provided. See also {{Section 9.6 of QUIC}}.
 
 # Connection Closure
 
@@ -528,11 +529,11 @@ has been initiated by one endpoint (for a limited time period), the expectation
 is that an immediate close was negotiated at the application layer and
 therefore no additional data is expected from both sides.
 
-An immediate close will emit an CONNECTION_CLOSE frame. This frame has two
-sets of error codes: one for QUIC internal problems that might lead to connection
-closure, and one for closures initiated by the application. An application
-using QUIC can define application-specific error codes (see, for example,
-{{QUIC-HTTP}}, Section 8.1).
+An immediate close will emit an CONNECTION_CLOSE frame. This frame has two sets
+of error codes: one for QUIC internal problems that might lead to connection
+closure, and one for closures initiated by the application. An application using
+QUIC can define application-specific error codes (see, for example, {{Section
+8.1 of QUIC-HTTP}}).
 
 The CONNECTION_CLOSE frame provides an optional reason field, that can be used
 to append human-readable information to an error code. Note that QUIC
@@ -554,8 +555,8 @@ quickly.
 If an application desires to keep the connection open for longer than the
 announced timeout, it can send keep-alive messages; a QUIC implementation may
 provide an option to defer the time-out by sending keep-alive messages at the
-transport layer to avoid unnecessary load, as specified in Section 10.1.2 of
-{{QUIC}}. See {{resumption-v-keepalive}} for further guidance on keep-alives.
+transport layer to avoid unnecessary load, as specified in {{Section 10.1.2 of
+QUIC}}. See {{resumption-v-keepalive}} for further guidance on keep-alives.
 
 
 # Information Exposure and the Connection ID {#connid}
@@ -584,7 +585,7 @@ a new path.
 ## Server-Generated Connection ID
 
 QUIC supports a server-generated connection ID, transmitted to the client during
-connection establishment (see Section 7.2 of {{!QUIC}}). Servers behind load
+connection establishment (see {{Section 7.2 of QUIC}}). Servers behind load
 balancers may need to change the connection ID during the handshake, encoding
 the identity of the server or information about its load balancing pool, in
 order to support stateless load balancing.
@@ -721,7 +722,7 @@ TCP register UDP ports analogous to their existing TCP registrations.
 
 # Security Considerations
 
-See the security considerations in {{!QUIC}} and {{!QUIC-TLS}}; the security
+See the security considerations in {{QUIC}} and {{!QUIC-TLS}}; the security
 considerations for the underlying transport protocol are relevant for
 applications using QUIC, as well. Considerations on linkability, replay attacks,
 and randomness discussed in {{!QUIC-TLS}} should be taken into account when
@@ -733,7 +734,7 @@ properties as QUIC; if this is not possible, the connection should fail to
 allow the application to explicitly handle fallback to a less-secure
 alternative. See {{fallback}}.
 
-Further {{?QUIC-HTTP}} provides security considerations specific to HTTP.
+Further {{QUIC-HTTP}} provides security considerations specific to HTTP.
 However, discussions such as on cross-protocol attacks, traffic analysis
 and padding, or migration might be relevant for other applications using QUIC
 as well.
