@@ -552,8 +552,8 @@ packet with a given version from a client to which a server responds with an
 Initial packet with the same version implies acceptance of that version.
 
 Negotiated version cannot be identified for flows for which a handshake is not
-observed, such as in the case of connection migration; however, these flows
-might eventually be associated with flows for which a version has been
+observed, such as in the case of connection migration; however, it might be
+possible to associate a flow with a flow for which a version has been
 identified; see {{sec-flow-association}}.
 
 This document focuses on QUIC Version 1, and this section applies only to
