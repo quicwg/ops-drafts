@@ -324,11 +324,21 @@ the receiver. Therefore it can be valuable to expose maximum number of allowed,
 currently open and currently used streams to the application to make the mapping
 of data to streams dependent on this information.
 
-While a QUIC implementation must necessarily provide a way for an application
-to send data on separate streams, it does not necessarily expose stream
-identifiers to the application (see, for example, {{QUIC-HTTP}}, Section 6)
-either at the sender or receiver end, so applications should not assume access
-to these identifiers.
+QUIC assigns a numerical identifier to each stream, called the Stream ID.  While
+the relationship between these identifiers and stream types is clearly defined
+in version 1 of QUIC, future versions might change this relationship for various
+reasons.  QUIC implementations should expose the properties of each stream
+(which endpoint initiated the stream, whether the stream is unidirectional or
+bidirectional, the Stream ID used for the stream); applications should query for
+these properties rather than attempting to infer them from the Stream ID.
+
+The method of allocating stream identifiers to streams opened by the application
+might vary between transport implementations. Therefore, an application should
+not assume a particular stream ID will be assigned to a stream that has not yet
+been allocated.  For example, HTTP/3 uses Stream IDs to refer to streams that have
+already been opened, but makes no assumptions about future Stream IDs or the way
+in which they are assigned.
+
 
 ## Stream versus Flow Multiplexing
 
