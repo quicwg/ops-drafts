@@ -780,6 +780,13 @@ in the downstream direction, and vice versa.
 In this section, we review specific network management and measurement
 techniques and how QUIC's design impacts them.
 
+## Passive Network Performance Measurement and Troubleshooting
+
+Limited RTT measurement is possible by passive observation of QUIC traffic;
+see {{sec-rtt}}. No passive measurement of loss is possible with the present
+wire image. Extremely limited observation of upstream congestion may be
+possible via the observation of CE markings on ECN-enabled QUIC traffic.
+
 ## Stateful Treatment of QUIC Traffic {#sec-stateful}
 
 Stateful treatment of QUIC traffic (e.g., at a firewall or NAT middlebox) is
@@ -809,12 +816,118 @@ off the connection ID may therefore cause undetectable and unrecoverable loss
 of state in the middle of a connection. Use of connection ID specifically
 discouraged for NAT applications.
 
-## Passive Network Performance Measurement and Troubleshooting
+## Network Address Translation (NAT)
 
-Limited RTT measurement is possible by passive observation of QUIC traffic;
-see {{sec-rtt}}. No passive measurement of loss is possible with the present
-wire image. Extremely limited observation of upstream congestion may be
-possible via the observation of CE markings on ECN-enabled QUIC traffic.
+This section uses the colloquial term Network Address
+Translation (NAT) to mean NAPT (section 2.2 of
+{{?RFC3022}}), which overloads several IP addresses to one IP address or to an
+IP address pool, as commonly deployed in carrier-grade NATs or residential NATs.
+
+{{?RFC4787}} contains some guidance on building NATs to interact constructively
+with a wide range of applications. This section extends the discussion to QUIC.
+
+In summary, the advise is simple: devices that perform NAT should use the
+QUIC connection ID to map their internal state but only use the 4-tuple of IP
+addresses and ports as they would do for other UDP traffic or other transports
+as well.
+
+As already recognised in section {#sec-stateful} the QUIC connection ID is not
+guaranteed to be constant over the life-time of a connection and a change of
+connection ID would therefore lead to loss of state or creation of unnecessary
+new state. Both should be avoided and indicate that a NAT device does not need
+to be QUIC-aware.
+
+Section  {#sec-stateful} also provides further recommendations on time-outs
+for stateful network functions such as NATs. For QUIC it is important that time-outs
+are not extremely short, however, the general recommendation as provided in
+{{RFC4787}} for UDP is also appropriate for QUIC and as such again not NAT
+function are not required to be QUIC-aware.
+
+However, there are two cases where it might seem temping to make the NAT device
+QUIC-aware and use of the connection ID as an additional mapping identifier:
+
+One, in order to multiplex several connections over a single address and port
+when a NAT hits an operational limit where the available public IP addresses and
+ports are exhausted. 
+
+Two, by deploying an additional NAT function in front of server
+infrastructure that forwards traffic based on the 4-tuple in order 
+to keep a connection alive even when the 4-tuple changes at client side.
+
+Both setups have the same problems which will be explained in more detail
+in the rest fo this section which are: If the NAT devices it not able to associate
+different connection IDs to the same connection (which is the kind of linkability
+which should actually be avoided by connection ID updates), use of the connection
+ID as identifier can lead to connectivity loss. And even if the NAT is able to associate
+different connection IDs with the same connection, which would require explicit
+coordination between an endpoint and the network device, concealing path
+changes from the endpoints can impact important protocol features negatively
+and may even weaken security features in QUIC by facilitating amplification attacks.
+
+As explained in section {{rebinding}},
+QUIC’s connection ID is an opaque byte fields that is expressed consistently
+across all QUIC versions {{QUIC-INVARIANTS}} and used by the endpoints to
+survive address rebindings. As such, endpoints may
+begin using new connection IDs at will at any time during the connection.
+Not-yet-used connection IDs are unknown to in-network devices and can usually 
+not be easily and reliably associated with a connection ID in use, as new connection IDs are
+negotiated inside cryptographically protected packets between the endpoints
+and as such are not observable in the network.
+
+When a NAT devices uses the connection ID as identifier and the connection ID
+changes, it does not have valid state for any incoming packets. As this change appears
+mid-connection, the NAT devices will not be able to observe a handshake and
+may potentially not even see any bi-directional traffic for a while. In a typical download situation,
+where most traffic is sent from a server to a client that sits behind a NAT, the
+NAT device can only drop the in-coming packets when no mapping is found.
+
+For QUIC traffic it is usually preferable to fail and fallback during connection
+establishment rather than persist with a connection that might be unstable or
+experiencing sudden connection errors and time outs later during the connection
+(see also Section {{sec-filtering}}). As such it is recommend to rather drop the
+initial packets of a flow, potentially trigger a fallback to TCP, than risking
+breakage later, if a NAT hits an operational limit.
+
+Note that multiplexing connection IDs over a single port anyway violates the
+best common practice to avoid "port overloading" as described in {{?RFC4787}}.
+
+Furthermore, wide deployment of NATs that rely on a fixed connection ID for their
+Internal state mapping and therefore my cause connectivity failure when the connection
+ID changes, hinders the use of QUIC's migration function, which relies on the ability
+to change the connection ID any time during the lifetime of a QUIC connection.
+
+The alternative where the NAT devices get exposed to connection IDs that belong to
+the same connection requires sharing configurations between the client and NAT
+which might be logistically challenging or impossible, especially when client migrates
+with an existing connection to a point behind the NAT.
+
+This might be different when a NAT function ought to be deployed at the server-side in front
+of the server-infrastructure operated by the same or cooperating parties. If the
+routers or switches in the server infrastructure rely on address-port 4-tuple, a NAT
+rebinding or any other address migration on the client side, even if that could be
+handled by the QUIC server, will cause packets to be delivered to the wrong server.
+
+In this case it seems temping to the connection IDs in the NAT to provide
+a stable address 4-tuple, rather than changing the deployed routing infrastructure.
+This might work if servers cooperate to inform the NAT of all connection IDs that
+can be used for each connection, similarly as described in {{QUIC_LB}} for load
+balancers. However, this approach is not recommended to be used with NAT
+functions, as hiding address changes from a server prevents the server from
+validating new addresses, which would facilitate amplification attacks (see
+{{Section 9 of QUIC-TRANSPORT}}).
+
+For example, an attacker might copy a legitimate QUIC packet and change the
+source address to match its own. In the absence of a bleaching NAT, the
+receiving endpoint would interpret this as a potential NAT rebinding and use a
+PATH_CHALLENGE frame to prove that the peer endpoint is not truly at the new
+address, thus thwarting the attack. A bleaching NAT has no means of sending an
+encrypted PATH_CHALLENGE frame, so it might start redirecting all QUIC traffic
+to the attacker address and thus allow an observer to break the connection.
+
+In addition, a change of IP address or port is also an input signal to other
+internal mechanisms in QUIC. When a path change is detected, path-dependent
+variables like congestion control parameters will be reset protecting
+the new path from overload.
 
 ## Server Cooperation with Load Balancers {#sec-loadbalancing}
 
@@ -822,7 +935,42 @@ In the case of content distribution networking architectures including load
 balancers, the connection ID provides a way for the server to signal information
 about the desired treatment of a flow to the load balancers. Guidance on
 assigning connection IDs is given in
-{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}}.
+{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}} and {{QUIC_LB}}
+describes a system for coordinating selection and use of connection IDs between
+load-balancers and servers.
+
+## Filtering behavior {#sec-filtering}
+
+{{?RFC4787}} describes possible packet filtering behaviors that relate to NATs.
+Though the guidance there holds, a particularly unwise behavior is to admit a
+handful of UDP packets and then make a decision as to whether or not to filter
+it. QUIC applications are encouraged to fail over to TCP if early packets do
+not arrive at their destination {{?I-D.ietf-quic-applicability}}, as QUIC is
+based on UDP and there are known block of UDP (see Section {{sec-udp-1312}}).
+Admitting a few packets allows the QUIC endpoint to determine that the path
+accepts QUIC. Sudden drops afterwards will result in slow and costly timeouts
+before abandoning the connection.
+
+## UDP Policing {#sec-udp-1312}
+
+Today, UDP is the most prevalent DDoS vector, since it is easy for compromised
+non-admin applications to send a flood of large UDP packets (while with TCP the
+attacker gets throttled by the congestion controller) or to craft reflection and
+amplification attacks. Networks should therefore be
+prepared for UDP flood attacks on ports used for QUIC traffic. One possible
+response to this threat is to police UDP traffic on the network, allocating a
+fixed portion of the network capacity to UDP and blocking UDP datagram over that
+cap.
+
+The recommended way to police QUIC
+packets is to either drop them all or to throttle them based on the hash of the
+UDP datagram's source and destination addresses, blocking a portion of the hash
+space that corresponds to the fraction of UDP traffic one wishes to drop.
+When the handshake is blocked, QUIC-capable applications may failover to TCP
+(at least applications using well-known UDP ports). However, blindly blocking a
+significant fraction of QUIC packets will allow many QUIC handshakes
+to complete, preventing a TCP failover, but the connections will suffer from
+severe packet loss.
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
@@ -864,27 +1012,6 @@ unsolicited injection of these packets by intermediaries who do not have consent
 of the end server. See {{QUIC_LB}} for standard ways for intermediaries to send
 Retry packets on behalf of consenting servers.
 
-## UDP Policing {#sec-udp-1312}
-
-Today, UDP is the most prevalent DDoS vector, since it is easy for compromised
-non-admin applications to send a flood of large UDP packets (while with TCP the
-attacker gets throttled by the congestion controller) or to craft reflection and
-amplification attacks. Networks should therefore be
-prepared for UDP flood attacks on ports used for QUIC traffic. One possible
-response to this threat is to police UDP traffic on the network, allocating a
-fixed portion of the network capacity to UDP and blocking UDP datagram over that
-cap.
-
-The recommended way to police QUIC
-packets is to either drop them all or to throttle them based on the hash of the
-UDP datagram's source and destination addresses, blocking a portion of the hash
-space that corresponds to the fraction of UDP traffic one wishes to drop.
-When the handshake is blocked, QUIC-capable applications may failover to TCP
-(at least applications using well-known UDP ports). However, blindly blocking a
-significant fraction of QUIC packets will allow many QUIC handshakes
-to complete, preventing a TCP failover, but the connections will suffer from
-severe packet loss.
-
 ## Distinguishing Acknowledgment traffic
 
 Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
@@ -916,115 +1043,6 @@ more tolerant of packet re-ordering than traditional TCP traffic (see
 recovery mechanism is used and therefore reordering tolerance should be
 considered as unknown.
 
-## QUIC and Network Address Translation (NAT)
-
-QUIC Connection IDs are opaque byte fields that are expressed consistently
-across all QUIC versions {{QUIC-INVARIANTS}}, see {{rebinding}}. This feature
-may appear to present opportunities to optimize NAT port usage and simplify the
-work of the QUIC server. In fact, NAT behavior that relies on CID may instead
-cause connection failure when endpoints change Connection ID, and disable
-important protocol security features. NATs should retain their existing
-4-tuple-based operation and refrain from parsing or otherwise using QUIC
-connection IDs.
-
-This section uses the colloquial term NAT to mean NAPT (section 2.2 of
-{{?RFC3022}}), which overloads several IP addresses to one IP address or to an
-IP address pool, as commonly deployed in carrier-grade NATs or residential NATs.
-
-The remainder of this section explains how QUIC supports NATs better than other
-connection-oriented protocols, why NAT use of Connection ID might appear
-attractive, and how NAT use of CID can create serious problems for the
-endpoints.
-
-{{?RFC4787}} contains some guidance on building NATs to interact constructively
-with a wide range of applications. This section extends the discussion to QUIC.
-
-By using the CID, QUIC connections can survive NAT rebindings as long as no
-routing function in the path is dependent on client IP address and port to
-deliver packets between server and NAT. Reducing the timeout on UDP NATs might
-be tempting in light of this property, but not all QUIC server deployments will
-be robust to rebinding.
-
-### Resource Conservation
-
-NATs sometimes hit an operational limit where they exhaust available public IP
-addresses and ports, and must evict flows from their address/port mapping. CIDs
-might appear to offer a way to multiplex many connections over a single
-address and port.
-
-However, QUIC endpoints may negotiate new connection IDs inside
-cryptographically protected packets, and begin using them at will. Imagine two
-clients behind a NAT that are sharing the same public IP address and port. The
-NAT is differentiating them using the incoming Connection ID. If one client
-secretly changes its connection ID, there will be no mapping for the NAT, and
-the connection will suddenly break.
-
-QUIC is deliberately designed to fail rather than persist when the network
-cannot support its operation. For HTTP/3, this extends to recommending a
-fallback to TCP-based versions of HTTP rather than persisting with a QUIC
-connection that might be unstable. And {{?I-D.ietf-quic-applicability}}
-recommends TCP fallback for other protocols on the basis that this is preferable
-to sudden connection errors and time outs.
-Furthermore, wide deployment of NATs with this behavior hinders the use of
-QUIC's migration function, which relies on the ability to change the connection
-ID any time during the lifetime of a QUIC connection.
-
-It is possible, in principle, to encode the client's identity in a connection ID
-using the techniques described in {{QUIC_LB}} and explicit coordination with the
-NAT. However, this implies that the client shares configuration with the NAT,
-which might be logistically difficult. This adds administrative overhead
-while not resolving the case where a client migrates to a point behind the NAT.
-
-Note that multiplexing connection IDs over a single port anyway violates the
-best common practice to avoid "port overloading" as described in {{?RFC4787}}.
-
-### "Helping" with routing infrastructure issues
-
-Concealing client address changes in order to simplify operational routing
-issues will mask important signals that drive security mechanisms, and
-therefore opens QUIC up to various attacks.
-
-One challenge in QUIC deployments that want to benefit from QUIC's migration
-capability is server infrastructures with routers and switches that direct
-traffic based on address-port 4-tuple rather than connection ID. The use of
-source IP address means that a NAT rebinding or address migration will deliver
-packets to the wrong server. As all QUIC payloads are encrypted, routers and
-switches will not have access to negotiated but not-yet-in-use CIDs. This is a
-particular problem for low-state load balancers. {{QUIC_LB}} addresses this
-problem proposing a QUIC extension to allow some server-load balancer
-coordination for routable CIDs.
-
-It seems that a NAT anywhere in the front of such an infrastructure setup could
-save the effort of converting all these devices by decoding routable connection
-IDs and rewriting the packet IP addresses to allow consistent routing by legacy
-devices.
-
-Unfortunately, the change of IP address or port is an important signal to QUIC
-endpoints. It requires a review of path-dependent variables like congestion
-control parameters. It can also signify various attacks that mislead one
-endpoint about the best peer address for the connection (see section 9 of
-{{QUIC-TRANSPORT}}). The QUIC PATH_CHALLENGE and PATH_RESPONSE frames are
-intended to detect and mitigate these attacks and verify connectivity to the
-new address. This mechanism cannot work if the NAT is bleaching peer address
-changes.
-
-For example, an attacker might copy a legitimate QUIC packet and change the
-source address to match its own. In the absence of a bleaching NAT, the
-receiving endpoint would interpret this as a potential NAT rebinding and use a
-PATH_CHALLENGE frame to prove that the peer endpoint is not truly at the new
-address, thus thwarting the attack. A bleaching NAT has no means of sending an
-encrypted PATH_CHALLENGE frame, so it might start redirecting all QUIC traffic
-to the attacker address and thus allow an observer to break the connection.
-
-## Filtering behavior
-
-{{?RFC4787}} describes possible packet filtering behaviors that relate to NATs.
-Though the guidance there holds, a particularly unwise behavior is to admit a
-handful of UDP packets and then make a decision as to whether or not to filter
-it. QUIC applications are encouraged to fail over to TCP if early packets do
-not arrive at their destination. Admitting a few packets allows the QUIC
-endpoint to determine that the path accepts QUIC. Sudden drops afterwards will
-result in slow and costly timeouts before abandoning the connection.
 
 # IANA Considerations
 
