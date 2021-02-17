@@ -981,7 +981,7 @@ ID any time during the lifetime of a QUIC connection.
 
 If a NAT hits an operational limit where the available public IP addresses and
 ports are
-exhausted, it should drop the initial packets of a connection rather than
+exhausted, it should drop the initial packets of a flow rather than
 risking breakage later. As QUIC is based on UDP and some devices are known to block
 UDP, QUIC deployments are recommended to implement a fallback to TCP
 {{?I-D.ietf-quic-applicability}}. Therefore it is often preferable for QUIC
@@ -997,7 +997,7 @@ therefore opens QUIC up to various attacks.
 
 While QUIC's migration capability makes it possible for an server to survive
 address changes, this does not work if the routers or switches in the server
-infrastructures reply on address-port 4-tuple as a NAT rebinding or address
+infrastructure rely on address-port 4-tuple as a NAT rebinding or address
 migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}
 addresses this problem proposing a QUIC extension to allow server-load balancer
 coordination to routable CIDs.
@@ -1021,7 +1021,7 @@ encrypted PATH_CHALLENGE frame, so it might start redirecting all QUIC traffic
 to the attacker address and thus allow an observer to break the connection.
 
 In addition, change of IP address or port is also an input signal to other
-internal mechanisms in QUIC. E.g. when a path change is detected, path-dependent
+internal mechanisms in QUIC. When a path change is detected, path-dependent
 variables like congestion control parameters will be reset protecting
 the new path from overload. 
 
