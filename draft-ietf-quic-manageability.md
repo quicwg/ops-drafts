@@ -438,9 +438,9 @@ protected. Further, information that was sent and exposed in handshake packets
 sent before the cryptographic context was established are validated later during
 the cryptographic handshake. Therefore, devices on path cannot alter any
 information or bits in QUIC packets. Such alterations would cause the integrity
-check at the end point to fail and as a result the receiver to discard the packet.
+check to fail, which results in the receiver discarding the packet.
 Some parts of Initial packets could be altered by removing and re-applying the
-authenticated encryption which immediate discard at the receiver. However,
+authenticated encryption without immediate discard at the receiver. However,
 the cryptographic handshake validates most fields and any modifications in
 those fields will result in connection establishment failing later on.
 
