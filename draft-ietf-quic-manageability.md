@@ -91,7 +91,7 @@ is exposed by QUIC to the network, requirements and assumptions that the QUIC
 design with respect to network treatment, and a description of how common
 network management practices will be impacted by QUIC.
 
-Since QUIC's wire image {{WIRE-IMAGE}} is integrity protected, in-network
+Since QUIC's wire image {{?WIRE-IMAGE=RFC8546}} is integrity protected, in-network
 operations that depend on modification of data are not possible without the
 cooperation of an endpoint. Network operation practices that alter data are
 only possible if performed as a QUIC endpoint, which might be possible with
