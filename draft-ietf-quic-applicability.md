@@ -125,7 +125,7 @@ prepared to accept connectivity failure on such networks, or be engineered to
 fall back to some other transport protocol. In the case of HTTP, this fallback
 is TLS 1.3 over TCP.
 
-The IETF TAPS specifications {{ID.ietf-taps-arch}} describe a system with a
+The IETF TAPS specifications {{I-D.ietf-taps-arch}} describe a system with a
 common API for multiple protocols and some of the implications of fallback
 between these different protocols, specifically precluding fallback to
 insecure protocols or to weaker versions of secure protocols.
