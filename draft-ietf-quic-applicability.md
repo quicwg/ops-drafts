@@ -103,7 +103,7 @@ QUIC {{QUIC}} is a new transport protocol providing a number of advanced
 features. While initially designed for the HTTP use case, it provides
 capabilities that can be used with a much wider variety of applications. QUIC is
 encapsulated in UDP. QUIC version 1 integrate TLS 1.3 {{!TLS13=RFC8446}} to
-encrypt all payload data and most control information. The version of HTTP which
+encrypt all payload data and most control information. The version of HTTP that
 uses QUIC is known as HTTP/3 {{QUIC-HTTP}}.
 
 This document provides guidance for application developers that want to use
