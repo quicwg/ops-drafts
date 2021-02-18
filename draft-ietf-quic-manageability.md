@@ -294,7 +294,7 @@ against amplification attacks and verifies that the network path meets the
 requirements for the minimum QUIC IP packet size, see Section 14 of
 {{QUIC-TRANSPORT}}. This is usually accomplished with
 either the addition of PADDING frames to the Initial packet, or by coalescing of
-the Initial Packet with packets from other encryption contexts. A network path 
+the Initial Packet with other packets. A network path 
 needs to be able to forward at least this size of packet for QUIC to be used.
 
 The content of QUIC Initial packets are encrypted using Initial Secrets, which
