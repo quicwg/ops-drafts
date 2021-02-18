@@ -816,104 +816,26 @@ off the connection ID may therefore cause undetectable and unrecoverable loss
 of state in the middle of a connection. Use of connection ID specifically
 discouraged for NAT applications.
 
-## Network Address Translation (NAT)
+If a NAT hits an operational limit, it is recommended to rather drop the
+initial packets of a flow (see allso {{sec-filtering}}),
+which potentially triggers a fallback to TCP, than using the connection ID to
+muliplex mulitple connections on the same IP address port pair which risks
+breakage later on connection ID change.
 
-This section uses the colloquial term Network Address
-Translation (NAT) to mean NAPT (section 2.2 of
-{{?RFC3022}}), which overloads several IP addresses to one IP address or to an
-IP address pool, as commonly deployed in carrier-grade NATs or residential NATs.
+## Address Rewriting to Ensure Routing Stability
 
-{{?RFC4787}} contains some guidance on building NATs to interact constructively
-with a wide range of applications. This section extends the discussion to QUIC.
-
-In summary, the advise is simple: devices that perform NAT should use the
-QUIC connection ID to map their internal state but only use the 4-tuple of IP
-addresses and ports as they would do for other UDP traffic or other transports
-as well.
-
-As already recognised in section {#sec-stateful} the QUIC connection ID is not
-guaranteed to be constant over the life-time of a connection and a change of
-connection ID would therefore lead to loss of state or creation of unnecessary
-new state. Both should be avoided and indicate that a NAT device does not need
-to be QUIC-aware.
-
-Section  {#sec-stateful} also provides further recommendations on time-outs
-for stateful network functions such as NATs. For QUIC it is important that time-outs
-are not extremely short, however, the general recommendation as provided in
-{{RFC4787}} for UDP is also appropriate for QUIC and as such again not NAT
-function are not required to be QUIC-aware.
-
-However, there are two cases where it might seem temping to make the NAT device
-QUIC-aware and use of the connection ID as an additional mapping identifier:
-
-One, in order to multiplex several connections over a single address and port
-when a NAT hits an operational limit where the available public IP addresses and
-ports are exhausted. 
-
-Two, by deploying an additional NAT function in front of server
-infrastructure that forwards traffic based on the 4-tuple in order 
-to keep a connection alive even when the 4-tuple changes at client side.
-
-Both setups have the same problems which will be explained in more detail
-in the rest fo this section which are: If the NAT devices it not able to associate
-different connection IDs to the same connection (which is the kind of linkability
-which should actually be avoided by connection ID updates), use of the connection
-ID as identifier can lead to connectivity loss. And even if the NAT is able to associate
-different connection IDs with the same connection, which would require explicit
-coordination between an endpoint and the network device, concealing path
-changes from the endpoints can impact important protocol features negatively
-and may even weaken security features in QUIC by facilitating amplification attacks.
-
-As explained in section {{rebinding}},
-QUIC’s connection ID is an opaque byte fields that is expressed consistently
-across all QUIC versions {{QUIC-INVARIANTS}} and used by the endpoints to
-survive address rebindings. As such, endpoints may
-begin using new connection IDs at will at any time during the connection.
-Not-yet-used connection IDs are unknown to in-network devices and can usually 
-not be easily and reliably associated with a connection ID in use, as new connection IDs are
-negotiated inside cryptographically protected packets between the endpoints
-and as such are not observable in the network.
-
-When a NAT devices uses the connection ID as identifier and the connection ID
-changes, it does not have valid state for any incoming packets. As this change appears
-mid-connection, the NAT devices will not be able to observe a handshake and
-may potentially not even see any bi-directional traffic for a while. In a typical download situation,
-where most traffic is sent from a server to a client that sits behind a NAT, the
-NAT device can only drop the in-coming packets when no mapping is found.
-
-For QUIC traffic it is usually preferable to fail and fallback during connection
-establishment rather than persist with a connection that might be unstable or
-experiencing sudden connection errors and time outs later during the connection
-(see also Section {{sec-filtering}}). As such it is recommend to rather drop the
-initial packets of a flow, potentially trigger a fallback to TCP, than risking
-breakage later, if a NAT hits an operational limit.
-
-Note that multiplexing connection IDs over a single port anyway violates the
-best common practice to avoid "port overloading" as described in {{?RFC4787}}.
-
-Furthermore, wide deployment of NATs that rely on a fixed connection ID for their
-Internal state mapping and therefore my cause connectivity failure when the connection
-ID changes, hinders the use of QUIC's migration function, which relies on the ability
-to change the connection ID any time during the lifetime of a QUIC connection.
-
-The alternative where the NAT devices get exposed to connection IDs that belong to
-the same connection requires sharing configurations between the client and NAT
-which might be logistically challenging or impossible, especially when client migrates
-with an existing connection to a point behind the NAT.
-
-This might be different when a NAT function ought to be deployed at the server-side in front
-of the server-infrastructure operated by the same or cooperating parties. If the
-routers or switches in the server infrastructure rely on address-port 4-tuple, a NAT
-rebinding or any other address migration on the client side, even if that could be
-handled by the QUIC server, will cause packets to be delivered to the wrong server.
-
-In this case it seems temping to the connection IDs in the NAT to provide
-a stable address 4-tuple, rather than changing the deployed routing infrastructure.
-This might work if servers cooperate to inform the NAT of all connection IDs that
-can be used for each connection, similarly as described in {{QUIC_LB}} for load
-balancers. However, this approach is not recommended to be used with NAT
-functions, as hiding address changes from a server prevents the server from
-validating new addresses, which would facilitate amplification attacks (see
+If the routers or switches in the server infrastructure rely on address-port
+4-tuple, a NAT rebinding or any other address migration on the client side,
+even if that could be handled by the QUIC server, will cause packets to be
+delivered to the wrong server. In this case it seems temping to use NAT in
+front of the server infrastructure to provide a stable address 4-tuple,
+rather than changing the deployed routing infrastructure. As the connection
+ID can change and not-yet-used values are not observable on path, this would
+require servers cooperate to inform the NAT of all new connection IDs,
+similarly as described in {{QUIC_LB}} for load balancers. However, this
+approach is not recommended to be used with NAT functions, as hiding address
+changes from a server prevents the server from validating new addresses,
+which would facilitate amplification attacks (see
 {{Section 9 of QUIC-TRANSPORT}}).
 
 For example, an attacker might copy a legitimate QUIC packet and change the
