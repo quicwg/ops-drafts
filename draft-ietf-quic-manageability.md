@@ -817,7 +817,7 @@ of state in the middle of a connection. Use of connection ID specifically
 discouraged for NAT applications.
 
 If a NAT hits an operational limit, it is recommended to rather drop the
-initial packets of a flow (see allso {{sec-filtering}}),
+initial packets of a flow (see also {{sec-filtering}}),
 which potentially triggers a fallback to TCP, than using the connection ID to
 muliplex mulitple connections on the same IP address port pair which risks
 breakage later on connection ID change.
@@ -827,7 +827,7 @@ breakage later on connection ID change.
 If the routers or switches in the server infrastructure rely on address-port
 4-tuple, a NAT rebinding or any other address migration on the client side,
 even if that could be handled by the QUIC server, will cause packets to be
-delivered to the wrong server. In this case it seems temping to use NAT in
+delivered to the wrong server. In this case it seems tempting to use NAT in
 front of the server infrastructure to provide a stable address 4-tuple,
 rather than changing the deployed routing infrastructure. As the connection
 ID can change and not-yet-used values are not observable on path, this would
@@ -857,18 +857,18 @@ In the case of content distribution networking architectures including load
 balancers, the connection ID provides a way for the server to signal information
 about the desired treatment of a flow to the load balancers. Guidance on
 assigning connection IDs is given in
-{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}} and {{QUIC_LB}}
+{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}}. {{QUIC_LB}}
 describes a system for coordinating selection and use of connection IDs between
 load-balancers and servers.
 
-## Filtering behavior {#sec-filtering}
+## Filtering Behavior {#sec-filtering}
 
 {{?RFC4787}} describes possible packet filtering behaviors that relate to NATs.
 Though the guidance there holds, a particularly unwise behavior is to admit a
 handful of UDP packets and then make a decision as to whether or not to filter
 it. QUIC applications are encouraged to fail over to TCP if early packets do
 not arrive at their destination {{?I-D.ietf-quic-applicability}}, as QUIC is
-based on UDP and there are known block of UDP (see Section {{sec-udp-1312}}).
+based on UDP and there are known block of UDP (see {{sec-udp-1312}}).
 Admitting a few packets allows the QUIC endpoint to determine that the path
 accepts QUIC. Sudden drops afterwards will result in slow and costly timeouts
 before abandoning the connection.
