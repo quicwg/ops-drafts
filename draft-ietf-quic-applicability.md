@@ -335,9 +335,9 @@ these properties rather than attempting to infer them from the Stream ID.
 The method of allocating stream identifiers to streams opened by the application
 might vary between transport implementations. Therefore, an application should
 not assume a particular stream ID will be assigned to a stream that has not yet
-been allocated.  For example, HTTP/3 uses Stream IDs to refer to streams that have
-already been opened, but makes no assumptions about future Stream IDs or the way
-in which they are assigned.
+been allocated.  For example, HTTP/3 uses Stream IDs to refer to streams that
+have already been opened, but makes no assumptions about future Stream IDs or
+the way in which they are assigned.
 
 
 ## Stream versus Flow Multiplexing
