@@ -233,9 +233,9 @@ translation could still affect the path. In particular, firewalls will often
 not admit server traffic for which it has not kept state for corresponding
 packets from the client.
 
-A QUIC applications can adjust idle periods to manage the risk of timeout.
-Idle periods and the network idle timeout are distinct from the connection
-idle timeout, which is defined as the minimum of either endpoint's idle timeout
+QUIC applications can adjust idle periods to manage the risk of timeout. Idle
+periods and the network idle timeout are distinct from the connection idle
+timeout, which is defined as the minimum of either endpoint's idle timeout
 parameter; see {{Section 10.1 of QUIC}}). There are three options:
 
 - Ignore the issue, if the application-layer protocol consists only of
