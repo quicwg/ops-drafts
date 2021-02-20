@@ -102,7 +102,7 @@ to QUIC, and implementors of these application protocols.
 QUIC {{QUIC}} is a new transport protocol providing a number of advanced
 features. While initially designed for the HTTP use case, it provides
 capabilities that can be used with a much wider variety of applications. QUIC is
-encapsulated in UDP. QUIC version 1 integrate TLS 1.3 {{!TLS13=RFC8446}} to
+encapsulated in UDP. QUIC version 1 integrates TLS 1.3 {{!TLS13=RFC8446}} to
 encrypt all payload data and most control information. The version of HTTP that
 uses QUIC is known as HTTP/3 {{QUIC-HTTP}}.
 
@@ -118,7 +118,7 @@ transport for their application.
 
 QUIC uses UDP as a substrate. This enables userspace implementation and permits
 traversal of network middleboxes (including NAT) without requiring updates to
-existing infrastructure.
+existing network infrastructure.
 
 While there is no evidence of a widespread, systematic disadvantage of UDP
 traffic compared to TCP in the Internet {{Edeline16}}, somewhere between three
@@ -233,10 +233,10 @@ translation could still affect the path. In particular, firewalls will often
 not admit server traffic for which it has not kept state for corresponding
 packets from the client.
 
-A QUIC application can adjust idle periods to manage the risk of timeout (noting
-that idle periods and the network idle timeout is distinct from the connection
-idle timeout, defined as the minimum of either endpoint's idle timeout
-parameter; see {{Section 10.1 of QUIC}}), but then there are three options:
+A QUIC applications can adjust idle periods to manage the risk of timeout.
+Idle periods and the network idle timeout are distinct from the connection
+idle timeout, which is defined as the minimum of either endpoint's idle timeout
+parameter; see {{Section 10.1 of QUIC}}). There are three options:
 
 - Ignore the issue, if the application-layer protocol consists only of
   interactions with no or very short idle periods, or the protocol's resistance
@@ -322,7 +322,7 @@ to expire an unacknowledged message can be used to emulate partial reliability
 on a message basis.
 
 If a QUIC receiver has the maximum number of streams open and the sender on the
-other end indicates that more streams are needed, it doesn't automatically lead
+other end indicates that more streams are needed via a STREAMS_BLOCKED frame, it doesn't automatically lead
 to an increase in the maximum number of streams by the receiver. Therefore it
 can be valuable to expose the maximum number of allowed, currently open, and
 currently used streams to the application to make the mapping of data to streams
