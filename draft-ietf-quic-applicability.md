@@ -322,11 +322,11 @@ to expire an unacknowledged message can be used to emulate partial reliability
 on a message basis.
 
 If a QUIC receiver has the maximum number of streams open and the sender on the
-other end indicates that more streams are needed via a STREAMS_BLOCKED frame, it doesn't automatically lead
-to an increase in the maximum number of streams by the receiver. Therefore it
-can be valuable to expose the maximum number of allowed, currently open, and
-currently used streams to the application to make the mapping of data to streams
-dependent on this information.
+other end indicates that more streams are needed via a STREAMS_BLOCKED frame, it
+doesn't automatically lead to an increase in the maximum number of streams by
+the receiver. Therefore it can be valuable to expose the maximum number of
+allowed, currently open, and currently used streams to the application to make
+the mapping of data to streams dependent on this information.
 
 While a QUIC implementation must necessarily provide a way for an application
 to send data on separate streams, it does not necessarily expose stream
