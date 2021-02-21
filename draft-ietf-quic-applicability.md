@@ -376,9 +376,10 @@ reliably delivered in order.
 Under this assumption, an endpoint that receives stream data might not make
 forward progress until data that is contiguous with the start of a stream is
 available.  In particular, a receiver might withhold flow control credit until
-contiguous data is delivered to the application.  To support this receive logic,
-an endpoint will send stream data until it is acknowledged, ensuring that data
-at the start of the stream is sent and acknowledged first.
+contiguous data is delivered to the application; see {{Section 2.2 of QUIC}}.
+To support this receive logic, an endpoint will send stream data until it is
+acknowledged, ensuring that data at the start of the stream is sent and
+acknowledged first.
 
 An endpoint that uses a different sending behavior and does not negotiate that
 change with its peer might encounter performance issues or deadlocks.
