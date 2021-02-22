@@ -123,7 +123,7 @@ Table of Contents
    and a description of how common network management practices will be
    impacted by QUIC.
 
-   Since QUIC's wire image [WIRE-IMAGE] is integrity protected, in-
+   Since QUIC's wire image [WIRE-IMAGE] is integrity-protected, in-
    network operations that depend on modification of data are not
    possible without the cooperation of an endpoint.  Network operation
    practices that alter data are only possible if performed as a QUIC
