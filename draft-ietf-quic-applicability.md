@@ -442,7 +442,9 @@ that the path is capable of transferring datagrams of at least a certain size,
 during the handshake (see Sections 8.1 and 14.1 of {{!QUIC}}) and for path
 validation after connection migration (see {{Section 8.2. of QUIC}}) as well as for
 Datagram Packetization Layer PMTU Discovery (DPLMTUD) (see Section 14.3 of
-{{!QUIC}}). Padding can also be used by an application to reduce leakage of
+{{!QUIC}}).
+
+Padding can also be used by an application to reduce leakage of
 information about the data that is sent. A QUIC implementation can expose an
 interface that allows an application layer to specify how to apply padding.
 
