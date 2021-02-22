@@ -712,17 +712,18 @@ handshake) at both sides.
 
 ### Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
-The spin bit provides an additional method to measure per-flow RTT from
-observation points on the network path throughout the duration of a connection,
-following the principles of protocol measurability laid out in {{IPIM}}.
-Endpoint participation in spin bit signaling is optional in QUIC. That is, while
-its location is fixed in this version of QUIC, an endpoint can unilaterally
-choose to not support "spinning" the bit. Use of the spin bit for RTT
-measurement by devices on path is only possible when both endpoints enable it.
-Some endpoints may disable use of the spin bit by default, others only in
-specific deployment scenarios, e.g. for servers and clients where the RTT would
-reveal the presence of a VPN or proxy. To avoid making these connections
-identifiable based on the usage of the spin bit, all
+The spin bit provides a version-specific method to measure per-flow RTT from
+observation points on the network path throughout the duration of a connection.
+See section 17.4 of {{?QUIC-TRANSPORT}} for the definition of the spin bit in
+Version 1 of QUIC. Endpoint participation in spin bit signaling is optional.
+That is, while its location is fixed in this version of QUIC, an endpoint can
+unilaterally choose to not support "spinning" the bit.
+
+Use of the spin bit for RTT measurement by devices on path is only possible when
+both endpoints enable it. Some endpoints may disable use of the spin bit by
+default, others only in specific deployment scenarios, e.g. for servers and
+clients where the RTT would reveal the presence of a VPN or proxy. To avoid
+making these connections identifiable based on the usage of the spin bit, all
 endpoints randomly disable "spinning" for at least one eighth of connections,
 even if otherwise enabled by default. An endpoint not participating in spin bit
 signaling for a given connection can use a fixed spin value for the duration of
@@ -732,7 +733,8 @@ When in use and a QUIC flow sends data continuously, the latency spin bit in
 each direction changes value once per round-trip time (RTT). An on-path observer
 can observe the time difference between edges (changes from 1 to 0 or 0 to 1) in
 the spin bit signal in a single direction to measure one sample of end-to-end
-RTT.
+RTT. This mechanism follows the principles of protocol measurability laid out
+in {{IPIM}}.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
 any transport protocol delay (e.g., delayed sending of acknowledgements) and/or
