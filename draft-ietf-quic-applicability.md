@@ -83,7 +83,6 @@ informative:
         ins: P. Sarolahti
       -
         ins: M. Kojo
-  I-D.nottingham-httpbis-retry:
 --- abstract
 
 This document discusses the applicability of the QUIC transport protocol,
@@ -117,19 +116,19 @@ transport for their application.
 QUIC uses UDP as a substrate. This enables both userspace implementation
 traversal of middleboxes and NAT without requiring updates.
 
-While there is no evidence of widespread, systematic disadvantage of UDP
-traffic compared to TCP in the Internet {{Edeline16}}, somewhere between three
-{{Trammell16}} and five {{Swett16}} percent of networks simply block UDP
-traffic. All applications running on top of QUIC must therefore either be
-prepared to accept connectivity failure on such networks, or be engineered to
-fall back to some other transport protocol. In the case of HTTP, this fallback
-is TLS 1.3 over TCP.
+While recent measurements have shown no evidence of widespread, systematic
+disadvantage of UDP traffic compared to TCP in the Internet {{Edeline16}},
+somewhere between three {{Trammell16}} and five {{Swett16}} percent of networks
+simply block UDP traffic. All applications running on top of QUIC must
+therefore either be prepared to accept connectivity failure on such networks,
+or be engineered to fall back to some other transport protocol. In the case of
+HTTP, this fallback is TLS 1.3 over TCP.
 
 An application that implements fallback needs to consider the security
 consequences. A fallback to TCP and TLS 1.3 exposes control information to
 modification and manipulation in the network. Further downgrades to older TLS
 versions might result in significantly weaker cryptographic protection. For
-example, the results of protocol negotiation {{?ALPN=RFC7301}} only have
+example, the results of protocol negotiation {{RFC7301}} only have
 confidentiality protection if TLS 1.3 is used.
 
 These applications must operate, perhaps with impaired functionality, in the
@@ -223,12 +222,12 @@ rebinding after a timeout. However, this only helps if one endpoint maintains
 availability at the address its peer uses, and the peer is the one to send
 after the timeout occurs.
 
-Some QUIC connections may not be robust to rebinding because the routing
+Some QUIC connections might not be robust to NAT rebinding because the routing
 infrastructure (in particular, load balancers) uses the address/port four-tuple
 to direct traffic. Furthermore, middleboxes with functions other than address
-translation could still affect the path. In particular, firewalls will often
-not admit server traffic for which it has not kept state for corresponding
-packets from the client.
+translation could still affect the path. In particular, some firewalls do not
+admit server traffic for which the firewall has no recent state for a
+corresponding packet sent from the client.
 
 A QUIC application can adjust idle periods to manage the risk of timeout
 (noting that idle periods and the network idle timeout is distinct from the
@@ -260,18 +259,18 @@ periods may result in excessive unproductive traffic in some situations, and to
 unacceptable power usage for power-constrained (mobile) devices. Additionally,
 time-outs shorter than 30 seconds can make it harder to handle transient network
 interruptions, such as VM migration or coverage loss during mobilty.
+See {{?RFC8085}}, especially Section 3.5.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
 data to a server over a connection idle longer than the server's idle timeout
 (available from the idle_timeout transport parameter) can simply reconnect. When
 possible, this reconnection can use 0-RTT session resumption, reducing the
-latency involved with restarting the connection. This of course only applies in
+latency involved with restarting the connection. This approach is only valid in
 cases in which 0-RTT data is safe, when the client is the restarting peer, and
-when the data to be sent is idempotent.  Using resumption in this way also
-assumes that the protocol does not accumulate any non-persistent state in
-association with a connection.  State bound to a connection cannot reliably be
-transferred to a resumed connection.
+when the data to be sent is idempotent. It is also not applicable when the
+application binds external state to the connection, as this state cannot
+reliably be transferred to a resumed connection.
 
 The tradeoffs between resumption and keepalive need to be evaluated on a
 per-application basis. However, in general applications should use keepalives
@@ -291,10 +290,11 @@ Streams can be unidirectional or bidirectional, and a stream may be initiated
 either by client or server. Only the initiator of a unidirectional stream can
 send data on it.
 
-Due to encoding limitations on stream offsets and connection
-flow control limits, both streams and connections can carry a maximum of
-2^62-1 bytes in each direction. In the presently unlikely event that this limit
-is reached by an application, a new connection would need to be established.
+Streams and connections can each carry a maximum of
+2^62-1 bytes in each direction, due to encoding limitations on
+stream offsets and connection flow control limits. In the presently unlikely
+event that this limit is reached by an application, a new connection would
+need to be established.
 
 Streams can be independently opened and closed, gracefully or by error. An
 application can gracefully close the egress direction of a stream by instructing
@@ -309,20 +309,27 @@ generate error messages on the application layer to inform the other end and/or
 the higher layer, which can eventually reset the QUIC connection.
 
 Mapping of application data to streams is application-specific and described for
-HTTP/3 in {{QUIC-HTTP}}. In general, data that can be processed independently,
-and therefore would suffer from head of line blocking if forced to be received
-in order, should be transmitted over separate streams. If the application
-requires certain data to be received in order, that data should be sent on the
-same stream. If there is a logical grouping of data chunks or
-messages, streams can be reused, or a new stream can be opened for each
-chunk/message. If one message is mapped to a single stream, resetting the stream
-to expire an unacknowledged message can be used to emulate partial reliability
-on a message basis. If a QUIC receiver has maximum allowed concurrent streams
-open and the sender on the other end indicates that more streams are needed, it
+HTTP/3 in {{QUIC-HTTP}}. There are a few general principles to apply when
+designing an application's use of streams:
+
+- A single stream provides ordering. If the application requires certain data to
+be received in order, that data should be sent on the same stream.
+
+- Multiple streams provide concurrency. Data that can be processed
+independently, and therefore would suffer from head of line blocking if forced
+to be received in order, should be transmitted over separate streams.
+
+- Streams can provide message orientation, and allow messages to be cancelled.
+If one message is mapped to a single stream, resetting the stream to expire an
+unacknowledged message can be used to emulate partial reliability
+for that message.
+
+If a QUIC receiver has opened the maximum allowed concurrent
+streams, and the sender indicates that more streams are needed, it
 doesn't automatically lead to an increase of the maximum number of streams by
-the receiver. Therefore it can be valuable to expose maximum number of allowed,
-currently open and currently used streams to the application to make the mapping
-of data to streams dependent on this information.
+the receiver. Therefore it can be valuable to expose the maximum number of
+allowed, currently open, and currently used streams to the application to make
+the mapping of data to streams dependent on this information.
 
 While a QUIC implementation must necessarily provide a way for an application
 to send data on separate streams, it does not necessarily expose stream
@@ -421,8 +428,8 @@ QUIC provides an interface that provides multiple streams to the application;
 however, the application usually cannot control how data transmitted over one
 stream is mapped into frames or how those frames are bundled into packets.
 
-By default, many QUIC implementations will try to maximally pack packets with
-one or more stream data frames to minimize bandwidth consumption and
+By default, many implementations will try to maximally pack QUIC packets
+with one or more stream data frames to minimize bandwidth consumption and
 computational costs (see section 13 of {{!QUIC}}). If there is not enough data
 available to fill a packet, an implementation might wait for a short time, to
 optimize bandwidth efficiency instead of latency. This delay can either be
@@ -484,13 +491,13 @@ identification.
 
 # Connection Migration
 
-QUIC supports connection migration by the client. If a lower-layer address
+QUIC supports connection migration by the client. If an IP address
 changes, a QUIC endpoint can still associate packets with an existing
-connection using the Destination connection ID field (see also {{connid}}) in
-the QUIC header, unless a zero-length value is used. This supports cases where
-address information changes, such as NAT rebinding, intentional change of the
-local interface, or based on an indication in the handshake of the server for a
-preferred address to be used.
+transport connection using the Destination Connection ID field
+(see also {{connid}}) in the QUIC header, unless a zero-length value is used.
+This supports cases where address information changes, such as NAT rebinding,
+intentional change of the local interface, or based on an indication in the
+handshake of the server for a preferred address to be used.
 
 Use of a non-empty connection ID for the server is strongly recommended if any
 clients are behind a NAT or could be. A non-empty connection ID is also
@@ -498,15 +505,15 @@ strongly recommended when migration is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
 time, and only when the new path is validated all traffic can be switched over
-to that new path. Path validation means that the other endpoint in required to
+to that new path. Path validation means that the remote endpoint is required to
 validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
-on path migration. Therefore migration usually has a performance impact.
+after path migration. Therefore migration usually has a performance impact.
 
-Probing packets, which cannot carry application data, can be sent on multiple
-paths at once. Probing packets can be used to perform address validation,
-measure path characteristics as input for the switching decision, or prime the
-congestion controller in preparation for switching to the new path.
+QUIC probing packets, which cannot carry application data, can be sent on
+multiple paths at once. Probing packets can be used to perform address
+validation, measure path characteristics as input for the switching decision,
+or prime the congestion controller in preparation for switching to the new path.
 
 Only the client can actively migrate. However, servers can indicate during the
 handshake that they prefer to transfer the connection to a different address
@@ -526,7 +533,7 @@ has been initiated by one endpoint (for a limited time period), the expectation
 is that an immediate close was negotiated at the application layer and
 therefore no additional data is expected from both sides.
 
-An immediate close will emit an CONNECTION_CLOSE frame. This frames has two
+An immediate close will emit an CONNECTION_CLOSE frame. This frame has two
 sets of types: one for QUIC internal problems that might lead to connection
 closure, and one for closures initiated by the application. An application
 using QUIC can define application-specific error codes (see, for example,
@@ -566,9 +573,9 @@ connection. While the long header always exposes some information (such as the
 version and connection IDs), the short header exposes at most only a single
 connection ID.
 
-Aside from the destination connection ID field of the first packets sent by
-clients, the connection ID can be zero length. This is a choice that is made by
-each endpoint individually.
+The connection ID can be zero length. Zero length connection IDs can be
+chosen on each endpoint individually, on any packet except the first packets
+sent by clients during connection establishment.
 
 An endpoint that selects a zero-length connection ID will receive packets with
 a zero-length destination connection ID. The endpoint needs to use other
@@ -611,10 +618,11 @@ for an observer to associate two connection IDs. Conversely, in the opposite
 limit where every server handles multiple simultaneous migrations, even an
 exposed server mapping may be insufficient information.
 
-The most efficient mitigation for these attacks is operational, either by using
-a load balancing architecture that loads more flows onto a single server-side
-address, by coordinating the timing of migrations to attempt to increase the
-number of simultaneous migrations at a given time, or through other means.
+The most efficient mitigations for these attacks are through network design
+and/or operational practice, by using a load balancing architecture that
+loads more flows onto a single server-side address, by coordinating the
+timing of migrations to attempt to increase the number of simultaneous
+migrations at a given time, or through other means.
 
 ## Using Server Retry for Redirection
 
