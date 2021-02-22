@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 19 August 2021                                           Google
-                                                        15 February 2021
+Expires: 26 August 2021                                           Google
+                                                        22 February 2021
 
 
               Manageability of the QUIC Transport Protocol
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 August 2021.
+   This Internet-Draft will expire on 26 August 2021.
 
 Copyright Notice
 
@@ -271,13 +271,13 @@ Table of Contents
 2.3.  Use of Port Numbers
 
    Applications that have a mapping for TCP as well as QUIC are expected
-   to use the same port number for both services.  However, as with TCP-
-   based services, especially when application layer information is
-   encrypted, there is no guarantee that a specific application will use
-   the registered port, or the used port is carrying traffic belonging
-   to the respective registered service.  For example, [QUIC-HTTP]
-   specifies the use of Alt-Svc for discovery of HTTP/3 services on
-   other ports.
+   to use the same port number for both services.  However, as for all
+   other IETF transports [RFC7605], there is no guarantee that a
+   specific application will use a given registered port, or that a
+   given port carries traffic belonging to the respective registered
+   service, especially when application layer information is encrypted.
+   For example, [QUIC-HTTP] specifies the use of Alt-Svc for discovery
+   of HTTP/3 services on other ports.
 
    Further, as QUIC has a connection ID, it is also possible to maintain
    multiple QUIC connections over one 5-tuple.  However, if the
@@ -1263,14 +1263,14 @@ Table of Contents
 
    [QUIC-TLS] Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
               Work in Progress, Internet-Draft, draft-ietf-quic-tls-34,
-              14 January 2021, <https://www.ietf.org/archive/id/draft-
-              ietf-quic-tls-34.txt>.
+              14 January 2021, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-quic-tls-34.txt>.
 
    [QUIC-TRANSPORT]
               Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
               and Secure Transport", Work in Progress, Internet-Draft,
               draft-ietf-quic-transport-34, 14 January 2021,
-              <https://www.ietf.org/archive/id/draft-ietf-quic-
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               transport-34.txt>.
 
 10.2.  Informative References
@@ -1286,14 +1286,14 @@ Table of Contents
               R. Compton, "DDoS Open Threat Signaling (DOTS)
               Architecture", Work in Progress, Internet-Draft, draft-
               ietf-dots-architecture-18, 6 March 2020,
-              <https://www.ietf.org/archive/id/draft-ietf-dots-
+              <https://datatracker.ietf.org/doc/html/draft-ietf-dots-
               architecture-18.txt>.
 
    [I-D.ietf-quic-applicability]
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
               draft-ietf-quic-applicability-09, 22 January 2021,
-              <https://www.ietf.org/archive/id/draft-ietf-quic-
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               applicability-09.txt>.
 
    [IPIM]     Allman, M., Beverly, R., and B. Trammell, "In-Protocol
@@ -1304,77 +1304,80 @@ Table of Contents
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
               draft-ietf-quic-applicability-09, 22 January 2021,
-              <https://www.ietf.org/archive/id/draft-ietf-quic-
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               applicability-09.txt>.
 
    [QUIC-HTTP]
               Bishop, M., "Hypertext Transfer Protocol Version 3
               (HTTP/3)", Work in Progress, Internet-Draft, draft-ietf-
               quic-http-34, 2 February 2021,
-              <https://www.ietf.org/archive/id/draft-ietf-quic-http-
-              34.txt>.
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
+              http-34.txt>.
 
    [QUIC-INVARIANTS]
               Thomson, M., "Version-Independent Properties of QUIC",
               Work in Progress, Internet-Draft, draft-ietf-quic-
               invariants-13, 14 January 2021,
-              <https://www.ietf.org/archive/id/draft-ietf-quic-
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               invariants-13.txt>.
 
    [QUIC_LB]  Duke, M. and N. Banks, "QUIC-LB: Generating Routable QUIC
               Connection IDs", Work in Progress, Internet-Draft, draft-
               ietf-quic-load-balancers-06, 4 February 2021,
-              <https://www.ietf.org/archive/id/draft-ietf-quic-load-
-              balancers-06.txt>.
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
+              load-balancers-06.txt>.
 
    [RFC2475]  Blake, S., Black, D., Carlson, M., Davies, E., Wang, Z.,
               and W. Weiss, "An Architecture for Differentiated
               Services", RFC 2475, DOI 10.17487/RFC2475, December 1998,
-              <https://www.rfc-editor.org/info/rfc2475>.
+              <https://datatracker.ietf.org/doc/html/rfc2475>.
 
    [RFC3022]  Srisuresh, P. and K. Egevang, "Traditional IP Network
               Address Translator (Traditional NAT)", RFC 3022,
               DOI 10.17487/RFC3022, January 2001,
-              <https://www.rfc-editor.org/info/rfc3022>.
+              <https://datatracker.ietf.org/doc/html/rfc3022>.
 
    [RFC4787]  Audet, F., Ed. and C. Jennings, "Network Address
               Translation (NAT) Behavioral Requirements for Unicast
               UDP", BCP 127, RFC 4787, DOI 10.17487/RFC4787, January
-              2007, <https://www.rfc-editor.org/info/rfc4787>.
+              2007, <https://datatracker.ietf.org/doc/html/rfc4787>.
 
    [RFC4937]  Arberg, P. and V. Mammoliti, "IANA Considerations for PPP
               over Ethernet (PPPoE)", RFC 4937, DOI 10.17487/RFC4937,
-              June 2007, <https://www.rfc-editor.org/info/rfc4937>.
+              June 2007,
+              <https://datatracker.ietf.org/doc/html/rfc4937>.
 
    [RFC5382]  Guha, S., Ed., Biswas, K., Ford, B., Sivakumar, S., and P.
               Srisuresh, "NAT Behavioral Requirements for TCP", BCP 142,
               RFC 5382, DOI 10.17487/RFC5382, October 2008,
-              <https://www.rfc-editor.org/info/rfc5382>.
+              <https://datatracker.ietf.org/doc/html/rfc5382>.
 
    [RFC6066]  Eastlake 3rd, D., "Transport Layer Security (TLS)
               Extensions: Extension Definitions", RFC 6066,
               DOI 10.17487/RFC6066, January 2011,
-              <https://www.rfc-editor.org/info/rfc6066>.
+              <https://datatracker.ietf.org/doc/html/rfc6066>.
 
    [RFC6928]  Chu, J., Dukkipati, N., Cheng, Y., and M. Mathis,
               "Increasing TCP's Initial Window", RFC 6928,
               DOI 10.17487/RFC6928, April 2013,
-              <https://www.rfc-editor.org/info/rfc6928>.
+              <https://datatracker.ietf.org/doc/html/rfc6928>.
 
    [RFC7301]  Friedl, S., Popov, A., Langley, A., and E. Stephan,
               "Transport Layer Security (TLS) Application-Layer Protocol
               Negotiation Extension", RFC 7301, DOI 10.17487/RFC7301,
-              July 2014, <https://www.rfc-editor.org/info/rfc7301>.
+              July 2014,
+              <https://datatracker.ietf.org/doc/html/rfc7301>.
 
    [RFC7605]  Touch, J., "Recommendations on Using Assigned Transport
               Port Numbers", BCP 165, RFC 7605, DOI 10.17487/RFC7605,
-              August 2015, <https://www.rfc-editor.org/info/rfc7605>.
+              August 2015,
+              <https://datatracker.ietf.org/doc/html/rfc7605>.
 
    [TLS-ESNI] Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
               draft-ietf-tls-esni-09, 16 December 2020,
-              <https://www.ietf.org/archive/id/draft-ietf-tls-esni-
-              09.txt>.
+              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
+              esni-09.txt>.
 
    [TMA-QOF]  Trammell, B., Gugelmann, D., and N. Brownlee, "Inline Data
               Integrity Signals for Passive Measurement (in Proc. TMA
@@ -1383,7 +1386,7 @@ Table of Contents
    [WIRE-IMAGE]
               Trammell, B. and M. Kuehlewind, "The Wire Image of a
               Network Protocol", RFC 8546, DOI 10.17487/RFC8546, April
-              2019, <https://www.rfc-editor.org/info/rfc8546>.
+              2019, <https://datatracker.ietf.org/doc/html/rfc8546>.
 
 Authors' Addresses
 
