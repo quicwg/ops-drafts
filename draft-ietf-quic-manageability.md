@@ -908,7 +908,7 @@ receiving ICMP feedback (see {{Section 14.2.1. of QUIC-TRANSPORT}}).
 
 Networks are recommended to forward these ICMP messages and retain as much of
 the original packet as possible without exceeding the minimum MTU for the IP
-version when generating ICMP messages as recommended in {{RFC1812}} {{RFC4443}}.
+version when generating ICMP messages as recommended in {{RFC1812}} and {{RFC4443}}.
 
 ## Quality of Service handling and ECMP
 
