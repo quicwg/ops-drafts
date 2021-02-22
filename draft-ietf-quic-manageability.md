@@ -511,7 +511,7 @@ see also {{?RFC7605}} section 5.
 
 While the second most significant bit (0x40) of the first octet is set to
 1 in most QUIC packets of the current version (see {{public-header}}),
-this method of recognizing QUIC traffic is not recommended. First, it only
+this method of recognizing QUIC traffic is NOT RECOMMENDED. First, it only
 provides one bit of information and is quite prone to collide with
 UDP-based protocols other than those that this static bit is meant to allow
 multiplexing with. Second, this feature of the wire image is not invariant
