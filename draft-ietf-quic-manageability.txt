@@ -192,7 +192,7 @@ Table of Contents
       for endpoints to demultiplex with other UDP-encapsulated
       protocols.  Even thought this bit is fixed in the QUICv1
       specification, endpoints may use a version or extension that
-      varies the bit.  Therefore, observers cannot reliably use it as an
+      varies the bit.  Therefore, observers cannot depend on it as an
       identifier for QUIC.
 
    *  latency spin bit: the third most significant bit of first octet in
@@ -295,10 +295,10 @@ Table of Contents
    visible in the UDP datagrams containing the QUIC handshake, then
    examine each of the datagrams in detail.
 
-   In the nominal case, the QUIC handshake can be recognized on the wire
-   through at least four datagrams we'll call "QUIC Client Hello", "QUIC
-   Server Hello", and "Initial Completion", and "Handshake Completion",
-   for purposes of this illustration, as shown in Figure 1.
+   The QUIC handshake can normally be recognized on the wire through at
+   least four datagrams we'll call "QUIC Client Hello", "QUIC Server
+   Hello", and "Initial Completion", and "Handshake Completion", for
+   purposes of this illustration, as shown in Figure 1.
 
    Packets in the handshake belong to three separate cryptographic and
    transport contexts ("Initial", which contains observable payload, and
@@ -348,10 +348,10 @@ Table of Contents
    The content of QUIC Initial packets are encrypted using Initial
    Secrets, which are derived from a per-version constant and the
    client's destination connection ID; they are therefore observable by
-   any on-path device that knows the per-version constant.  We therefore
-   consider these as visible in our illustration.  The content of QUIC
-   Handshake packets are encrypted using keys established during the
-   initial handshake exchange, and are therefore not visible.
+   any on-path device that knows the per-version constant.  They are
+   therefore considered visible in this illustration.  The content of
+   QUIC Handshake packets are encrypted using keys established during
+   the initial handshake exchange, and are therefore not visible.
 
    Initial, Handshake, and the Short Header packets transmitted after
    the handshake belong to cryptographic and transport contexts.  The
@@ -374,9 +374,9 @@ Table of Contents
      Figure 2: Typical QUIC Client Hello datagram pattern with no 0-RTT
 
    The Client Hello datagram exposes version number, source and
-   destination connection IDs in the clear.  Information in the TLS
-   Client Hello frame, including any TLS Server Name Indication (SNI)
-   present, is obfuscated using the Initial secret.  Note that the
+   destination connection IDs without encryption.  Information in the
+   TLS Client Hello frame, including any TLS Server Name Indication
+   (SNI) present, is obfuscated using the Initial secret.  Note that the
    location of PADDING is implementation-dependent, and PADDING frames
    may not appear in a coalesced Initial packet.
 
@@ -472,7 +472,8 @@ Table of Contents
    0-RTT protected long header packets may be sent from the client to
    the server after the Client Hello datagram, containing the rest of
    the 0-RTT data.  The amount of 0-RTT protected data is limited by the
-   initial congestion window, typically around 10 packets [RFC6928].
+   initial congestion window, typically around 10 packets (see
+   Section 7.2 of [QUIC-RECOVERY]).
 
 2.5.  Integrity Protection of the Wire Image
 
@@ -529,7 +530,7 @@ Table of Contents
 
    Version Negotiation packets are not intrinsically protected, but QUIC
    versions can use later encrypted messages to verify that they were
-   authentic.  Therefore any manipulation of this list will be detected
+   authentic.  Therefore any modification of this list will be detected
    and may cause the endpoints to terminate the connection attempt.
 
    Also note that the list of versions in the Version Negotiation packet
@@ -577,14 +578,15 @@ Table of Contents
    section 5.
 
    While the second most significant bit (0x40) of the first octet is
-   set to 1 in most QUIC packets of the current version (see
-   Section 2.1), this method of recognizing QUIC traffic is NOT
-   RECOMMENDED.  First, it only provides one bit of information and is
-   quite prone to collide with UDP-based protocols other than those that
-   this static bit is meant to allow multiplexing with.  Second, this
-   feature of the wire image is not invariant [QUIC-INVARIANTS] and may
-   change in future versions of the protocol, or even be negotiated
-   during the handshake via the use of transport parameters.
+   set to 1 in most QUIC packets of the current version (see Section 2.1
+   and section 17 of [QUIC-TRANSPORT]), this method of recognizing QUIC
+   traffic is not reliable.  First, it only provides one bit of
+   information and is prone to collision with UDP-based protocols other
+   than those that this static bit is meant to allow multiplexing with.
+   Second, this feature of the wire image is not invariant
+   [QUIC-INVARIANTS] and may change in future versions of the protocol,
+   or even be negotiated during the handshake via the use of transport
+   parameters.
 
    Even though transport parameters transmitted in the client initial
    are obserable by the network, they cannot be modified by the network
@@ -655,8 +657,8 @@ Table of Contents
 
    Work is currently underway in the TLS working group to encrypt the
    SNI in TLS 1.3 [TLS-ESNI].  This would make SNI-based application
-   identification impossible through passive measurement for QUIC and
-   other protocols that use TLS.
+   identification impossible by on-path observation for QUIC and other
+   protocols that use TLS.
 
 3.3.1.  Extracting Server Name Indication (SNI) Information
 
@@ -705,8 +707,8 @@ Table of Contents
    over it.  Note that the length of the frames is dependent on the
    frame type.  In QUIC version 1, the packet is expected to only carry
    the CRYPTO frame and optionally padding frames.  However, PADDING
-   frames, which are each one byte of zeros, may also occur before or
-   after the CRYPTO frame.
+   frames, each consisting of a single zero byte, may also occur before
+   or after the CRYPTO frame.
 
    Note that client Initial packets after the first do not always use
    the destination connection ID that was used to generate the Initial
@@ -867,7 +869,7 @@ Table of Contents
    either through timers or through least-recently-used eviction,
    depending on application requirements.
 
-   [RFC4787] requires a timout that is not less than 2 minutes for most
+   [RFC4787] requires a timeout that is not less than 2 minutes for most
    UDP traffic.  However, in pratice, timers are often lower, in the
    range of 15 to 30 seconds.  In contrast, [RFC5382] recommends a
    timeout of more than 2 hours for TCP, given that TCP is a connection-
@@ -881,11 +883,12 @@ Table of Contents
    as additional entropy beyond the 5-tuple, if needed.  The QUIC
    handshake needs to be observed in order to understand whether the
    connection ID is present and what length it has.  However, connection
-   IDs may be renegotiated during a connection, and this renegotiation
-   is not visible to the path.  Keying state off the connection ID may
-   therefore cause undetectable and unrecoverable loss of state in the
-   middle of a connection.  Use of connection ID specifically
-   discouraged for NAT applications.
+   IDs may be renegotiated during after the handshake, and this
+   renegotiation is not visible to the path.  Using the connection ID as
+   a flow key field for stateful treatment of flows may therefore cause
+   undetectable and unrecoverable loss of state in the middle of a
+   connection.  Use of connection IDs is specifically discouraged for
+   NAT applications.
 
 4.2.  Passive Network Performance Measurement and Troubleshooting
 
@@ -972,8 +975,8 @@ Table of Contents
    Some deployed in-network functions distinguish pure-acknowledgment
    (ACK) packets from packets carrying upper-layer data in order to
    attempt to enhance performance, for example by queueing ACKs
-   differently or manipulating ACK signaling.  Distinguishing ACK
-   packets is trivial in TCP, but not supported by QUIC, since
+   differently or manipulating ACK signaling.  Distinguishing pure ACK
+   packets is easy in TCP, but not supported by QUIC, since
    acknowledgment signaling is carried inside QUIC's encrypted payload,
    and ACK manipulation is impossible.  Specifically, heuristics
    attempting to distinguish ACK-only packets from payload-carrying
@@ -1329,6 +1332,13 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               invariants-13.txt>.
 
+   [QUIC-RECOVERY]
+              Iyengar, J. and I. Swett, "QUIC Loss Detection and
+              Congestion Control", Work in Progress, Internet-Draft,
+              draft-ietf-quic-recovery-34, 14 January 2021,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
+              recovery-34.txt>.
+
    [QUIC_LB]  Duke, M. and N. Banks, "QUIC-LB: Generating Routable QUIC
               Connection IDs", Work in Progress, Internet-Draft, draft-
               ietf-quic-load-balancers-06, 4 February 2021,
@@ -1364,11 +1374,6 @@ Table of Contents
               Extensions: Extension Definitions", RFC 6066,
               DOI 10.17487/RFC6066, January 2011,
               <https://datatracker.ietf.org/doc/html/rfc6066>.
-
-   [RFC6928]  Chu, J., Dukkipati, N., Cheng, Y., and M. Mathis,
-              "Increasing TCP's Initial Window", RFC 6928,
-              DOI 10.17487/RFC6928, April 2013,
-              <https://datatracker.ietf.org/doc/html/rfc6928>.
 
    [RFC7301]  Friedl, S., Popov, A., Langley, A., and E. Stephan,
               "Transport Layer Security (TLS) Application-Layer Protocol
