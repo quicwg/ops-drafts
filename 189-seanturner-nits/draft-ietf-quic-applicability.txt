@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 16 August 2021                                           Google
-                                                        12 February 2021
+Expires: 26 August 2021                                           Google
+                                                        22 February 2021
 
 
               Applicability of the QUIC Transport Protocol
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 August 2021.
+   This Internet-Draft will expire on 26 August 2021.
 
 Copyright Notice
 
@@ -62,7 +62,8 @@ Table of Contents
    4.  Use of Streams
      4.1.  Stream versus Flow Multiplexing
      4.2.  Prioritization
-     4.3.  Flow Control Deadlocks
+     4.3.  Ordered and Reliable Delivery
+     4.4.  Flow Control Deadlocks
    5.  Packetization and Latency
    6.  Port Selection and Application Endpoint Discovery
    7.  Connection Migration
@@ -108,21 +109,22 @@ Table of Contents
    implementation traversal of middleboxes and NAT without requiring
    updates.
 
-   While there is no evidence of widespread, systematic disadvantage of
-   UDP traffic compared to TCP in the Internet [Edeline16], somewhere
-   between three [Trammell16] and five [Swett16] percent of networks
-   simply block UDP traffic.  All applications running on top of QUIC
-   must therefore either be prepared to accept connectivity failure on
-   such networks, or be engineered to fall back to some other transport
-   protocol.  In the case of HTTP, this fallback is TLS 1.3 over TCP.
+   While recent measurements have shown no evidence of widespread,
+   systematic disadvantage of UDP traffic compared to TCP in the
+   Internet [Edeline16], somewhere between three [Trammell16] and five
+   [Swett16] percent of networks simply block UDP traffic.  All
+   applications running on top of QUIC must therefore either be prepared
+   to accept connectivity failure on such networks, or be engineered to
+   fall back to some other transport protocol.  In the case of HTTP,
+   this fallback is TLS 1.3 over TCP.
 
    An application that implements fallback needs to consider the
    security consequences.  A fallback to TCP and TLS 1.3 exposes control
    information to modification and manipulation in the network.  Further
    downgrades to older TLS versions might result in significantly weaker
    cryptographic protection.  For example, the results of protocol
-   negotiation [ALPN] only have confidentiality protection if TLS 1.3 is
-   used.
+   negotiation [RFC7301] only have confidentiality protection if TLS 1.3
+   is used.
 
    These applications must operate, perhaps with impaired functionality,
    in the absence of features provided by QUIC not present in the
@@ -223,13 +225,13 @@ Table of Contents
    endpoint maintains availability at the address its peer uses, and the
    peer is the one to send after the timeout occurs.
 
-   Some QUIC connections may not be robust to rebinding because the
-   routing infrastructure (in particular, load balancers) uses the
+   Some QUIC connections might not be robust to NAT rebinding because
+   the routing infrastructure (in particular, load balancers) uses the
    address/port four-tuple to direct traffic.  Furthermore, middleboxes
    with functions other than address translation could still affect the
-   path.  In particular, firewalls will often not admit server traffic
-   for which it has not kept state for corresponding packets from the
-   client.
+   path.  In particular, some firewalls do not admit server traffic for
+   which the firewall has no recent state for a corresponding packet
+   sent from the client.
 
    A QUIC application can adjust idle periods to manage the risk of
    timeout (noting that idle periods and the network idle timeout is
@@ -267,7 +269,8 @@ Table of Contents
    situations, and to unacceptable power usage for power-constrained
    (mobile) devices.  Additionally, time-outs shorter than 30 seconds
    can make it harder to handle transient network interruptions, such as
-   VM migration or coverage loss during mobilty.
+   VM migration or coverage loss during mobilty.  See [RFC8085],
+   especially Section 3.5.
 
    Alternatively, the client (but not the server) can use session
    resumption instead of sending keepalive traffic.  In this case, a
@@ -276,11 +279,10 @@ Table of Contents
    idle_timeout transport parameter) can simply reconnect.  When
    possible, this reconnection can use 0-RTT session resumption,
    reducing the latency involved with restarting the connection.  This
-   of course only applies in cases in which 0-RTT data is safe, when the
+   approach is only valid in cases in which 0-RTT data is safe, when the
    client is the restarting peer, and when the data to be sent is
-   idempotent.  Using resumption in this way also assumes that the
-   protocol does not accumulate any non-persistent state in association
-   with a connection.  State bound to a connection cannot reliably be
+   idempotent.  It is also not applicable when the application binds
+   external state to the connection, as this state cannot reliably be
    transferred to a resumed connection.
 
    The tradeoffs between resumption and keepalive need to be evaluated
@@ -301,9 +303,9 @@ Table of Contents
    initiated either by client or server.  Only the initiator of a
    unidirectional stream can send data on it.
 
-   Due to encoding limitations on stream offsets and connection flow
-   control limits, both streams and connections can carry a maximum of
-   2^62-1 bytes in each direction.  In the presently unlikely event that
+   Streams and connections can each carry a maximum of 2^62-1 bytes in
+   each direction, due to encoding limitations on stream offsets and
+   connection flow control limits.  In the presently unlikely event that
    this limit is reached by an application, a new connection would need
    to be established.
 
@@ -323,22 +325,30 @@ Table of Contents
    reset the QUIC connection.
 
    Mapping of application data to streams is application-specific and
-   described for HTTP/3 in [QUIC-HTTP].  In general, data that can be
-   processed independently, and therefore would suffer from head of line
-   blocking if forced to be received in order, should be transmitted
-   over separate streams.  If the application requires certain data to
-   be received in order, that data should be sent on the same stream.
-   If there is a logical grouping of data chunks or messages, streams
-   can be reused, or a new stream can be opened for each chunk/message.
-   If one message is mapped to a single stream, resetting the stream to
-   expire an unacknowledged message can be used to emulate partial
-   reliability on a message basis.  If a QUIC receiver has maximum
-   allowed concurrent streams open and the sender on the other end
-   indicates that more streams are needed, it doesn't automatically lead
-   to an increase of the maximum number of streams by the receiver.
-   Therefore it can be valuable to expose maximum number of allowed,
-   currently open and currently used streams to the application to make
-   the mapping of data to streams dependent on this information.
+   described for HTTP/3 in [QUIC-HTTP].  There are a few general
+   principles to apply when designing an application's use of streams:
+
+   *  A single stream provides ordering.  If the application requires
+      certain data to be received in order, that data should be sent on
+      the same stream.
+
+   *  Multiple streams provide concurrency.  Data that can be processed
+      independently, and therefore would suffer from head of line
+      blocking if forced to be received in order, should be transmitted
+      over separate streams.
+
+   *  Streams can provide message orientation, and allow messages to be
+      cancelled.  If one message is mapped to a single stream, resetting
+      the stream to expire an unacknowledged message can be used to
+      emulate partial reliability for that message.
+
+   If a QUIC receiver has opened the maximum allowed concurrent streams,
+   and the sender indicates that more streams are needed, it doesn't
+   automatically lead to an increase of the maximum number of streams by
+   the receiver.  Therefore it can be valuable to expose the maximum
+   number of allowed, currently open, and currently used streams to the
+   application to make the mapping of data to streams dependent on this
+   information.
 
    While a QUIC implementation must necessarily provide a way for an
    application to send data on separate streams, it does not necessarily
@@ -386,7 +396,27 @@ Table of Contents
    an explicit interface to control prioritization, or derive the
    prioritization decision from the reliability level of the stream.
 
-4.3.  Flow Control Deadlocks
+4.3.  Ordered and Reliable Delivery
+
+   QUIC streams enable ordered and reliable delivery.  Though it is
+   possible for an implementation to provide options that use streams
+   for partial reliability or out-of-order delivery, most
+   implementations will assume that data is reliably delivered in order.
+
+   Under this assumption, an endpoint that receives stream data might
+   not make forward progress until data that is contiguous with the
+   start of a stream is available.  In particular, a receiver might
+   withhold flow control credit until contiguous data is delivered to
+   the application; see Section 2.2 of [QUIC].  To support this receive
+   logic, an endpoint will send stream data until it is acknowledged,
+   ensuring that data at the start of the stream is sent and
+   acknowledged first.
+
+   An endpoint that uses a different sending behavior and does not
+   negotiate that change with its peer might encounter performance
+   issues or deadlocks.
+
+4.4.  Flow Control Deadlocks
 
    Flow control provides a means of managing access to the limited
    buffers endpoints have for incoming data.  This mechanism limits the
@@ -448,7 +478,7 @@ Table of Contents
    transmitted over one stream is mapped into frames or how those frames
    are bundled into packets.
 
-   By default, many QUIC implementations will try to maximally pack
+   By default, many implementations will try to maximally pack QUIC
    packets with one or more stream data frames to minimize bandwidth
    consumption and computational costs (see section 13 of [QUIC]).  If
    there is not enough data available to fill a packet, an
@@ -514,9 +544,9 @@ Table of Contents
 
 7.  Connection Migration
 
-   QUIC supports connection migration by the client.  If a lower-layer
-   address changes, a QUIC endpoint can still associate packets with an
-   existing connection using the Destination connection ID field (see
+   QUIC supports connection migration by the client.  If an IP address
+   changes, a QUIC endpoint can still associate packets with an existing
+   transport connection using the Destination Connection ID field (see
    also Section 9) in the QUIC header, unless a zero-length value is
    used.  This supports cases where address information changes, such as
    NAT rebinding, intentional change of the local interface, or based on
@@ -531,16 +561,16 @@ Table of Contents
    Currently QUIC only supports failover cases.  Only one "path" can be
    used at a time, and only when the new path is validated all traffic
    can be switched over to that new path.  Path validation means that
-   the other endpoint in required to validate the new path before use in
-   order to avoid address spoofing attacks.  Path validation takes at
-   least one RTT and congestion control will also be reset on path
+   the remote endpoint is required to validate the new path before use
+   in order to avoid address spoofing attacks.  Path validation takes at
+   least one RTT and congestion control will also be reset after path
    migration.  Therefore migration usually has a performance impact.
 
-   Probing packets, which cannot carry application data, can be sent on
-   multiple paths at once.  Probing packets can be used to perform
-   address validation, measure path characteristics as input for the
-   switching decision, or prime the congestion controller in preparation
-   for switching to the new path.
+   QUIC probing packets, which cannot carry application data, can be
+   sent on multiple paths at once.  Probing packets can be used to
+   perform address validation, measure path characteristics as input for
+   the switching decision, or prime the congestion controller in
+   preparation for switching to the new path.
 
    Only the client can actively migrate.  However, servers can indicate
    during the handshake that they prefer to transfer the connection to a
@@ -562,7 +592,7 @@ Table of Contents
    application layer and therefore no additional data is expected from
    both sides.
 
-   An immediate close will emit an CONNECTION_CLOSE frame.  This frames
+   An immediate close will emit an CONNECTION_CLOSE frame.  This frame
    has two sets of types: one for QUIC internal problems that might lead
    to connection closure, and one for closures initiated by the
    application.  An application using QUIC can define application-
@@ -605,9 +635,9 @@ Table of Contents
    connection IDs), the short header exposes at most only a single
    connection ID.
 
-   Aside from the destination connection ID field of the first packets
-   sent by clients, the connection ID can be zero length.  This is a
-   choice that is made by each endpoint individually.
+   The connection ID can be zero length.  Zero length connection IDs can
+   be chosen on each endpoint individually, on any packet except the
+   first packets sent by clients during connection establishment.
 
    An endpoint that selects a zero-length connection ID will receive
    packets with a zero-length destination connection ID.  The endpoint
@@ -654,11 +684,12 @@ Table of Contents
    simultaneous migrations, even an exposed server mapping may be
    insufficient information.
 
-   The most efficient mitigation for these attacks is operational,
-   either by using a load balancing architecture that loads more flows
-   onto a single server-side address, by coordinating the timing of
-   migrations to attempt to increase the number of simultaneous
-   migrations at a given time, or through other means.
+   The most efficient mitigations for these attacks are through network
+   design and/or operational practice, by using a load balancing
+   architecture that loads more flows onto a single server-side address,
+   by coordinating the timing of migrations to attempt to increase the
+   number of simultaneous migrations at a given time, or through other
+   means.
 
 9.3.  Using Server Retry for Redirection
 
@@ -812,18 +843,19 @@ Table of Contents
    [QUIC]     Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
               and Secure Transport", Work in Progress, Internet-Draft,
               draft-ietf-quic-transport-34, 14 January 2021,
-              <http://www.ietf.org/internet-drafts/draft-ietf-quic-
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               transport-34.txt>.
 
    [QUIC-INVARIANTS]
               Thomson, M., "Version-Independent Properties of QUIC",
               Work in Progress, Internet-Draft, draft-ietf-quic-
-              invariants-13, 14 January 2021, <http://www.ietf.org/
-              internet-drafts/draft-ietf-quic-invariants-13.txt>.
+              invariants-13, 14 January 2021,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
+              invariants-13.txt>.
 
    [QUIC-TLS] Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
               Work in Progress, Internet-Draft, draft-ietf-quic-tls-34,
-              14 January 2021, <http://www.ietf.org/internet-drafts/
+              14 January 2021, <https://datatracker.ietf.org/doc/html/
               draft-ietf-quic-tls-34.txt>.
 
    [RFC6335]  Cotton, M., Eggert, L., Touch, J., Westerlund, M., and S.
@@ -831,18 +863,13 @@ Table of Contents
               Procedures for the Management of the Service Name and
               Transport Protocol Port Number Registry", BCP 165,
               RFC 6335, DOI 10.17487/RFC6335, August 2011,
-              <https://www.rfc-editor.org/info/rfc6335>.
+              <https://datatracker.ietf.org/doc/html/rfc6335>.
 
    [TLS13]    Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
-              <https://www.rfc-editor.org/info/rfc8446>.
+              <https://datatracker.ietf.org/doc/html/rfc8446>.
 
 17.2.  Informative References
-
-   [ALPN]     Friedl, S., Popov, A., Langley, A., and E. Stephan,
-              "Transport Layer Security (TLS) Application-Layer Protocol
-              Negotiation Extension", RFC 7301, DOI 10.17487/RFC7301,
-              July 2014, <https://www.rfc-editor.org/info/rfc7301>.
 
    [Edeline16]
               Edeline, K., Kuehlewind, M., Trammell, B., Aben, E., and
@@ -859,13 +886,7 @@ Table of Contents
    [HTTP-REPLAY]
               Thomson, M., Nottingham, M., and W. Tarreau, "Using Early
               Data in HTTP", RFC 8470, DOI 10.17487/RFC8470, September
-              2018, <https://www.rfc-editor.org/info/rfc8470>.
-
-   [I-D.nottingham-httpbis-retry]
-              Nottingham, M., "Retrying HTTP Requests", Work in
-              Progress, Internet-Draft, draft-nottingham-httpbis-retry-
-              01, 1 February 2017, <http://www.ietf.org/internet-drafts/
-              draft-nottingham-httpbis-retry-01.txt>.
+              2018, <https://datatracker.ietf.org/doc/html/rfc8470>.
 
    [PaaschNanog]
               Paasch, C., "Network Support for TCP Fast Open (NANOG 67
@@ -876,38 +897,42 @@ Table of Contents
    [QUIC-HTTP]
               Bishop, M., "Hypertext Transfer Protocol Version 3
               (HTTP/3)", Work in Progress, Internet-Draft, draft-ietf-
-              quic-http-33, 15 December 2020, <http://www.ietf.org/
-              internet-drafts/draft-ietf-quic-http-33.txt>.
+              quic-http-34, 2 February 2021,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
+              http-34.txt>.
 
    [QUIC-LB]  Duke, M. and N. Banks, "QUIC-LB: Generating Routable QUIC
               Connection IDs", Work in Progress, Internet-Draft, draft-
-              ietf-quic-load-balancers-05, 30 October 2020,
-              <http://www.ietf.org/internet-drafts/draft-ietf-quic-load-
-              balancers-05.txt>.
+              ietf-quic-load-balancers-06, 4 February 2021,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
+              load-balancers-06.txt>.
 
    [RFC2475]  Blake, S., Black, D., Carlson, M., Davies, E., Wang, Z.,
               and W. Weiss, "An Architecture for Differentiated
               Services", RFC 2475, DOI 10.17487/RFC2475, December 1998,
-              <https://www.rfc-editor.org/info/rfc2475>.
+              <https://datatracker.ietf.org/doc/html/rfc2475>.
 
    [RFC5077]  Salowey, J., Zhou, H., Eronen, P., and H. Tschofenig,
               "Transport Layer Security (TLS) Session Resumption without
               Server-Side State", RFC 5077, DOI 10.17487/RFC5077,
-              January 2008, <https://www.rfc-editor.org/info/rfc5077>.
+              January 2008,
+              <https://datatracker.ietf.org/doc/html/rfc5077>.
 
    [RFC5382]  Guha, S., Ed., Biswas, K., Ford, B., Sivakumar, S., and P.
               Srisuresh, "NAT Behavioral Requirements for TCP", BCP 142,
               RFC 5382, DOI 10.17487/RFC5382, October 2008,
-              <https://www.rfc-editor.org/info/rfc5382>.
+              <https://datatracker.ietf.org/doc/html/rfc5382>.
 
    [RFC7301]  Friedl, S., Popov, A., Langley, A., and E. Stephan,
               "Transport Layer Security (TLS) Application-Layer Protocol
               Negotiation Extension", RFC 7301, DOI 10.17487/RFC7301,
-              July 2014, <https://www.rfc-editor.org/info/rfc7301>.
+              July 2014,
+              <https://datatracker.ietf.org/doc/html/rfc7301>.
 
    [RFC8085]  Eggert, L., Fairhurst, G., and G. Shepherd, "UDP Usage
               Guidelines", BCP 145, RFC 8085, DOI 10.17487/RFC8085,
-              March 2017, <https://www.rfc-editor.org/info/rfc8085>.
+              March 2017,
+              <https://datatracker.ietf.org/doc/html/rfc8085>.
 
    [Swett16]  Swett, I., "QUIC Deployment Experience at Google (IETF96
               QUIC BoF presentation)", 20 July 2016,
