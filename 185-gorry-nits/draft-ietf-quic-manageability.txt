@@ -877,9 +877,10 @@ Table of Contents
    connection ID is present and what length it has.  However, connection
    IDs may be renegotiated during a connection, and this renegotiation
    is not visible to the path.  Using the connection ID as a flow key
-   field for statful treatment of flows may therefore cause undetectable
-   and unrecoverable loss of state in the middle of a connection.  Use
-   of connection ID specifically discouraged for NAT applications.
+   field for stateful treatment of flows may therefore cause
+   undetectable and unrecoverable loss of state in the middle of a
+   connection.  Use of connection ID specifically discouraged for NAT
+   applications.
 
 4.2.  Passive Network Performance Measurement and Troubleshooting
 
