@@ -439,7 +439,7 @@ Similarly, an application has usually no control about the length of a QUIC
 packet on the wire. QUIC provides the ability to add a PADDING frame to
 arbitrarily increase the size of packets. Padding is used by QUIC to ensure
 that the path is capable of transferring datagrams of at least a certain size,
-during the handshake (see section 8.1 and 14.1 of {{!QUIC}}) and for path
+during the handshake (see Sections 8.1 and 14.1 of {{!QUIC}}) and for path
 validation after connection migration (see 8.2. of {{!QUIC}}) as well as for
 Datagram Packetization Layer PMTU Discovery (DPLMTUD) (see section 14.3 of
 {{!QUIC}}). Padding can also be used by an application to reduce leakage of
