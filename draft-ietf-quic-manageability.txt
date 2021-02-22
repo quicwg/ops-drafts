@@ -68,27 +68,27 @@ Table of Contents
        3.1.1.  Identifying Negotiated Version
        3.1.2.  Rejection of Garbage Traffic
      3.2.  Connection Confirmation
-     3.3.  Application Identification
-       3.3.1.  Extracting Server Name Indication (SNI) Information
-     3.4.  Flow Association
-     3.5.  Flow teardown
-     3.6.  Flow Symmetry Measurement
-     3.7.  Round-Trip Time (RTT) Measurement
-       3.7.1.  Measuring Initial RTT
-       3.7.2.  Using the Spin Bit for Passive RTT Measurement
+     3.3.  Distinguishing Acknowledgment traffic
+     3.4.  Application Identification
+       3.4.1.  Extracting Server Name Indication (SNI) Information
+     3.5.  Flow Association
+     3.6.  Flow teardown
+     3.7.  Flow Symmetry Measurement
+     3.8.  Round-Trip Time (RTT) Measurement
+       3.8.1.  Measuring Initial RTT
+       3.8.2.  Using the Spin Bit for Passive RTT Measurement
    4.  Specific Network Management Tasks
      4.1.  Stateful Treatment of QUIC Traffic
      4.2.  Passive Network Performance Measurement and Troubleshooting
      4.3.  Server Cooperation with Load Balancers
      4.4.  DDoS Detection and Mitigation
      4.5.  UDP Policing
-     4.6.  Distinguishing Acknowledgment traffic
-     4.7.  Handling ICMP Messages
-     4.8.  Quality of Service handling and ECMP
-     4.9.  QUIC and Network Address Translation (NAT)
-       4.9.1.  Resource Conservation
-       4.9.2.  "Helping" with routing infrastructure issues
-     4.10. Filtering behavior
+     4.6.  Handling ICMP Messages
+     4.7.  Quality of Service handling and ECMP
+     4.8.  QUIC and Network Address Translation (NAT)
+       4.8.1.  Resource Conservation
+       4.8.2.  "Helping" with routing infrastructure issues
+     4.9.  Filtering behavior
    5.  IANA Considerations
    6.  Security Considerations
    7.  Contributors
@@ -198,7 +198,7 @@ Table of Contents
    *  latency spin bit: the third most significant bit of first octet in
       the short packet header.  The spin bit is set by endpoints such
       that tracking edge transitions can be used to passively observe
-      end-to-end RTT.  See Section 3.7.2 for further details.
+      end-to-end RTT.  See Section 3.8.2 for further details.
 
    *  header type: the long header has a 2 bit packet type field
       following the Header Form and fixed bits.  Header types correspond
@@ -429,7 +429,7 @@ Table of Contents
    The Initial Completion datagram does not expose any additional
    information; however, recognizing it can be used to determine that a
    handshake has completed (see Section 3.2), and for three-way
-   handshake RTT estimation as in Section 3.7.
+   handshake RTT estimation as in Section 3.8.
 
    +------------------------------------------------------------+
    | UDP header (source and destination UDP ports)              |
@@ -611,7 +611,7 @@ Table of Contents
    Negotiated version cannot be identified for flows for which a
    handshake is not observed, such as in the case of connection
    migration; however, it might be possible to associate a flow with a
-   flow for which a version has been identified; see Section 3.4.
+   flow for which a version has been identified; see Section 3.5.
 
    This document focuses on QUIC Version 1, and this section applies
    only to packets belonging to Version 1 QUIC flows; for purposes of
@@ -650,7 +650,21 @@ Table of Contents
    token on the Retry with the token on the subsequent Initial packet
    and the destination connection ID of the new Initial packet.
 
-3.3.  Application Identification
+3.3.  Distinguishing Acknowledgment traffic
+
+   Some deployed in-network functions distinguish pure-acknowledgment
+   (ACK) packets from packets carrying upper-layer data in order to
+   attempt to enhance performance, for example by queueing ACKs
+   differently or manipulating ACK signaling.  Distinguishing ACK
+   packets is trivial in TCP, but not supported by QUIC, since
+   acknowledgment signaling is carried inside QUIC's encrypted payload,
+   and ACK manipulation is impossible.  Specifically, heuristics
+   attempting to distinguish ACK-only packets from payload-carrying
+   packets based on packet size are likely to fail, and are not
+   recommended to use as a way to construe internals of QUIC's operation
+   as those mechanisms can change, e.g., due to the use of extensions.
+
+3.4.  Application Identification
 
    The cleartext TLS handshake may contain Server Name Indication (SNI)
    [RFC6066], by which the client reveals the name of the server it
@@ -666,7 +680,7 @@ Table of Contents
    identification impossible by on-path observation for QUIC and other
    protocols that use TLS.
 
-3.3.1.  Extracting Server Name Indication (SNI) Information
+3.4.1.  Extracting Server Name Indication (SNI) Information
 
    If the SNI is not encrypted it can be derived from the QUIC Initial
    packet by calculating the Initial Secret to decrypt the packet
@@ -721,7 +735,7 @@ Table of Contents
    keys.  Therefore, attempts to decrypt these packets using the
    procedure above might fail.
 
-3.4.  Flow Association
+3.5.  Flow Association
 
    The QUIC connection ID (see Section 2.6) is designed to allow an on-
    path device such as a load-balancer to associate two flows as
@@ -740,7 +754,7 @@ Table of Contents
    The connection ID value should be treated as opaque; see Section 4.3
    for caveats regarding connection ID selection at servers.
 
-3.5.  Flow teardown
+3.6.  Flow teardown
 
    QUIC does not expose the end of a connection; the only indication to
    on-path devices that a flow has ended is that packets are no longer
@@ -748,7 +762,7 @@ Table of Contents
    therefore use idle timeouts to determine when to drop state for QUIC
    flows, see further section Section 4.1.
 
-3.6.  Flow Symmetry Measurement
+3.7.  Flow Symmetry Measurement
 
    QUIC explicitly exposes which side of a connection is a client and
    which side is a server during the handshake.  In addition, the
@@ -758,7 +772,7 @@ Table of Contents
    data rate in each direction.  While QUIC traffic is protected and
    ACKs may be padded, padding is not required.
 
-3.7.  Round-Trip Time (RTT) Measurement
+3.8.  Round-Trip Time (RTT) Measurement
 
    Round-trip time of QUIC flows can be inferred by observation once per
    flow, during the handshake, as in passive TCP measurement; this
@@ -767,7 +781,7 @@ Table of Contents
    during the flow's lifetime, if the endpoints use the spin bit
    facility described below and in [QUIC-TRANSPORT], section 17.3.1.
 
-3.7.1.  Measuring Initial RTT
+3.8.1.  Measuring Initial RTT
 
    In the common case, the delay between the Initial packet containing
    the TLS Client Hello and the Handshake packet containing the TLS
@@ -785,7 +799,7 @@ Table of Contents
    latter mainly caused by the asymmetric crypto operations associated
    with the TLS handshake) at both sides.
 
-3.7.2.  Using the Spin Bit for Passive RTT Measurement
+3.8.2.  Using the Spin Bit for Passive RTT Measurement
 
    The spin bit provides a version-specific method to measure per-flow
    RTT from observation points on the network path throughout the
@@ -875,7 +889,7 @@ Table of Contents
    middlebox) is possible through QUIC traffic and version
    identification (Section 3.1) and observation of the handshake for
    connection confirmation (Section 3.2).  The lack of any visible end-
-   of-flow signal (Section 3.5) means that this state must be purged
+   of-flow signal (Section 3.6) means that this state must be purged
    either through timers or through least-recently-used eviction,
    depending on application requirements.
 
@@ -903,7 +917,7 @@ Table of Contents
 4.2.  Passive Network Performance Measurement and Troubleshooting
 
    Limited RTT measurement is possible by passive observation of QUIC
-   traffic; see Section 3.7.  No passive measurement of loss is possible
+   traffic; see Section 3.8.  No passive measurement of loss is possible
    with the present wire image.  Extremely limited observation of
    upstream congestion may be possible via the observation of CE
    markings on ECN-enabled QUIC traffic.
@@ -980,21 +994,7 @@ Table of Contents
    many QUIC handshakes to complete, preventing a TCP failover, but the
    connections will suffer from severe packet loss.
 
-4.6.  Distinguishing Acknowledgment traffic
-
-   Some deployed in-network functions distinguish pure-acknowledgment
-   (ACK) packets from packets carrying upper-layer data in order to
-   attempt to enhance performance, for example by queueing ACKs
-   differently or manipulating ACK signaling.  Distinguishing pure ACK
-   packets is easy in TCP, but not supported by QUIC, since
-   acknowledgment signaling is carried inside QUIC's encrypted payload,
-   and ACK manipulation is impossible.  Specifically, heuristics
-   attempting to distinguish ACK-only packets from payload-carrying
-   packets based on packet size are very likely to fail, and are not
-   recommended to use as a way to construe internals of QUIC's operation
-   as those mechanisms can change, e.g., due to the use of extensions.
-
-4.7.  Handling ICMP Messages
+4.6.  Handling ICMP Messages
 
    Datagram Packetization Layer PMTU Discovery (PLPMTUD) can be used by
    QUIC to probe for the supported PMTU.  PLPMTUD optionally uses ICMP
@@ -1008,7 +1008,7 @@ Table of Contents
    MTU for the IP version when generating ICMP messages as recommended
    in [RFC1812] and [RFC4443].
 
-4.8.  Quality of Service handling and ECMP
+4.7.  Quality of Service handling and ECMP
 
    It is expected that any QoS handling in the network, e.g. based on
    use of DiffServ Code Points (DSCPs) [RFC2475] as well as Equal-Cost
@@ -1028,7 +1028,7 @@ Table of Contents
    recovery mechanism is used and therefore reordering tolerance should
    be considered as unknown.
 
-4.9.  QUIC and Network Address Translation (NAT)
+4.8.  QUIC and Network Address Translation (NAT)
 
    QUIC Connection IDs are opaque byte fields that are expressed
    consistently across all QUIC versions [QUIC-INVARIANTS], see
@@ -1060,7 +1060,7 @@ Table of Contents
    timeout on UDP NATs might be tempting in light of this property, but
    not all QUIC server deployments will be robust to rebinding.
 
-4.9.1.  Resource Conservation
+4.8.1.  Resource Conservation
 
    NATs sometimes hit an operational limit where they exhaust available
    public IP addresses and ports, and must evict flows from their
@@ -1097,7 +1097,7 @@ Table of Contents
    violates the best common practice to avoid "port overloading" as
    described in [RFC4787].
 
-4.9.2.  "Helping" with routing infrastructure issues
+4.8.2.  "Helping" with routing infrastructure issues
 
    Concealing client address changes in order to simplify operational
    routing issues will mask important signals that drive security
@@ -1139,7 +1139,7 @@ Table of Contents
    to the attacker address and thus allow an observer to break the
    connection.
 
-4.10.  Filtering behavior
+4.9.  Filtering behavior
 
    [RFC4787] describes possible packet filtering behaviors that relate
    to NATs.  Though the guidance there holds, a particularly unwise
