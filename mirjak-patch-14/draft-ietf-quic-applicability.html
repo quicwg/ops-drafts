@@ -845,7 +845,7 @@ address div.right {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Kuehlewind &amp; Trammell</td>
-<td class="center">Expires 16 August 2021</td>
+<td class="center">Expires 26 August 2021</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -858,12 +858,12 @@ address div.right {
 <dd class="internet-draft">draft-ietf-quic-applicability</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2021-02-12" class="published">12 February 2021</time>
+<time datetime="2021-02-22" class="published">22 February 2021</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2021-08-16">16 August 2021</time></dd>
+<dd class="expires"><time datetime="2021-08-26">26 August 2021</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -904,7 +904,7 @@ to QUIC, and implementors of these application protocols.<a href="#section-abstr
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 16 August 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 26 August 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1407,11 +1407,11 @@ is less true today due to encapsulation, mechanisms for dynamic port
 assignments, and NATs.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">As QUIC is a general purpose transport protocol, there are no requirements that
 servers use a particular UDP port for QUIC. For applications with a fallback to
-TCP that do not already have an alternate mapping to UDP, the registration (if
-necessary) and use of the UDP port number corresponding to the TCP port already
-registered for the application is RECOMMENDED. For example, the default port
-for HTTP/3 <span>[<a href="#QUIC-HTTP" class="xref">QUIC-HTTP</a>]</span> is UDP port 443, analogous to HTTP/1.1 or HTTP/2 over
-TLS over TCP.<a href="#section-6-2" class="pilcrow">¶</a></p>
+TCP that do not already have an alternate mapping to UDP, usually the
+registration (if necessary) and use of the UDP port number corresponding to the
+TCP port already registered for the application is appropriate. For example,
+the default port for HTTP/3 <span>[<a href="#QUIC-HTTP" class="xref">QUIC-HTTP</a>]</span> is UDP port 443, analogous to HTTP/1.1
+or HTTP/2 over TLS over TCP.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <p id="section-6-3">Applications could define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 (<span>[<a href="#QUIC-HTTP" class="xref">QUIC-HTTP</a>]</span>
 Sections 3.2 and 3.3) specifies the use of ALPN <span>[<a href="#RFC7301" class="xref">RFC7301</a>]</span> for service
@@ -1423,8 +1423,9 @@ between the endpoints on the protocol stack in use.<a href="#section-6-3" class=
 <p id="section-6-4">Given the prevalence of the assumption in network management
 practice that a port number maps unambiguously to an application, the
 use of ports that cannot easily be mapped to a registered service name
-might lead to blocking or other interference by network elements such as
-firewalls that rely on the port number for application identification.<a href="#section-6-4" class="pilcrow">¶</a></p>
+might lead to blocking or other changes to the forwarding behavior by network
+elements such as firewalls that use the port number for application
+identification.<a href="#section-6-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="connection-migration">
@@ -1726,23 +1727,23 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.<
 <dl class="references">
 <dt id="QUIC">[QUIC]</dt>
         <dd>
-<span class="refAuthor">Iyengar, J.</span><span class="refAuthor"> and M. Thomson</span>, <span class="refTitle">"QUIC: A UDP-Based Multiplexed and Secure Transport"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-transport-34</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-quic-transport-34.txt">http://www.ietf.org/internet-drafts/draft-ietf-quic-transport-34.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Iyengar, J.</span><span class="refAuthor"> and M. Thomson</span>, <span class="refTitle">"QUIC: A UDP-Based Multiplexed and Secure Transport"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-transport-34</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-transport-34.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-transport-34.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="QUIC-INVARIANTS">[QUIC-INVARIANTS]</dt>
         <dd>
-<span class="refAuthor">Thomson, M.</span>, <span class="refTitle">"Version-Independent Properties of QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-invariants-13</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-quic-invariants-13.txt">http://www.ietf.org/internet-drafts/draft-ietf-quic-invariants-13.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Thomson, M.</span>, <span class="refTitle">"Version-Independent Properties of QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-invariants-13</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-invariants-13.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-invariants-13.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="QUIC-TLS">[QUIC-TLS]</dt>
         <dd>
-<span class="refAuthor">Thomson, M.</span><span class="refAuthor"> and S. Turner</span>, <span class="refTitle">"Using TLS to Secure QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-tls-34</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-quic-tls-34.txt">http://www.ietf.org/internet-drafts/draft-ietf-quic-tls-34.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Thomson, M.</span><span class="refAuthor"> and S. Turner</span>, <span class="refTitle">"Using TLS to Secure QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-tls-34</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-tls-34.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-tls-34.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6335">[RFC6335]</dt>
         <dd>
-<span class="refAuthor">Cotton, M.</span><span class="refAuthor">, Eggert, L.</span><span class="refAuthor">, Touch, J.</span><span class="refAuthor">, Westerlund, M.</span><span class="refAuthor">, and S. Cheshire</span>, <span class="refTitle">"Internet Assigned Numbers Authority (IANA) Procedures for the Management of the Service Name and Transport Protocol Port Number Registry"</span>, <span class="seriesInfo">BCP 165</span>, <span class="seriesInfo">RFC 6335</span>, <span class="seriesInfo">DOI 10.17487/RFC6335</span>, <time datetime="2011-08" class="refDate">August 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6335">https://www.rfc-editor.org/info/rfc6335</a>&gt;</span>. </dd>
+<span class="refAuthor">Cotton, M.</span><span class="refAuthor">, Eggert, L.</span><span class="refAuthor">, Touch, J.</span><span class="refAuthor">, Westerlund, M.</span><span class="refAuthor">, and S. Cheshire</span>, <span class="refTitle">"Internet Assigned Numbers Authority (IANA) Procedures for the Management of the Service Name and Transport Protocol Port Number Registry"</span>, <span class="seriesInfo">BCP 165</span>, <span class="seriesInfo">RFC 6335</span>, <span class="seriesInfo">DOI 10.17487/RFC6335</span>, <time datetime="2011-08" class="refDate">August 2011</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc6335">https://datatracker.ietf.org/doc/html/rfc6335</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="TLS13">[TLS13]</dt>
       <dd>
-<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8446">https://www.rfc-editor.org/info/rfc8446</a>&gt;</span>. </dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8446">https://datatracker.ietf.org/doc/html/rfc8446</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -1753,7 +1754,7 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.<
 <dl class="references">
 <dt id="ALPN">[ALPN]</dt>
         <dd>
-<span class="refAuthor">Friedl, S.</span><span class="refAuthor">, Popov, A.</span><span class="refAuthor">, Langley, A.</span><span class="refAuthor">, and E. Stephan</span>, <span class="refTitle">"Transport Layer Security (TLS) Application-Layer Protocol Negotiation Extension"</span>, <span class="seriesInfo">RFC 7301</span>, <span class="seriesInfo">DOI 10.17487/RFC7301</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7301">https://www.rfc-editor.org/info/rfc7301</a>&gt;</span>. </dd>
+<span class="refAuthor">Friedl, S.</span><span class="refAuthor">, Popov, A.</span><span class="refAuthor">, Langley, A.</span><span class="refAuthor">, and E. Stephan</span>, <span class="refTitle">"Transport Layer Security (TLS) Application-Layer Protocol Negotiation Extension"</span>, <span class="seriesInfo">RFC 7301</span>, <span class="seriesInfo">DOI 10.17487/RFC7301</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7301">https://datatracker.ietf.org/doc/html/rfc7301</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="Edeline16">[Edeline16]</dt>
         <dd>
@@ -1765,11 +1766,11 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.<
 <dd class="break"></dd>
 <dt id="HTTP-REPLAY">[HTTP-REPLAY]</dt>
         <dd>
-<span class="refAuthor">Thomson, M.</span><span class="refAuthor">, Nottingham, M.</span><span class="refAuthor">, and W. Tarreau</span>, <span class="refTitle">"Using Early Data in HTTP"</span>, <span class="seriesInfo">RFC 8470</span>, <span class="seriesInfo">DOI 10.17487/RFC8470</span>, <time datetime="2018-09" class="refDate">September 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8470">https://www.rfc-editor.org/info/rfc8470</a>&gt;</span>. </dd>
+<span class="refAuthor">Thomson, M.</span><span class="refAuthor">, Nottingham, M.</span><span class="refAuthor">, and W. Tarreau</span>, <span class="refTitle">"Using Early Data in HTTP"</span>, <span class="seriesInfo">RFC 8470</span>, <span class="seriesInfo">DOI 10.17487/RFC8470</span>, <time datetime="2018-09" class="refDate">September 2018</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8470">https://datatracker.ietf.org/doc/html/rfc8470</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.nottingham-httpbis-retry">[I-D.nottingham-httpbis-retry]</dt>
         <dd>
-<span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Retrying HTTP Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-nottingham-httpbis-retry-01</span>, <time datetime="2017-02-01" class="refDate">1 February 2017</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-nottingham-httpbis-retry-01.txt">http://www.ietf.org/internet-drafts/draft-nottingham-httpbis-retry-01.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Retrying HTTP Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-nottingham-httpbis-retry-01</span>, <time datetime="2017-02-01" class="refDate">1 February 2017</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-nottingham-httpbis-retry-01.txt">https://datatracker.ietf.org/doc/html/draft-nottingham-httpbis-retry-01.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="PaaschNanog">[PaaschNanog]</dt>
         <dd>
@@ -1777,31 +1778,31 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.<
 <dd class="break"></dd>
 <dt id="QUIC-HTTP">[QUIC-HTTP]</dt>
         <dd>
-<span class="refAuthor">Bishop, M.</span>, <span class="refTitle">"Hypertext Transfer Protocol Version 3 (HTTP/3)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-http-33</span>, <time datetime="2020-12-15" class="refDate">15 December 2020</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-quic-http-33.txt">http://www.ietf.org/internet-drafts/draft-ietf-quic-http-33.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Bishop, M.</span>, <span class="refTitle">"Hypertext Transfer Protocol Version 3 (HTTP/3)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-http-34</span>, <time datetime="2021-02-02" class="refDate">2 February 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-34.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-34.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="QUIC-LB">[QUIC-LB]</dt>
         <dd>
-<span class="refAuthor">Duke, M.</span><span class="refAuthor"> and N. Banks</span>, <span class="refTitle">"QUIC-LB: Generating Routable QUIC Connection IDs"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-load-balancers-05</span>, <time datetime="2020-10-30" class="refDate">30 October 2020</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-quic-load-balancers-05.txt">http://www.ietf.org/internet-drafts/draft-ietf-quic-load-balancers-05.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Duke, M.</span><span class="refAuthor"> and N. Banks</span>, <span class="refTitle">"QUIC-LB: Generating Routable QUIC Connection IDs"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-load-balancers-06</span>, <time datetime="2021-02-04" class="refDate">4 February 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-load-balancers-06.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-load-balancers-06.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2475">[RFC2475]</dt>
         <dd>
-<span class="refAuthor">Blake, S.</span><span class="refAuthor">, Black, D.</span><span class="refAuthor">, Carlson, M.</span><span class="refAuthor">, Davies, E.</span><span class="refAuthor">, Wang, Z.</span><span class="refAuthor">, and W. Weiss</span>, <span class="refTitle">"An Architecture for Differentiated Services"</span>, <span class="seriesInfo">RFC 2475</span>, <span class="seriesInfo">DOI 10.17487/RFC2475</span>, <time datetime="1998-12" class="refDate">December 1998</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2475">https://www.rfc-editor.org/info/rfc2475</a>&gt;</span>. </dd>
+<span class="refAuthor">Blake, S.</span><span class="refAuthor">, Black, D.</span><span class="refAuthor">, Carlson, M.</span><span class="refAuthor">, Davies, E.</span><span class="refAuthor">, Wang, Z.</span><span class="refAuthor">, and W. Weiss</span>, <span class="refTitle">"An Architecture for Differentiated Services"</span>, <span class="seriesInfo">RFC 2475</span>, <span class="seriesInfo">DOI 10.17487/RFC2475</span>, <time datetime="1998-12" class="refDate">December 1998</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc2475">https://datatracker.ietf.org/doc/html/rfc2475</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC5077">[RFC5077]</dt>
         <dd>
-<span class="refAuthor">Salowey, J.</span><span class="refAuthor">, Zhou, H.</span><span class="refAuthor">, Eronen, P.</span><span class="refAuthor">, and H. Tschofenig</span>, <span class="refTitle">"Transport Layer Security (TLS) Session Resumption without Server-Side State"</span>, <span class="seriesInfo">RFC 5077</span>, <span class="seriesInfo">DOI 10.17487/RFC5077</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5077">https://www.rfc-editor.org/info/rfc5077</a>&gt;</span>. </dd>
+<span class="refAuthor">Salowey, J.</span><span class="refAuthor">, Zhou, H.</span><span class="refAuthor">, Eronen, P.</span><span class="refAuthor">, and H. Tschofenig</span>, <span class="refTitle">"Transport Layer Security (TLS) Session Resumption without Server-Side State"</span>, <span class="seriesInfo">RFC 5077</span>, <span class="seriesInfo">DOI 10.17487/RFC5077</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc5077">https://datatracker.ietf.org/doc/html/rfc5077</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC5382">[RFC5382]</dt>
         <dd>
-<span class="refAuthor">Guha, S., Ed.</span><span class="refAuthor">, Biswas, K.</span><span class="refAuthor">, Ford, B.</span><span class="refAuthor">, Sivakumar, S.</span><span class="refAuthor">, and P. Srisuresh</span>, <span class="refTitle">"NAT Behavioral Requirements for TCP"</span>, <span class="seriesInfo">BCP 142</span>, <span class="seriesInfo">RFC 5382</span>, <span class="seriesInfo">DOI 10.17487/RFC5382</span>, <time datetime="2008-10" class="refDate">October 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5382">https://www.rfc-editor.org/info/rfc5382</a>&gt;</span>. </dd>
+<span class="refAuthor">Guha, S., Ed.</span><span class="refAuthor">, Biswas, K.</span><span class="refAuthor">, Ford, B.</span><span class="refAuthor">, Sivakumar, S.</span><span class="refAuthor">, and P. Srisuresh</span>, <span class="refTitle">"NAT Behavioral Requirements for TCP"</span>, <span class="seriesInfo">BCP 142</span>, <span class="seriesInfo">RFC 5382</span>, <span class="seriesInfo">DOI 10.17487/RFC5382</span>, <time datetime="2008-10" class="refDate">October 2008</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc5382">https://datatracker.ietf.org/doc/html/rfc5382</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7301">[RFC7301]</dt>
         <dd>
-<span class="refAuthor">Friedl, S.</span><span class="refAuthor">, Popov, A.</span><span class="refAuthor">, Langley, A.</span><span class="refAuthor">, and E. Stephan</span>, <span class="refTitle">"Transport Layer Security (TLS) Application-Layer Protocol Negotiation Extension"</span>, <span class="seriesInfo">RFC 7301</span>, <span class="seriesInfo">DOI 10.17487/RFC7301</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7301">https://www.rfc-editor.org/info/rfc7301</a>&gt;</span>. </dd>
+<span class="refAuthor">Friedl, S.</span><span class="refAuthor">, Popov, A.</span><span class="refAuthor">, Langley, A.</span><span class="refAuthor">, and E. Stephan</span>, <span class="refTitle">"Transport Layer Security (TLS) Application-Layer Protocol Negotiation Extension"</span>, <span class="seriesInfo">RFC 7301</span>, <span class="seriesInfo">DOI 10.17487/RFC7301</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7301">https://datatracker.ietf.org/doc/html/rfc7301</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8085">[RFC8085]</dt>
         <dd>
-<span class="refAuthor">Eggert, L.</span><span class="refAuthor">, Fairhurst, G.</span><span class="refAuthor">, and G. Shepherd</span>, <span class="refTitle">"UDP Usage Guidelines"</span>, <span class="seriesInfo">BCP 145</span>, <span class="seriesInfo">RFC 8085</span>, <span class="seriesInfo">DOI 10.17487/RFC8085</span>, <time datetime="2017-03" class="refDate">March 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8085">https://www.rfc-editor.org/info/rfc8085</a>&gt;</span>. </dd>
+<span class="refAuthor">Eggert, L.</span><span class="refAuthor">, Fairhurst, G.</span><span class="refAuthor">, and G. Shepherd</span>, <span class="refTitle">"UDP Usage Guidelines"</span>, <span class="seriesInfo">BCP 145</span>, <span class="seriesInfo">RFC 8085</span>, <span class="seriesInfo">DOI 10.17487/RFC8085</span>, <time datetime="2017-03" class="refDate">March 2017</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8085">https://datatracker.ietf.org/doc/html/rfc8085</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="Swett16">[Swett16]</dt>
         <dd>
