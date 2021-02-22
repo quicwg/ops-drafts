@@ -224,7 +224,7 @@ ID; see Section 17.2 of {{QUIC-TRANSPORT}}.
 ## Use of Port Numbers
 
 Applications that have a mapping for TCP as well as QUIC are expected to
-use the same port number for both services. However, as all other IETF
+use the same port number for both services. However, as for all other IETF
 transports {{?RFC7605}}, there is no guarantee that a specific application
 will use a given registered port, or that a given port carries traffic belonging
 to the respective registered service, especially when application layer
