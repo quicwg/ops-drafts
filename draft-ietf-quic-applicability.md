@@ -373,6 +373,24 @@ might not be desirable. For such streams, QUIC could either provide an
 explicit interface to control prioritization, or derive the prioritization
 decision from the reliability level of the stream.
 
+## Ordered and Reliable Delivery
+
+QUIC streams enable ordered and reliable delivery.  Though it is possible for an
+implementation to provide options that use streams for partial reliability
+or out-of-order delivery, most implementations will assume that data is
+reliably delivered in order.
+
+Under this assumption, an endpoint that receives stream data might not make
+forward progress until data that is contiguous with the start of a stream is
+available.  In particular, a receiver might withhold flow control credit until
+contiguous data is delivered to the application; see {{Section 2.2 of QUIC}}.
+To support this receive logic, an endpoint will send stream data until it is
+acknowledged, ensuring that data at the start of the stream is sent and
+acknowledged first.
+
+An endpoint that uses a different sending behavior and does not negotiate that
+change with its peer might encounter performance issues or deadlocks.
+
 ## Flow Control Deadlocks {#flow-control-deadlocks}
 
 Flow control provides a means of managing access to the limited buffers
