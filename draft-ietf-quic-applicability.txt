@@ -56,9 +56,8 @@ Table of Contents
    1.  Introduction
    2.  The Necessity of Fallback
    3.  Zero RTT
-     3.1.  Thinking in Zero RTT
-     3.2.  Here There Be Dragons
-     3.3.  Session resumption versus Keep-alive
+     3.1.  Replay Attacks
+     3.2.  Session resumption versus Keep-alive
    4.  Use of Streams
      4.1.  Stream versus Flow Multiplexing
      4.2.  Prioritization
@@ -160,27 +159,23 @@ Table of Contents
 
 3.  Zero RTT
 
-   QUIC provides for 0-RTT connection establishment.  This presents
-   opportunities and challenges for applications using QUIC.
-
-3.1.  Thinking in Zero RTT
+   QUIC provides for 0-RTT connection establishment.  Though the same
+   facility exists in TLS 1.3 with TCP, 0-RTT presents opportunities and
+   challenges for applications using QUIC.
 
    A transport protocol that provides 0-RTT connection establishment is
    qualitatively different than one that does not from the point of view
    of the application using it.  Relative trade-offs between the cost of
    closing and reopening a connection and trying to keep it open are
-   different; see Section 3.3.
+   different; see Section 3.2.
 
-   Applications must be slightly rethought in order to make best use of
-   0-RTT resumption.  Using 0-RTT requires an understanding of the
-   implication of sending application data that might be replayed by an
-   attacker.
+   An application needs to deliberately choose to use 0-RTT, as 0-RTT
+   carries a risk of replay attack.  Application protocols that use
+   0-RTT require a profile that describes the types of information that
+   can be safely sent.  For HTTP, this profile is described in
+   [HTTP-REPLAY].
 
-   Application protocols that use 0-RTT require a profile that describes
-   the types of information that can be safely sent.  For HTTP, this
-   profile is described in [HTTP-REPLAY].
-
-3.2.  Here There Be Dragons
+3.1.  Replay Attacks
 
    Retransmission or (malicious) replay of data contained in 0-RTT
    packets could cause the server side to receive two copies of the same
@@ -210,7 +205,7 @@ Table of Contents
    partial or even complete replay protection, which could be used to
    manage replay risk.
 
-3.3.  Session resumption versus Keep-alive
+3.2.  Session resumption versus Keep-alive
 
    Because QUIC is encapsulated in UDP, applications using QUIC must
    deal with short network idle timeouts.  Deployed stateful middleboxes
@@ -628,7 +623,7 @@ Table of Contents
    the announced timeout, it can send keep-alive messages, or a QUIC
    implementation may provide an option to defer the time-out to avoid
    unnecessary load, as specified in Section 10.1.2 of [QUIC].  See
-   Section 3.3 for further guidance on keep-alives.
+   Section 3.2 for further guidance on keep-alives.
 
 9.  Information Exposure and the Connection ID
 
