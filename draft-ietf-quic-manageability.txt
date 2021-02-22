@@ -83,11 +83,12 @@ Table of Contents
      4.4.  DDoS Detection and Mitigation
      4.5.  UDP Policing
      4.6.  Distinguishing Acknowledgment traffic
-     4.7.  Quality of Service handling and ECMP
-     4.8.  QUIC and Network Address Translation (NAT)
-       4.8.1.  Resource Conservation
-       4.8.2.  "Helping" with routing infrastructure issues
-     4.9.  Filtering behavior
+     4.7.  Handling ICMP Messages
+     4.8.  Quality of Service handling and ECMP
+     4.9.  QUIC and Network Address Translation (NAT)
+       4.9.1.  Resource Conservation
+       4.9.2.  "Helping" with routing infrastructure issues
+     4.10. Filtering behavior
    5.  IANA Considerations
    6.  Security Considerations
    7.  Contributors
@@ -987,7 +988,21 @@ Table of Contents
    recommended to use as a way to construe internals of QUIC's operation
    as those mechanisms can change, e.g., due to the use of extensions.
 
-4.7.  Quality of Service handling and ECMP
+4.7.  Handling ICMP Messages
+
+   Datagram Packetization Layer PMTU Discovery (PLPMTUD) can be used by
+   QUIC to probe for the supported PMTU.  PLPMTUD optionally uses ICMP
+   messages (e.g., IPv6 Packet Too Big messages).  Given known attacks
+   with the use of ICMP messages, the use of PLPMTUD in QUIC has been
+   designed to safely use but not rely on receiving ICMP feedback (see
+   Section 14.2.1. of [QUIC-TRANSPORT]).
+
+   Networks are recommended to forward these ICMP messages and retain as
+   much of the original packet as possible without exceeding the minimum
+   MTU for the IP version when generating ICMP messages as recommended
+   in [RFC1812] and [RFC4443].
+
+4.8.  Quality of Service handling and ECMP
 
    It is expected that any QoS handling in the network, e.g. based on
    use of DiffServ Code Points (DSCPs) [RFC2475] as well as Equal-Cost
@@ -1007,7 +1022,7 @@ Table of Contents
    recovery mechanism is used and therefore reordering tolerance should
    be considered as unknown.
 
-4.8.  QUIC and Network Address Translation (NAT)
+4.9.  QUIC and Network Address Translation (NAT)
 
    QUIC Connection IDs are opaque byte fields that are expressed
    consistently across all QUIC versions [QUIC-INVARIANTS], see
@@ -1039,7 +1054,7 @@ Table of Contents
    timeout on UDP NATs might be tempting in light of this property, but
    not all QUIC server deployments will be robust to rebinding.
 
-4.8.1.  Resource Conservation
+4.9.1.  Resource Conservation
 
    NATs sometimes hit an operational limit where they exhaust available
    public IP addresses and ports, and must evict flows from their
@@ -1076,7 +1091,7 @@ Table of Contents
    violates the best common practice to avoid "port overloading" as
    described in [RFC4787].
 
-4.8.2.  "Helping" with routing infrastructure issues
+4.9.2.  "Helping" with routing infrastructure issues
 
    Concealing client address changes in order to simplify operational
    routing issues will mask important signals that drive security
@@ -1118,7 +1133,7 @@ Table of Contents
    to the attacker address and thus allow an observer to break the
    connection.
 
-4.9.  Filtering behavior
+4.10.  Filtering behavior
 
    [RFC4787] describes possible packet filtering behaviors that relate
    to NATs.  Though the guidance there holds, a particularly unwise
@@ -1248,6 +1263,10 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               load-balancers-06.txt>.
 
+   [RFC1812]  Baker, F., Ed., "Requirements for IP Version 4 Routers",
+              RFC 1812, DOI 10.17487/RFC1812, June 1995,
+              <https://datatracker.ietf.org/doc/html/rfc1812>.
+
    [RFC2475]  Blake, S., Black, D., Carlson, M., Davies, E., Wang, Z.,
               and W. Weiss, "An Architecture for Differentiated
               Services", RFC 2475, DOI 10.17487/RFC2475, December 1998,
@@ -1257,6 +1276,12 @@ Table of Contents
               Address Translator (Traditional NAT)", RFC 3022,
               DOI 10.17487/RFC3022, January 2001,
               <https://datatracker.ietf.org/doc/html/rfc3022>.
+
+   [RFC4443]  Conta, A., Deering, S., and M. Gupta, Ed., "Internet
+              Control Message Protocol (ICMPv6) for the Internet
+              Protocol Version 6 (IPv6) Specification", STD 89,
+              RFC 4443, DOI 10.17487/RFC4443, March 2006,
+              <https://datatracker.ietf.org/doc/html/rfc4443>.
 
    [RFC4787]  Audet, F., Ed. and C. Jennings, "Network Address
               Translation (NAT) Behavioral Requirements for Unicast
