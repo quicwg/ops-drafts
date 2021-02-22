@@ -547,7 +547,7 @@ parameters are actually in use.
 ### Identifying Negotiated Version
 
 An in-network observer assuming that a set of packets belongs to a QUIC flow
-can infer the version number in use by observing the handshake: for QUIC 
+can infer the version number in use by observing the handshake: for QUIC
 version 1 if the version number in the Initial packet from a client is the
 same as the version number in Initial packet of the server response, that
 version has been accepted by both endpoints to be used for the rest of the
