@@ -473,6 +473,8 @@ therefore not part of the wire image that is visible to on-path observers.
 
 ## Version Negotiation and Greasing {#version}
 
+Version Negotiation packets are used by the server to indicate that a requested
+version from the client is not supported (see section 6 of {{QUIC-TRANSPORT}}.
 Version Negotiation packets are not intrinsically protected, but QUIC versions
 can use later encrypted messages to verify that they were authentic.
 Therefore any modification of this list will be detected and may cause the
