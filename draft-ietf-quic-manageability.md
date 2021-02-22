@@ -1033,12 +1033,13 @@ candidate for fragmentation by routers (it's IPv6, or has DF bit set). In such
 networks this leads to a need to influence a majority of senders to use smaller
 packets, so that the limited reassembly capacity is not exceeded.
 
-If the majority use TCP this can be managed with MSS Clamping, but QUIC
-requires a different approach. Section 14 of {{QUIC-TRANSPORT}} advises senders
-to probe larger sizes using Datagram Packetization Layer PMTU Discovery
-({{?DPLPMTUD=RFC8899}}) or Path Maximum Transmission Unit Discovery
-(PMTUD: {{?RFC1191}} and {{?RFC8201}}). This mechanism will encourage senders to
-approach the maximum size, driving fragmentation that they may not be aware of.
+For TCP, MSS clamping ({{?Section 3.2 of RFC4459}}) is often used to change
+the sender's maximum TCP segment size, but QUIC requires a different approach.
+Section 14 of {{QUIC-TRANSPORT}} advises senders to probe larger sizes using
+Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
+Maximum Transmission Unit Discovery (PMTUD: {{?RFC1191}} and {{?RFC8201}}).
+This mechanism will encourage senders to approach the maximum size, driving
+fragmentation that they may not be aware of.
 
 Networks can seek to avoid this by identifying probable QUIC packets
 ({{sec-identifying}}) and taking action whenever packets exceed the desired
