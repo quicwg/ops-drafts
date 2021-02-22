@@ -89,6 +89,8 @@ informative:
   QUIC-HTTP: I-D.ietf-quic-http
 
 
+--- abstract
+
 This document discusses the applicability of the QUIC transport protocol,
 focusing on caveats impacting application protocol development and deployment
 over QUIC. Its intended audience is designers of application protocol mappings
