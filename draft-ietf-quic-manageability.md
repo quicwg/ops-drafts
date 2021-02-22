@@ -902,9 +902,10 @@ use of extensions.
 
 Datagram Packetization Layer PMTU Discovery (PLPMTUD) can be used by QUIC to
 probe for the supported PMTU. PLPMTUD optionally uses ICMP messages (e.g.,
-IPv6 Packet Too Big messages). Given known attacks with the use of ICMP messages,
-the use of PLPMTUD in QUIC has been designed to safely use but not rely on
-receiving ICMP feedback (see {{Section 14.2.1. of QUIC-TRANSPORT}}).
+IPv6 Packet Too Big messages). Given known attacks with the use of ICMP
+messages, the use of PLPMTUD in QUIC has been designed to safely use but
+not rely on receiving ICMP feedback (see
+{{Section 14.2.1. of QUIC-TRANSPORT}}).
 
 Networks are recommended to forward these ICMP messages and retain as much of
 the original packet as possible without exceeding the minimum MTU for the IP
