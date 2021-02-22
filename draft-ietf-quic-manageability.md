@@ -875,7 +875,7 @@ signaling. Distinguishing ACK packets is trivial in TCP, but not supported by
 QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
 and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
-are very likely to fail.
+are very likely to fail, and are emphatically NOT RECOMMENDED.
 
 ## Quality of Service handling and ECMP
 
