@@ -450,7 +450,7 @@ padding.
 
 On network paths where there is significant asymmetry,
 the transmission of packets only containing ACK frames can reduce the efficient use of network
-capacity or transmission opportunities. This effect occurs
+capacity. This effect occurs
 when the return capacity is significantly more constrained than the
 forward capacity, or the cost of transmission per packet is a
 significant component of the total transmission cost. Reducing
