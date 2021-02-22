@@ -327,9 +327,9 @@ for that message.
 If a QUIC receiver has opened the maximum allowed concurrent
 streams, and the sender indicates that more streams are needed, it
 doesn't automatically lead to an increase of the maximum number of streams by
-the receiver. Therefore it can be valuable to expose the maximum number of
-allowed, currently open, and currently used streams to the application to make
-the mapping of data to streams dependent on this information.
+the receiver. Therefore, an application can utilise the maximum number of
+allowed, currently open, and currently used streams when determining how to
+map data to streams.
 
 While a QUIC implementation must necessarily provide a way for an application
 to send data on separate streams, it does not necessarily expose stream
