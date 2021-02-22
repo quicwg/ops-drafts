@@ -158,8 +158,7 @@ The following information is exposed in QUIC packet headers:
   identifies the version used for that packet. During Version
   Negotiation (see {{version}} and Section 17.2.1 of {{QUIC-TRANSPORT}}), the
   version number field has a special value (0x00000000) that identifies the
-  packet as a Version Negotiation packet. Upon time of publishing of this
-  document, QUIC versions that start with 0xff implement IETF drafts. QUIC
+  packet as a Version Negotiation packet. QUIC
   version 1 uses version 0x00000001. Operators should expect to observe
   packets with other version numbers as a result of various Internet
   experiments and future standards.
