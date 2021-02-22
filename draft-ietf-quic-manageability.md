@@ -94,8 +94,8 @@ network management practices will be impacted by QUIC.
 Since QUIC's wire image {{?WIRE-IMAGE=RFC8546}} is integrity-protected,
 in-network operations that depend on modification of data are not possible
 without the cooperation of an endpoint. Network operation practices that alter
-data are only possible if performed as a QUIC endpoint, which might be possible
-with the introduction of a proxy, which either authenticates as an endpoint.
+data are only possible if performed as a QUIC endpoint; this might be possible
+with the introduction of a proxy which authenticates as an endpoint.
 Proxy operations are not in scope for this document.
 
 Network management is not a one-size-fits-all endeavour: practices considered
