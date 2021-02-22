@@ -62,7 +62,8 @@ Table of Contents
    4.  Use of Streams
      4.1.  Stream versus Flow Multiplexing
      4.2.  Prioritization
-     4.3.  Flow Control Deadlocks
+     4.3.  Ordered and Reliable Delivery
+     4.4.  Flow Control Deadlocks
    5.  Packetization and Latency
    6.  Port Selection and Application Endpoint Discovery
    7.  Connection Migration
@@ -395,7 +396,27 @@ Table of Contents
    an explicit interface to control prioritization, or derive the
    prioritization decision from the reliability level of the stream.
 
-4.3.  Flow Control Deadlocks
+4.3.  Ordered and Reliable Delivery
+
+   QUIC streams enable ordered and reliable delivery.  Though it is
+   possible for an implementation to provide options that use streams
+   for partial reliability or out-of-order delivery, most
+   implementations will assume that data is reliably delivered in order.
+
+   Under this assumption, an endpoint that receives stream data might
+   not make forward progress until data that is contiguous with the
+   start of a stream is available.  In particular, a receiver might
+   withhold flow control credit until contiguous data is delivered to
+   the application; see Section 2.2 of [QUIC].  To support this receive
+   logic, an endpoint will send stream data until it is acknowledged,
+   ensuring that data at the start of the stream is sent and
+   acknowledged first.
+
+   An endpoint that uses a different sending behavior and does not
+   negotiate that change with its peer might encounter performance
+   issues or deadlocks.
+
+4.4.  Flow Control Deadlocks
 
    Flow control provides a means of managing access to the limited
    buffers endpoints have for incoming data.  This mechanism limits the
