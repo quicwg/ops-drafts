@@ -1070,31 +1070,35 @@ simply block UDP traffic. All applications running on top of QUIC must
 therefore either be prepared to accept connectivity failure on such networks,
 or be engineered to fall back to some other transport protocol. In the case of
 HTTP, this fallback is TLS 1.3 over TCP.<a href="#section-2-2" class="pilcrow">¶</a></p>
-<p id="section-2-3">An application that implements fallback needs to consider the security
+<p id="section-2-3">The IETF TAPS specifications <span>[<a href="#I-D.ietf-taps-arch" class="xref">I-D.ietf-taps-arch</a>]</span> describe a system with a
+common API for multiple protocols and some of the implications of fallback
+between these different protocols, specifically precluding fallback to
+insecure protocols or to weaker versions of secure protocols.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-4">An application that implements fallback needs to consider the security
 consequences. A fallback to TCP and TLS 1.3 exposes control information to
 modification and manipulation in the network. Further downgrades to older TLS
 versions might result in significantly weaker cryptographic protection. For
 example, the results of protocol negotiation <span>[<a href="#RFC7301" class="xref">RFC7301</a>]</span> only have
-confidentiality protection if TLS 1.3 is used.<a href="#section-2-3" class="pilcrow">¶</a></p>
-<p id="section-2-4">These applications must operate, perhaps with impaired functionality, in the
+confidentiality protection if TLS 1.3 is used.<a href="#section-2-4" class="pilcrow">¶</a></p>
+<p id="section-2-5">These applications must operate, perhaps with impaired functionality, in the
 absence of features provided by QUIC not present in the fallback protocol. For
 fallback to TLS over TCP, the most obvious difference is that TCP does not
 provide stream multiplexing and therefore stream multiplexing would need to be
-implemented in the application layer if needed.<a href="#section-2-4" class="pilcrow">¶</a></p>
-<p id="section-2-5">Further, TCP implementations and network paths often do not support the Fast
+implemented in the application layer if needed.<a href="#section-2-5" class="pilcrow">¶</a></p>
+<p id="section-2-6">Further, TCP implementations and network paths often do not support the Fast
 Open option, which is analogous to 0-RTT session resumption. Even if Fast Open
 successfully operates end-to-end, it is limited to a single packet of payload,
-unlike QUIC 0-RTT.<a href="#section-2-5" class="pilcrow">¶</a></p>
-<p id="section-2-6">Note that there is some evidence of middleboxes blocking SYN data even if TFO
-was successfully negotiated (see <span>[<a href="#PaaschNanog" class="xref">PaaschNanog</a>]</span>).<a href="#section-2-6" class="pilcrow">¶</a></p>
-<p id="section-2-7">Any fallback mechanism is likely to impose a degradation of performance;
+unlike QUIC 0-RTT.<a href="#section-2-6" class="pilcrow">¶</a></p>
+<p id="section-2-7">Note that there is some evidence of middleboxes blocking SYN data even if TFO
+was successfully negotiated (see <span>[<a href="#PaaschNanog" class="xref">PaaschNanog</a>]</span>).<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-8">Any fallback mechanism is likely to impose a degradation of performance;
 however, fallback must not silently violate the application's expectation of
-confidentiality or integrity of its payload data.<a href="#section-2-7" class="pilcrow">¶</a></p>
-<p id="section-2-8">Moreover, while encryption (in this case TLS) is inseparably integrated with
+confidentiality or integrity of its payload data.<a href="#section-2-8" class="pilcrow">¶</a></p>
+<p id="section-2-9">Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
 supported, the connection should be aborted instead, in order to enable
 the application to present a suitable prompt to the user that secure
-communication is unavailable.<a href="#section-2-8" class="pilcrow">¶</a></p>
+communication is unavailable.<a href="#section-2-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="zero-rtt">
@@ -1797,6 +1801,10 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.<
 <dt id="HTTP-REPLAY">[HTTP-REPLAY]</dt>
         <dd>
 <span class="refAuthor">Thomson, M.</span><span class="refAuthor">, Nottingham, M.</span><span class="refAuthor">, and W. Tarreau</span>, <span class="refTitle">"Using Early Data in HTTP"</span>, <span class="seriesInfo">RFC 8470</span>, <span class="seriesInfo">DOI 10.17487/RFC8470</span>, <time datetime="2018-09" class="refDate">September 2018</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8470">https://datatracker.ietf.org/doc/html/rfc8470</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-taps-arch">[I-D.ietf-taps-arch]</dt>
+        <dd>
+<span class="refAuthor">Pauly, T.</span><span class="refAuthor">, Trammell, B.</span><span class="refAuthor">, Brunstrom, A.</span><span class="refAuthor">, Fairhurst, G.</span><span class="refAuthor">, Perkins, C.</span><span class="refAuthor">, Tiesel, P. S.</span><span class="refAuthor">, and C. A. Wood</span>, <span class="refTitle">"An Architecture for Transport Services"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-taps-arch-09</span>, <time datetime="2020-11-02" class="refDate">2 November 2020</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-taps-arch-09.txt">https://datatracker.ietf.org/doc/html/draft-ietf-taps-arch-09.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="PaaschNanog">[PaaschNanog]</dt>
         <dd>
