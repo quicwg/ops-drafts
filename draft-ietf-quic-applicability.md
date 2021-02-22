@@ -88,7 +88,6 @@ informative:
   RFC5077:
   QUIC-HTTP: I-D.ietf-quic-http
 
---- abstract
 
 This document discusses the applicability of the QUIC transport protocol,
 focusing on caveats impacting application protocol development and deployment
@@ -120,38 +119,36 @@ QUIC uses UDP as a substrate. This enables userspace implementation and permits
 traversal of network middleboxes (including NAT) without requiring updates to
 existing network infrastructure.
 
-While there is no evidence of a widespread, systematic disadvantage of UDP
-traffic compared to TCP in the Internet {{Edeline16}}, somewhere between three
-{{Trammell16}} and five {{Swett16}} percent of networks block all UDP
-traffic. All applications running on top of QUIC must therefore either be
-prepared to accept connectivity failure on such networks or be engineered to
-fall back to some other transport protocol. In the case of HTTP, this fallback
-is TLS 1.3 over TCP.
+While recent measurements have shown no evidence of a widespread, systematic
+disadvantage of UDP traffic compared to TCP in the Internet {{Edeline16}},
+somewhere between three {{Trammell16}} and five {{Swett16}} percent of networks
+block all UDP traffic. All applications running on top of QUIC must
+therefore either be prepared to accept connectivity failure on such networks
+or be engineered to fall back to some other transport protocol. In the case of
+HTTP, this fallback is TLS over TCP.
+
+The IETF TAPS specifications {{?I-D.ietf-taps-arch}} describe a system with a
+common API for multiple protocols and some of the implications of fallback
+between these different protocols, specifically precluding fallback to
+insecure protocols or to weaker versions of secure protocols.
 
 An application that implements fallback needs to consider the security
-consequences. A fallback to TCP and TLS 1.3 exposes control information to
+consequences. A fallback to TCP and TLS exposes control information to
 modification and manipulation in the network. Further downgrades to older TLS
-versions might result in significantly weaker cryptographic protection. For
-example, the results of protocol negotiation {{?ALPN=RFC7301}} only have
-confidentiality protection if TLS 1.3 is used.
+versions than used in QUIC, which is 1.3, might result in significantly weaker
+cryptographic protection. For example, the results of protocol negotiation
+{{?RFC7301}} only have confidentiality protection if TLS 1.3 is used.
 
 These applications must operate, perhaps with impaired functionality, in the
 absence of features provided by QUIC not present in the fallback protocol. For
 fallback to TLS over TCP, the most obvious difference is that TCP does not
 provide stream multiplexing and therefore stream multiplexing would need to be
-implemented in the application layer if needed.
-
-Further, TCP implementations and network paths often do not support the Fast
-Open option, which is analogous to 0-RTT session resumption. Even if Fast Open
-successfully operates end-to-end, it is limited to a single packet of payload,
-unlike QUIC 0-RTT.
-
-Note that there is some evidence of middleboxes blocking SYN data even if TFO
-was successfully negotiated (see {{PaaschNanog}}).
-
-Any fallback mechanism is likely to impose a degradation of performance;
-however, fallback must not silently violate the application's expectation of
-confidentiality or integrity of its payload data.
+implemented in the application layer if needed. Further, TCP implementations
+and network paths often do not support the Fast Open option, which is analogous
+to 0-RTT session resumption. Note that there is some evidence of middleboxes
+blocking SYN data even if TFO was successfully negotiated (see {{PaaschNanog}}).
+And even if Fast Open successfully operates end-to-end, it is limited to a
+single packet of payload, unlike QUIC 0-RTT.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
@@ -159,12 +156,16 @@ supported, the connection should be aborted instead, in order to enable
 the application to present a suitable prompt to the user that secure
 communication is unavailable.
 
+In summary, any fallback mechanism is likely to impose a degradation of
+performance and can degrade security; however, fallback must not silently
+violate the application's expectation of confidentiality or integrity of its
+payload data.
+
 # Zero RTT {#zero-rtt}
 
-QUIC provides for 0-RTT connection establishment. This presents opportunities
-and challenges for applications using QUIC.
-
-## Thinking in Zero RTT
+QUIC provides for 0-RTT connection establishment. Though the same facility
+exists in TLS 1.3 with TCP, 0-RTT presents opportunities and challenges for
+applications using QUIC.
 
 A transport protocol that provides 0-RTT connection establishment is
 qualitatively different than one that does not from the point of view of the
@@ -172,15 +173,12 @@ application using it. Relative trade-offs between the cost of closing and
 reopening a connection and trying to keep it open are different; see
 {{resumption-v-keepalive}}.
 
-Applications must be slightly rethought in order to make best use of 0-RTT
-resumption. Using 0-RTT requires an understanding of the implication of sending
-application data that might be replayed by an attacker.
+An application needs to deliberately choose to use 0-RTT, as 0-RTT carries a
+risk of replay attack.  Application protocols that use 0-RTT require a profile
+that describes the types of information that can be safely sent. For HTTP, this
+profile is described in {{?HTTP-REPLAY=RFC8470}}.
 
-Application protocols that use 0-RTT require a profile that describes the types
-of information that can be safely sent. For HTTP, this profile is described in
-{{?HTTP-REPLAY=RFC8470}}.
-
-## Here There Be Dragons
+## Replay Attacks
 
 Retransmission or (malicious) replay of data contained in 0-RTT packets could
 cause the server side to receive two copies of the same data.
@@ -226,12 +224,12 @@ rebinding after a timeout. However, this only helps if one endpoint maintains
 availability at the address its peer uses, and the peer is the one to send
 after the timeout occurs.
 
-Some QUIC connections may not be robust to rebinding because the routing
+Some QUIC connections might not be robust to NAT rebinding because the routing
 infrastructure (in particular, load balancers) uses the address/port four-tuple
 to direct traffic. Furthermore, middleboxes with functions other than address
-translation could still affect the path. In particular, firewalls will often
-not admit server traffic for which it has not kept state for corresponding
-packets from the client.
+translation could still affect the path. In particular, some firewalls do not
+admit server traffic for which the firewall has no recent state for a
+corresponding packet sent from the client.
 
 QUIC applications can adjust idle periods to manage the risk of timeout. Idle
 periods and the network idle timeout are distinct from the connection idle
@@ -263,18 +261,18 @@ periods may result in excessive unproductive traffic in some situations, and to
 unacceptable power usage for power-constrained (mobile) devices. Additionally,
 timeouts shorter than 30 seconds can make it harder to handle transient network
 interruptions, such as VM migration or coverage loss during mobilty.
+See {{?RFC8085}}, especially Section 3.5.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
 data to a server over a connection idle longer than the server's idle timeout
 (available from the idle_timeout transport parameter) can simply reconnect. When
 possible, this reconnection can use 0-RTT session resumption, reducing the
-latency involved with restarting the connection. Of course, this only applies in
-cases in which 0-RTT data is safe, when the client is the restarting peer, and
-when the data to be sent is idempotent.  Using resumption in this way also
-assumes that the protocol does not accumulate any non-persistent state in
-association with a connection.  State bound to a connection cannot reliably be
-transferred to a resumed connection.
+latency involved with restarting the connection. Of course, this approach is only
+valid in cases in which 0-RTT data is safe, when the client is the restarting
+peer, and when the data to be sent is idempotent. It is also not applicable when
+the application binds external state to the connection, as this state cannot
+reliably be transferred to a resumed connection.
 
 The tradeoffs between resumption and keep-alives need to be evaluated on a
 per-application basis. In general, applications should use keep-alives only in
@@ -293,10 +291,11 @@ Streams can be unidirectional or bidirectional, and a stream may be initiated
 either by client or server. Only the initiator of a unidirectional stream can
 send data on it.
 
-Due to encoding limitations on stream offsets and connection flow control
-limits, both streams and connections can carry a maximum of 2<sup>62</sup>-1
-bytes in each direction. In the presently unlikely event that this limit is
-reached by an application, a new connection would need to be established.
+Streams and connections can each carry a maximum of
+ 2<sup>62</sup>-1 bytes in each direction, due to encoding limitations on
+stream offsets and connection flow control limits. In the presently unlikely
+event that this limit is reached by an application, a new connection would
+need to be established.
 
 Streams can be independently opened and closed, gracefully or abruptly. An
 application can gracefully close the egress direction of a stream by instructing
@@ -311,28 +310,42 @@ generate error messages on the application layer to inform the other end and/or
 the higher layer, which can eventually reset the QUIC connection.
 
 Mapping of application data to streams is application-specific and described for
-HTTP/3 in {{QUIC-HTTP}}. In general, data that can be processed independently,
-and therefore would suffer from head of line blocking if forced to be received
-in order, should be transmitted over separate streams. If the application
-requires certain data to be received in order, that data should be sent on the
-same stream. If there is a logical grouping of data chunks or
-messages, streams can be reused, or a new stream can be opened for each
-chunk/message. If one message is mapped to a single stream, resetting the stream
-to expire an unacknowledged message can be used to emulate partial reliability
-on a message basis.
+HTTP/3 in {{QUIC-HTTP}}. There are a few general principles to apply when
+designing an application's use of streams:
 
-If a QUIC receiver has the maximum number of streams open and the sender on the
-other end indicates that more streams are needed via a STREAMS_BLOCKED frame, it
-doesn't automatically lead to an increase in the maximum number of streams by
+- A single stream provides ordering. If the application requires certain data to
+be received in order, that data should be sent on the same stream.
+
+- Multiple streams provide concurrency. Data that can be processed
+independently, and therefore would suffer from head of line blocking if forced
+to be received in order, should be transmitted over separate streams.
+
+- Streams can provide message orientation, and allow messages to be cancelled.
+If one message is mapped to a single stream, resetting the stream to expire an
+unacknowledged message can be used to emulate partial reliability
+for that message.
+
+If a QUIC receiver has opened the maximum allowed concurrent
+streams, and the sender indicates that more streams are needed, it
+does not automatically lead to an increase of the maximum number of streams by
 the receiver. Therefore it can be valuable to expose the maximum number of
 allowed, currently open, and currently used streams to the application to make
 the mapping of data to streams dependent on this information.
 
-While a QUIC implementation must necessarily provide a way for an application
-to send data on separate streams, it does not necessarily expose stream
-identifiers to the application (see, for example, {{Section 6 of QUIC-HTTP}})
-either at the sender or receiver end, so applications should not assume access
-to these identifiers.
+QUIC assigns a numerical identifier to each stream, called the Stream ID.  While
+the relationship between these identifiers and stream types is clearly defined
+in version 1 of QUIC, future versions might change this relationship for various
+reasons. QUIC implementations should expose the properties of each stream
+(which endpoint initiated the stream, whether the stream is unidirectional or
+bidirectional, the Stream ID used for the stream); applications should query for
+these properties rather than attempting to infer them from the Stream ID.
+
+The method of allocating stream identifiers to streams opened by the application
+might vary between transport implementations. Therefore, an application should
+not assume a particular stream ID will be assigned to a stream that has not yet
+been allocated.  For example, HTTP/3 uses Stream IDs to refer to streams that
+have already been opened, but makes no assumptions about future Stream IDs or
+the way in which they are assigned {{Section 6 of QUIC-HTTP}}).
 
 ## Stream versus Flow Multiplexing
 
@@ -369,6 +382,24 @@ priority scheduling of retransmissions over data of higher-priority streams
 might not be desirable. For such streams, QUIC could either provide an
 explicit interface to control prioritization, or derive the prioritization
 decision from the reliability level of the stream.
+
+## Ordered and Reliable Delivery
+
+QUIC streams enable ordered and reliable delivery.  Though it is possible for an
+implementation to provide options that use streams for partial reliability
+or out-of-order delivery, most implementations will assume that data is
+reliably delivered in order.
+
+Under this assumption, an endpoint that receives stream data might not make
+forward progress until data that is contiguous with the start of a stream is
+available.  In particular, a receiver might withhold flow control credit until
+contiguous data is delivered to the application; see {{Section 2.2 of QUIC}}.
+To support this receive logic, an endpoint will send stream data until it is
+acknowledged, ensuring that data at the start of the stream is sent and
+acknowledged first.
+
+An endpoint that uses a different sending behavior and does not negotiate that
+change with its peer might encounter performance issues or deadlocks.
 
 ## Flow Control Deadlocks {#flow-control-deadlocks}
 
@@ -425,7 +456,7 @@ QUIC exposes an interface that provides multiple streams to the application;
 however, the application usually cannot control how data transmitted over those
 streams is mapped into frames or how those frames are bundled into packets.
 
-By default, many QUIC implementations will try to maximally pack packets with
+By default, many implementations will try to maximally pack QUIC packets
 DATA frames from one or more streams to minimize bandwidth consumption and
 computational costs (see {{Section 13 of QUIC}}). If there is not enough data
 available to fill a packet, an implementation might wait for a short time, to
@@ -441,14 +472,16 @@ wait before bundle frames into a packet.
 
 Similarly, an application has usually no control about the length of a QUIC
 packet on the wire. QUIC provides the ability to add a PADDING frame to
-arbitrarily increase the size of packets.
+arbitrarily increase the size of packets. Padding is used by QUIC to ensure
+that the path is capable of transferring datagrams of at least a certain size,
+during the handshake (see Sections 8.1 and 14.1 of {{!QUIC}}) and for path
+validation after connection migration (see {{Section 8.2 of QUIC}}) as well
+as for Datagram Packetization Layer PMTU Discovery (DPLMTUD) (see Section 14.3
+of {{!QUIC}}).
 
-Padding is used by QUIC to ensure that the path is capable of transferring
-datagrams of at least a certain size, both during the handshake and for
-connection migration. Padding can also be used by an application to reduce
-leakage of information about the data that is sent. A QUIC implementation can
-expose an interface that allows an application layer to specify how to apply
-padding.
+Padding can also be used by an application to reduce leakage of
+information about the data that is sent. A QUIC implementation can expose an
+interface that allows an application layer to specify how to apply padding.
 
 
 # Port Selection and Application Endpoint Discovery {#ports}
@@ -469,13 +502,14 @@ TCP port already registered for the application is appropriate. For example,
 the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
-Applications could define an alternate endpoint discovery mechanism to allow the
-usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2 and
-3.3 of QUIC-HTTP}}) specifies the use of ALPN {{?RFC7301}} for service discovery
-which allows the server to use and announce a different port number. Note that
-HTTP/3's ALPN token ("h3") identifies not only the version of the application
-protocol, but also the version of QUIC itself; this approach allows unambiguous
-agreement between the endpoints on the protocol stack in use.
+Applications could define an alternate endpoint discovery mechanism to allow
+the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
+and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
+for an HTTP origin to advertise the availability of an equivalent HTTP/3
+endpoint on a certain UDP port by using the "h3" ALPN token {{?RFC7301}}.
+Note that HTTP/3's ALPN token ("h3") identifies not only the version of the
+application protocol, but also the version of QUIC itself; this approach
+allows unambiguous agreement between the endpoints on the protocol stack in use.
 
 Given the prevalence of the assumption in network management
 practice that a port number maps unambiguously to an application, the
@@ -487,29 +521,29 @@ identification.
 
 # Connection Migration
 
-QUIC supports connection migration by the client. If a lower-layer address
+QUIC supports connection migration by the client. If an IP address
 changes, a QUIC endpoint can still associate packets with an existing
-connection using the Destination Connection ID field (see also {{connid}}) in
-the QUIC header, unless a zero-length value is used. This supports cases where
-address information changes, such as NAT rebinding, intentional change of the
-local interface, or based on an indication in the handshake of the server for a
-preferred address to be used.
+transport connection using the destination connection ID field
+(see also {{connid}}) in the QUIC header, unless a zero-length value is used.
+This supports cases where address information changes, such as NAT rebinding,
+intentional change of the local interface, or based on an indication in the
+handshake of the server for a preferred address to be used.
 
 Use of a non-zero-length connection ID for the server is strongly recommended if
 any clients are behind a NAT or could be. A non-zero-length connection ID is
 also strongly recommended when migration is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
-time, and only when the new path is validated can all traffic be switched over
-to that new path. Path validation means that the other endpoint is required to
+time, and only when the new path is validated all traffic can be switched over
+to that new path. Path validation means that the remote endpoint is required to
 validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
-on path migration. Therefore migration usually has a performance impact.
+after path migration. Therefore migration usually has a performance impact.
 
-Probing packets, which cannot carry application data, can be sent on multiple
-paths at once. Probing packets can be used to perform address validation,
-measure path characteristics as input for the switching decision, or prime the
-congestion controller in preparation for switching to the new path.
+QUIC probing packets, which cannot carry application data, can be sent on
+multiple paths at once. Probing packets can be used to perform address
+validation, measure path characteristics as input for the switching decision,
+or prime the congestion controller in preparation for switching to the new path.
 
 Only the client can actively migrate in version 1 of QUIC. However, servers can
 indicate during the handshake that they prefer to transfer the connection to a
@@ -529,17 +563,15 @@ has been initiated by one endpoint (for a limited time period), the expectation
 is that an immediate close was negotiated at the application layer and
 therefore no additional data is expected from both sides.
 
-An immediate close will emit an CONNECTION_CLOSE frame. This frame has two sets
-of error codes: one for QUIC internal problems that might lead to connection
-closure, and one for closures initiated by the application. An application using
-QUIC can define application-specific error codes (see, for example, {{Section
-8.1 of QUIC-HTTP}}).
+An immediate close will emit an CONNECTION_CLOSE frame. This frame has two
+sets of types: one for QUIC internal problems that might lead to connection
+closure, and one for closures initiated by the application. An application
+using QUIC can define application-specific error codes (see, for example,
+{{Section 8.1 of QUIC-HTTP}}).
 
 The CONNECTION_CLOSE frame provides an optional reason field, that can be used
-to append human-readable information to an error code. Note that QUIC
-RESET_STREAM and STOP_SENDING frames also include an error code, but no reason
-string. Application error codes are expected to be defined from a single space
-that applies to all three frame types.
+to append human-readable information to an error code.  RESET_STREAM and
+STOP_SENDING frames also include an error code, but no reason string.
 
 Alternatively, a QUIC connection can be silently closed by each endpoint
 separately after an idle timeout. If enabled as indicated by a transport
@@ -570,9 +602,9 @@ In QUIC version 1, the long header is used during connection establishment,
 while the short header is used for data transmission in an established
 connection.
 
-Aside from the Destination Connection ID field of the first packets sent by
-clients, the connection ID can be zero-length. This is a choice that is made by
-each endpoint individually.
+The connection ID can be zero length. Zero length connection IDs can be
+chosen on each endpoint individually, on any packet except the first packets
+sent by clients during connection establishment.
 
 An endpoint that selects a zero-length connection ID will receive packets with a
 zero-length destination connection ID. The endpoint needs to use other
@@ -615,10 +647,11 @@ for an observer to associate two connection IDs. Conversely, in the opposite
 limit where every server handles multiple simultaneous migrations, even an
 exposed server mapping may be insufficient information.
 
-The most efficient mitigation for these attacks is operational, either by using
-a load balancing architecture that loads more flows onto a single server-side
-address, by coordinating the timing of migrations in an attempt to increase the
-number of simultaneous migrations at a given time, or through other means.
+The most efficient mitigations for these attacks are through network design
+and/or operational practice, by using a load balancing architecture that
+loads more flows onto a single server-side address, by coordinating the
+timing of migrations in an attempt to increase the number of simultaneous
+migrations at a given time, or through other means.
 
 ## Using Server Retry for Redirection
 
