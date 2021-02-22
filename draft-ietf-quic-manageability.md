@@ -717,7 +717,7 @@ handshake) at both sides.
 
 ### Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
-The spin bit provides an additional method to measure per-flow RTT from
+The spin bit provides a version-specific method (see section 17.4 of {{?QUIC-TRANSPORT}}) to measure per-flow RTT from
 observation points on the network path throughout the duration of a connection.
 Endpoint participation in spin bit signaling is optional and version-specific
 (see section 17.4 of {{?QUIC-TRANSPORT}}). That is, while
