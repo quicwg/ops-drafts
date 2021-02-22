@@ -40,6 +40,17 @@ informative:
       -
         ins: N. Brownlee
     date: 2014-04
+  IPIM:	
+    title: In-Protocol Internet Measurement (arXiv preprint 1612.02902)	
+    author:	
+      -	
+        ins: M. Allman	
+      -	
+        ins: R. Beverly	
+      -	
+        ins: B. Trammell	
+    target: https://arxiv.org/abs/1612.02902	
+    date: 2016-12-09
 
 --- abstract
 
