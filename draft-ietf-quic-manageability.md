@@ -95,7 +95,7 @@ Since QUIC's wire image {{?WIRE-IMAGE=RFC8546}} is integrity protected,
 in-network operations that depend on modification of data are not possible
 without the cooperation of an endpoint. Network operation practices that alter
 data are only possible if performed as a QUIC endpoint, which might be possible
-with the introduction of a proxy, which either autenticates itself as a
+with the introduction of a proxy, which either authenticates as an endpoint.
 separate instance or acts as a front-facing instance for the endpoint. Proxy
 operations are not in scope for this document.
 
