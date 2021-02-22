@@ -322,7 +322,7 @@ to be received in order, should be transmitted over separate streams.
 - Streams can provide message orientation, and allow messages to be cancelled.
 If one message is mapped to a single stream, resetting the stream to expire an
 unacknowledged message can be used to emulate partial reliability
-on a message basis.
+for that message.
 
 If a QUIC receiver has opened the maximum allowed concurrent
 streams, and the sender indicates that more streams are needed, it
