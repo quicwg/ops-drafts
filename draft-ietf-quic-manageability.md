@@ -902,6 +902,20 @@ are very likely to fail, and are not recommended to use as a way to construe
 internals of QUIC's operation as those mechanisms can change, e.g., due to the
 use of extensions.
 
+## Handling ICMP Messages
+
+Datagram Packetization Layer PMTU Discovery (PLPMTUD) can be used by QUIC to
+probe for the supported PMTU. PLPMTUD optionally uses ICMP messages (e.g.,
+IPv6 Packet Too Big messages). Given known attacks with the use of ICMP
+messages, the use of PLPMTUD in QUIC has been designed to safely use but
+not rely on receiving ICMP feedback (see
+{{Section 14.2.1. of QUIC-TRANSPORT}}).
+
+Networks are recommended to forward these ICMP messages and retain as much of
+the original packet as possible without exceeding the minimum MTU for the IP
+version when generating ICMP messages as recommended in {{?RFC1812}}
+and {{?RFC4443}}.
+
 ## Quality of Service handling and ECMP
 
 It is expected that any QoS handling in the network, e.g. based on use of
