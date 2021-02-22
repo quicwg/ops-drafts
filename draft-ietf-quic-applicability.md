@@ -560,10 +560,8 @@ using QUIC can define application-specific error codes (see, for example,
 {{QUIC-HTTP}}, Section 8.1).
 
 The CONNECTION_CLOSE frame provides an optional reason field, that can be used
-to append human-readable information to an error code. Note that QUIC
-RESET_STREAM and STOP_SENDING frames also include an error code, but no reason
-string. Application error codes are expected to be defined from a single space
-that applies to all three frame types.
+to append human-readable information to an error code.  RESET_STREAM and
+STOP_SENDING frames also include an error code, but no reason string.
 
 Alternatively, a QUIC connection can be silently closed by each endpoint
 separately after an idle timeout. If enabled as indicated by a transport
