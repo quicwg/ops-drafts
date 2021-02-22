@@ -527,10 +527,13 @@ Table of Contents
 
 2.8.  Version Negotiation and Greasing
 
-   Version Negotiation packets are not intrinsically protected, but QUIC
-   versions can use later encrypted messages to verify that they were
-   authentic.  Therefore any modification of this list will be detected
-   and may cause the endpoints to terminate the connection attempt.
+   Version Negotiation packets are used by the server to indicate that a
+   requested version from the client is not supported (see section 6 of
+   [QUIC-TRANSPORT].  Version Negotiation packets are not intrinsically
+   protected, but QUIC versions can use later encrypted messages to
+   verify that they were authentic.  Therefore any modification of this
+   list will be detected and may cause the endpoints to terminate the
+   connection attempt.
 
    Also note that the list of versions in the Version Negotiation packet
    may contain reserved versions.  This mechanism is used to avoid
