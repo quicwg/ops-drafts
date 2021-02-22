@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Manageability of the QUIC Transport Protocol</title>
+<meta content="Mirja Kuehlewind" name="author">
+<meta content="Brian Trammell" name="author">
+<meta content="
+       This document discusses manageability of the QUIC transport protocol, focusing
+on caveats impacting network operations involving QUIC traffic. Its intended
+audience is network operators, as well as content providers that rely on the use
+of QUIC-aware middleboxes, e.g. for load balancing. 
+    " name="description">
+<meta content="xml2rfc 3.5.0" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-ietf-quic-manageability" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.5.0
+    Python 3.8.7
+    appdirs 1.4.4
+    ConfigArgParse 1.2.3
+    google-i18n-address 2.4.0
+    html5lib 1.1
+    intervaltree 3.1.0
+    Jinja2 2.11.2
+    kitchen 1.2.6
+    lxml 4.6.2
+    pycountry 20.7.3
+    pyflakes 2.2.0
+    PyYAML 5.4.1
+    requests 2.25.1
+    setuptools 51.3.3
+    six 1.15.0
+-->
+<link href="draft-ietf-quic-manageability.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@import url('https://martinthomson.github.io/i-d-template/fonts.css');
+
+html {
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  scrollbar-color: #bbb #eee;
+}
+@media (prefers-color-scheme: dark) {
+html {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+#title {
+  padding: 1em 0 0.2em;
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p, #abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 18px;
+  line-height: 24px;
+}
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+dd.break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href].selfRef {
+  color: var(--text-color);
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px 'Oxygen Mono', monospace;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  pre {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  pre + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+tr:nth-child(2n) > td {
+  background-color: var(--background-color);
+}
+tr:nth-child(2n+1) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n+1) > td {
+  background-color: var(--background-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 500px) {
+  .index ul {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .index ul ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul p, #toc ul li {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left, table .text-left {
+  text-align: left;
+}
+table .text-center, table .text-center {
+  text-align: center;
+}
+table .text-right, table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
+  }
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+</style>
+
+</head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">QUIC Manageability</td>
+<td class="right">February 2021</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Kuehlewind &amp; Trammell</td>
+<td class="center">Expires 26 August 2021</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-quic-manageability</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2021-02-22" class="published">22 February 2021</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Informational</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2021-08-26">26 August 2021</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">M. Kuehlewind</div>
+<div class="org">Ericsson</div>
+</div>
+<div class="author">
+      <div class="author-name">B. Trammell</div>
+<div class="org">Google</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Manageability of the QUIC Transport Protocol</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document discusses manageability of the QUIC transport protocol, focusing
+on caveats impacting network operations involving QUIC traffic. Its intended
+audience is network operators, as well as content providers that rely on the use
+of QUIC-aware middleboxes, e.g. for load balancing.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 26 August 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2021 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="toc ulEmpty compact">
+<li class="toc ulEmpty compact" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a><a href="#section-toc.1-1.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-features-of-the-quic-wire-i" class="xref">Features of the QUIC Wire Image</a><a href="#section-toc.1-1.2.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-quic-packet-header-structur" class="xref">QUIC Packet Header Structure</a><a href="#section-toc.1-1.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1" class="keepWithNext"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-coalesced-packets" class="xref">Coalesced Packets</a><a href="#section-toc.1-1.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="xref">2.3</a>.  <a href="#name-use-of-port-numbers" class="xref">Use of Port Numbers</a><a href="#section-toc.1-1.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.4">
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="xref">2.4</a>.  <a href="#name-the-quic-handshake" class="xref">The QUIC Handshake</a><a href="#section-toc.1-1.2.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.5">
+                <p id="section-toc.1-1.2.2.5.1"><a href="#section-2.5" class="xref">2.5</a>.  <a href="#name-integrity-protection-of-the" class="xref">Integrity Protection of the Wire Image</a><a href="#section-toc.1-1.2.2.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.6">
+                <p id="section-toc.1-1.2.2.6.1"><a href="#section-2.6" class="xref">2.6</a>.  <a href="#name-connection-id-and-rebinding" class="xref">Connection ID and Rebinding</a><a href="#section-toc.1-1.2.2.6.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.7">
+                <p id="section-toc.1-1.2.2.7.1"><a href="#section-2.7" class="xref">2.7</a>.  <a href="#name-packet-numbers" class="xref">Packet Numbers</a><a href="#section-toc.1-1.2.2.7.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.8">
+                <p id="section-toc.1-1.2.2.8.1"><a href="#section-2.8" class="xref">2.8</a>.  <a href="#name-version-negotiation-and-gre" class="xref">Version Negotiation and Greasing</a><a href="#section-toc.1-1.2.2.8.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-network-visible-information" class="xref">Network-visible Information about QUIC Flows</a><a href="#section-toc.1-1.3.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-identifying-quic-traffic" class="xref">Identifying QUIC Traffic</a><a href="#section-toc.1-1.3.2.1.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.3.2.1.2.1">
+                    <p id="section-toc.1-1.3.2.1.2.1.1"><a href="#section-3.1.1" class="xref">3.1.1</a>.  <a href="#name-identifying-negotiated-vers" class="xref">Identifying Negotiated Version</a><a href="#section-toc.1-1.3.2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.1.2.2">
+                    <p id="section-toc.1-1.3.2.1.2.2.1"><a href="#section-3.1.2" class="xref">3.1.2</a>.  <a href="#name-rejection-of-garbage-traffi" class="xref">Rejection of Garbage Traffic</a><a href="#section-toc.1-1.3.2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-connection-confirmation" class="xref">Connection Confirmation</a><a href="#section-toc.1-1.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="xref">3.3</a>.  <a href="#name-application-identification" class="xref">Application Identification</a><a href="#section-toc.1-1.3.2.3.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.3.2.3.2.1">
+                    <p id="section-toc.1-1.3.2.3.2.1.1"><a href="#section-3.3.1" class="xref">3.3.1</a>.  <a href="#name-extracting-server-name-indi" class="xref">Extracting Server Name Indication (SNI) Information</a><a href="#section-toc.1-1.3.2.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="xref">3.4</a>.  <a href="#name-flow-association" class="xref">Flow Association</a><a href="#section-toc.1-1.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="xref">3.5</a>.  <a href="#name-flow-teardown" class="xref">Flow teardown</a><a href="#section-toc.1-1.3.2.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.6">
+                <p id="section-toc.1-1.3.2.6.1"><a href="#section-3.6" class="xref">3.6</a>.  <a href="#name-flow-symmetry-measurement" class="xref">Flow Symmetry Measurement</a><a href="#section-toc.1-1.3.2.6.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.7">
+                <p id="section-toc.1-1.3.2.7.1"><a href="#section-3.7" class="xref">3.7</a>.  <a href="#name-round-trip-time-rtt-measure" class="xref">Round-Trip Time (RTT) Measurement</a><a href="#section-toc.1-1.3.2.7.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.3.2.7.2.1">
+                    <p id="section-toc.1-1.3.2.7.2.1.1"><a href="#section-3.7.1" class="xref">3.7.1</a>.  <a href="#name-measuring-initial-rtt" class="xref">Measuring Initial RTT</a><a href="#section-toc.1-1.3.2.7.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.7.2.2">
+                    <p id="section-toc.1-1.3.2.7.2.2.1"><a href="#section-3.7.2" class="xref">3.7.2</a>.  <a href="#name-using-the-spin-bit-for-pass" class="xref">Using the Spin Bit for Passive RTT Measurement</a><a href="#section-toc.1-1.3.2.7.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-specific-network-management" class="xref">Specific Network Management Tasks</a><a href="#section-toc.1-1.4.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-stateful-treatment-of-quic-" class="xref">Stateful Treatment of QUIC Traffic</a><a href="#section-toc.1-1.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-passive-network-performance" class="xref">Passive Network Performance Measurement and Troubleshooting</a><a href="#section-toc.1-1.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-server-cooperation-with-loa" class="xref">Server Cooperation with Load Balancers</a><a href="#section-toc.1-1.4.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="xref">4.4</a>.  <a href="#name-ddos-detection-and-mitigati" class="xref">DDoS Detection and Mitigation</a><a href="#section-toc.1-1.4.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.5">
+                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="xref">4.5</a>.  <a href="#name-udp-policing" class="xref">UDP Policing</a><a href="#section-toc.1-1.4.2.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.6">
+                <p id="section-toc.1-1.4.2.6.1"><a href="#section-4.6" class="xref">4.6</a>.  <a href="#name-distinguishing-acknowledgme" class="xref">Distinguishing Acknowledgment traffic</a><a href="#section-toc.1-1.4.2.6.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.7">
+                <p id="section-toc.1-1.4.2.7.1"><a href="#section-4.7" class="xref">4.7</a>.  <a href="#name-handling-icmp-messages" class="xref">Handling ICMP Messages</a><a href="#section-toc.1-1.4.2.7.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.8">
+                <p id="section-toc.1-1.4.2.8.1"><a href="#section-4.8" class="xref">4.8</a>.  <a href="#name-quality-of-service-handling" class="xref">Quality of Service handling and ECMP</a><a href="#section-toc.1-1.4.2.8.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.9">
+                <p id="section-toc.1-1.4.2.9.1"><a href="#section-4.9" class="xref">4.9</a>.  <a href="#name-quic-and-network-address-tr" class="xref">QUIC and Network Address Translation (NAT)</a><a href="#section-toc.1-1.4.2.9.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.4.2.9.2.1">
+                    <p id="section-toc.1-1.4.2.9.2.1.1"><a href="#section-4.9.1" class="xref">4.9.1</a>.  <a href="#name-resource-conservation" class="xref">Resource Conservation</a><a href="#section-toc.1-1.4.2.9.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.9.2.2">
+                    <p id="section-toc.1-1.4.2.9.2.2.1"><a href="#section-4.9.2" class="xref">4.9.2</a>.  <a href="#name-helping-with-routing-infras" class="xref">"Helping" with routing infrastructure issues</a><a href="#section-toc.1-1.4.2.9.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.4.2.10">
+                <p id="section-toc.1-1.4.2.10.1"><a href="#section-4.10" class="xref">4.10</a>. <a href="#name-filtering-behavior" class="xref">Filtering behavior</a><a href="#section-toc.1-1.4.2.10.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a><a href="#section-toc.1-1.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a><a href="#section-toc.1-1.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-contributors" class="xref">Contributors</a><a href="#section-toc.1-1.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-acknowledgments" class="xref">Acknowledgments</a><a href="#section-toc.1-1.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-appendix" class="xref">Appendix</a><a href="#section-toc.1-1.9.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="xref">9.1</a>.  <a href="#name-distinguishing-ietf-quic-an" class="xref">Distinguishing IETF QUIC and Google QUIC Versions</a><a href="#section-toc.1-1.9.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="xref">9.2</a>.  <a href="#name-extracting-the-crypto-frame" class="xref">Extracting the CRYPTO frame</a><a href="#section-toc.1-1.9.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-references" class="xref">References</a><a href="#section-toc.1-1.10.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="xref">10.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a><a href="#section-toc.1-1.10.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="xref">10.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a><a href="#section-toc.1-1.10.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc ulEmpty compact" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-appendix.a" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a><a href="#section-toc.1-1.11.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">QUIC <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span> is a new transport protocol
+encapsulated in UDP and encrypted by default. QUIC integrates TLS
+<span>[<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span> to encrypt all payload data and most control
+information. The design focused on support of semantics for HTTP, which required
+changes to HTTP known as HTTP/3 <span>[<a href="#QUIC-HTTP" class="xref">QUIC-HTTP</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Given that QUIC is an end-to-end transport protocol, all information in the
+protocol header, even that which can be inspected, is not meant to be
+mutable by the network, and is therefore integrity-protected. While less
+information is visible to the network than for TCP, integrity protection can
+also simplify troubleshooting, because none of the nodes on the network path
+can modify the transport layer information.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">This document provides guidance for network operations that manage QUIC
+traffic. This includes guidance on how to interpret and utilize information that
+is exposed by QUIC to the network, requirements and assumptions that the QUIC
+design with respect to network treatment, and a description of how common
+network management practices will be impacted by QUIC.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">Since QUIC's wire image <span>[<a href="#WIRE-IMAGE" class="xref">WIRE-IMAGE</a>]</span> is integrity protected and not
+modifiable on path, in-network operations are not possible without terminating
+the QUIC connection, for instance using a back-to-back proxy. Proxy operations
+are not in scope for this document. A proxy can either explicit identify itself
+as providing a proxy service, or may share the TLS credentials to authenticate
+as the server and (in some cases) client acting as a front-facing instance for
+the endpoint itself.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">Network management is not a one-size-fits-all endeavour: practices considered
+necessary or even mandatory within enterprise networks with certain compliance
+requirements, for example, would be impermissible on other networks without
+those requirements. This document therefore does not make any specific
+recommendations as to which practices should or should not be applied; for each
+practice, it describes what is and is not possible with the QUIC transport
+protocol as defined.<a href="#section-1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-wire-image">
+<section id="section-2">
+      <h2 id="name-features-of-the-quic-wire-i">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-features-of-the-quic-wire-i" class="section-name selfRef">Features of the QUIC Wire Image</a>
+      </h2>
+<p id="section-2-1">In this section, we discuss those aspects of the QUIC transport protocol that
+have an impact on the design and operation of devices that forward QUIC packets.
+Here, we are concerned primarily with the unencrypted part of QUIC's wire image
+<span>[<a href="#WIRE-IMAGE" class="xref">WIRE-IMAGE</a>]</span>, which we define as the information available in the packet
+header in each QUIC packet, and the dynamics of that information. Since QUIC is
+a versioned protocol, the wire image of the header format can also change from
+version to version. However, the field that identifies the QUIC version in some
+packets, and the format of the Version Negotiation Packet, are both inspectable
+and invariant <span>[<a href="#QUIC-INVARIANTS" class="xref">QUIC-INVARIANTS</a>]</span>.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">This document describes version 1 of the QUIC protocol, whose wire image
+is fully defined in <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span> and <span>[<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>. Features of the wire
+image described herein may change in future versions of the protocol, except
+when specified as an invariant <span>[<a href="#QUIC-INVARIANTS" class="xref">QUIC-INVARIANTS</a>]</span>,
+and cannot be used to identify QUIC as a protocol or
+to infer the behavior of future versions of QUIC.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3"><a href="#sec-google-version" class="xref">Section 9.1</a> provides non-normative guidance on the identification of
+QUIC version 1 packets compared to some pre-standard versions.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<div id="public-header">
+<section id="section-2.1">
+        <h3 id="name-quic-packet-header-structur">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-quic-packet-header-structur" class="section-name selfRef">QUIC Packet Header Structure</a>
+        </h3>
+<p id="section-2.1-1">QUIC packets may have either a long header, or a short header. The first bit
+of the QUIC header is the Header Form bit, and indicates which type of header
+is present. The purpose of this bit is invariant across QUIC versions.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">The long header exposes more information. It is used during connection
+establishment, including version negotiation, retry, and 0-RTT data. It
+contains a version number, as well as source and destination connection IDs
+for grouping packets belonging to the same flow. The definition and location
+of these fields in the QUIC long header are invariant for future versions of
+QUIC, although future versions of QUIC may provide additional fields in the
+long header <span>[<a href="#QUIC-INVARIANTS" class="xref">QUIC-INVARIANTS</a>]</span>.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.1-3">Short headers are used after connection establishment, and contain only an
+optional destination connection ID and the spin bit for RTT measurement.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
+<p id="section-2.1-4">The following information is exposed in QUIC packet headers:<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-5.1">"fixed bit": the second most significant bit of the first octet most QUIC
+packets of the current version is currently set to 1, for endpoints to
+demultiplex with other UDP-encapsulated protocols. Even thought this bit is
+fixed in the QUICv1 specification, endpoints may use a version or extension
+that varies the bit. Therefore, observers cannot reliably use it as an
+identifier for QUIC.<a href="#section-2.1-5.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.1-5.2">latency spin bit: the third most significant bit of first octet in the short
+packet header. The spin bit is set by endpoints such that  tracking edge
+transitions can be used to passively observe end-to-end RTT. See
+<a href="#spin-usage" class="xref">Section 3.7.2</a> for further details.<a href="#section-2.1-5.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.1-5.3">header type: the long header has a 2 bit packet type field following the
+Header Form and fixed bits. Header types correspond to stages of the
+handshake; see Section 17.2 of <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span> for details.<a href="#section-2.1-5.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.1-5.4">version number: the version number is present in the long header, and
+identifies the version used for that packet. During Version
+Negotiation (see <a href="#version" class="xref">Section 2.8</a> and Section 17.2.1 of <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>), the
+version number field has a special value (0x00000000) that identifies the
+packet as a Version Negotiation packet. Many QUIC versions that start with
+0xff implement IETF drafts. QUIC versions that start with 0x0000 are reserved
+for IETF consensus documents. For example, QUIC version 1 uses version
+0x00000001.  Operators should expect to observe packets with other version
+numbers as a result of various internet experiments and future standards.<a href="#section-2.1-5.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.1-5.5">source and destination connection ID: short and long packet headers carry a
+destination connection ID, a variable-length field that can be used to
+identify the connection associated with a QUIC packet, for load-balancing and
+NAT rebinding purposes; see <a href="#sec-loadbalancing" class="xref">Section 4.3</a> and <a href="#rebinding" class="xref">Section 2.6</a>. Long
+packet headers additionally carry a source connection ID. The source
+connection ID corresponds to the destination connection ID the source would
+like to have on packets sent to it, and is only present on long packet
+headers. On long header packets, the length of the connection
+IDs is also present; on short header packets, the length of the destination
+connection ID is implicit.<a href="#section-2.1-5.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.1-5.6">length: the length of the remaining QUIC packet after the length field,
+present on long headers. This field is used to implement coalesced packets
+during the handshake (see <a href="#coalesced" class="xref">Section 2.2</a>).<a href="#section-2.1-5.6" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.1-5.7">token: Initial packets may contain a token, a variable-length opaque value
+optionally sent from client to server, used for validating the client's
+address. Retry packets also contain a token, which can be used by the client
+in an Initial packet on a subsequent connection attempt. The length of the
+token is explicit in both cases.<a href="#section-2.1-5.7" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-2.1-6">Retry (Section 17.2.5 of <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>) and Version Negotiation (Section
+17.2.1 of <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>) packets are not encrypted or obfuscated in any
+way. For other kinds of packets, other information in the packet headers is
+cryptographically obfuscated:<a href="#section-2.1-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-7.1">packet number: All packets except Version Negotiation and
+Retry packets have an associated packet number; however, this packet number
+is encrypted, and therefore not of use to on-path observers. The offset of the
+packet number is encoded in long headers, while it
+is implicit (depending on destination connection ID length) in short headers.
+The length of the packet number is cryptographically obfuscated.<a href="#section-2.1-7.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.1-7.2">key phase: The Key Phase bit, present in short headers, specifies the keys
+used to encrypt the packet to support key rotation. The Key Phase bit is
+cryptographically obfuscated.<a href="#section-2.1-7.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="coalesced">
+<section id="section-2.2">
+        <h3 id="name-coalesced-packets">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-coalesced-packets" class="section-name selfRef">Coalesced Packets</a>
+        </h3>
+<p id="section-2.2-1">Multiple QUIC packets may be coalesced into a UDP datagram, with a datagram
+carrying one or more long header packets followed by zero or one short header
+packets. When packets are coalesced, the Length fields in the long headers are
+used to separate QUIC packets; see Section 12.2 of <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>.
+The length header field is variable length, and its position in the header is
+also variable depending on the length of the source and destination connection
+ID; see Section 17.2 of <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="use-of-port-numbers">
+<section id="section-2.3">
+        <h3 id="name-use-of-port-numbers">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-use-of-port-numbers" class="section-name selfRef">Use of Port Numbers</a>
+        </h3>
+<p id="section-2.3-1">Applications that have a mapping for TCP as well as QUIC are expected to
+use the same port number for both services. However, as with
+TCP-based services, especially when application layer information is
+encrypted, there is no guarantee that a specific application will use the
+registered port, or the used port is carrying traffic belonging to the
+respective registered service. For example, <span>[<a href="#QUIC-HTTP" class="xref">QUIC-HTTP</a>]</span> specifies
+the use of Alt-Svc for discovery of HTTP/3 services on other ports.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">Further, as QUIC has a connection ID, it is also possible to maintain multiple
+QUIC connections over one 5-tuple. However, if the connection ID is not present
+in the packet header, all packets of the 5-tuple belong to the same QUIC
+connection.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="handshake">
+<section id="section-2.4">
+        <h3 id="name-the-quic-handshake">
+<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-the-quic-handshake" class="section-name selfRef">The QUIC Handshake</a>
+        </h3>
+<p id="section-2.4-1">New QUIC connections are established using a handshake, which is distinguishable
+on the wire and contains some information that can be passively observed.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4-2">To illustrate the information visible in the QUIC wire image during the
+handshake, we first show the general communication pattern visible in the UDP
+datagrams containing the QUIC handshake, then examine each of the datagrams in
+detail.<a href="#section-2.4-2" class="pilcrow">¶</a></p>
+<p id="section-2.4-3">In the nominal case, the QUIC handshake can be recognized on the wire through at
+least four datagrams we'll call "QUIC Client Hello", "QUIC Server Hello", and
+"Initial Completion", and "Handshake Completion", for purposes of this
+illustration, as shown in <a href="#fig-handshake" class="xref">Figure 1</a>.<a href="#section-2.4-3" class="pilcrow">¶</a></p>
+<p id="section-2.4-4">Packets in the handshake belong to three separate cryptographic and transport
+contexts ("Initial", which contains observable payload, and "Handshake" and
+"1-RTT", which do not). QUIC packets in separate contexts during the handshake
+are generally coalesced (see <a href="#coalesced" class="xref">Section 2.2</a>) in order to reduce the number of UDP
+datagrams sent during the handshake.<a href="#section-2.4-4" class="pilcrow">¶</a></p>
+<p id="section-2.4-5">As shown here, the client can send 0-RTT data as soon as it has sent its Client
+Hello, and the server can send 1-RTT data as soon as it has sent its Server
+Hello.<a href="#section-2.4-5" class="pilcrow">¶</a></p>
+<span id="name-general-communication-patte"></span><div id="fig-handshake">
+<figure id="figure-1">
+          <div class="artwork art-text alignLeft" id="section-2.4-6.1">
+<pre>
+Client                                    Server
+  |                                          |
+  +----QUIC Client Hello--------------------&gt;|
+  +----(zero or more 0RTT)------------------&gt;|
+  |                                          |
+  |&lt;--------------------QUIC Server Hello----+
+  |&lt;---------(1RTT encrypted data starts)----+
+  |                                          |
+  +----Initial Completion-------------------&gt;|
+  +----(1RTT encrypted data starts)---------&gt;|
+  |                                          |
+  |&lt;-----------------Handshake Completion----+
+  |                                          |
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-general-communication-patte" class="selfRef">General communication pattern visible in the QUIC handshake</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.4-7">A typical handshake starts with the client sending of a QUIC Client Hello
+datagram as shown in <a href="#fig-client-hello" class="xref">Figure 2</a>, which elicits a QUIC Server Hello
+datagram as shown in <a href="#fig-server-hello" class="xref">Figure 3</a> typically containing three packets:
+an Initial packet with the Server Hello, a Handshake packet with the rest of
+the server's side of the TLS handshake, and initial 1-RTT data, if present.<a href="#section-2.4-7" class="pilcrow">¶</a></p>
+<p id="section-2.4-8">The Initial Completion datagram contains at least one Handshake packet and
+some also include an Initial packet.<a href="#section-2.4-8" class="pilcrow">¶</a></p>
+<p id="section-2.4-9">Datagrams that contain a QUIC Initial Packet (Client Hello, Server Hello, and
+some Initial Completion) must be at least 1200 octets long. This protects
+against amplification attacks and verifies that the network path meets minimum
+Maximum Transmission Unit (MTU) requirements. This is usually accomplished with
+either the addition of PADDING frames to the Initial packet, or coalescing of
+the Initial Packet with packets from other encryption contexts.<a href="#section-2.4-9" class="pilcrow">¶</a></p>
+<p id="section-2.4-10">The content of QUIC Initial packets are encrypted using Initial Secrets, which
+are derived from a per-version constant and the client's destination connection
+ID; they are therefore observable by any on-path device that knows the
+per-version constant. We therefore consider these as visible in our
+illustration. The content of QUIC Handshake packets are encrypted using keys
+established during the initial handshake exchange, and are therefore not
+visible.<a href="#section-2.4-10" class="pilcrow">¶</a></p>
+<p id="section-2.4-11">Initial, Handshake, and the Short Header packets transmitted after the handshake
+belong to cryptographic and transport contexts. The Initial Completion
+<a href="#fig-init-complete" class="xref">Figure 4</a> and the Handshake Completion <a href="#fig-hs-complete" class="xref">Figure 5</a> datagrams
+finish these first two contexts, by sending the final acknowledgment and
+finishing the transmission of CRYPTO frames.<a href="#section-2.4-11" class="pilcrow">¶</a></p>
+<span id="name-typical-quic-client-hello-d"></span><div id="fig-client-hello">
+<figure id="figure-2">
+          <div class="artwork art-text alignLeft" id="section-2.4-12.1">
+<pre>
++----------------------------------------------------------+
+| UDP header (source and destination UDP ports)            |
++----------------------------------------------------------+
+| QUIC long header (type = Initial, Version, DCID, SCID) (Length)
++----------------------------------------------------------+  |
+| QUIC CRYPTO frame header                                 |  |
++----------------------------------------------------------+  |
+| TLS Client Hello (incl. TLS SNI)                         |  |
++----------------------------------------------------------+  |
+| QUIC PADDING frames                                      |  |
++----------------------------------------------------------+&lt;-+
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-typical-quic-client-hello-d" class="selfRef">Typical QUIC Client Hello datagram pattern with no  0-RTT</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.4-13">The Client Hello datagram exposes version number, source and destination
+connection IDs in the clear. Information in the TLS Client Hello frame,
+including any TLS Server Name Indication (SNI) present, is obfuscated using the
+Initial secret. Note that the location of PADDING is implementation-dependent,
+and PADDING frames may not appear in a coalesced Initial packet.<a href="#section-2.4-13" class="pilcrow">¶</a></p>
+<span id="name-typical-quic-server-hello-d"></span><div id="fig-server-hello">
+<figure id="figure-3">
+          <div class="artwork art-text alignLeft" id="section-2.4-14.1">
+<pre>
++------------------------------------------------------------+
+| UDP header (source and destination UDP ports)              |
++------------------------------------------------------------+
+| QUIC long header (type = Initial, Version, DCID, SCID)   (Length)
++------------------------------------------------------------+  |
+| QUIC CRYPTO frame header                                   |  |
++------------------------------------------------------------+  |
+| TLS Server Hello                                           |  |
++------------------------------------------------------------+  |
+| QUIC ACK frame (acknowledging client hello)                |  |
++------------------------------------------------------------+&lt;-+
+| QUIC long header (type = Handshake, Version, DCID, SCID) (Length)
++------------------------------------------------------------+  |
+| encrypted payload (presumably CRYPTO frames)               |  |
++------------------------------------------------------------+&lt;-+
+| QUIC short header                                          |
++------------------------------------------------------------+
+| 1-RTT encrypted payload                                    |
++------------------------------------------------------------+
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-typical-quic-server-hello-d" class="selfRef">Typical QUIC Server Hello datagram pattern</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.4-15">The Server Hello datagram also exposes version number, source and
+destination connection IDs and information in the TLS Server Hello message
+which is obfuscated using the Initial secret.<a href="#section-2.4-15" class="pilcrow">¶</a></p>
+<span id="name-typical-quic-initial-comple"></span><div id="fig-init-complete">
+<figure id="figure-4">
+          <div class="artwork art-text alignLeft" id="section-2.4-16.1">
+<pre>
++------------------------------------------------------------+
+| UDP header (source and destination UDP ports)              |
++------------------------------------------------------------+
+| QUIC long header (type = Initial, Version, DCID, SCID)   (Length)
++------------------------------------------------------------+  |
+| QUIC ACK frame (acknowledging Server Hello Initial)        |  |
++------------------------------------------------------------+&lt;-+
+| QUIC long header (type = Handshake, Version, DCID, SCID) (Length)
++------------------------------------------------------------+  |
+| encrypted payload (presumably CRYPTO/ACK frames)           |  |
++------------------------------------------------------------+&lt;-+
+| QUIC short header                                          |
++------------------------------------------------------------+
+| 1-RTT encrypted payload                                    |
++------------------------------------------------------------+
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-typical-quic-initial-comple" class="selfRef">Typical QUIC Initial Completion datagram pattern</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.4-17">The Initial Completion datagram does not expose any additional information;
+however, recognizing it can be used to determine that a handshake has completed
+(see <a href="#sec-confirm" class="xref">Section 3.2</a>), and for three-way handshake RTT estimation as in
+<a href="#sec-rtt" class="xref">Section 3.7</a>.<a href="#section-2.4-17" class="pilcrow">¶</a></p>
+<span id="name-typical-quic-handshake-comp"></span><div id="fig-hs-complete">
+<figure id="figure-5">
+          <div class="artwork art-text alignLeft" id="section-2.4-18.1">
+<pre>
++------------------------------------------------------------+
+| UDP header (source and destination UDP ports)              |
++------------------------------------------------------------+
+| QUIC long header (type = Handshake, Version, DCID, SCID) (Length)
++------------------------------------------------------------+  |
+| encrypted payload (presumably ACK frame)                   |  |
++------------------------------------------------------------+&lt;-+
+| QUIC short header                                          |
++------------------------------------------------------------+
+| 1-RTT encrypted payload                                    |
++------------------------------------------------------------+
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-typical-quic-handshake-comp" class="selfRef">Typical QUIC Handshake Completion datagram pattern</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.4-19">Similar to Initial Completion, Handshake Completion also exposes no additional
+information; observing it serves only to determine that the handshake has
+completed.<a href="#section-2.4-19" class="pilcrow">¶</a></p>
+<p id="section-2.4-20">When the client uses 0-RTT connection resumption, 0-RTT data may also be
+seen in the QUIC Client Hello datagram, as shown in <a href="#fig-client-hello-0rtt" class="xref">Figure 6</a>.<a href="#section-2.4-20" class="pilcrow">¶</a></p>
+<span id="name-typical-0-rtt-quic-client-h"></span><div id="fig-client-hello-0rtt">
+<figure id="figure-6">
+          <div class="artwork art-text alignLeft" id="section-2.4-21.1">
+<pre>
++----------------------------------------------------------+
+| UDP header (source and destination UDP ports)            |
++----------------------------------------------------------+
+| QUIC long header (type = Initial, Version, DCID, SCID) (Length)
++----------------------------------------------------------+  |
+| QUIC CRYPTO frame header                                 |  |
++----------------------------------------------------------+  |
+| TLS Client Hello (incl. TLS SNI)                         |  |
++----------------------------------------------------------+&lt;-+
+| QUIC long header (type = 0RTT, Version, DCID, SCID)    (Length)
++----------------------------------------------------------+  |
+| 0-rtt encrypted payload                                  |  |
++----------------------------------------------------------+&lt;-+
+</pre>
+</div>
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<a href="#name-typical-0-rtt-quic-client-h" class="selfRef">Typical 0-RTT QUIC Client Hello datagram pattern</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.4-22">In a 0-RTT QUIC Client Hello datagram, the PADDING frame is only present if
+necessary to increase the size of the datagram with 0RTT data to at least 1200
+bytes. Additional datagrams containing only 0-RTT protected long header packets
+may be sent from the client to the server after the Client Hello datagram,
+containing the rest of the 0-RTT data. The amount of 0-RTT protected data is
+limited by the initial congestion window, typically around 10 packets
+<span>[<a href="#RFC6928" class="xref">RFC6928</a>]</span>.<a href="#section-2.4-22" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="wire-integrity">
+<section id="section-2.5">
+        <h3 id="name-integrity-protection-of-the">
+<a href="#section-2.5" class="section-number selfRef">2.5. </a><a href="#name-integrity-protection-of-the" class="section-name selfRef">Integrity Protection of the Wire Image</a>
+        </h3>
+<p id="section-2.5-1">As soon as the cryptographic context is established, all information in the QUIC
+header, including exposed information, is integrity
+protected. Further, information that was sent and exposed in handshake packets
+sent before the cryptographic context was established are validated later during
+the cryptographic handshake.  Therefore, devices on path cannot alter any
+information or bits in QUIC packet headers, except specific parts of Initial
+packets, since alteration of header information  will lead to a failed integrity
+check at the receiver, and can even lead to connection termination.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="rebinding">
+<section id="section-2.6">
+        <h3 id="name-connection-id-and-rebinding">
+<a href="#section-2.6" class="section-number selfRef">2.6. </a><a href="#name-connection-id-and-rebinding" class="section-name selfRef">Connection ID and Rebinding</a>
+        </h3>
+<p id="section-2.6-1">The connection ID in the QUIC packet headers allows routing of QUIC packets at
+load balancers on other than five-tuple information, ensuring that related
+flows are appropriately balanced together; and to allow rebinding of a
+connection after one of the endpoint's addresses changes - usually the
+client's. Client and server negotiate
+connection IDs during the handshake; typically, however, only the server will
+request a connection ID for the lifetime of the connection. Connection IDs for
+either endpoint may change during the lifetime of a connection, with the new
+connection ID being negotiated via encrypted frames. See Section 5.1 of
+<span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>. Therefore, observing a new connection ID does not
+necessary indicate a new connection.<a href="#section-2.6-1" class="pilcrow">¶</a></p>
+<p id="section-2.6-2">Server-generated connection IDs should seek to obscure any encoding, of routing
+identities or any other information. Exposing the server mapping would allow
+linkage of multiple IP addresses to the same host if the server also supports
+migration. Furthermore, this opens an attack vector on specific servers or
+pools.<a href="#section-2.6-2" class="pilcrow">¶</a></p>
+<p id="section-2.6-3">The best way to obscure an encoding is to appear random to observers, which is
+most rigorously achieved with encryption. Even when encrypted, a scheme could
+embed the unencrypted length of the connection ID in the connection ID itself,
+instead of remembering it.<a href="#section-2.6-3" class="pilcrow">¶</a></p>
+<p id="section-2.6-4"><span>[<a href="#QUIC_LB" class="xref">QUIC_LB</a>]</span> further specified possible algorithms
+to generate connection IDs at load balancers.<a href="#section-2.6-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="packetnumber">
+<section id="section-2.7">
+        <h3 id="name-packet-numbers">
+<a href="#section-2.7" class="section-number selfRef">2.7. </a><a href="#name-packet-numbers" class="section-name selfRef">Packet Numbers</a>
+        </h3>
+<p id="section-2.7-1">The packet number field is always present in the QUIC packet header; however,
+it is always encrypted. The encryption key for packet number protection on
+handshake packets sent before cryptographic context establishment is specific
+to the QUIC version, while packet number protection on subsequent packets uses
+secrets derived from the end-to-end cryptographic context. Packet numbers are
+therefore not part of the wire image that is visible to on-path observers.<a href="#section-2.7-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="version">
+<section id="section-2.8">
+        <h3 id="name-version-negotiation-and-gre">
+<a href="#section-2.8" class="section-number selfRef">2.8. </a><a href="#name-version-negotiation-and-gre" class="section-name selfRef">Version Negotiation and Greasing</a>
+        </h3>
+<p id="section-2.8-1">Version Negotiation packets are not intrinsically protected, but QUIC versions
+can use later encrypted messages to verify that they were authentic.
+Therefore any manipulation of this list will be detected and may cause the
+endpoints to terminate the connection attempt.<a href="#section-2.8-1" class="pilcrow">¶</a></p>
+<p id="section-2.8-2">Also note that the list of versions in the Version Negotiation packet may
+contain reserved versions. This mechanism is used to avoid ossification in the
+implementation on the selection mechanism. Further, a client may send a Initial
+Client packet with a reserved version number to trigger version negotiation. In
+the Version Negotiation packet the connection ID and packet number of the Client
+Initial packet are reflected to provide a proof of return-routability. Therefore
+changing this information will also cause the connection to fail.<a href="#section-2.8-2" class="pilcrow">¶</a></p>
+<p id="section-2.8-3">QUIC is expected to evolve rapidly, so new versions, both experimental and IETF
+standard versions, will be deployed in the Internet more often than with
+traditional Internet- and transport-layer protocols. Using a particular version
+number to recognize valid QUIC traffic is likely to persistently miss a fraction
+of QUIC flows and completely fail in the near future, and is therefore
+not recommended. In addition, due to the speed of evolution of the protocol,
+devices that attempt to distinguish QUIC traffic from non-QUIC traffic for
+purposes of network admission control should admit all QUIC traffic regardless
+of version.<a href="#section-2.8-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="network-visible-information-about-quic-flows">
+<section id="section-3">
+      <h2 id="name-network-visible-information">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-network-visible-information" class="section-name selfRef">Network-visible Information about QUIC Flows</a>
+      </h2>
+<p id="section-3-1">This section addresses the different kinds of observations and inferences that
+can be made about QUIC flows by a passive observer in the network based on the
+wire image in <a href="#sec-wire-image" class="xref">Section 2</a>. Here we assume a bidirectional observer (one
+that can see packets in both directions in the sequence in which they are
+carried on the wire) unless noted.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div id="sec-identifying">
+<section id="section-3.1">
+        <h3 id="name-identifying-quic-traffic">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-identifying-quic-traffic" class="section-name selfRef">Identifying QUIC Traffic</a>
+        </h3>
+<p id="section-3.1-1">The QUIC wire image is not specifically designed to be distinguishable from
+other UDP traffic.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">The only application binding defined by the IETF QUIC WG is HTTP/3
+<span>[<a href="#QUIC-HTTP" class="xref">QUIC-HTTP</a>]</span> at the time of this writing; however, many other applications
+are currently being defined and deployed over QUIC, so an assumption that all
+QUIC traffic is HTTP/3 is not valid. HTTP over QUIC uses UDP port 443 by
+default, although URLs referring to resources available over HTTP/3
+may specify alternate port numbers. Simple assumptions about whether a
+given flow is using QUIC based upon a UDP port number may therefore not hold;
+see also <span>[<a href="#RFC7605" class="xref">RFC7605</a>]</span> section 5.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">While the second most significant bit (0x40) of the first octet is set to
+1 in most QUIC packets of the current version (see <a href="#public-header" class="xref">Section 2.1</a>),
+this method of recognizing QUIC traffic is NOT RECOMMENDED. First, it only
+provides one bit of information and is quite prone to collide with
+UDP-based protocols other than those that this static bit is meant to allow
+multiplexing with. Second, this feature of the wire image is not invariant
+<span>[<a href="#QUIC-INVARIANTS" class="xref">QUIC-INVARIANTS</a>]</span> and may change in future versions of the protocol, or
+even be negotiated during the handshake via the use of transport parameters.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">Even though transport parameters transmitted in the client initial are
+obserable by the network, they cannot be modified by the network without
+risking connection failure. Further, the negotiated reply from the server
+cannot be observed, so observers on the network cannot know which
+parameters are actually in use.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<div id="identifying-negotiated-version">
+<section id="section-3.1.1">
+          <h4 id="name-identifying-negotiated-vers">
+<a href="#section-3.1.1" class="section-number selfRef">3.1.1. </a><a href="#name-identifying-negotiated-vers" class="section-name selfRef">Identifying Negotiated Version</a>
+          </h4>
+<p id="section-3.1.1-1">An in-network observer assuming that a set of packets belongs to a QUIC flow
+can infer the version number in use by observing the handshake: an Initial
+packet with a given version from a client to which a server responds with an
+Initial packet with the same version implies acceptance of that version.<a href="#section-3.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1.1-2">Negotiated version cannot be identified for flows for which a handshake is not
+observed, such as in the case of connection migration; however, these flows can
+be associated with flows for which a version has been identified; see
+<a href="#sec-flow-association" class="xref">Section 3.4</a>.<a href="#section-3.1.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1.1-3">This document focuses on QUIC Version 1, and this section applies only to
+packets belonging to Version 1 QUIC flows; for purposes of on-path observation,
+it assumes that these packets have been identified as such through the
+observation of a version number exchange as described above.<a href="#section-3.1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-garbage">
+<section id="section-3.1.2">
+          <h4 id="name-rejection-of-garbage-traffi">
+<a href="#section-3.1.2" class="section-number selfRef">3.1.2. </a><a href="#name-rejection-of-garbage-traffi" class="section-name selfRef">Rejection of Garbage Traffic</a>
+          </h4>
+<p id="section-3.1.2-1">A related question is whether a first packet of a given flow on a known
+QUIC-associated port is a valid QUIC packet, to support in-network
+filtering of garbage UDP packets (reflection attacks, random backscatter). While
+heuristics based on the first byte of the packet (packet type) could be used to
+separate valid from invalid first packet types, the deployment of such
+heuristics is not recommended, as packet types may have different meanings in
+future versions of the protocol.<a href="#section-3.1.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-confirm">
+<section id="section-3.2">
+        <h3 id="name-connection-confirmation">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-connection-confirmation" class="section-name selfRef">Connection Confirmation</a>
+        </h3>
+<p id="section-3.2-1">Connection establishment uses Initial and Handshake packets containing a
+TLS handshake, and Retry packets that do not contain parts of the handshake.
+Connection establishment can therefore be detected using heuristics similar to
+those used to detect TLS over TCP. A client initiating a 0-RTT connection may
+also send data packets in 0-RTT Protected packets directly after the Initial
+packet containing the TLS Client Hello. Since these packets may be reordered in
+the network, 0-RTT Protected data packets could be seen before the Initial
+packet.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">Note that clients send Initial packets before servers do, servers send Handshake
+packets before clients do, and only clients send Initial packets with tokens.
+Therefore, the role as a client or server can generally be confirmed by an on-
+path observer. An attempted connection after Retry can be detected by
+correlating the token on the Retry with the token on the subsequent Initial
+packet and the destination connection ID of the new Initial packet.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-server">
+<section id="section-3.3">
+        <h3 id="name-application-identification">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-application-identification" class="section-name selfRef">Application Identification</a>
+        </h3>
+<p id="section-3.3-1">The cleartext TLS handshake may contain Server Name Indication (SNI)
+<span>[<a href="#RFC6066" class="xref">RFC6066</a>]</span>, by which the client reveals the name of the server it intends to
+connect to, in order to allow the server to present a certificate based on
+that name. It may also contain information from Application-Layer Protocol
+Negotiation (ALPN) <span>[<a href="#RFC7301" class="xref">RFC7301</a>]</span>, by which the client exposes the names of
+application-layer protocols it supports; an observer can deduce that one of
+those protocols will be used if the connection continues.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">Work is currently underway in the TLS working group to encrypt the SNI in TLS
+1.3 <span>[<a href="#TLS-ESNI" class="xref">TLS-ESNI</a>]</span>. This would make SNI-based application
+identification impossible through passive measurement for QUIC and other
+ protocols that use TLS.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<div id="extracting-server-name-indication-sni-information">
+<section id="section-3.3.1">
+          <h4 id="name-extracting-server-name-indi">
+<a href="#section-3.3.1" class="section-number selfRef">3.3.1. </a><a href="#name-extracting-server-name-indi" class="section-name selfRef">Extracting Server Name Indication (SNI) Information</a>
+          </h4>
+<p id="section-3.3.1-1">If the SNI is not encrypted it can be derived from the QUIC Initial packet
+by calculating the Initial Secret to decrypt the packet payload and parse the
+QUIC CRYPTO Frame containing the TLS ClientHello.<a href="#section-3.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-2">As both the initial salt for the Initial Secret as well as CRYPTO frame itself
+are version-specific, the first step is always to parse the version number
+(second to sixth byte of the long header). Note that only long header packets
+carry the version number, so it is necessary to also check the if first bit of
+the QUIC packet is set to 1, indicating a long header.<a href="#section-3.3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-3">Note that proprietary QUIC versions, that have been deployed before
+standardization, might not set the first bit in a QUIC long header packets to
+1. To parse these versions, example code is provided in the appendix (see
+<a href="#sec-google-version" class="xref">Section 9.1</a>), however, it is expected that these versions will
+gradually disappear over time.<a href="#section-3.3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-4">When the version has been identified as QUIC version 1, the packet type needs
+to be verified as an Initial packet by checking that the third and fourth bit
+of the header are both set to 0. Then the client destination connection ID
+needs to be extracted to calculate the Initial Secret together with the
+version specific initial salt, as described in <span>[<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>. The length of
+the connection ID is indicated in the 6th byte of the header followed by the
+connection ID itself.<a href="#section-3.3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-5">To determine the end of the header and find the start of the payload,
+the packet number length, the source connection ID length, and the token
+length need to be extracted. The packet number length is defined by the seventh
+and eight bits of the header as described in section 17.2. of
+<span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>, but is obfuscated as described in <span>[<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>. The source
+connection ID length is specified in the byte after the destination connection
+ID. And the token length, which follows the source connection ID, is a variable
+length integer as specified in Section 16 of <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>.<a href="#section-3.3.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-6">After decryption, the Initial Client packet can be parsed to detect the
+CRYPTO frame that contains the TLS Client Hello, which then can be parsed
+similarly to TLS over TCP connections. The Initial client packet may
+contain other frames, so the first bytes of each frame need to be checked to
+identify the frame type, and if needed skip over it. Note that the length of the
+frames is dependent on the frame type. In QUIC version 1, the packet is
+expected to only carry the CRYPTO frame and optionally padding frames. However,
+PADDING frames, which are each one byte of zeros, may also occur before or after
+the CRYPTO frame.<a href="#section-3.3.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-7">Note that client Initial packets after the first do not always use the
+destination connection ID that was used to generate the Initial keys. Therefore,
+attempts to decrypt these packets using the procedure above might fail.<a href="#section-3.3.1-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-flow-association">
+<section id="section-3.4">
+        <h3 id="name-flow-association">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-flow-association" class="section-name selfRef">Flow Association</a>
+        </h3>
+<p id="section-3.4-1">The QUIC connection ID (see <a href="#rebinding" class="xref">Section 2.6</a>) is designed to allow an on-path
+device such as a load-balancer to associate two flows as identified by
+five-tuple when the address and port of one of the endpoints changes; e.g. due
+to NAT rebinding or server IP address migration. An observer keeping flow state
+can associate a connection ID with a given flow, and can associate a known flow
+with a new flow when when observing a packet sharing a connection ID and one
+endpoint address (IP address and port) with the known flow.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-2">However, since the connection ID may change multiple times during the lifetime
+of a flow, and the negotiation of connection ID changes is encrypted, packets
+with the same 5-tuple but different connection IDs may or may not belong to the
+same connection.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
+<p id="section-3.4-3">The connection ID value should be treated as opaque; see <a href="#sec-loadbalancing" class="xref">Section 4.3</a>
+for caveats regarding connection ID selection at servers.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-teardown">
+<section id="section-3.5">
+        <h3 id="name-flow-teardown">
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-flow-teardown" class="section-name selfRef">Flow teardown</a>
+        </h3>
+<p id="section-3.5-1">QUIC does not expose the end of a connection; the only indication to on-path
+devices that a flow has ended is that packets are no longer observed. Stateful
+devices on path such as NATs and firewalls must therefore use idle timeouts to
+determine when to drop state for QUIC flows, see further section
+<a href="#sec-stateful" class="xref">Section 4.1</a>.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-symmetry">
+<section id="section-3.6">
+        <h3 id="name-flow-symmetry-measurement">
+<a href="#section-3.6" class="section-number selfRef">3.6. </a><a href="#name-flow-symmetry-measurement" class="section-name selfRef">Flow Symmetry Measurement</a>
+        </h3>
+<p id="section-3.6-1">QUIC explicitly exposes which side of a connection is a client and which side is
+a server during the handshake. In addition, the symmetry of a flow (whether
+primarily client-to-server, primarily server-to-client, or roughly
+bidirectional, as input to basic traffic classification techniques) can be
+inferred through the measurement of data rate in each direction. While QUIC
+traffic is protected and ACKs may be padded, padding is not required.<a href="#section-3.6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-rtt">
+<section id="section-3.7">
+        <h3 id="name-round-trip-time-rtt-measure">
+<a href="#section-3.7" class="section-number selfRef">3.7. </a><a href="#name-round-trip-time-rtt-measure" class="section-name selfRef">Round-Trip Time (RTT) Measurement</a>
+        </h3>
+<p id="section-3.7-1">Round-trip time of QUIC flows can be inferred by observation once per flow,
+during the handshake, as in passive TCP measurement; this requires parsing of
+the QUIC packet header and recognition of the handshake, as illustrated in
+<a href="#handshake" class="xref">Section 2.4</a>. It can also be inferred during the flow's lifetime, if the
+endpoints use the spin bit facility described below and in
+<span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>, section 17.3.1.<a href="#section-3.7-1" class="pilcrow">¶</a></p>
+<div id="measuring-initial-rtt">
+<section id="section-3.7.1">
+          <h4 id="name-measuring-initial-rtt">
+<a href="#section-3.7.1" class="section-number selfRef">3.7.1. </a><a href="#name-measuring-initial-rtt" class="section-name selfRef">Measuring Initial RTT</a>
+          </h4>
+<p id="section-3.7.1-1">In the common case, the delay between the Initial packet containing the TLS
+Client Hello and the Handshake packet containing the TLS Server Hello
+represents the RTT component on the path between the observer and the server.
+The delay between the TLS Server Hello and the Handshake packet containing the
+TLS Finished message sent by the client represents the RTT component on the
+path between the observer and the client. While the client may send 0-RTT
+Protected packets after the Initial packet during 0-RTT connection
+re-establishment, these can be ignored for RTT measurement purposes.<a href="#section-3.7.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.7.1-2">Handshake RTT can be measured by adding the client-to-observer and
+observer-to-server RTT components together. This measurement necessarily
+includes any transport and application layer delay (the latter mainly
+caused by the asymmetric crypto operations associated with the TLS
+handshake) at both sides.<a href="#section-3.7.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="spin-usage">
+<section id="section-3.7.2">
+          <h4 id="name-using-the-spin-bit-for-pass">
+<a href="#section-3.7.2" class="section-number selfRef">3.7.2. </a><a href="#name-using-the-spin-bit-for-pass" class="section-name selfRef">Using the Spin Bit for Passive RTT Measurement</a>
+          </h4>
+<p id="section-3.7.2-1">The spin bit provides an additional method to measure per-flow RTT from
+observation points on the network path throughout the duration of a connection.
+Endpoint participation in spin bit signaling is optional in QUIC. That is, while
+its location is fixed in this version of QUIC, an endpoint can unilaterally
+choose to not support "spinning" the bit. Use of the spin bit for RTT
+measurement by devices on path is only possible when both endpoints enable it.
+Some endpoints may disable use of the spin bit by default, others only in
+specific deployment scenarios, e.g. for servers and clients where the RTT would
+reveal the presence of a VPN or proxy. To avoid making these connections
+identifiable based on the usage of the spin bit, all
+endpoints randomly disable "spinning" for at least one eighth of connections,
+even if otherwise enabled by default. An endpoint not participating in spin bit
+signaling for a given connection can use a fixed spin value for the duration of
+the connection, or can set the bit randomly on each packet sent.<a href="#section-3.7.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.7.2-2">When in use and a QUIC flow sends data continuously, the latency spin bit in
+each direction changes value once per round-trip time (RTT). An on-path observer
+can observe the time difference between edges (changes from 1 to 0 or 0 to 1) in
+the spin bit signal in a single direction to measure one sample of end-to-end
+RTT.<a href="#section-3.7.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.7.2-3">Note that this measurement, as with passive RTT measurement for TCP, includes
+any transport protocol delay (e.g., delayed sending of acknowledgements) and/or
+application layer delay (e.g., waiting for a response to be generated). It
+therefore provides devices on path a good instantaneous estimate of the RTT as
+experienced by the application. A simple linear smoothing or moving minimum
+filter can be applied to the stream of RTT information to get a more stable
+estimate.<a href="#section-3.7.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.7.2-4">However, application-limited and flow-control-limited senders can have
+application and transport layer delay, respectively, that are much greater than
+network RTT. When the sender is application-limited and e.g. only sends small
+amount of periodic application traffic, where that period is longer than the
+RTT, measuring the spin bit provides information about the application period,
+not the network RTT.<a href="#section-3.7.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.7.2-5">Since the spin bit logic at each endpoint considers only samples from packets
+that advance the largest packet number, signal generation itself is
+resistant to reordering. However, reordering can cause problems at an observer
+by causing spurious edge detection and therefore inaccurate (i.e., lower) RTT
+estimates, if reordering occurs across a spin-bit flip in the stream.<a href="#section-3.7.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.7.2-6">Simple heuristics based on the observed data rate per flow or changes in the RTT
+series can be used to reject bad RTT samples due to lost or reordered edges in
+the spin signal, as well as application or flow control limitation; for example,
+QoF <span>[<a href="#TMA-QOF" class="xref">TMA-QOF</a>]</span> rejects component RTTs significantly higher than RTTs over the
+history of the flow. These heuristics may use the handshake RTT as an initial
+RTT estimate for a given flow. Usually such heuristics would also detect if
+the spin is either constant or randomly set for a connection.<a href="#section-3.7.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.7.2-7">An on-path observer that can see traffic in both directions (from client to
+server and from server to client) can also use the spin bit to measure
+"upstream" and "downstream" component RTT; i.e, the component of the
+end-to-end RTT attributable to the paths between the observer and the server
+and the observer and the client, respectively. It does this by measuring the
+delay between a spin edge observed in the upstream direction and that observed
+in the downstream direction, and vice versa.<a href="#section-3.7.2-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="specific-network-management-tasks">
+<section id="section-4">
+      <h2 id="name-specific-network-management">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-specific-network-management" class="section-name selfRef">Specific Network Management Tasks</a>
+      </h2>
+<p id="section-4-1">In this section, we review specific network management and measurement
+techniques and how QUIC's design impacts them.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<div id="sec-stateful">
+<section id="section-4.1">
+        <h3 id="name-stateful-treatment-of-quic-">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-stateful-treatment-of-quic-" class="section-name selfRef">Stateful Treatment of QUIC Traffic</a>
+        </h3>
+<p id="section-4.1-1">Stateful treatment of QUIC traffic (e.g., at a firewall or NAT middlebox) is
+possible through QUIC traffic and version
+identification (<a href="#sec-identifying" class="xref">Section 3.1</a>) and observation of the handshake for
+connection confirmation (<a href="#sec-confirm" class="xref">Section 3.2</a>). The lack of any visible end-of-flow
+signal (<a href="#sec-teardown" class="xref">Section 3.5</a>) means that this state must be purged either through
+timers or through least-recently-used eviction, depending on application
+requirements.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2"><span>[<a href="#RFC4787" class="xref">RFC4787</a>]</span> requires a timout that is not less than 2 minutes for most UDP
+traffic.
+However, in pratice, timers are often lower, in the range of 15 to 30 seconds.
+In contrast, <span>[<a href="#RFC5382" class="xref">RFC5382</a>]</span> recommends a timeout of more than 2 hours for TCP,
+given that TCP is a connection-oriented protocol with well-defined closure
+semantics. For network devices that are QUIC-aware, it is recommended to also
+use longer timeouts for QUIC traffic, as QUIC is connection-oriented. As such,
+a handshake packet from the server indicates the willingness of the server to
+communicate with the client.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">The QUIC header optionally contains a connection ID which can be used as
+additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
+to be observed in order to understand whether the connection ID is present and
+what length it has. However, connection IDs may be renegotiated during
+a connection, and this renegotiation is not visible to the path. Keying state
+off the connection ID may therefore cause undetectable and unrecoverable loss
+of state in the middle of a connection. Use of connection ID specifically
+discouraged for NAT applications.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="passive-network-performance-measurement-and-troubleshooting">
+<section id="section-4.2">
+        <h3 id="name-passive-network-performance">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-passive-network-performance" class="section-name selfRef">Passive Network Performance Measurement and Troubleshooting</a>
+        </h3>
+<p id="section-4.2-1">Limited RTT measurement is possible by passive observation of QUIC traffic;
+see <a href="#sec-rtt" class="xref">Section 3.7</a>. No passive measurement of loss is possible with the present
+wire image. Extremely limited observation of upstream congestion may be
+possible via the observation of CE markings on ECN-enabled QUIC traffic.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-loadbalancing">
+<section id="section-4.3">
+        <h3 id="name-server-cooperation-with-loa">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-server-cooperation-with-loa" class="section-name selfRef">Server Cooperation with Load Balancers</a>
+        </h3>
+<p id="section-4.3-1">In the case of content distribution networking architectures including load
+balancers, the connection ID provides a way for the server to signal information
+about the desired treatment of a flow to the load balancers. Guidance on
+assigning connection IDs is given in
+<span>[<a href="#QUIC-APPLICABILITY" class="xref">QUIC-APPLICABILITY</a>]</span>.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-ddos-dec">
+<section id="section-4.4">
+        <h3 id="name-ddos-detection-and-mitigati">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-ddos-detection-and-mitigati" class="section-name selfRef">DDoS Detection and Mitigation</a>
+        </h3>
+<p id="section-4.4-1">Current practices in detection and mitigation of Distributed Denial of Service
+(DDoS) attacks generally involve classification of incoming traffic (as
+packets, flows, or some other aggregate) into "good" (productive) and "bad"
+(DDoS) traffic, and then differential treatment of this traffic to forward only
+good traffic. This operation is often done in a separate specialized mitigation
+environment through which all traffic is filtered; a generalized architecture
+for separation of concerns in mitigation is given in
+ <span>[<a href="#DOTS-ARCH" class="xref">DOTS-ARCH</a>]</span>.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.4-2">Key to successful DDoS mitigation is efficient classification of this traffic in
+the mitigation environment.  Limited first-packet garbage detection as in
+<a href="#sec-garbage" class="xref">Section 3.1.2</a> and stateful tracking of QUIC traffic as in <a href="#sec-stateful" class="xref">Section 4.1</a>
+above may be useful during classification.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+<p id="section-4.4-3">Note that the use of a connection ID to support connection migration renders
+5-tuple based filtering insufficient and requires more state to be maintained by
+DDoS defense systems. For the common case of NAT rebinding, DDoS defense systems
+can detect a change in the client's endpoint address by linking flows based on
+the server's connection IDs. QUIC's linkability resistance ensures that
+a deliberate connection migration is accompanied by a change in the connection
+ID.<a href="#section-4.4-3" class="pilcrow">¶</a></p>
+<p id="section-4.4-4">It is questionable whether connection migrations must be supported during a DDoS
+attack. If the connection migration is not visible to the network that performs
+the DDoS detection, an active, migrated QUIC connection may be blocked by such a
+system under attack. As soon as the connection blocking is detected by the
+client, the client may rely on the fast resumption mechanism provided by
+QUIC. When clients migrate to a new path, they should be prepared for the
+migration to fail and attempt to reconnect quickly.<a href="#section-4.4-4" class="pilcrow">¶</a></p>
+<p id="section-4.4-5">TCP syncookies <span>[<a href="#RFC4937" class="xref">RFC4937</a>]</span> are a well-established method of mitigating some
+kinds of TCP DDoS attacks. QUIC Retry packets are the functional analogue to
+syncookies, forcing clients to prove possession of their IP address before
+committing server state.  However, there are safeguards in QUIC against
+unsolicited injection of these packets by intermediaries who do not have consent
+of the end server. See <span>[<a href="#QUIC_LB" class="xref">QUIC_LB</a>]</span> for standard ways for intermediaries to send
+Retry packets on behalf of consenting servers.<a href="#section-4.4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-udp-1312">
+<section id="section-4.5">
+        <h3 id="name-udp-policing">
+<a href="#section-4.5" class="section-number selfRef">4.5. </a><a href="#name-udp-policing" class="section-name selfRef">UDP Policing</a>
+        </h3>
+<p id="section-4.5-1">Today, UDP is the most prevalent DDoS vector, since it is easy for compromised
+non-admin applications to send a flood of large UDP packets (while with TCP the
+attacker gets throttled by the congestion controller) or to craft reflection and
+amplification attacks. Networks should therefore be
+prepared for UDP flood attacks on ports used for QUIC traffic. One possible
+response to this threat is to police UDP traffic on the network, allocating a
+fixed portion of the network capacity to UDP and blocking UDP datagram over that
+cap.<a href="#section-4.5-1" class="pilcrow">¶</a></p>
+<p id="section-4.5-2">The recommended way to police QUIC
+packets is to either drop them all or to throttle them based on the hash of the
+UDP datagram's source and destination addresses, blocking a portion of the hash
+space that corresponds to the fraction of UDP traffic one wishes to drop.
+When the handshake is blocked, QUIC-capable applications may failover to TCP
+(at least applications using well-known UDP ports). However, blindly blocking a
+significant fraction of QUIC packets will allow many QUIC handshakes
+to complete, preventing a TCP failover, but the connections will suffer from
+severe packet loss.<a href="#section-4.5-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="distinguishing-acknowledgment-traffic">
+<section id="section-4.6">
+        <h3 id="name-distinguishing-acknowledgme">
+<a href="#section-4.6" class="section-number selfRef">4.6. </a><a href="#name-distinguishing-acknowledgme" class="section-name selfRef">Distinguishing Acknowledgment traffic</a>
+        </h3>
+<p id="section-4.6-1">Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
+from packets carrying upper-layer data in order to attempt to enhance
+performance, for example by queueing ACKs differently or manipulating ACK
+signaling. Distinguishing ACK packets is trivial in TCP, but not supported by
+QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
+and ACK manipulation is impossible. Specifically, heuristics attempting to
+distinguish ACK-only packets from payload-carrying packets based on packet size
+are likely to fail, and are not recommended to use as a way to construe
+internals of QUIC's operation as those mechanisms can change, e.g., due to the
+use of extensions.<a href="#section-4.6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="handling-icmp-messages">
+<section id="section-4.7">
+        <h3 id="name-handling-icmp-messages">
+<a href="#section-4.7" class="section-number selfRef">4.7. </a><a href="#name-handling-icmp-messages" class="section-name selfRef">Handling ICMP Messages</a>
+        </h3>
+<p id="section-4.7-1">Datagram Packetization Layer PMTU Discovery (PLPMTUD) can be used by QUIC to
+probe for the supported PMTU. PLPMTUD optionally uses ICMP messages (e.g.,
+IPv6 Packet Too Big messages). Given known attacks with the use of ICMP
+messages, the use of PLPMTUD in QUIC has been designed to safely use but
+not rely on receiving ICMP feedback (see
+<span><a href="https://tools.ietf.org/html/draft-ietf-quic-transport-34#section-14.2.1." class="relref">Section 14.2.1.</a> of [<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>).<a href="#section-4.7-1" class="pilcrow">¶</a></p>
+<p id="section-4.7-2">Networks are recommended to forward these ICMP messages and retain as much of
+the original packet as possible without exceeding the minimum MTU for the IP
+version when generating ICMP messages as recommended in <span>[<a href="#RFC1812" class="xref">RFC1812</a>]</span>
+and <span>[<a href="#RFC4443" class="xref">RFC4443</a>]</span>.<a href="#section-4.7-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="quality-of-service-handling-and-ecmp">
+<section id="section-4.8">
+        <h3 id="name-quality-of-service-handling">
+<a href="#section-4.8" class="section-number selfRef">4.8. </a><a href="#name-quality-of-service-handling" class="section-name selfRef">Quality of Service handling and ECMP</a>
+        </h3>
+<p id="section-4.8-1">It is expected that any QoS handling in the network, e.g. based on use of
+DiffServ Code Points (DSCPs) <span>[<a href="#RFC2475" class="xref">RFC2475</a>]</span> as well as Equal-Cost
+Multi-Path (ECMP) routing, is applied on a per flow-basis (and not per-packet)
+and as such that all packets belonging to the same QUIC connection get uniform
+treatment. Using ECMP to distribute packets from a single flow across multiple
+network paths or any other non-uniform treatment of packets belong to the same
+connection could result in variations in order, delivery rate, and drop rate.
+As feedback about loss or delay of each packet is used as input to
+the congestion controller, these variations could adversely affect performance.<a href="#section-4.8-1" class="pilcrow">¶</a></p>
+<p id="section-4.8-2">Depending of the loss recovery mechanism implemented, QUIC may be
+more tolerant of packet re-ordering than traditional TCP traffic (see
+<a href="#packetnumber" class="xref">Section 2.7</a>). However, it cannot be known by the network which exact
+recovery mechanism is used and therefore reordering tolerance should be
+considered as unknown.<a href="#section-4.8-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="quic-and-network-address-translation-nat">
+<section id="section-4.9">
+        <h3 id="name-quic-and-network-address-tr">
+<a href="#section-4.9" class="section-number selfRef">4.9. </a><a href="#name-quic-and-network-address-tr" class="section-name selfRef">QUIC and Network Address Translation (NAT)</a>
+        </h3>
+<p id="section-4.9-1">QUIC Connection IDs are opaque byte fields that are expressed consistently
+across all QUIC versions <span>[<a href="#QUIC-INVARIANTS" class="xref">QUIC-INVARIANTS</a>]</span>, see <a href="#rebinding" class="xref">Section 2.6</a>. This feature
+may appear to present opportunities to optimize NAT port usage and simplify the
+work of the QUIC server. In fact, NAT behavior that relies on CID may instead
+cause connection failure when endpoints change Connection ID, and disable
+important protocol security features. NATs should retain their existing
+4-tuple-based operation and refrain from parsing or otherwise using QUIC
+connection IDs.<a href="#section-4.9-1" class="pilcrow">¶</a></p>
+<p id="section-4.9-2">This section uses the colloquial term NAT to mean NAPT (section 2.2 of
+<span>[<a href="#RFC3022" class="xref">RFC3022</a>]</span>), which overloads several IP addresses to one IP address or to an
+IP address pool, as commonly deployed in carrier-grade NATs or residential NATs.<a href="#section-4.9-2" class="pilcrow">¶</a></p>
+<p id="section-4.9-3">The remainder of this section explains how QUIC supports NATs better than other
+connection-oriented protocols, why NAT use of Connection ID might appear
+attractive, and how NAT use of CID can create serious problems for the
+endpoints.<a href="#section-4.9-3" class="pilcrow">¶</a></p>
+<p id="section-4.9-4"><span>[<a href="#RFC4787" class="xref">RFC4787</a>]</span> contains some guidance on building NATs to interact constructively
+with a wide range of applications. This section extends the discussion to QUIC.<a href="#section-4.9-4" class="pilcrow">¶</a></p>
+<p id="section-4.9-5">By using the CID, QUIC connections can survive NAT rebindings as long as no
+routing function in the path is dependent on client IP address and port to
+deliver packets between server and NAT. Reducing the timeout on UDP NATs might
+be tempting in light of this property, but not all QUIC server deployments will
+be robust to rebinding.<a href="#section-4.9-5" class="pilcrow">¶</a></p>
+<div id="resource-conservation">
+<section id="section-4.9.1">
+          <h4 id="name-resource-conservation">
+<a href="#section-4.9.1" class="section-number selfRef">4.9.1. </a><a href="#name-resource-conservation" class="section-name selfRef">Resource Conservation</a>
+          </h4>
+<p id="section-4.9.1-1">NATs sometimes hit an operational limit where they exhaust available public IP
+addresses and ports, and must evict flows from their address/port mapping. CIDs
+might appear to offer a way to multiplex many connections over a single
+address and port.<a href="#section-4.9.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.9.1-2">However, QUIC endpoints may negotiate new connection IDs inside
+cryptographically protected packets, and begin using them at will. Imagine two
+clients behind a NAT that are sharing the same public IP address and port. The
+NAT is differentiating them using the incoming Connection ID. If one client
+secretly changes its connection ID, there will be no mapping for the NAT, and
+the connection will suddenly break.<a href="#section-4.9.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.9.1-3">QUIC is deliberately designed to fail rather than persist when the network
+cannot support its operation. For HTTP/3, this extends to recommending a
+fallback to TCP-based versions of HTTP rather than persisting with a QUIC
+connection that might be unstable. And <span>[<a href="#I-D.ietf-quic-applicability" class="xref">I-D.ietf-quic-applicability</a>]</span>
+recommends TCP fallback for other protocols on the basis that this is preferable
+to sudden connection errors and time outs.
+Furthermore, wide deployment of NATs with this behavior hinders the use of
+QUIC's migration function, which relies on the ability to change the connection
+ID any time during the lifetime of a QUIC connection.<a href="#section-4.9.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.9.1-4">It is possible, in principle, to encode the client's identity in a connection ID
+using the techniques described in <span>[<a href="#QUIC_LB" class="xref">QUIC_LB</a>]</span> and explicit coordination with the
+NAT. However, this implies that the client shares configuration with the NAT,
+which might be logistically difficult. This adds administrative overhead
+while not resolving the case where a client migrates to a point behind the NAT.<a href="#section-4.9.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.9.1-5">Note that multiplexing connection IDs over a single port anyway violates the
+best common practice to avoid "port overloading" as described in <span>[<a href="#RFC4787" class="xref">RFC4787</a>]</span>.<a href="#section-4.9.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="helping-with-routing-infrastructure-issues">
+<section id="section-4.9.2">
+          <h4 id="name-helping-with-routing-infras">
+<a href="#section-4.9.2" class="section-number selfRef">4.9.2. </a><a href="#name-helping-with-routing-infras" class="section-name selfRef">"Helping" with routing infrastructure issues</a>
+          </h4>
+<p id="section-4.9.2-1">Concealing client address changes in order to simplify operational routing
+issues will mask important signals that drive security mechanisms, and
+therefore opens QUIC up to various attacks.<a href="#section-4.9.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.9.2-2">One challenge in QUIC deployments that want to benefit from QUIC's migration
+capability is server infrastructures with routers and switches that direct
+traffic based on address-port 4-tuple rather than connection ID. The use of
+source IP address means that a NAT rebinding or address migration will deliver
+packets to the wrong server. As all QUIC payloads are encrypted, routers and
+switches will not have access to negotiated but not-yet-in-use CIDs. This is a
+particular problem for low-state load balancers. <span>[<a href="#QUIC_LB" class="xref">QUIC_LB</a>]</span> addresses this
+problem proposing a QUIC extension to allow some server-load balancer
+coordination for routable CIDs.<a href="#section-4.9.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.9.2-3">It seems that a NAT anywhere in the front of such an infrastructure setup could
+save the effort of converting all these devices by decoding routable connection
+IDs and rewriting the packet IP addresses to allow consistent routing by legacy
+devices.<a href="#section-4.9.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.9.2-4">Unfortunately, the change of IP address or port is an important signal to QUIC
+endpoints. It requires a review of path-dependent variables like congestion
+control parameters. It can also signify various attacks that mislead one
+endpoint about the best peer address for the connection (see section 9 of
+<span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>). The QUIC PATH_CHALLENGE and PATH_RESPONSE frames are
+intended to detect and mitigate these attacks and verify connectivity to the
+new address. This mechanism cannot work if the NAT is bleaching peer address
+changes.<a href="#section-4.9.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.9.2-5">For example, an attacker might copy a legitimate QUIC packet and change the
+source address to match its own. In the absence of a bleaching NAT, the
+receiving endpoint would interpret this as a potential NAT rebinding and use a
+PATH_CHALLENGE frame to prove that the peer endpoint is not truly at the new
+address, thus thwarting the attack. A bleaching NAT has no means of sending an
+encrypted PATH_CHALLENGE frame, so it might start redirecting all QUIC traffic
+to the attacker address and thus allow an observer to break the connection.<a href="#section-4.9.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="filtering-behavior">
+<section id="section-4.10">
+        <h3 id="name-filtering-behavior">
+<a href="#section-4.10" class="section-number selfRef">4.10. </a><a href="#name-filtering-behavior" class="section-name selfRef">Filtering behavior</a>
+        </h3>
+<p id="section-4.10-1"><span>[<a href="#RFC4787" class="xref">RFC4787</a>]</span> describes possible packet filtering behaviors that relate to NATs.
+Though the guidance there holds, a particularly unwise behavior is to admit a
+handful of UDP packets and then make a decision as to whether or not to filter
+it. QUIC applications are encouraged to fail over to TCP if early packets do
+not arrive at their destination. Admitting a few packets allows the QUIC
+endpoint to determine that the path accepts QUIC. Sudden drops afterwards will
+result in slow and costly timeouts before abandoning the connection.<a href="#section-4.10-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-5">
+      <h2 id="name-iana-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-5-1">This document has no actions for IANA.<a href="#section-5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-6">
+      <h2 id="name-security-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-6-1">QUIC is an encrypted and authenticated transport. That means, once the
+cryptographic handshake is complete, QUIC endpoints discard most packets that
+are not authenticated, greatly limiting the ability of an attacker to interfere
+with existing connections.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">However, some information is still observerable, as supporting manageability of
+QUIC traffic inherently involves tradeoffs with the confidentiality of QUIC's
+control information; this entire document is therefore security-relevant.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">More security considerations for QUIC are discussed in <span>[<a href="#QUIC-TRANSPORT" class="xref">QUIC-TRANSPORT</a>]</span>
+and <span>[<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>, generally considering active or passive attackers in the
+network as well as attacks on specific QUIC mechanism.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">Version Negotiation packets do not contain any mechanism to prevent version
+downgrade attacks. However, future versions of QUIC that use Version Negotiation
+packets are require to define a mechanism that is robust against version
+downgrade attacks. Therefore a network node should not attempt to impact version
+selection, as version downgrade may result in connection failure.<a href="#section-6-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="contributors">
+<section id="section-7">
+      <h2 id="name-contributors">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-contributors" class="section-name selfRef">Contributors</a>
+      </h2>
+<p id="section-7-1">The following people have contributed text to sections of this document:<a href="#section-7-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7-2.1">Dan Druta<a href="#section-7-2.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-7-2.2">Martin Duke<a href="#section-7-2.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-7-2.3">Marcus Ilhar<a href="#section-7-2.3" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-7-2.4">Igor Lubashev<a href="#section-7-2.4" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-7-2.5">David Schinazi<a href="#section-7-2.5" class="pilcrow">¶</a>
+</li>
+      </ul>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="section-8">
+      <h2 id="name-acknowledgments">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="section-8-1">Special thanks to Martin Thomson and Martin Duke for the detailed reviews and
+feedback.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">This work is partially supported by the European Commission under Horizon 2020
+grant agreement no. 688421 Measurement and Architecture for a Middleboxed
+Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and
+Innovation under contract no. 15.0268. This support does not imply endorsement.<a href="#section-8-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="appendix">
+<section id="section-9">
+      <h2 id="name-appendix">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-appendix" class="section-name selfRef">Appendix</a>
+      </h2>
+<p id="section-9-1">This appendix uses the following conventions:
+array[i] - one byte at index i of array
+array[i:j] - subset of array starting with index i (inclusive) up to j-1
+(inclusive)
+array[i:] - subset of array starting with index i (inclusive) up to the
+end of the array<a href="#section-9-1" class="pilcrow">¶</a></p>
+<div id="sec-google-version">
+<section id="section-9.1">
+        <h3 id="name-distinguishing-ietf-quic-an">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-distinguishing-ietf-quic-an" class="section-name selfRef">Distinguishing IETF QUIC and Google QUIC Versions</a>
+        </h3>
+<p id="section-9.1-1">This section contains algorithms that allows parsing versions from both
+Google QUIC and IETF QUIC. These mechanisms will become
+irrelevant when IETF QUIC is fully deployed and Google QUIC is deprecated.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
+<p id="section-9.1-2">Note that other than this appendix, nothing in this document applies to
+Google QUIC. And the purpose of this appendix is merely to distinguish IETF QUIC
+from any versions of Google QUIC.<a href="#section-9.1-2" class="pilcrow">¶</a></p>
+<p id="section-9.1-3">Conceptually, a Google QUIC version is an opaque 32bit field. When we refer to a
+version with four printable characters, we use its ASCII representation:
+for example, Q050 refers to {'Q', '0', '5', '0'} which is equal to
+{0x51, 0x30, 0x35, 0x30}. Otherwise, we use its hexadecimal representation:
+for example, 0xff00001d refers to {0xff, 0x00, 0x00, 0x1d}.<a href="#section-9.1-3" class="pilcrow">¶</a></p>
+<p id="section-9.1-4">QUIC versions that start with 'Q' or 'T' followed by three digits are
+Google QUIC versions. Versions up to and including 43 are documented by
+&lt;https://docs.google.com/document/d/
+1WJvyZflAO2pq77yOLbp9NsGjC1CHetAXV8I0fQe-B_U/preview&gt;.
+Versions Q046, Q050, T050, and T051 are not fully documented, but this appendix
+should contain enough information to allow parsing Client Hellos for those
+versions.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
+<p id="section-9.1-5">To extract the version number itself, one needs to look at the first byte of
+the QUIC packet, in other words the first byte of the UDP payload.<a href="#section-9.1-5" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-9.1-6">
+<pre>
+  first_byte = packet[0]
+  first_byte_bit1 = ((first_byte &amp; 0x80) != 0)
+  first_byte_bit2 = ((first_byte &amp; 0x40) != 0)
+  first_byte_bit3 = ((first_byte &amp; 0x20) != 0)
+  first_byte_bit4 = ((first_byte &amp; 0x10) != 0)
+  first_byte_bit5 = ((first_byte &amp; 0x08) != 0)
+  first_byte_bit6 = ((first_byte &amp; 0x04) != 0)
+  first_byte_bit7 = ((first_byte &amp; 0x02) != 0)
+  first_byte_bit8 = ((first_byte &amp; 0x01) != 0)
+  if (first_byte_bit1) {
+    version = packet[1:5]
+  } else if (first_byte_bit5 &amp;&amp; !first_byte_bit2) {
+    if (!first_byte_bit8) {
+      abort("Packet without version")
+    }
+    if (first_byte_bit5) {
+      version = packet[9:13]
+    } else {
+      version = packet[5:9]
+    }
+  } else {
+    abort("Packet without version")
+  }
+</pre><a href="#section-9.1-6" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="extracting-the-crypto-frame">
+<section id="section-9.2">
+        <h3 id="name-extracting-the-crypto-frame">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-extracting-the-crypto-frame" class="section-name selfRef">Extracting the CRYPTO frame</a>
+        </h3>
+<div class="artwork art-text alignLeft" id="section-9.2-1">
+<pre>
+  counter = 0
+  while (payload[counter] == 0) {
+    counter += 1
+  }
+  first_nonzero_payload_byte = payload[counter]
+  fnz_payload_byte_bit3 = ((first_nonzero_payload_byte &amp; 0x20) != 0)
+
+  if (first_nonzero_payload_byte != 0x06) {
+    abort("Unexpected frame")
+  }
+  if (payload[counter+1] != 0x00) {
+    abort("Unexpected crypto stream offset")
+  }
+  counter += 2
+  if ((payload[counter] &amp; 0xc0) == 0) {
+    crypto_data_length = payload[counter]
+    counter += 1
+  } else {
+    crypto_data_length = payload[counter:counter+2]
+    counter += 2
+  }
+  crypto_data = payload[counter:counter+crypto_data_length]
+  ParseTLS(crypto_data)
+</pre><a href="#section-9.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<section id="section-10">
+      <h2 id="name-references">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-10.1">
+        <h3 id="name-normative-references">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="QUIC-TLS">[QUIC-TLS]</dt>
+        <dd>
+<span class="refAuthor">Thomson, M.</span><span class="refAuthor"> and S. Turner</span>, <span class="refTitle">"Using TLS to Secure QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-tls-34</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-tls-34.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-tls-34.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="QUIC-TRANSPORT">[QUIC-TRANSPORT]</dt>
+      <dd>
+<span class="refAuthor">Iyengar, J.</span><span class="refAuthor"> and M. Thomson</span>, <span class="refTitle">"QUIC: A UDP-Based Multiplexed and Secure Transport"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-transport-34</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-transport-34.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-transport-34.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-10.2">
+        <h3 id="name-informative-references">
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="Ding2015">[Ding2015]</dt>
+        <dd>
+<span class="refAuthor">Ding, H.</span><span class="refAuthor"> and M. Rabinovich</span>, <span class="refTitle">"TCP Stretch Acknowledgments and Timestamps - Findings and Impliciations for Passive RTT Measurement (ACM Computer Communication Review)"</span>, <time datetime="2015-07" class="refDate">July 2015</time>, <span>&lt;<a href="http://www.sigcomm.org/sites/default/files/ccr/papers/2015/July/0000000-0000002.pdf">http://www.sigcomm.org/sites/default/files/ccr/papers/2015/July/0000000-0000002.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="DOTS-ARCH">[DOTS-ARCH]</dt>
+        <dd>
+<span class="refAuthor">Mortensen, A.</span><span class="refAuthor">, Reddy, T.</span><span class="refAuthor">, Andreasen, F.</span><span class="refAuthor">, Teague, N.</span><span class="refAuthor">, and R. Compton</span>, <span class="refTitle">"DDoS Open Threat Signaling (DOTS) Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-dots-architecture-18</span>, <time datetime="2020-03-06" class="refDate">6 March 2020</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-dots-architecture-18.txt">https://datatracker.ietf.org/doc/html/draft-ietf-dots-architecture-18.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-quic-applicability">[I-D.ietf-quic-applicability]</dt>
+        <dd>
+<span class="refAuthor">Kuehlewind, M.</span><span class="refAuthor"> and B. Trammell</span>, <span class="refTitle">"Applicability of the QUIC Transport Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-applicability-09</span>, <time datetime="2021-01-22" class="refDate">22 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-09.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-09.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="IPIM">[IPIM]</dt>
+        <dd>
+<span class="refAuthor">Allman, M.</span><span class="refAuthor">, Beverly, R.</span><span class="refAuthor">, and B. Trammell</span>, <span class="refTitle">"In-Protocol Internet Measurement (arXiv preprint 1612.02902)"</span>, <time datetime="2016-12-09" class="refDate">9 December 2016</time>, <span>&lt;<a href="https://arxiv.org/abs/1612.02902">https://arxiv.org/abs/1612.02902</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="QUIC-APPLICABILITY">[QUIC-APPLICABILITY]</dt>
+        <dd>
+<span class="refAuthor">Kuehlewind, M.</span><span class="refAuthor"> and B. Trammell</span>, <span class="refTitle">"Applicability of the QUIC Transport Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-applicability-09</span>, <time datetime="2021-01-22" class="refDate">22 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-09.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-09.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="QUIC-HTTP">[QUIC-HTTP]</dt>
+        <dd>
+<span class="refAuthor">Bishop, M.</span>, <span class="refTitle">"Hypertext Transfer Protocol Version 3 (HTTP/3)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-http-34</span>, <time datetime="2021-02-02" class="refDate">2 February 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-34.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-34.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="QUIC-INVARIANTS">[QUIC-INVARIANTS]</dt>
+        <dd>
+<span class="refAuthor">Thomson, M.</span>, <span class="refTitle">"Version-Independent Properties of QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-invariants-13</span>, <time datetime="2021-01-14" class="refDate">14 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-invariants-13.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-invariants-13.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="QUIC_LB">[QUIC_LB]</dt>
+        <dd>
+<span class="refAuthor">Duke, M.</span><span class="refAuthor"> and N. Banks</span>, <span class="refTitle">"QUIC-LB: Generating Routable QUIC Connection IDs"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-load-balancers-06</span>, <time datetime="2021-02-04" class="refDate">4 February 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-load-balancers-06.txt">https://datatracker.ietf.org/doc/html/draft-ietf-quic-load-balancers-06.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC1812">[RFC1812]</dt>
+        <dd>
+<span class="refAuthor">Baker, F., Ed.</span>, <span class="refTitle">"Requirements for IP Version 4 Routers"</span>, <span class="seriesInfo">RFC 1812</span>, <span class="seriesInfo">DOI 10.17487/RFC1812</span>, <time datetime="1995-06" class="refDate">June 1995</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc1812">https://datatracker.ietf.org/doc/html/rfc1812</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2475">[RFC2475]</dt>
+        <dd>
+<span class="refAuthor">Blake, S.</span><span class="refAuthor">, Black, D.</span><span class="refAuthor">, Carlson, M.</span><span class="refAuthor">, Davies, E.</span><span class="refAuthor">, Wang, Z.</span><span class="refAuthor">, and W. Weiss</span>, <span class="refTitle">"An Architecture for Differentiated Services"</span>, <span class="seriesInfo">RFC 2475</span>, <span class="seriesInfo">DOI 10.17487/RFC2475</span>, <time datetime="1998-12" class="refDate">December 1998</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc2475">https://datatracker.ietf.org/doc/html/rfc2475</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3022">[RFC3022]</dt>
+        <dd>
+<span class="refAuthor">Srisuresh, P.</span><span class="refAuthor"> and K. Egevang</span>, <span class="refTitle">"Traditional IP Network Address Translator (Traditional NAT)"</span>, <span class="seriesInfo">RFC 3022</span>, <span class="seriesInfo">DOI 10.17487/RFC3022</span>, <time datetime="2001-01" class="refDate">January 2001</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc3022">https://datatracker.ietf.org/doc/html/rfc3022</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4443">[RFC4443]</dt>
+        <dd>
+<span class="refAuthor">Conta, A.</span><span class="refAuthor">, Deering, S.</span><span class="refAuthor">, and M. Gupta, Ed.</span>, <span class="refTitle">"Internet Control Message Protocol (ICMPv6) for the Internet Protocol Version 6 (IPv6) Specification"</span>, <span class="seriesInfo">STD 89</span>, <span class="seriesInfo">RFC 4443</span>, <span class="seriesInfo">DOI 10.17487/RFC4443</span>, <time datetime="2006-03" class="refDate">March 2006</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc4443">https://datatracker.ietf.org/doc/html/rfc4443</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4787">[RFC4787]</dt>
+        <dd>
+<span class="refAuthor">Audet, F., Ed.</span><span class="refAuthor"> and C. Jennings</span>, <span class="refTitle">"Network Address Translation (NAT) Behavioral Requirements for Unicast UDP"</span>, <span class="seriesInfo">BCP 127</span>, <span class="seriesInfo">RFC 4787</span>, <span class="seriesInfo">DOI 10.17487/RFC4787</span>, <time datetime="2007-01" class="refDate">January 2007</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc4787">https://datatracker.ietf.org/doc/html/rfc4787</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4937">[RFC4937]</dt>
+        <dd>
+<span class="refAuthor">Arberg, P.</span><span class="refAuthor"> and V. Mammoliti</span>, <span class="refTitle">"IANA Considerations for PPP over Ethernet (PPPoE)"</span>, <span class="seriesInfo">RFC 4937</span>, <span class="seriesInfo">DOI 10.17487/RFC4937</span>, <time datetime="2007-06" class="refDate">June 2007</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc4937">https://datatracker.ietf.org/doc/html/rfc4937</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5382">[RFC5382]</dt>
+        <dd>
+<span class="refAuthor">Guha, S., Ed.</span><span class="refAuthor">, Biswas, K.</span><span class="refAuthor">, Ford, B.</span><span class="refAuthor">, Sivakumar, S.</span><span class="refAuthor">, and P. Srisuresh</span>, <span class="refTitle">"NAT Behavioral Requirements for TCP"</span>, <span class="seriesInfo">BCP 142</span>, <span class="seriesInfo">RFC 5382</span>, <span class="seriesInfo">DOI 10.17487/RFC5382</span>, <time datetime="2008-10" class="refDate">October 2008</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc5382">https://datatracker.ietf.org/doc/html/rfc5382</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6066">[RFC6066]</dt>
+        <dd>
+<span class="refAuthor">Eastlake 3rd, D.</span>, <span class="refTitle">"Transport Layer Security (TLS) Extensions: Extension Definitions"</span>, <span class="seriesInfo">RFC 6066</span>, <span class="seriesInfo">DOI 10.17487/RFC6066</span>, <time datetime="2011-01" class="refDate">January 2011</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc6066">https://datatracker.ietf.org/doc/html/rfc6066</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6928">[RFC6928]</dt>
+        <dd>
+<span class="refAuthor">Chu, J.</span><span class="refAuthor">, Dukkipati, N.</span><span class="refAuthor">, Cheng, Y.</span><span class="refAuthor">, and M. Mathis</span>, <span class="refTitle">"Increasing TCP's Initial Window"</span>, <span class="seriesInfo">RFC 6928</span>, <span class="seriesInfo">DOI 10.17487/RFC6928</span>, <time datetime="2013-04" class="refDate">April 2013</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc6928">https://datatracker.ietf.org/doc/html/rfc6928</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7301">[RFC7301]</dt>
+        <dd>
+<span class="refAuthor">Friedl, S.</span><span class="refAuthor">, Popov, A.</span><span class="refAuthor">, Langley, A.</span><span class="refAuthor">, and E. Stephan</span>, <span class="refTitle">"Transport Layer Security (TLS) Application-Layer Protocol Negotiation Extension"</span>, <span class="seriesInfo">RFC 7301</span>, <span class="seriesInfo">DOI 10.17487/RFC7301</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7301">https://datatracker.ietf.org/doc/html/rfc7301</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7605">[RFC7605]</dt>
+        <dd>
+<span class="refAuthor">Touch, J.</span>, <span class="refTitle">"Recommendations on Using Assigned Transport Port Numbers"</span>, <span class="seriesInfo">BCP 165</span>, <span class="seriesInfo">RFC 7605</span>, <span class="seriesInfo">DOI 10.17487/RFC7605</span>, <time datetime="2015-08" class="refDate">August 2015</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7605">https://datatracker.ietf.org/doc/html/rfc7605</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TLS-ESNI">[TLS-ESNI]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span><span class="refAuthor">, Oku, K.</span><span class="refAuthor">, Sullivan, N.</span><span class="refAuthor">, and C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-09</span>, <time datetime="2020-12-16" class="refDate">16 December 2020</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-09.txt">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-09.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TMA-QOF">[TMA-QOF]</dt>
+        <dd>
+<span class="refAuthor">Trammell, B.</span><span class="refAuthor">, Gugelmann, D.</span><span class="refAuthor">, and N. Brownlee</span>, <span class="refTitle">"Inline Data Integrity Signals for Passive Measurement (in Proc. TMA 2014)"</span>, <time datetime="2014-04" class="refDate">April 2014</time>. </dd>
+<dd class="break"></dd>
+<dt id="WIRE-IMAGE">[WIRE-IMAGE]</dt>
+      <dd>
+<span class="refAuthor">Trammell, B.</span><span class="refAuthor"> and M. Kuehlewind</span>, <span class="refTitle">"The Wire Image of a Network Protocol"</span>, <span class="seriesInfo">RFC 8546</span>, <span class="seriesInfo">DOI 10.17487/RFC8546</span>, <time datetime="2019-04" class="refDate">April 2019</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8546">https://datatracker.ietf.org/doc/html/rfc8546</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="authors-addresses">
+<section id="section-appendix.a">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Mirja Kuehlewind</span></div>
+<div dir="auto" class="left"><span class="org">Ericsson</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:mirja.kuehlewind@ericsson.com" class="email">mirja.kuehlewind@ericsson.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Brian Trammell</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
+<div dir="auto" class="left"><span class="street-address">Gustav-Gull-Platz 1</span></div>
+<div dir="auto" class="left">CH- <span class="locality">8004 Zurich</span>
+</div>
+<div dir="auto" class="left"><span class="country-name">Switzerland</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ietf@trammell.ch" class="email">ietf@trammell.ch</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
