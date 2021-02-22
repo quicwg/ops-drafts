@@ -294,8 +294,9 @@ protects against amplification attacks and verifies that the network path meets
 the requirements for the minimum QUIC IP packet size, see Section 14 of
 {{QUIC-TRANSPORT}}. This is accomplished by either adding PADDING frames within
 the Initial packet, coalescing other packets with the Initial packet, or
-leaving unused payload in the UDP packet after the Initial packet. A network path
-needs to be able to forward at least this size of packet for QUIC to be used.
+leaving unused payload in the UDP packet after the Initial packet. A network
+path needs to be able to forward at least this size of packet for QUIC to be
+used.
 
 The content of QUIC Initial packets are encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
