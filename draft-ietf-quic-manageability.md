@@ -1033,7 +1033,7 @@ candidate for fragmentation by routers (it's IPv6, or has DF bit set). In such
 networks this leads to a need to influence a majority of senders to use smaller
 packets, so that the limited reassembly capacity is not exceeded.
 
-For TCP, MSS clamping ({{?Section 3.2 of RFC4459}}) is often used to change
+For TCP, MSS clamping (Section 3.2 of {{?RFC4459}}) is often used to change
 the sender's maximum TCP segment size, but QUIC requires a different approach.
 Section 14 of {{QUIC-TRANSPORT}} advises senders to probe larger sizes using
 Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
