@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 26 August 2021                                           Google
-                                                        22 February 2021
+Expires: 27 August 2021                                           Google
+                                                        23 February 2021
 
 
               Manageability of the QUIC Transport Protocol
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 August 2021.
+   This Internet-Draft will expire on 27 August 2021.
 
 Copyright Notice
 
@@ -68,21 +68,22 @@ Table of Contents
        3.1.1.  Identifying Negotiated Version
        3.1.2.  Rejection of Garbage Traffic
      3.2.  Connection Confirmation
-     3.3.  Application Identification
-       3.3.1.  Extracting Server Name Indication (SNI) Information
-     3.4.  Flow Association
-     3.5.  Flow teardown
-     3.6.  Flow Symmetry Measurement
-     3.7.  Round-Trip Time (RTT) Measurement
-       3.7.1.  Measuring Initial RTT
-       3.7.2.  Using the Spin Bit for Passive RTT Measurement
+     3.3.  Distinguishing Acknowledgment traffic
+     3.4.  Application Identification
+       3.4.1.  Extracting Server Name Indication (SNI) Information
+     3.5.  Flow Association
+     3.6.  Flow teardown
+     3.7.  Flow Symmetry Measurement
+     3.8.  Round-Trip Time (RTT) Measurement
+       3.8.1.  Measuring Initial RTT
+       3.8.2.  Using the Spin Bit for Passive RTT Measurement
    4.  Specific Network Management Tasks
      4.1.  Stateful Treatment of QUIC Traffic
      4.2.  Passive Network Performance Measurement and Troubleshooting
      4.3.  Server Cooperation with Load Balancers
      4.4.  DDoS Detection and Mitigation
      4.5.  UDP Policing
-     4.6.  Distinguishing Acknowledgment traffic
+     4.6.  Handling ICMP Messages
      4.7.  Quality of Service handling and ECMP
      4.8.  QUIC and Network Address Translation (NAT)
        4.8.1.  Resource Conservation
@@ -123,14 +124,13 @@ Table of Contents
    and a description of how common network management practices will be
    impacted by QUIC.
 
-   Since QUIC's wire image [WIRE-IMAGE] is integrity protected and not
-   modifiable on path, in-network operations are not possible without
-   terminating the QUIC connection, for instance using a back-to-back
-   proxy.  Proxy operations are not in scope for this document.  A proxy
-   can either explicit identify itself as providing a proxy service, or
-   may share the TLS credentials to authenticate as the server and (in
-   some cases) client acting as a front-facing instance for the endpoint
-   itself.
+   Since QUIC's wire image [WIRE-IMAGE] is integrity-protected, in-
+   network operations that depend on modification of data are not
+   possible without the cooperation of an endpoint.  Network operation
+   practices that alter data are only possible if performed as a QUIC
+   endpoint; this might be possible with the introduction of a proxy
+   which authenticates as an endpoint.  Proxy operations are not in
+   scope for this document.
 
    Network management is not a one-size-fits-all endeavour: practices
    considered necessary or even mandatory within enterprise networks
@@ -198,7 +198,7 @@ Table of Contents
    *  latency spin bit: the third most significant bit of first octet in
       the short packet header.  The spin bit is set by endpoints such
       that tracking edge transitions can be used to passively observe
-      end-to-end RTT.  See Section 3.7.2 for further details.
+      end-to-end RTT.  See Section 3.8.2 for further details.
 
    *  header type: the long header has a 2 bit packet type field
       following the Header Form and fixed bits.  Header types correspond
@@ -210,11 +210,10 @@ Table of Contents
       Negotiation (see Section 2.8 and Section 17.2.1 of
       [QUIC-TRANSPORT]), the version number field has a special value
       (0x00000000) that identifies the packet as a Version Negotiation
-      packet.  Many QUIC versions that start with 0xff implement IETF
-      drafts.  QUIC versions that start with 0x0000 are reserved for
-      IETF consensus documents.  For example, QUIC version 1 uses
+      packet.  Upon time of publishing of this document, QUIC versions
+      that start with 0xff implement IETF drafts.  QUIC version 1 uses
       version 0x00000001.  Operators should expect to observe packets
-      with other version numbers as a result of various internet
+      with other version numbers as a result of various Internet
       experiments and future standards.
 
    *  source and destination connection ID: short and long packet
@@ -338,12 +337,15 @@ Table of Contents
    packet and some also include an Initial packet.
 
    Datagrams that contain a QUIC Initial Packet (Client Hello, Server
-   Hello, and some Initial Completion) must be at least 1200 octets
-   long.  This protects against amplification attacks and verifies that
-   the network path meets minimum Maximum Transmission Unit (MTU)
-   requirements.  This is usually accomplished with either the addition
-   of PADDING frames to the Initial packet, or coalescing of the Initial
-   Packet with packets from other encryption contexts.
+   Hello, and some Initial Completion) contain at least 1200 octets of
+   UDP payload.  This protects against amplification attacks and
+   verifies that the network path meets the requirements for the minimum
+   QUIC IP packet size, see Section 14 of [QUIC-TRANSPORT].  This is
+   accomplished by either adding PADDING frames within the Initial
+   packet, coalescing other packets with the Initial packet, or leaving
+   unused payload in the UDP packet after the Initial packet.  A network
+   path needs to be able to forward at least this size of packet for
+   QUIC to be used.
 
    The content of QUIC Initial packets are encrypted using Initial
    Secrets, which are derived from a per-version constant and the
@@ -427,7 +429,7 @@ Table of Contents
    The Initial Completion datagram does not expose any additional
    information; however, recognizing it can be used to determine that a
    handshake has completed (see Section 3.2), and for three-way
-   handshake RTT estimation as in Section 3.7.
+   handshake RTT estimation as in Section 3.8.
 
    +------------------------------------------------------------+
    | UDP header (source and destination UDP ports)              |
@@ -483,9 +485,13 @@ Table of Contents
    handshake packets sent before the cryptographic context was
    established are validated later during the cryptographic handshake.
    Therefore, devices on path cannot alter any information or bits in
-   QUIC packet headers, except specific parts of Initial packets, since
-   alteration of header information will lead to a failed integrity
-   check at the receiver, and can even lead to connection termination.
+   QUIC packets.  Such alterations would cause the integrity check to
+   fail, which results in the receiver discarding the packet.  Some
+   parts of Initial packets could be altered by removing and re-applying
+   the authenticated encryption without immediate discard at the
+   receiver.  However, the cryptographic handshake validates most fields
+   and any modifications in those fields will result in connection
+   establishment failing later on.
 
 2.6.  Connection ID and Rebinding
 
@@ -528,10 +534,13 @@ Table of Contents
 
 2.8.  Version Negotiation and Greasing
 
-   Version Negotiation packets are not intrinsically protected, but QUIC
-   versions can use later encrypted messages to verify that they were
-   authentic.  Therefore any modification of this list will be detected
-   and may cause the endpoints to terminate the connection attempt.
+   Version Negotiation packets are used by the server to indicate that a
+   requested version from the client is not supported (see section 6 of
+   [QUIC-TRANSPORT].  Version Negotiation packets are not intrinsically
+   protected, but QUIC versions can use later encrypted messages to
+   verify that they were authentic.  Therefore any modification of this
+   list will be detected and may cause the endpoints to terminate the
+   connection attempt.
 
    Also note that the list of versions in the Version Negotiation packet
    may contain reserved versions.  This mechanism is used to avoid
@@ -605,8 +614,8 @@ Table of Contents
 
    Negotiated version cannot be identified for flows for which a
    handshake is not observed, such as in the case of connection
-   migration; however, these flows can be associated with flows for
-   which a version has been identified; see Section 3.4.
+   migration; however, it might be possible to associate a flow with a
+   flow for which a version has been identified; see Section 3.5.
 
    This document focuses on QUIC Version 1, and this section applies
    only to packets belonging to Version 1 QUIC flows; for purposes of
@@ -645,7 +654,21 @@ Table of Contents
    token on the Retry with the token on the subsequent Initial packet
    and the destination connection ID of the new Initial packet.
 
-3.3.  Application Identification
+3.3.  Distinguishing Acknowledgment traffic
+
+   Some deployed in-network functions distinguish pure-acknowledgment
+   (ACK) packets from packets carrying upper-layer data in order to
+   attempt to enhance performance, for example by queueing ACKs
+   differently or manipulating ACK signaling.  Distinguishing ACK
+   packets is trivial in TCP, but not supported by QUIC, since
+   acknowledgment signaling is carried inside QUIC's encrypted payload,
+   and ACK manipulation is impossible.  Specifically, heuristics
+   attempting to distinguish ACK-only packets from payload-carrying
+   packets based on packet size are likely to fail, and are not
+   recommended to use as a way to construe internals of QUIC's operation
+   as those mechanisms can change, e.g., due to the use of extensions.
+
+3.4.  Application Identification
 
    The cleartext TLS handshake may contain Server Name Indication (SNI)
    [RFC6066], by which the client reveals the name of the server it
@@ -661,7 +684,7 @@ Table of Contents
    identification impossible by on-path observation for QUIC and other
    protocols that use TLS.
 
-3.3.1.  Extracting Server Name Indication (SNI) Information
+3.4.1.  Extracting Server Name Indication (SNI) Information
 
    If the SNI is not encrypted it can be derived from the QUIC Initial
    packet by calculating the Initial Secret to decrypt the packet
@@ -716,7 +739,7 @@ Table of Contents
    keys.  Therefore, attempts to decrypt these packets using the
    procedure above might fail.
 
-3.4.  Flow Association
+3.5.  Flow Association
 
    The QUIC connection ID (see Section 2.6) is designed to allow an on-
    path device such as a load-balancer to associate two flows as
@@ -735,7 +758,7 @@ Table of Contents
    The connection ID value should be treated as opaque; see Section 4.3
    for caveats regarding connection ID selection at servers.
 
-3.5.  Flow teardown
+3.6.  Flow teardown
 
    QUIC does not expose the end of a connection; the only indication to
    on-path devices that a flow has ended is that packets are no longer
@@ -743,7 +766,7 @@ Table of Contents
    therefore use idle timeouts to determine when to drop state for QUIC
    flows, see further section Section 4.1.
 
-3.6.  Flow Symmetry Measurement
+3.7.  Flow Symmetry Measurement
 
    QUIC explicitly exposes which side of a connection is a client and
    which side is a server during the handshake.  In addition, the
@@ -753,7 +776,7 @@ Table of Contents
    data rate in each direction.  While QUIC traffic is protected and
    ACKs may be padded, padding is not required.
 
-3.7.  Round-Trip Time (RTT) Measurement
+3.8.  Round-Trip Time (RTT) Measurement
 
    Round-trip time of QUIC flows can be inferred by observation once per
    flow, during the handshake, as in passive TCP measurement; this
@@ -762,7 +785,7 @@ Table of Contents
    during the flow's lifetime, if the endpoints use the spin bit
    facility described below and in [QUIC-TRANSPORT], section 17.3.1.
 
-3.7.1.  Measuring Initial RTT
+3.8.1.  Measuring Initial RTT
 
    In the common case, the delay between the Initial packet containing
    the TLS Client Hello and the Handshake packet containing the TLS
@@ -780,7 +803,7 @@ Table of Contents
    latter mainly caused by the asymmetric crypto operations associated
    with the TLS handshake) at both sides.
 
-3.7.2.  Using the Spin Bit for Passive RTT Measurement
+3.8.2.  Using the Spin Bit for Passive RTT Measurement
 
    The spin bit provides a version-specific method to measure per-flow
    RTT from observation points on the network path throughout the
@@ -870,7 +893,7 @@ Table of Contents
    middlebox) is possible through QUIC traffic and version
    identification (Section 3.1) and observation of the handshake for
    connection confirmation (Section 3.2).  The lack of any visible end-
-   of-flow signal (Section 3.5) means that this state must be purged
+   of-flow signal (Section 3.6) means that this state must be purged
    either through timers or through least-recently-used eviction,
    depending on application requirements.
 
@@ -898,7 +921,7 @@ Table of Contents
 4.2.  Passive Network Performance Measurement and Troubleshooting
 
    Limited RTT measurement is possible by passive observation of QUIC
-   traffic; see Section 3.7.  No passive measurement of loss is possible
+   traffic; see Section 3.8.  No passive measurement of loss is possible
    with the present wire image.  Extremely limited observation of
    upstream congestion may be possible via the observation of CE
    markings on ECN-enabled QUIC traffic.
@@ -975,19 +998,19 @@ Table of Contents
    many QUIC handshakes to complete, preventing a TCP failover, but the
    connections will suffer from severe packet loss.
 
-4.6.  Distinguishing Acknowledgment traffic
+4.6.  Handling ICMP Messages
 
-   Some deployed in-network functions distinguish pure-acknowledgment
-   (ACK) packets from packets carrying upper-layer data in order to
-   attempt to enhance performance, for example by queueing ACKs
-   differently or manipulating ACK signaling.  Distinguishing pure ACK
-   packets is easy in TCP, but not supported by QUIC, since
-   acknowledgment signaling is carried inside QUIC's encrypted payload,
-   and ACK manipulation is impossible.  Specifically, heuristics
-   attempting to distinguish ACK-only packets from payload-carrying
-   packets based on packet size are very likely to fail, and are not
-   recommended to use as a way to construe internals of QUIC's operation
-   as those mechanisms can change, e.g., due to the use of extensions.
+   Datagram Packetization Layer PMTU Discovery (PLPMTUD) can be used by
+   QUIC to probe for the supported PMTU.  PLPMTUD optionally uses ICMP
+   messages (e.g., IPv6 Packet Too Big messages).  Given known attacks
+   with the use of ICMP messages, the use of PLPMTUD in QUIC has been
+   designed to safely use but not rely on receiving ICMP feedback (see
+   Section 14.2.1. of [QUIC-TRANSPORT]).
+
+   Networks are recommended to forward these ICMP messages and retain as
+   much of the original packet as possible without exceeding the minimum
+   MTU for the IP version when generating ICMP messages as recommended
+   in [RFC1812] and [RFC4443].
 
 4.7.  Quality of Service handling and ECMP
 
@@ -1175,10 +1198,13 @@ Table of Contents
 
    *  David Schinazi
 
+   *  Gorry Fairhurst
+
 8.  Acknowledgments
 
    Special thanks to Martin Thomson and Martin Duke for the detailed
-   reviews and feedback.
+   reviews and feedback.  Thanks also to Sean Turner and Mike Bishop for
+   their last call reviews.
 
    This work is partially supported by the European Commission under
    Horizon 2020 grant agreement no. 688421 Measurement and Architecture
@@ -1219,9 +1245,9 @@ Table of Contents
    [QUIC-APPLICABILITY]
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
-              draft-ietf-quic-applicability-09, 22 January 2021,
+              draft-ietf-quic-applicability-10, 22 February 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              applicability-09.txt>.
+              applicability-10.txt>.
 
    [QUIC-HTTP]
               Bishop, M., "Hypertext Transfer Protocol Version 3
@@ -1250,6 +1276,10 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
               load-balancers-06.txt>.
 
+   [RFC1812]  Baker, F., Ed., "Requirements for IP Version 4 Routers",
+              RFC 1812, DOI 10.17487/RFC1812, June 1995,
+              <https://datatracker.ietf.org/doc/html/rfc1812>.
+
    [RFC2475]  Blake, S., Black, D., Carlson, M., Davies, E., Wang, Z.,
               and W. Weiss, "An Architecture for Differentiated
               Services", RFC 2475, DOI 10.17487/RFC2475, December 1998,
@@ -1259,6 +1289,12 @@ Table of Contents
               Address Translator (Traditional NAT)", RFC 3022,
               DOI 10.17487/RFC3022, January 2001,
               <https://datatracker.ietf.org/doc/html/rfc3022>.
+
+   [RFC4443]  Conta, A., Deering, S., and M. Gupta, Ed., "Internet
+              Control Message Protocol (ICMPv6) for the Internet
+              Protocol Version 6 (IPv6) Specification", STD 89,
+              RFC 4443, DOI 10.17487/RFC4443, March 2006,
+              <https://datatracker.ietf.org/doc/html/rfc4443>.
 
    [RFC4787]  Audet, F., Ed. and C. Jennings, "Network Address
               Translation (NAT) Behavioral Requirements for Unicast
