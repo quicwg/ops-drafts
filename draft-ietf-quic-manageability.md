@@ -932,7 +932,7 @@ across all QUIC versions {{QUIC-INVARIANTS}} and used by the endpoints to
 survive address rebindings. While this may appear as an opportunities to
 minimize NAT port usage (see section {{nat-resource}}) or to support the
 work of the QUIC server (see section {{nat-help}}) by
-hinding path changes, use of the connection ID by a NAT device to intentify
+hiding path changes, use of the connection ID by a NAT device to identify
 flows will cause connection failure when the connection ID changes.
 Wrongly assuming a fixed connection ID for each connection can disable
 important protocol features that require connection IDs to be
