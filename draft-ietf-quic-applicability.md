@@ -777,8 +777,12 @@ as well.
 # Contributors
 
 Igor Lubashev contributed text to {{connid}} on server-selected connection IDs.
+Mike Bishop and Martin Thomson contributed text in various places.
 
 # Acknowledgments
+
+Thanks also to Martin Duke, Gorry Fairhurst, Sean Turner, Lucas Pardue and
+Ian Swett for their reviews.
 
 This work is partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
