@@ -1025,13 +1025,13 @@ result in slow and costly timeouts before abandoning the connection.
 
 ## Guiding Path MTU
 
-Some networks are required to be able to carry 1500-byte packets but become
-inefficient at this size, because such packets are fragmented and
-reassembled across a segment where the effective MTU is smaller (e.g. due to
-IPSEC overhead). They do this even when the encapsulated packet is not a
-candidate for fragmentation by routers (it's IPv6, or has DF bit set). In such
-networks this leads to a need to influence a majority of senders to use smaller
-packets, so that the limited reassembly capacity is not exceeded.
+Some networks support 1500-byte packets, but can only do so by fragmenting at a
+lower layer before traversing a smaller MTU segment, and then reassembling.
+This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set,
+because it occurs below the IP layer. However, this process can add to compute
+and memory costs, leading to a bottleneck that limits network capacity. In such
+networks this generates a desire to influence a majority of senders to use
+smaller packets, so that the limited reassembly capacity is not exceeded.
 
 For TCP, MSS clamping (Section 3.2 of {{?RFC4459}}) is often used to change
 the sender's maximum TCP segment size, but QUIC requires a different approach.
