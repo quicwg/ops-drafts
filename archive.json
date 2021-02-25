@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-02-23T00:52:58.674365+00:00",
+  "timestamp": "2021-02-25T00:53:21.200068+00:00",
   "repo": "quicwg/ops-drafts",
   "labels": [
     {
@@ -5275,7 +5275,7 @@
       ],
       "body": "The ops draft currently says:\r\n\r\n> While a QUIC implementation must necessarily provide a way for an application\r\nto send data on separate streams, it does not necessarily expose stream\r\nidentifiers to the application (see, for example, {{QUIC-HTTP}}, Section 6)\r\neither at the sender or receiver end, so applications should not assume access\r\nto these identifiers.\r\n\r\nI don't see anything in Section 6 of HTTP/3 to support that claim.  In fact, HTTP/3 uses Stream IDs in the GOAWAY frame to indicate the last request the server processed; both client and server will require access to the identifiers of streams, or that information is impossible to generate and useless to receive.\r\n\r\nThe constraint that I tried to use when writing the HTTP draft was that the application layer has no control over the assignment of Stream IDs.  However, once it has requested and been given a stream, it can retrieve the ID of that stream and use it to reference the stream at the application layer.\r\n\r\nBy the same token, the application layer shouldn't assume it understands the relationship between stream types and Stream IDs; that may change in a future QUIC version, and it should rely on querying the stream properties to identify types.",
       "createdAt": "2021-02-17T15:50:05Z",
-      "updatedAt": "2021-02-22T11:11:17Z",
+      "updatedAt": "2021-02-23T10:36:17Z",
       "closedAt": "2021-02-22T11:11:17Z",
       "comments": [
         {
@@ -5478,6 +5478,22 @@
       "body": "This is branched of #239.\r\n\r\n@martinthomson said:\r\n\r\n\"However, it needs to specify that the connection ID association needs to be directional. Maybe that is assumed, but it should be stated. And it needs to say that this is unlikely to apply when the connection ID is empty.\"",
       "createdAt": "2021-02-22T11:04:41Z",
       "updatedAt": "2021-02-22T13:17:00Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 283,
+      "id": "MDU6SXNzdWU4MTQ0MDAxMDk=",
+      "title": "Clarify Stream ID assignment",
+      "url": "https://github.com/quicwg/ops-drafts/issues/283",
+      "state": "OPEN",
+      "author": "mikkelfj",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Follow up to comment on #270 \r\n\r\nThe current text:\r\n\r\n> The method of allocating stream identifiers to streams opened by the application\r\nmight vary between transport implementations. Therefore, an application should\r\nnot assume a particular stream ID will be assigned to a stream that has not yet\r\nbeen allocated.  For example, HTTP/3 uses Stream IDs to refer to streams that\r\nhave already been opened, but makes no assumptions about future Stream IDs or\r\nthe way in which they are assigned.\r\n\r\nSpecifically \"An application should\r\nnot assume a particular stream ID will be assigned to a stream that has not yet\r\nbeen allocated. \"\r\n\r\nThis highly depends on the application protocol, not the QUIC transport API. It may be that a given QUIC transport protocol is unable to support the requirements of a QUIC application protocol, but it is the app protocol that decides. If a given  QUIC transport API only supports \"OpenNextStreamOfType(x)\" that might be enough to support HTTP/3. But it should be be that all app protocols follow the same constraints.\r\n\r\nHowever, it is reasonable to recommend that application level protocols attempts to avoid a dependency on a specific stream ID in order to be able to target a broader range of QUIC transport libraries and to avoid unnecessary dependencies while at the same time permitting this for specific use cases.",
+      "createdAt": "2021-02-23T12:02:48Z",
+      "updatedAt": "2021-02-23T12:02:48Z",
       "closedAt": null,
       "comments": []
     }
@@ -14344,13 +14360,13 @@
       ],
       "body": "This is my suggestion to resolve #210.",
       "createdAt": "2021-02-08T16:16:19Z",
-      "updatedAt": "2021-02-22T19:02:17Z",
+      "updatedAt": "2021-02-24T20:07:05Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "3ded00f9cbd7a37a93074e9802b1bac5da52922d",
       "headRepository": "chris-box/ops-drafts",
       "headRefName": "master",
-      "headRefOid": "4dbf7d8137ab17dc7de54644c2df18e6c172d380",
+      "headRefOid": "9e24bd6fb1eaecdee96383a28b382d456b1fab80",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -14402,7 +14418,7 @@
               "originalPosition": 19,
               "body": "The problem is that probe packets cannot be identified/distinguished from other QUIc traffic. I believe that's also what section 3.1 (Identifying QUIC traffic) says. If that's no clear we can say more there.",
               "createdAt": "2021-02-08T16:59:32Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14422,7 +14438,7 @@
               "originalPosition": 19,
               "body": "My interpretation of quic-transport is that it says:\r\n- Initial packets would not normally exceed 1200 bytes unless the client is aware (from history) that a larger size is supported.\r\n- Endpoints should only send packets larger than this if they are employing either PMTUD or DPLPMTUD.\r\n- All QUIC packets that are not sent in a PMTU probe should be sized to fit within the (currently known) maximum datagram size.\r\n\r\nHence probes should be identifiable as the only packets that are larger than this. Is this wrong?",
               "createdAt": "2021-02-08T17:20:00Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14442,13 +14458,13 @@
               "originalPosition": 19,
               "body": "I can tell you that our implementation starts with 1330 and 1350 bytes of UDP payload, so I wouldn't assume everyone starts at 1200 bytes of payload.  In fact, I'm not sure any production deployments do today.\r\n\r\nHowever, I 'think' your suggestion will work, but I think there needs to be more caveats and explanations about the nature of how these networks operate, because I didn't realize they existed until a few months ago.  As I commented on the issue, it seems like the behavior you're describing goes against the intent of the DF bit, which is surprising.\r\n\r\n",
               "createdAt": "2021-02-08T20:58:42Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             },
             {
               "originalPosition": 10,
               "body": "It's worth calling out that these networks fragment instead of dropping v4 packets with DF set and IPv6 packets(assuming that's what they do)",
               "createdAt": "2021-02-08T21:00:37Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14468,7 +14484,7 @@
               "originalPosition": 27,
               "body": "```suggestion\r\nin {{Section 1.1 of DPLPMTUD}}). PMTUD requires such PTB messages in order to\r\n```\r\n\r\nThis reference format is relatively new, but also really nice.",
               "createdAt": "2021-02-08T21:52:41Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14488,7 +14504,7 @@
               "originalPosition": 19,
               "body": "Ian that's interesting. The relevant sentence for me from quic-transport is \"Datagrams containing Initial packets MAY exceed 1200 bytes if the sender believes that the network path and peer both support the size that it chooses.\" In the general case, from where does that belief arise? In starting at 1330 (which I assume is the v6 size) it would work fine on the EE network but it would fail in traversing a network with the IPv6 minimum MTU. Are you relying on successful PMTU discovery from the INITIAL packet to catch that situation?",
               "createdAt": "2021-02-09T12:56:43Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14508,7 +14524,7 @@
               "originalPosition": 10,
               "body": "Yes happy to make this clearer in the text.",
               "createdAt": "2021-02-09T12:57:25Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14528,7 +14544,7 @@
               "originalPosition": 19,
               "body": "HTTP/3 has to handle fallback to TCP no matter what, and too large a packet and UDP being dropped look identical to a client attempting a handshake.\r\n\r\nIn this case, the belief that networks support 1330/1350 byte size is based on historical data we gathered showing what MTUs were supported by most networks, so it's not path specific.",
               "createdAt": "2021-02-09T17:22:52Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14561,25 +14577,25 @@
               "originalPosition": 13,
               "body": "This makes it sound like the current method is very wrong - It is **OK* for a lower layer (including a tunnel) to fragment and reassemble to the MTU it supports. However, in some cases it **CAN** fragmentation and reassembly below IP can add to the processing cost and memory requirements - and hence can become a bottleneck. This text isn't clear yet  - but the text might be heading in the correct direction",
               "createdAt": "2021-02-16T12:27:04Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             },
             {
               "originalPosition": 15,
               "body": "/majority use/majority of traffic use/\r\n... although I really do think it better to avoid /can/ and say /is/... \r\n\r\nI suggest:\r\n\r\n/For TCP, MSS-clamping is currently used to change the sender's maximum TCP segment size, but QUIC.../",
               "createdAt": "2021-02-16T12:30:55Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             },
             {
               "originalPosition": 19,
               "body": "I believe the recommendation needs to be that path needs to support the minimum QUIC packet size (aka 1200B).  If the path performance is limited when sending larger packets, the devices on-path need to decide consistently send all packets for a flow, or should drop all packets that exceed a specific size. This avoids creating an anomaly that has unpredictable consequences on QUIC protocol mechanisms that probe a path. ((The same predictability is needing when choosing a forwarding path, etc)). ",
               "createdAt": "2021-02-16T12:41:15Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             },
             {
               "originalPosition": 28,
               "body": "When a device drops an IP packet, it ought to send an ICMP PTB message indicating the supported MTU, and quoting the discarded packet. However, endpoints do not necessarily receive these PTB Messages, and QUIC is robust to their loss.",
               "createdAt": "2021-02-16T12:43:08Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14599,7 +14615,7 @@
               "originalPosition": 13,
               "body": "Would it be better to say this?\r\n\r\n\"Some networks are required to support 1500-byte packets but can only do so by fragmenting at a lower layer before traversing a smaller MTU segment, and then reassembling. This is permissible even when the IP layer is IPv6 or has DF bit set, because it occurs at that lower layer. However this process can add to compute and memory costs, leading to a bottleneck that limits network capacity. In such networks this generates a desire to influence a majority of senders to use smaller packets, so that the limited reassembly capacity is not exceeded.\"",
               "createdAt": "2021-02-22T18:24:07Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14619,7 +14635,7 @@
               "originalPosition": 15,
               "body": "Happy with the new suggestion, so I'll merge it. I think I should also cite RFC4459 here.",
               "createdAt": "2021-02-22T18:32:53Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14639,7 +14655,7 @@
               "originalPosition": 19,
               "body": "Agree that \"If the path performance is limited when sending larger packets, the devices on-path need to decide consistently send all packets for a flow, or should drop all packets that exceed a specific size. \"\r\nThis is however a very limited consistency (one flow). I feel we should go further and ask for consistency for all flows of a particular transport protocol (QUIC in this case). This would permit endpoints to make use of historic knowledge such as \"on this network, QUIC only works up to size x\".\r\n\r\nWe should also state the desired goal that it should be consistent for all IP packets, regardless of protocol, but recognise that network may be cautious here, especially when there is a large diversity of protocols.",
               "createdAt": "2021-02-22T18:41:14Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14659,7 +14675,7 @@
               "originalPosition": 28,
               "body": "Agree. Are you suggesting the wording should be tightened, so that dropping the packet and not bothering with the PTB is called out as less-desirable?",
               "createdAt": "2021-02-22T18:43:34Z",
-              "updatedAt": "2021-02-22T19:00:53Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
         },
@@ -14679,9 +14695,120 @@
               "originalPosition": 15,
               "body": "https://github.com/chris-box/ops-drafts/commit/4dbf7d8137ab17dc7de54644c2df18e6c172d380",
               "createdAt": "2021-02-22T19:02:16Z",
-              "updatedAt": "2021-02-22T19:02:17Z"
+              "updatedAt": "2021-02-24T18:39:22Z"
             }
           ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk3MjMwNjAz",
+          "commit": {
+            "abbreviatedOid": "a3e3d6a"
+          },
+          "author": "gorryfair",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "Thanks, I expect this to be heading in a good way, and suggest more specific text to see if this helps reach final text.",
+          "createdAt": "2021-02-24T08:49:30Z",
+          "updatedAt": "2021-02-24T10:43:29Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "Looks near, I suggest: \"Some networks support 1500-byte packets, but can only do so by fragmenting at a lower layer before traversing a smaller MTU segment, and then reassembling. This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set, because it occurs below the IP layer. However, this process can add to compute and memory costs, leading to a bottleneck that limits network capacity. In such networks this generates a desire to influence a majority of senders to use smaller packets, so that the limited reassembly capacity is not exceeded.\"",
+              "createdAt": "2021-02-24T08:49:30Z",
+              "updatedAt": "2021-02-24T18:39:22Z"
+            },
+            {
+              "originalPosition": 19,
+              "body": "Aha, I suggest: \"If the path performance is limited when sending larger packets, the devices on-path ought to support a maximum packet size for a specific transport flow and then to consistently drop all packets that exceed the configured MTU size (when the inner IPv4 packet has DF set, or IPv6 is used). Endpoints can cache PMTU information between IP flows, in the IP-layer cache, so short-term consistency between the PMTU for flows can help avoid an endpoint using a PMTU that is inefficient.\"",
+              "createdAt": "2021-02-24T09:15:38Z",
+              "updatedAt": "2021-02-24T18:39:22Z"
+            },
+            {
+              "originalPosition": 28,
+              "body": "Now I see where this is heading, I think we should encourage PTB ... and perhaps say something like:\r\n\r\n\"({{sec-identifying}}) and taking action whenever packets exceed the desired size. For DPLPMTUD it is sufficient for the path to silently drop a packet larger than the supported size. (A QUIC probe packet is used to discover the PMTU. If lost, this does not impact the flow of QUIC data.) \r\n\r\nIPv4 routers generate an ICMP message when a packet is dropped because the link MTU was exceeded. {{RFC8504}} specifies how an IPv6 node generates an ICMPv6 Packet Too Big message (PTB) in this case. \r\n\r\nPMTUD relies upon an endpoint receiving such PTB messages {{RFC8201}},  whereas DPLPMTUD does not reply upon these messages, but still can optionally utilise these to improve performance {{Section 4.6 of DPLPMTUD}}. \r\n\r\nSince a network cannot know in advance which discovery method a QUIC endpoint is using, it ought to send a PTB message in addition to dropping any oversized packet.  A generated PTB message should be compliant with the validation requirements of {{section 14.2.1 of QUIC-TRANSPORT}}, otherwise it will be ignored by DPLPMTUD.\"\r\n\r\n- choose: /ought to send a PTB message/needs to send/ - choose appropriate words!\r\n",
+              "createdAt": "2021-02-24T10:41:12Z",
+              "updatedAt": "2021-02-24T18:39:22Z"
+            },
+            {
+              "originalPosition": 28,
+              "body": "Details:\r\n- Unwelcome detail: In some cases, a PMTUD implementation *might* accept any ICMP  message to update the IP cache, but that isn't a great choice, and text in recent RFCs seeks to discourage this.\r\n- As far as I recall, the RFC series is very murky for IPv4. \r\n- For IPv6 the advice is clear, despite the current state of affairs reported in RFC8899, and that this alone can't really solve the problem. It says: \"For IPv6, \"a Packet Too Big MUST be sent by a router in response to a packet that it cannot forward because the packet is larger than the MTU of the outgoing link\"{{RFC4443}}. These PTB messages \"MUST NOT be filtered\" {{RFC8504}}.\r\n- We likely do not wish to cite that - because also it does not solve the problems of PTB message delivery, but we ought to strongly encourage PTB where it can work.",
+              "createdAt": "2021-02-24T10:42:33Z",
+              "updatedAt": "2021-02-24T18:39:22Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk3ODAxMDAw",
+          "commit": {
+            "abbreviatedOid": "a3e3d6a"
+          },
+          "author": "chris-box",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-24T18:35:17Z",
+          "updatedAt": "2021-02-24T18:35:17Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "Yes, happy with that.",
+              "createdAt": "2021-02-24T18:35:17Z",
+              "updatedAt": "2021-02-24T18:39:22Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk3ODA0Nzkx",
+          "commit": {
+            "abbreviatedOid": "9e24bd6"
+          },
+          "author": "chris-box",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-24T18:39:47Z",
+          "updatedAt": "2021-02-24T18:39:47Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "Great - now applied.",
+              "createdAt": "2021-02-24T18:39:47Z",
+              "updatedAt": "2021-02-24T18:39:47Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk3ODEzNTI1",
+          "commit": {
+            "abbreviatedOid": "9e24bd6"
+          },
+          "author": "chris-box",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-24T18:49:23Z",
+          "updatedAt": "2021-02-24T18:49:24Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "Happy with the new wording. Regarding \"ought to send\" my inclination is to use SHOULD but I'm not sure if normative language is permitted here. Otherwise \"should\".",
+              "createdAt": "2021-02-24T18:49:23Z",
+              "updatedAt": "2021-02-24T18:49:24Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk3ODc3OTE3",
+          "commit": {
+            "abbreviatedOid": "9e24bd6"
+          },
+          "author": "ianswett",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Thanks for the updates, this makes sense to me.",
+          "createdAt": "2021-02-24T20:07:05Z",
+          "updatedAt": "2021-02-24T20:07:05Z",
+          "comments": []
         }
       ]
     },
@@ -17147,13 +17274,13 @@
       ],
       "body": "fixes #241",
       "createdAt": "2021-02-16T14:17:41Z",
-      "updatedAt": "2021-02-22T22:47:54Z",
+      "updatedAt": "2021-02-23T10:13:08Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "1a5b60f913adad4ea0de8a107c12a4fb8da5e8b0",
       "headRepository": "quicwg/ops-drafts",
       "headRefName": "mirjak-patch-25",
-      "headRefOid": "d66275f35d4a6fa2a4f1b2560d84608f38fd2ed4",
+      "headRefOid": "967f79018de6359737aa1f489a0e65f7c75b1555",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -17191,7 +17318,7 @@
               "originalPosition": 20,
               "body": "```suggestion\r\nminimize NAT port usage or to support the work of the QUIC server by\r\n```",
               "createdAt": "2021-02-16T16:14:18Z",
-              "updatedAt": "2021-02-16T20:29:44Z"
+              "updatedAt": "2021-02-23T10:13:08Z"
             }
           ]
         },
@@ -17211,19 +17338,19 @@
               "originalPosition": 13,
               "body": "```suggestion\r\nTranslation (NAT) better than other connection-oriented protocols, and\r\n```",
               "createdAt": "2021-02-16T18:24:22Z",
-              "updatedAt": "2021-02-16T20:29:44Z"
+              "updatedAt": "2021-02-23T10:13:08Z"
             },
             {
               "originalPosition": 15,
               "body": "```suggestion\r\nfor the endpoints even though it might appear to simplify network\r\n```",
               "createdAt": "2021-02-16T18:24:42Z",
-              "updatedAt": "2021-02-16T20:29:44Z"
+              "updatedAt": "2021-02-23T10:13:08Z"
             },
             {
               "originalPosition": 30,
               "body": "```suggestion\r\nchangeable and even impact security by facilitating amplification attacks.\r\n```",
               "createdAt": "2021-02-16T18:25:14Z",
-              "updatedAt": "2021-02-16T20:29:44Z"
+              "updatedAt": "2021-02-23T10:13:08Z"
             }
           ]
         },
@@ -17256,13 +17383,13 @@
               "originalPosition": 26,
               "body": "```suggestion\r\nhiding path changes, use of the connection ID by a NAT device to identify\r\n```",
               "createdAt": "2021-02-22T22:46:58Z",
-              "updatedAt": "2021-02-22T22:47:54Z"
+              "updatedAt": "2021-02-23T10:13:08Z"
             },
             {
               "originalPosition": 23,
               "body": "```suggestion\r\nsurvive address rebindings. While this may appear as an opportunity to\r\n```",
               "createdAt": "2021-02-22T22:47:32Z",
-              "updatedAt": "2021-02-22T22:47:54Z"
+              "updatedAt": "2021-02-23T10:13:08Z"
             }
           ]
         }
@@ -18190,7 +18317,7 @@
       "labels": [],
       "body": "Fixes #263.",
       "createdAt": "2021-02-17T19:12:25Z",
-      "updatedAt": "2021-02-22T11:11:17Z",
+      "updatedAt": "2021-02-23T12:03:19Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "1a5b60f913adad4ea0de8a107c12a4fb8da5e8b0",
@@ -18203,7 +18330,29 @@
       "mergeCommit": {
         "oid": "5c39f2fe13d2aa2b98e4ceadac344c8e2f73bc5d"
       },
-      "comments": [],
+      "comments": [
+        {
+          "author": "mikkelfj",
+          "authorAssociation": "NONE",
+          "body": "I believe it is sane to not assume a specific ID ordering, but I do not think it is right to require that all applications do not so. You can easily have applications that benefit from knowing and controlling the ID sequencing in detail, but such applications may not be implementable on the majority of QUIC library implementations. Ops should only make this a guidance for designing new app level protocols, not a requirement.",
+          "createdAt": "2021-02-23T10:39:07Z",
+          "updatedAt": "2021-02-23T10:39:07Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I would see everything in the ops docs as a recommendation and not a requirement. However this PR is already merged. Can you open a new issue (and ideally propose some wording or say more specifically where you think the current wording is too restrictive)?",
+          "createdAt": "2021-02-23T10:45:37Z",
+          "updatedAt": "2021-02-23T10:45:37Z"
+        },
+        {
+          "author": "mikkelfj",
+          "authorAssociation": "NONE",
+          "body": "@mirjak done",
+          "createdAt": "2021-02-23T12:03:19Z",
+          "updatedAt": "2021-02-23T12:03:19Z"
+        }
+      ],
       "reviews": [
         {
           "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkyNzAyMTU0",
@@ -18287,7 +18436,7 @@
       ],
       "body": "Note that the main point about using CID in a NAT can break connectivity was already covered the section \"Stateful Treatment of QUIC Traffic\". The new section now only covers the NAT for routing stability case.",
       "createdAt": "2021-02-18T01:22:31Z",
-      "updatedAt": "2021-02-22T22:29:01Z",
+      "updatedAt": "2021-02-23T19:26:16Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "1a5b60f913adad4ea0de8a107c12a4fb8da5e8b0",
@@ -18595,6 +18744,126 @@
               "updatedAt": "2021-02-22T22:29:01Z"
             }
           ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2MTc3NTY3",
+          "commit": {
+            "abbreviatedOid": "668ee0c"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T10:16:29Z",
+          "updatedAt": "2021-02-23T10:16:30Z",
+          "comments": [
+            {
+              "originalPosition": 81,
+              "body": "Blocking?",
+              "createdAt": "2021-02-23T10:16:30Z",
+              "updatedAt": "2021-02-23T10:16:30Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2MTg0NDgx",
+          "commit": {
+            "abbreviatedOid": "668ee0c"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T10:24:45Z",
+          "updatedAt": "2021-02-23T10:24:45Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "```suggestion\r\nrequire servers cooperate with the in-network device about the use of connection IDs,\r\n```\r\n\r\nIs this okay @martinduke ?",
+              "createdAt": "2021-02-23T10:24:45Z",
+              "updatedAt": "2021-02-23T10:24:45Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2MTg4NjQ5",
+          "commit": {
+            "abbreviatedOid": "668ee0c"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T10:29:44Z",
+          "updatedAt": "2021-02-23T10:29:44Z",
+          "comments": [
+            {
+              "originalPosition": 27,
+              "body": "Regarding your point 1: I think this is covered by \r\n\"this approach is not recommended to be used with NAT functions, as hiding address\r\n changes from a server prevents the server from validating new addresses,\r\n which would facilitate amplification attacks\"\r\nWhat's missing?\r\n\r\nRegarding you point 2, I would think it is also possible to use similar mechanisms as described in the LB doc to not only encode with server but also the actual connection, no?",
+              "createdAt": "2021-02-23T10:29:44Z",
+              "updatedAt": "2021-02-23T10:29:44Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2MTg4OTYx",
+          "commit": {
+            "abbreviatedOid": "668ee0c"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T10:30:08Z",
+          "updatedAt": "2021-02-23T10:30:09Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "Or should we keep the original text and remove the reference to the LB doc?",
+              "createdAt": "2021-02-23T10:30:09Z",
+              "updatedAt": "2021-02-23T10:30:09Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2MTk0NTky",
+          "commit": {
+            "abbreviatedOid": "668ee0c"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T10:37:05Z",
+          "updatedAt": "2021-02-23T10:37:06Z",
+          "comments": [
+            {
+              "originalPosition": 27,
+              "body": "This is the text from the other rewrite attempt:\r\n\r\n```\r\nConcealing client address changes in order to simplify operational routing\r\n issues will mask important signals that drive security mechanisms, and\r\n therefore opens QUIC up to various attacks.\r\n\r\nWhile QUIC's migration capability makes it possible for an server to survive\r\n address changes, this does not work if the routers or switches in the server\r\n infrastructure rely on address-port 4-tuple as a NAT rebinding or address\r\n migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}\r\n addresses this problem proposing a QUIC extension to allow server-load balancer\r\n coordination to routable CIDs.\r\n\r\nAn alternative, potentially simpler approach would seem to be the use of NAT\r\n in front of such an infrastructure setup. However, hiding information about the\r\n change of the IP address or port conceals important, and security relevant\r\n information from QUIC endpoints, and as such would facilitate amplification\r\n attacks (see section 9 of {{QUIC-TRANSPORT}}).\r\n\r\n An NAT that bleaches peer address changes, hinders the other end\r\n to detect and mitigate these attacks and verify connectivity to the\r\n new address based on QUIC PATH_CHALLENGE and PATH_RESPONSE frames.\r\n```\r\n\r\nOr is this a better starting point?",
+              "createdAt": "2021-02-23T10:37:06Z",
+              "updatedAt": "2021-02-23T10:37:06Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2NzE1OTk0",
+          "commit": {
+            "abbreviatedOid": "668ee0c"
+          },
+          "author": "martinduke",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T19:26:15Z",
+          "updatedAt": "2021-02-23T19:26:16Z",
+          "comments": [
+            {
+              "originalPosition": 27,
+              "body": "I like the other rewrite text better, yes.\r\n\r\nOn point 1: what I'm saying is that QUIC-LB doesn't enter into it.\r\n\r\nOn point 2: yes, that is theoretically possible. However, I don't want to suggest in any way that we make CIDs absolutely linkable. Exposing the server mapping is bad enough!",
+              "createdAt": "2021-02-23T19:26:15Z",
+              "updatedAt": "2021-02-23T19:26:16Z"
+            }
+          ]
         }
       ]
     },
@@ -18615,7 +18884,7 @@
       ],
       "body": "resolves #269 ",
       "createdAt": "2021-02-18T11:57:56Z",
-      "updatedAt": "2021-02-22T18:58:55Z",
+      "updatedAt": "2021-02-24T11:40:49Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "1a5b60f913adad4ea0de8a107c12a4fb8da5e8b0",
@@ -18709,6 +18978,86 @@
               "body": "I would rephrase this as \"Unlike operating directly over UDP, an applications that uses the QUIC datagram service need not provide its own congestion control, per {{?RFC8085}}, as QUIC datagrams are congestion controlled.\"",
               "createdAt": "2021-02-22T18:58:35Z",
               "updatedAt": "2021-02-22T18:58:55Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2MDkzNTA5",
+          "commit": {
+            "abbreviatedOid": "0672481"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T08:35:12Z",
+          "updatedAt": "2021-02-23T08:35:12Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "```suggestion\r\nand receiving unreliable datagrams over QUIC. Unlike operating directly over UDP,\r\napplications that use the QUIC datagram service do not need to implement their own\r\ncongestion control, per {{?RFC8085}}, as QUIC datagrams are congestion controlled.\r\n```",
+              "createdAt": "2021-02-23T08:35:12Z",
+              "updatedAt": "2021-02-23T15:52:14Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2MDk0NDYw",
+          "commit": {
+            "abbreviatedOid": "0672481"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T08:36:34Z",
+          "updatedAt": "2021-02-23T08:36:34Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "```suggestion\r\n\r\n```",
+              "createdAt": "2021-02-23T08:36:34Z",
+              "updatedAt": "2021-02-23T08:37:03Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2MDk2MjI4",
+          "commit": {
+            "abbreviatedOid": "0672481"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T08:38:54Z",
+          "updatedAt": "2021-02-23T08:38:55Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "Usually is there because you can also implement a message-based interface for streams (see taps) and there is nothing in the protocol spec that says anything about the interface.",
+              "createdAt": "2021-02-23T08:38:54Z",
+              "updatedAt": "2021-02-23T08:39:18Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk2NDgxNDQ5",
+          "commit": {
+            "abbreviatedOid": "0672481"
+          },
+          "author": "martinduke",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-23T15:42:43Z",
+          "updatedAt": "2021-02-23T15:42:43Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "Yes, thanks. That seems clearer to me, except s/its/their",
+              "createdAt": "2021-02-23T15:42:43Z",
+              "updatedAt": "2021-02-23T15:42:43Z"
             }
           ]
         }
@@ -18855,6 +19204,62 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 281,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTc4MjU3NTc2",
+      "title": "Applicability: Contributors and acks",
+      "url": "https://github.com/quicwg/ops-drafts/pull/281",
+      "state": "OPEN",
+      "author": "mirjak",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [
+        "-applicability"
+      ],
+      "body": "",
+      "createdAt": "2021-02-23T08:28:43Z",
+      "updatedAt": "2021-02-23T08:32:58Z",
+      "baseRepository": "quicwg/ops-drafts",
+      "baseRefName": "master",
+      "baseRefOid": "cee71e08bbdd6188efce99db675cbf2c2b84c059",
+      "headRepository": "quicwg/ops-drafts",
+      "headRefName": "mirjak-patch-15",
+      "headRefOid": "65ff5211fd56cddafdad6fb84fea9d4dc6f07db6",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 282,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTc4MjU5NTg5",
+      "title": "Manageability: Contributor and acks",
+      "url": "https://github.com/quicwg/ops-drafts/pull/282",
+      "state": "OPEN",
+      "author": "mirjak",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [
+        "-manageability"
+      ],
+      "body": "",
+      "createdAt": "2021-02-23T08:32:10Z",
+      "updatedAt": "2021-02-23T08:32:17Z",
+      "baseRepository": "quicwg/ops-drafts",
+      "baseRefName": "master",
+      "baseRefOid": "cee71e08bbdd6188efce99db675cbf2c2b84c059",
+      "headRepository": "quicwg/ops-drafts",
+      "headRefName": "mirjak-patch-16",
+      "headRefOid": "3623ca373c380fa222d8cbf0fe08bfdea6631ce4",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
