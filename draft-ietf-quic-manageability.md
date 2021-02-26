@@ -1038,8 +1038,8 @@ the sender's maximum TCP segment size, but QUIC requires a different approach.
 {{Section 14 of QUIC-TRANSPORT}} advises senders to probe larger sizes using
 Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
 Maximum Transmission Unit Discovery (PMTUD: {{?RFC1191}} and {{?RFC8201}}).
-This mechanism will encourage senders to approach the maximum size, driving
-fragmentation that they may not be aware of.
+This mechanism will encourage senders to approach the maximum size, which
+could cause fragmentation that they may not be aware of.
 
 If path performance is limited when sending larger packets, an on-path
 device should support a maximum packet size for a specific transport flow
