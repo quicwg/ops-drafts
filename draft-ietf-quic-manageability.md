@@ -1041,20 +1041,34 @@ Maximum Transmission Unit Discovery (PMTUD: {{?RFC1191}} and {{?RFC8201}}).
 This mechanism will encourage senders to approach the maximum size, driving
 fragmentation that they may not be aware of.
 
-Networks can seek to avoid this by identifying probable QUIC packets
-({{sec-identifying}}) and taking action whenever packets exceed the desired
-size. For DPLPMTUD a sufficient action is to drop the packet. If it is
-genuinely QUIC, the packet should have been a probe and so its loss should not
-cause impact to the flow of data. It serves only to guide the discovery of an
-optimal Path MTU.
+If path performance is limited when sending larger packets, an on-path
+device should support a maximum packet size for a specific transport flow
+and then consistently drop all packets that exceed the configured size
+when the inner IPv4 packet has DF set, or IPv6 is used. Endpoints can cache
+PMTU information between IP flows, in the IP-layer cache, so short-term
+consistency between the PMTU for flows can help avoid an endpoint using a
+PMTU that is inefficient.
 
-DPLPMTUD can optionally make use of ICMP Packet Too Big messages (PTB, defined
-in {{Section 1.1 of DPLPMTUD}}). PMTUD requires such PTB messages in order to
-work. Since the network cannot know in advance which discovery method the QUIC
-endpoints are using, it should send a PTB packet in addition to dropping the
-oversized probe packet. The generated PTB packet should be compliant with the
-validation requirements of section 14.2.1 of {{QUIC-TRANSPORT}} otherwise it
-is likely to be ignored.
+If network operators wish to start with a more limited implementation of
+such packet drops, they may wish to focus on QUIC. QUIC packets cannot always
+be identified ({{sec-identifying}}), but we assume that a set of candidate
+QUIC flows have been chosen. For QUIC endpoints using DPLPMTUD it is
+minimally sufficient for the path to silently drop a packet larger than the
+supported size. (A QUIC probe packet is used to discover the PMTU. If lost,
+this does not impact the flow of QUIC data.)
+
+IPv4 routers generate an ICMP message when a packet is dropped because the
+link MTU was exceeded. {{RFC8504}} specifies how an IPv6 node generates an
+ICMPv6 Packet Too Big message (PTB) in this case. PMTUD relies upon an
+endpoint receiving such PTB messages {{RFC8201}}, whereas DPLPMTUD does not
+reply upon these messages, but still can optionally use these to improve
+performance {{Section 4.6 of DPLPMTUD}}.
+
+Since a network cannot know in advance which discovery method a QUIC endpoint
+is using, it should always send a PTB message in addition to dropping the
+oversized packet. A generated PTB message should be compliant with the
+validation requirements of section 14.2.1 of {{QUIC-TRANSPORT}}, otherwise it
+will be ignored by DPLPMTUD.
 
 # IANA Considerations
 
