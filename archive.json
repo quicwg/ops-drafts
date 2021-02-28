@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-02-25T00:53:21.200068+00:00",
+  "timestamp": "2021-02-28T00:57:09.193300+00:00",
   "repo": "quicwg/ops-drafts",
   "labels": [
     {
@@ -67,6 +67,11 @@
       "name": "next revision",
       "description": "",
       "color": "4A0A92"
+    },
+    {
+      "name": "NAT section",
+      "description": "",
+      "color": "A70369"
     }
   ],
   "issues": [
@@ -1896,7 +1901,7 @@
       "labels": [],
       "body": "> Current practices in detection and mitigation of Distributed Denial of Service (DDoS) attacks generally involve passive measurement using network flow data {{?RFC7011}}, classification of traffic into \"good\" (productive) and \"bad\" (DoS) flows, and filtering of these bad flows in a \"scrubbing\" environment\r\n\r\nThis is not how it works. A few examples:\r\n - https://en.wikipedia.org/wiki/SYN_cookies\r\n - https://www.researchgate.net/publication/220027076_Mitigating_denial_of_service_attack_using_CAPTCHA_mechanism",
       "createdAt": "2020-04-27T12:02:13Z",
-      "updatedAt": "2020-08-14T14:28:43Z",
+      "updatedAt": "2021-02-26T16:52:27Z",
       "closedAt": "2020-07-08T08:48:25Z",
       "comments": [
         {
@@ -1954,6 +1959,13 @@
           "body": "I think what is still missing is to note that this document is generally scoped to in-network manageability and therefore does not discuss measures that can be applied directly at the end hosts. Maybe we can clarify this by add one simple word like this:\r\n\r\ns/Current practices in detection and mitigation/Current in-network practices in detection and mitigation/\r\n\r\n?",
           "createdAt": "2020-08-14T14:28:43Z",
           "updatedAt": "2020-08-14T14:28:43Z"
+        },
+        {
+          "author": "ximaera",
+          "authorAssociation": "NONE",
+          "body": "> Maybe we can clarify this by add one simple word like this:\r\n> s/Current practices in detection and mitigation/Current in-network practices in detection and mitigation/\r\n\r\nNo, this is still not fair. Active countermeasures like SYN proxying still belong to the network.\r\n\r\nProbably the only way to do this properly would be to say that \"Current practices in passive detection and mitigation\" do whatever they do, and to add later in the section that there are also practices in _active_ mitigation which are not supported by the protocol (the last paragraph basically sums it up) when the endpoint is not cooperating.\r\n\r\nIt'd be also a good idea to highlight the impact of the lack of active mitigation features, and to hint to how the endpoint could cooperate.",
+          "createdAt": "2021-02-26T16:42:21Z",
+          "updatedAt": "2021-02-26T16:52:27Z"
         }
       ]
     },
@@ -3150,11 +3162,12 @@
         "LPardue"
       ],
       "labels": [
-        "-applicability"
+        "-applicability",
+        "editor-ready"
       ],
       "body": "https://quicwg.org/ops-drafts/draft-ietf-quic-applicability.html#section-8 deals with connection closure and is pretty exhaustive. However, I think it would be improved by discussing how an application protocol might manage graceful connection close in the absence of a transport-layer mechanism. HTTP/3 defines the GOAWAY frame for this purpose, defining the closure signalling mechnanism and the  behaviour of endpoints when in the draining period - especially wrt creating streams.",
       "createdAt": "2021-02-01T17:44:16Z",
-      "updatedAt": "2021-02-12T12:26:15Z",
+      "updatedAt": "2021-02-26T17:10:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -3424,18 +3437,19 @@
       "url": "https://github.com/quicwg/ops-drafts/issues/183",
       "state": "OPEN",
       "author": "gorryfair",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [
         "martinduke"
       ],
       "labels": [
         "-manageability",
+        "NAT section",
         "has PR",
         "meeting-agenda"
       ],
       "body": "Sect 4.1 : This contains a statement on the recommendations for middleboxes and NATs, that I can\u2019t understand, and this concerns me.\r\ni.e. to me, the present text suggests that the advice in BCP 127 (aka RFC4787) should be changed for QUIC. I don\u2019t recall this being discussed - was it?\r\n\r\nI don\u2019t actually follow the rationale that says this follows from QUIC being connection-oriented. If the connection close was visible to the device, and it could release state - then this might make sense, but that isn\u2019t exactly what is explained. I\u2019m left unsure how a \u201cQUIC-aware\u201d middlebox is supposed to track this state.\r\n\r\nI'm also unsure how say a NAPT could know the traffic was QUIC, is this suggesting a port-based change. I think I need to understand this proposal.\r\n",
       "createdAt": "2021-02-04T11:56:53Z",
-      "updatedAt": "2021-02-15T17:25:33Z",
+      "updatedAt": "2021-02-26T17:08:36Z",
       "closedAt": null,
       "comments": [
         {
@@ -3454,18 +3468,19 @@
       "url": "https://github.com/quicwg/ops-drafts/issues/184",
       "state": "OPEN",
       "author": "gorryfair",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [
         "martinduke"
       ],
       "labels": [
         "-manageability",
+        "NAT section",
         "has PR",
         "meeting-agenda"
       ],
       "body": "Sect 4.8: Reducing the timeout on UDP NATs\r\n\r\n\u201cReducing the timeout on UDP NATs might be tempting in light of this property, but not all QUIC server deployments will be robust to rebinding.\u201d \r\n- so  now,  I did not understand what was being discouraged here. Is this somehow linked to section 4.6\u2019s discussion of holding state?\r\n\r\n(perhaps related to issue #183)",
       "createdAt": "2021-02-04T11:57:57Z",
-      "updatedAt": "2021-02-16T18:13:55Z",
+      "updatedAt": "2021-02-26T17:08:46Z",
       "closedAt": null,
       "comments": [
         {
@@ -3526,7 +3541,7 @@
         },
         {
           "author": "gorryfair",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "It would seem OK to motivate suggesting an increase in the NAT timeout, but saying this is  \"because it's connection-oriented\" ... isn't really enough. Other UDP protocols can also be connection oriented and they might also have observable closing packets - to release the NAT state under normal usage. I think the rationale just needs a little explanation, perhaps in terms of the benefits to QUIC of a larger NAT timeout.",
           "createdAt": "2021-02-12T08:55:03Z",
           "updatedAt": "2021-02-12T08:55:03Z"
@@ -3799,16 +3814,17 @@
       "url": "https://github.com/quicwg/ops-drafts/issues/193",
       "state": "OPEN",
       "author": "gorryfair",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [
         "LPardue"
       ],
       "labels": [
-        "-applicability"
+        "-applicability",
+        "editor-ready"
       ],
       "body": "Issue: Sect 4.3. Flow Control - we should have a subsection also encouraging timely credits\r\n\r\nThis ID discusses flow control deadlock, whichI think  is important. I suggest we should also note that timely release of flow control credit is also important (QUIC transport has some text to point to). This need is evident when the path has a large RTT, and there can be a large BDP, where the whole of operation of QUIC can be dominated by the way in which the application manages the flow credit. This might not be obvious, because the equivalent rwnd update in TCP is handled by the transport rather than the application.\r\n",
       "createdAt": "2021-02-06T12:01:25Z",
-      "updatedAt": "2021-02-16T20:50:32Z",
+      "updatedAt": "2021-02-26T17:08:17Z",
       "closedAt": null,
       "comments": [
         {
@@ -3841,7 +3857,7 @@
         },
         {
           "author": "gorryfair",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I'm content that flow control is something the libraries need to get correct - the TCP people spent energy to get this automated, although QUIC's multi-streaming makes the trickier. \r\n\r\nLucas text suggestion would improve things by making it clearer how the API is intended to be used.",
           "createdAt": "2021-02-16T17:47:08Z",
           "updatedAt": "2021-02-16T17:47:08Z"
@@ -3852,6 +3868,13 @@
           "body": "@LPardue ?",
           "createdAt": "2021-02-16T20:50:32Z",
           "updatedAt": "2021-02-16T20:50:32Z"
+        },
+        {
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "body": "I will add some text (just need to find the time).",
+          "createdAt": "2021-02-26T15:35:07Z",
+          "updatedAt": "2021-02-26T15:35:07Z"
         }
       ]
     },
@@ -4267,7 +4290,7 @@
       ],
       "body": "Should TAPS be cited as an informational ref to an API that is being discussed by the IETF, and which could apply to QUIC - at least to define the primitives needed in an API, and has quite some insight into protocol racing/fallback as described in applicability?\r\n",
       "createdAt": "2021-02-06T12:16:10Z",
-      "updatedAt": "2021-02-22T13:08:35Z",
+      "updatedAt": "2021-02-26T15:34:36Z",
       "closedAt": null,
       "comments": [
         {
@@ -4409,6 +4432,13 @@
           "body": "We merged PR #259. Is there anything we want to add or can this issue be closed?",
           "createdAt": "2021-02-22T13:08:35Z",
           "updatedAt": "2021-02-22T13:08:35Z"
+        },
+        {
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "body": "The merged PR addresses all of my concerns. I'll let @gorryfair be the judge whether his original issue has been addressed.",
+          "createdAt": "2021-02-26T15:34:35Z",
+          "updatedAt": "2021-02-26T15:34:35Z"
         }
       ]
     },
@@ -4419,15 +4449,16 @@
       "url": "https://github.com/quicwg/ops-drafts/issues/204",
       "state": "OPEN",
       "author": "gorryfair",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [
         "-applicability",
+        "NAT section",
         "meeting-agenda"
       ],
       "body": "Should RFC7857 also be cited? (NAT update BCP)\r\nShould RFC4787 also be cited? (behaviour for UDP NAT)",
       "createdAt": "2021-02-06T12:17:35Z",
-      "updatedAt": "2021-02-12T12:50:02Z",
+      "updatedAt": "2021-02-27T16:06:29Z",
       "closedAt": null,
       "comments": [
         {
@@ -4439,10 +4470,31 @@
         },
         {
           "author": "gorryfair",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "In 3.5 the ID currently states: \" According to a 2010 study ([Hatonen10]), UDP\r\n   applications can assume that any NAT binding or other state entry can\r\n   expire after just thirty seconds of inactivity.\"\r\nWhereas in RFC 4787 (BCP) Requirement 6 states: \r\n\"   REQ-5:  A NAT UDP mapping timer MUST NOT expire in less than two\r\n      minutes, unless REQ-5a applies.\r\n      a) For specific destination ports in the well-known port range\r\n         (ports 0-1023), a NAT MAY have shorter UDP mapping timers that\r\n         are specific to the IANA-registered application running over\r\n         that specific destination port.\r\n      b) The value of the NAT UDP mapping timer MAY be configurable.\r\n      c) A default value of five minutes or more for the NAT UDP mapping\r\n         timer is RECOMMENDED.\"\r\nI suggest we directly refer to this RFC before or after the above sentence, before the ID then continues in the next sentence to discuss the topic of keep alive (aka RFC8085).",
           "createdAt": "2021-02-09T09:06:01Z",
           "updatedAt": "2021-02-09T09:06:01Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "There was always a reference to RFC4787. Text is\r\n\r\n>{{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP traffic. However, in pratice, timers are often lower, in the range of 15 to 30 seconds. \r\n\r\nWhat else should be added?",
+          "createdAt": "2021-02-26T15:20:43Z",
+          "updatedAt": "2021-02-26T15:20:43Z"
+        },
+        {
+          "author": "ianswett",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I suggested changing the latter from \"15 to 30 seconds\" to \"30 seconds to 1 minute,\" or something like Gorry's quote: \r\n\r\n  \"According to a 2010 study ([Hatonen10]), UDP\r\n   applications can assume that any NAT binding or other state entry can\r\n   expire after just thirty seconds of inactivity.\"",
+          "createdAt": "2021-02-26T17:19:35Z",
+          "updatedAt": "2021-02-26T17:19:35Z"
+        },
+        {
+          "author": "gorryfair",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "When I review \"experience\" reported in OPS drafts, I usually try to avoid wording that might convey the IETF endorses the reported behaviour, rather than be aware of the reported behaviour. I suggest this is one of these cases. \r\n\r\nSo suggest a style something like:\r\n\r\n{{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP traffic. However, protocols traversing NATs should be aware of systems using lower values, in the range of 15 to 30 seconds. A study in 2010 study ([Hatonen10]), reported that UDP applications can experience that NAT binding or other state entries expire after just thirty seconds of inactivity.\r\n",
+          "createdAt": "2021-02-27T16:06:29Z",
+          "updatedAt": "2021-02-27T16:06:29Z"
         }
       ]
     },
@@ -5086,7 +5138,7 @@
       ],
       "body": "[Section 4.4](https://quicwg.org/ops-drafts/draft-ietf-quic-manageability.html#section-4.4) talks at length about detecting and mitigating against (D)DoS attacks, but this is written with the assumption of an uncooperative endpoint (likely to be, but unstated, a server).  All except the Retry text where the design specifically forces interventions to be cooperative.\r\n\r\nIt is entirely reasonable for DoS classification to be done with full knowledge of valid connection IDs or at least valid connection ID lengths.  If you allow for cooperation, the text might then explain how this might allow established flows to be separated from spoofed flows and new connection attempts.",
       "createdAt": "2021-02-16T02:30:06Z",
-      "updatedAt": "2021-02-22T13:12:46Z",
+      "updatedAt": "2021-02-26T16:50:40Z",
       "closedAt": null,
       "comments": [
         {
@@ -5109,6 +5161,13 @@
           "body": "In the last paragraph, it may be worth mentioning the 3x amplification limit during the handshake as well.\r\n\r\nPost-handshake DoS/DDoS is usually an application-level property which could affect TCP as much as QUIC, so the whole 5-tuple/CID aspect seems like it could be ignored commonly post-handshake.\r\n\r\nIs there a DoS expert we could ask to look at this text to see if it made sense, since I worry none of us are that person?",
           "createdAt": "2021-02-16T20:01:49Z",
           "updatedAt": "2021-02-16T20:01:49Z"
+        },
+        {
+          "author": "ximaera",
+          "authorAssociation": "NONE",
+          "body": "@ianswett with TCP, the handshake could be completed by the DDoS \"classification\" engine without passing a bit of an information to the endpoint. That's called \"SYN proxying\".\r\n\r\nThat was, uh, a cool feature since otherwise the endpoint would've been flooded by handshake attempts. Even though TCP wasn't cooperating, this feature was powerful enough to allow to build an impenetrable DDoS mitigation infrastructure.\r\n\r\nPlease see also #93 .",
+          "createdAt": "2021-02-26T16:35:34Z",
+          "updatedAt": "2021-02-26T16:50:40Z"
         }
       ]
     },
@@ -5122,11 +5181,12 @@
       "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [
-        "-manageability"
+        "-manageability",
+        "NAT section"
       ],
       "body": "> In fact, NAT behavior that relies on CID may instead cause connection failure when endpoints change Connection ID, and disable important protocol security features. \r\n\r\nI don't think so, but the structure of [this sentence](https://quicwg.org/ops-drafts/draft-ietf-quic-manageability.html#section-4.8-1) makes it hard to tell.",
       "createdAt": "2021-02-16T02:35:11Z",
-      "updatedAt": "2021-02-22T13:13:34Z",
+      "updatedAt": "2021-02-26T17:07:43Z",
       "closedAt": null,
       "comments": [
         {
@@ -5149,16 +5209,17 @@
       "assignees": [],
       "labels": [
         "-manageability",
+        "NAT section",
         "has PR"
       ],
       "body": "This section seems to be saying two things about a NAT that attempts to rewrite addresses to keep them stable:\r\n\r\n1. It won't work, because the NAT needs to know about all connection IDs, including those that have been negotiated without its knowledge.\r\n2. Even if it did work, which would require cooperation with endpoints, it would facilitate amplification attacks.\r\n\r\nThis is good, but I found it unclear.  It took a few readings to figure it out.",
       "createdAt": "2021-02-16T02:45:08Z",
-      "updatedAt": "2021-02-16T16:12:50Z",
+      "updatedAt": "2021-02-26T17:09:54Z",
       "closedAt": null,
       "comments": [
         {
           "author": "gorryfair",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "To what text does #242 relate?",
           "createdAt": "2021-02-16T09:46:56Z",
           "updatedAt": "2021-02-16T09:46:56Z"
@@ -5189,11 +5250,12 @@
       "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [
-        "-manageability"
+        "-manageability",
+        "meeting-agenda"
       ],
       "body": "[This text](https://quicwg.org/ops-drafts/draft-ietf-quic-manageability.html#section-2.6-2) repeats requirements from the transport spec unnecessarily.\r\n\r\n> Server-generated connection IDs should seek to obscure any encoding, of routing identities or any other information. Exposing the server mapping would allow linkage of multiple IP addresses to the same host if the server also supports migration. Furthermore, this opens an attack vector on specific servers or pools.\r\n\r\nIt might be easier to just strike this.\r\n",
       "createdAt": "2021-02-16T03:01:29Z",
-      "updatedAt": "2021-02-16T21:21:44Z",
+      "updatedAt": "2021-02-26T17:06:03Z",
       "closedAt": null,
       "comments": [
         {
@@ -5473,11 +5535,13 @@
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [
-        "-manageability"
+        "-manageability",
+        "meeting-agenda",
+        "needs-author"
       ],
       "body": "This is branched of #239.\r\n\r\n@martinthomson said:\r\n\r\n\"However, it needs to specify that the connection ID association needs to be directional. Maybe that is assumed, but it should be stated. And it needs to say that this is unlikely to apply when the connection ID is empty.\"",
       "createdAt": "2021-02-22T11:04:41Z",
-      "updatedAt": "2021-02-22T13:17:00Z",
+      "updatedAt": "2021-02-26T17:06:16Z",
       "closedAt": null,
       "comments": []
     },
@@ -14360,13 +14424,13 @@
       ],
       "body": "This is my suggestion to resolve #210.",
       "createdAt": "2021-02-08T16:16:19Z",
-      "updatedAt": "2021-02-24T20:07:05Z",
+      "updatedAt": "2021-02-27T08:36:38Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "3ded00f9cbd7a37a93074e9802b1bac5da52922d",
       "headRepository": "chris-box/ops-drafts",
       "headRefName": "master",
-      "headRefOid": "9e24bd6fb1eaecdee96383a28b382d456b1fab80",
+      "headRefOid": "254aad30d6d244058fb45b806e228fb40710b48f",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -14418,7 +14482,7 @@
               "originalPosition": 19,
               "body": "The problem is that probe packets cannot be identified/distinguished from other QUIc traffic. I believe that's also what section 3.1 (Identifying QUIC traffic) says. If that's no clear we can say more there.",
               "createdAt": "2021-02-08T16:59:32Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14438,7 +14502,7 @@
               "originalPosition": 19,
               "body": "My interpretation of quic-transport is that it says:\r\n- Initial packets would not normally exceed 1200 bytes unless the client is aware (from history) that a larger size is supported.\r\n- Endpoints should only send packets larger than this if they are employing either PMTUD or DPLPMTUD.\r\n- All QUIC packets that are not sent in a PMTU probe should be sized to fit within the (currently known) maximum datagram size.\r\n\r\nHence probes should be identifiable as the only packets that are larger than this. Is this wrong?",
               "createdAt": "2021-02-08T17:20:00Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14458,13 +14522,13 @@
               "originalPosition": 19,
               "body": "I can tell you that our implementation starts with 1330 and 1350 bytes of UDP payload, so I wouldn't assume everyone starts at 1200 bytes of payload.  In fact, I'm not sure any production deployments do today.\r\n\r\nHowever, I 'think' your suggestion will work, but I think there needs to be more caveats and explanations about the nature of how these networks operate, because I didn't realize they existed until a few months ago.  As I commented on the issue, it seems like the behavior you're describing goes against the intent of the DF bit, which is surprising.\r\n\r\n",
               "createdAt": "2021-02-08T20:58:42Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             },
             {
               "originalPosition": 10,
               "body": "It's worth calling out that these networks fragment instead of dropping v4 packets with DF set and IPv6 packets(assuming that's what they do)",
               "createdAt": "2021-02-08T21:00:37Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14484,7 +14548,7 @@
               "originalPosition": 27,
               "body": "```suggestion\r\nin {{Section 1.1 of DPLPMTUD}}). PMTUD requires such PTB messages in order to\r\n```\r\n\r\nThis reference format is relatively new, but also really nice.",
               "createdAt": "2021-02-08T21:52:41Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14504,7 +14568,7 @@
               "originalPosition": 19,
               "body": "Ian that's interesting. The relevant sentence for me from quic-transport is \"Datagrams containing Initial packets MAY exceed 1200 bytes if the sender believes that the network path and peer both support the size that it chooses.\" In the general case, from where does that belief arise? In starting at 1330 (which I assume is the v6 size) it would work fine on the EE network but it would fail in traversing a network with the IPv6 minimum MTU. Are you relying on successful PMTU discovery from the INITIAL packet to catch that situation?",
               "createdAt": "2021-02-09T12:56:43Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14524,7 +14588,7 @@
               "originalPosition": 10,
               "body": "Yes happy to make this clearer in the text.",
               "createdAt": "2021-02-09T12:57:25Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14544,7 +14608,7 @@
               "originalPosition": 19,
               "body": "HTTP/3 has to handle fallback to TCP no matter what, and too large a packet and UDP being dropped look identical to a client attempting a handshake.\r\n\r\nIn this case, the belief that networks support 1330/1350 byte size is based on historical data we gathered showing what MTUs were supported by most networks, so it's not path specific.",
               "createdAt": "2021-02-09T17:22:52Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14577,25 +14641,25 @@
               "originalPosition": 13,
               "body": "This makes it sound like the current method is very wrong - It is **OK* for a lower layer (including a tunnel) to fragment and reassemble to the MTU it supports. However, in some cases it **CAN** fragmentation and reassembly below IP can add to the processing cost and memory requirements - and hence can become a bottleneck. This text isn't clear yet  - but the text might be heading in the correct direction",
               "createdAt": "2021-02-16T12:27:04Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             },
             {
               "originalPosition": 15,
               "body": "/majority use/majority of traffic use/\r\n... although I really do think it better to avoid /can/ and say /is/... \r\n\r\nI suggest:\r\n\r\n/For TCP, MSS-clamping is currently used to change the sender's maximum TCP segment size, but QUIC.../",
               "createdAt": "2021-02-16T12:30:55Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             },
             {
               "originalPosition": 19,
               "body": "I believe the recommendation needs to be that path needs to support the minimum QUIC packet size (aka 1200B).  If the path performance is limited when sending larger packets, the devices on-path need to decide consistently send all packets for a flow, or should drop all packets that exceed a specific size. This avoids creating an anomaly that has unpredictable consequences on QUIC protocol mechanisms that probe a path. ((The same predictability is needing when choosing a forwarding path, etc)). ",
               "createdAt": "2021-02-16T12:41:15Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             },
             {
               "originalPosition": 28,
               "body": "When a device drops an IP packet, it ought to send an ICMP PTB message indicating the supported MTU, and quoting the discarded packet. However, endpoints do not necessarily receive these PTB Messages, and QUIC is robust to their loss.",
               "createdAt": "2021-02-16T12:43:08Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14615,7 +14679,7 @@
               "originalPosition": 13,
               "body": "Would it be better to say this?\r\n\r\n\"Some networks are required to support 1500-byte packets but can only do so by fragmenting at a lower layer before traversing a smaller MTU segment, and then reassembling. This is permissible even when the IP layer is IPv6 or has DF bit set, because it occurs at that lower layer. However this process can add to compute and memory costs, leading to a bottleneck that limits network capacity. In such networks this generates a desire to influence a majority of senders to use smaller packets, so that the limited reassembly capacity is not exceeded.\"",
               "createdAt": "2021-02-22T18:24:07Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14635,7 +14699,7 @@
               "originalPosition": 15,
               "body": "Happy with the new suggestion, so I'll merge it. I think I should also cite RFC4459 here.",
               "createdAt": "2021-02-22T18:32:53Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14655,7 +14719,7 @@
               "originalPosition": 19,
               "body": "Agree that \"If the path performance is limited when sending larger packets, the devices on-path need to decide consistently send all packets for a flow, or should drop all packets that exceed a specific size. \"\r\nThis is however a very limited consistency (one flow). I feel we should go further and ask for consistency for all flows of a particular transport protocol (QUIC in this case). This would permit endpoints to make use of historic knowledge such as \"on this network, QUIC only works up to size x\".\r\n\r\nWe should also state the desired goal that it should be consistent for all IP packets, regardless of protocol, but recognise that network may be cautious here, especially when there is a large diversity of protocols.",
               "createdAt": "2021-02-22T18:41:14Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14675,7 +14739,7 @@
               "originalPosition": 28,
               "body": "Agree. Are you suggesting the wording should be tightened, so that dropping the packet and not bothering with the PTB is called out as less-desirable?",
               "createdAt": "2021-02-22T18:43:34Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14695,7 +14759,7 @@
               "originalPosition": 15,
               "body": "https://github.com/chris-box/ops-drafts/commit/4dbf7d8137ab17dc7de54644c2df18e6c172d380",
               "createdAt": "2021-02-22T19:02:16Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14715,25 +14779,25 @@
               "originalPosition": 13,
               "body": "Looks near, I suggest: \"Some networks support 1500-byte packets, but can only do so by fragmenting at a lower layer before traversing a smaller MTU segment, and then reassembling. This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set, because it occurs below the IP layer. However, this process can add to compute and memory costs, leading to a bottleneck that limits network capacity. In such networks this generates a desire to influence a majority of senders to use smaller packets, so that the limited reassembly capacity is not exceeded.\"",
               "createdAt": "2021-02-24T08:49:30Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             },
             {
               "originalPosition": 19,
               "body": "Aha, I suggest: \"If the path performance is limited when sending larger packets, the devices on-path ought to support a maximum packet size for a specific transport flow and then to consistently drop all packets that exceed the configured MTU size (when the inner IPv4 packet has DF set, or IPv6 is used). Endpoints can cache PMTU information between IP flows, in the IP-layer cache, so short-term consistency between the PMTU for flows can help avoid an endpoint using a PMTU that is inefficient.\"",
               "createdAt": "2021-02-24T09:15:38Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             },
             {
               "originalPosition": 28,
               "body": "Now I see where this is heading, I think we should encourage PTB ... and perhaps say something like:\r\n\r\n\"({{sec-identifying}}) and taking action whenever packets exceed the desired size. For DPLPMTUD it is sufficient for the path to silently drop a packet larger than the supported size. (A QUIC probe packet is used to discover the PMTU. If lost, this does not impact the flow of QUIC data.) \r\n\r\nIPv4 routers generate an ICMP message when a packet is dropped because the link MTU was exceeded. {{RFC8504}} specifies how an IPv6 node generates an ICMPv6 Packet Too Big message (PTB) in this case. \r\n\r\nPMTUD relies upon an endpoint receiving such PTB messages {{RFC8201}},  whereas DPLPMTUD does not reply upon these messages, but still can optionally utilise these to improve performance {{Section 4.6 of DPLPMTUD}}. \r\n\r\nSince a network cannot know in advance which discovery method a QUIC endpoint is using, it ought to send a PTB message in addition to dropping any oversized packet.  A generated PTB message should be compliant with the validation requirements of {{section 14.2.1 of QUIC-TRANSPORT}}, otherwise it will be ignored by DPLPMTUD.\"\r\n\r\n- choose: /ought to send a PTB message/needs to send/ - choose appropriate words!\r\n",
               "createdAt": "2021-02-24T10:41:12Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             },
             {
               "originalPosition": 28,
               "body": "Details:\r\n- Unwelcome detail: In some cases, a PMTUD implementation *might* accept any ICMP  message to update the IP cache, but that isn't a great choice, and text in recent RFCs seeks to discourage this.\r\n- As far as I recall, the RFC series is very murky for IPv4. \r\n- For IPv6 the advice is clear, despite the current state of affairs reported in RFC8899, and that this alone can't really solve the problem. It says: \"For IPv6, \"a Packet Too Big MUST be sent by a router in response to a packet that it cannot forward because the packet is larger than the MTU of the outgoing link\"{{RFC4443}}. These PTB messages \"MUST NOT be filtered\" {{RFC8504}}.\r\n- We likely do not wish to cite that - because also it does not solve the problems of PTB message delivery, but we ought to strongly encourage PTB where it can work.",
               "createdAt": "2021-02-24T10:42:33Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14753,7 +14817,7 @@
               "originalPosition": 19,
               "body": "Yes, happy with that.",
               "createdAt": "2021-02-24T18:35:17Z",
-              "updatedAt": "2021-02-24T18:39:22Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14773,7 +14837,7 @@
               "originalPosition": 13,
               "body": "Great - now applied.",
               "createdAt": "2021-02-24T18:39:47Z",
-              "updatedAt": "2021-02-24T18:39:47Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14793,7 +14857,7 @@
               "originalPosition": 28,
               "body": "Happy with the new wording. Regarding \"ought to send\" my inclination is to use SHOULD but I'm not sure if normative language is permitted here. Otherwise \"should\".",
               "createdAt": "2021-02-24T18:49:23Z",
-              "updatedAt": "2021-02-24T18:49:24Z"
+              "updatedAt": "2021-02-26T20:20:41Z"
             }
           ]
         },
@@ -14809,6 +14873,124 @@
           "createdAt": "2021-02-24T20:07:05Z",
           "updatedAt": "2021-02-24T20:07:05Z",
           "comments": []
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk4MzU5NTg4",
+          "commit": {
+            "abbreviatedOid": "9e24bd6"
+          },
+          "author": "gorryfair",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-25T09:30:16Z",
+          "updatedAt": "2021-02-25T09:30:17Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "The document is not presently not using RFC2119 language, so \"should\" would seem OK personally, from my side propose what seems best.",
+              "createdAt": "2021-02-25T09:30:16Z",
+              "updatedAt": "2021-02-26T20:20:41Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk5MDczMjY0",
+          "commit": {
+            "abbreviatedOid": "9e24bd6"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "This is now a very good addition to the document.  Thanks Chris.",
+          "createdAt": "2021-02-25T21:55:44Z",
+          "updatedAt": "2021-02-25T21:57:31Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "```suggestion\r\n{{Section 14 of QUIC-TRANSPORT}} advises senders to probe larger sizes using\r\n```",
+              "createdAt": "2021-02-25T21:55:44Z",
+              "updatedAt": "2021-02-26T20:20:41Z"
+            },
+            {
+              "originalPosition": 20,
+              "body": "```suggestion\r\nThis mechanism will encourage senders to approach the maximum size, which\r\ncould cause fragmentation that they may not be aware of.\r\n```",
+              "createdAt": "2021-02-25T21:56:07Z",
+              "updatedAt": "2021-02-26T20:20:41Z"
+            },
+            {
+              "originalPosition": 34,
+              "body": "```suggestion\r\nvalidation requirements of {{Section 14.2.1 of QUIC-TRANSPORT}} otherwise it\r\n```",
+              "createdAt": "2021-02-25T21:57:02Z",
+              "updatedAt": "2021-02-26T20:20:41Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk5OTEwNDUy",
+          "commit": {
+            "abbreviatedOid": "b9762d7"
+          },
+          "author": "chris-box",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-26T20:16:29Z",
+          "updatedAt": "2021-02-26T20:16:30Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "Applied this in the latest commit.",
+              "createdAt": "2021-02-26T20:16:30Z",
+              "updatedAt": "2021-02-26T20:20:41Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk5OTE0NDUx",
+          "commit": {
+            "abbreviatedOid": "254aad3"
+          },
+          "author": "chris-box",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-02-26T20:22:26Z",
+          "updatedAt": "2021-02-26T20:22:26Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "Why does this format give me the error \"Error: IDREF attribute target references an unknown ID \"section_14.2.1_of_QUIC-TRANSPORT\", at None\"?",
+              "createdAt": "2021-02-26T20:22:26Z",
+              "updatedAt": "2021-02-26T20:22:26Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjAwMTE5MDY4",
+          "commit": {
+            "abbreviatedOid": "254aad3"
+          },
+          "author": "gorryfair",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "I think this is good to commit, with two minor issues.",
+          "createdAt": "2021-02-27T08:35:15Z",
+          "updatedAt": "2021-02-27T08:36:38Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "/more limited implementation of ... packet drops/  does read rather odd, I think this needs to say /drops to avoid fragmentation/. e.g.;\r\n\"if network operators wish to start to drop large packets to avoid fragmentation, ",
+              "createdAt": "2021-02-27T08:35:15Z",
+              "updatedAt": "2021-02-27T08:36:38Z"
+            },
+            {
+              "originalPosition": 20,
+              "body": "could this be /fragmentation with a network segment/ ... just to be clear that this isn't something else?",
+              "createdAt": "2021-02-27T08:35:57Z",
+              "updatedAt": "2021-02-27T08:36:38Z"
+            }
+          ]
         }
       ]
     },
