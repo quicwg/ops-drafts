@@ -1041,7 +1041,7 @@ the sender's maximum TCP segment size, but QUIC requires a different approach.
 Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
 Maximum Transmission Unit Discovery (PMTUD: {{?RFC1191}} and {{?RFC8201}}).
 This mechanism will encourage senders to approach the maximum size, which
-could cause fragmentation that they may not be aware of.
+could cause fragmentation with a network segment that they may not be aware of.
 
 If path performance is limited when sending larger packets, an on-path
 device should support a maximum packet size for a specific transport flow
@@ -1051,8 +1051,8 @@ PMTU information between IP flows, in the IP-layer cache, so short-term
 consistency between the PMTU for flows can help avoid an endpoint using a
 PMTU that is inefficient.
 
-If network operators wish to start with a more limited implementation of
-such packet drops, they may wish to focus on QUIC. QUIC packets cannot always
+If network operators wish to start to drop large packets to avoid
+fragmentation, they may wish to focus on QUIC. QUIC packets cannot always
 be identified ({{sec-identifying}}), but we assume that a set of candidate
 QUIC flows have been chosen. For QUIC endpoints using DPLPMTUD it is
 minimally sufficient for the path to silently drop a packet larger than the
