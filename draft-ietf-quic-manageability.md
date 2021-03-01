@@ -60,6 +60,8 @@ informative:
       -
         ins: N. Brownlee
     date: 2014-04
+  RFC4459:
+  RFC8504:
 
 --- abstract
 
@@ -1033,7 +1035,7 @@ and memory costs, leading to a bottleneck that limits network capacity. In such
 networks this generates a desire to influence a majority of senders to use
 smaller packets, so that the limited reassembly capacity is not exceeded.
 
-For TCP, MSS clamping (Section 3.2 of {{?RFC4459}}) is often used to change
+For TCP, MSS clamping ({{Section 3.2 of RFC4459}}) is often used to change
 the sender's maximum TCP segment size, but QUIC requires a different approach.
 {{Section 14 of QUIC-TRANSPORT}} advises senders to probe larger sizes using
 Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
@@ -1067,7 +1069,7 @@ performance {{Section 4.6 of DPLPMTUD}}.
 Since a network cannot know in advance which discovery method a QUIC endpoint
 is using, it should always send a PTB message in addition to dropping the
 oversized packet. A generated PTB message should be compliant with the
-validation requirements of section 14.2.1 of {{QUIC-TRANSPORT}}, otherwise it
+validation requirements of {{Section 14.2.1 of QUIC-TRANSPORT}}, otherwise it
 will be ignored by DPLPMTUD.
 
 # IANA Considerations
