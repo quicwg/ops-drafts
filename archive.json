@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-02-28T00:57:09.193300+00:00",
+  "timestamp": "2021-03-02T00:45:37.051839+00:00",
   "repo": "quicwg/ops-drafts",
   "labels": [
     {
@@ -4277,7 +4277,7 @@
       "id": "MDU6SXNzdWU4MDI2OTAwMzY=",
       "title": "App: Ref: TAPS API work: on TCP fallback / API?",
       "url": "https://github.com/quicwg/ops-drafts/issues/203",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "gorryfair",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [
@@ -4290,8 +4290,8 @@
       ],
       "body": "Should TAPS be cited as an informational ref to an API that is being discussed by the IETF, and which could apply to QUIC - at least to define the primitives needed in an API, and has quite some insight into protocol racing/fallback as described in applicability?\r\n",
       "createdAt": "2021-02-06T12:16:10Z",
-      "updatedAt": "2021-02-26T15:34:36Z",
-      "closedAt": null,
+      "updatedAt": "2021-03-01T15:08:24Z",
+      "closedAt": "2021-03-01T15:08:24Z",
       "comments": [
         {
           "author": "mirjak",
@@ -4439,6 +4439,20 @@
           "body": "The merged PR addresses all of my concerns. I'll let @gorryfair be the judge whether his original issue has been addressed.",
           "createdAt": "2021-02-26T15:34:35Z",
           "updatedAt": "2021-02-26T15:34:35Z"
+        },
+        {
+          "author": "gorryfair",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "That looked good to me.",
+          "createdAt": "2021-03-01T14:56:58Z",
+          "updatedAt": "2021-03-01T14:56:58Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks all!",
+          "createdAt": "2021-03-01T15:08:24Z",
+          "updatedAt": "2021-03-01T15:08:24Z"
         }
       ]
     },
@@ -14424,13 +14438,13 @@
       ],
       "body": "This is my suggestion to resolve #210.",
       "createdAt": "2021-02-08T16:16:19Z",
-      "updatedAt": "2021-02-27T08:36:38Z",
+      "updatedAt": "2021-03-01T23:59:38Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "3ded00f9cbd7a37a93074e9802b1bac5da52922d",
       "headRepository": "chris-box/ops-drafts",
       "headRefName": "master",
-      "headRefOid": "254aad30d6d244058fb45b806e228fb40710b48f",
+      "headRefOid": "8747cb4850c4d4e79a13cac916ddb6d5fd23053d",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -14482,7 +14496,7 @@
               "originalPosition": 19,
               "body": "The problem is that probe packets cannot be identified/distinguished from other QUIc traffic. I believe that's also what section 3.1 (Identifying QUIC traffic) says. If that's no clear we can say more there.",
               "createdAt": "2021-02-08T16:59:32Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14502,7 +14516,7 @@
               "originalPosition": 19,
               "body": "My interpretation of quic-transport is that it says:\r\n- Initial packets would not normally exceed 1200 bytes unless the client is aware (from history) that a larger size is supported.\r\n- Endpoints should only send packets larger than this if they are employing either PMTUD or DPLPMTUD.\r\n- All QUIC packets that are not sent in a PMTU probe should be sized to fit within the (currently known) maximum datagram size.\r\n\r\nHence probes should be identifiable as the only packets that are larger than this. Is this wrong?",
               "createdAt": "2021-02-08T17:20:00Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14522,13 +14536,13 @@
               "originalPosition": 19,
               "body": "I can tell you that our implementation starts with 1330 and 1350 bytes of UDP payload, so I wouldn't assume everyone starts at 1200 bytes of payload.  In fact, I'm not sure any production deployments do today.\r\n\r\nHowever, I 'think' your suggestion will work, but I think there needs to be more caveats and explanations about the nature of how these networks operate, because I didn't realize they existed until a few months ago.  As I commented on the issue, it seems like the behavior you're describing goes against the intent of the DF bit, which is surprising.\r\n\r\n",
               "createdAt": "2021-02-08T20:58:42Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 10,
               "body": "It's worth calling out that these networks fragment instead of dropping v4 packets with DF set and IPv6 packets(assuming that's what they do)",
               "createdAt": "2021-02-08T21:00:37Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14548,7 +14562,7 @@
               "originalPosition": 27,
               "body": "```suggestion\r\nin {{Section 1.1 of DPLPMTUD}}). PMTUD requires such PTB messages in order to\r\n```\r\n\r\nThis reference format is relatively new, but also really nice.",
               "createdAt": "2021-02-08T21:52:41Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14568,7 +14582,7 @@
               "originalPosition": 19,
               "body": "Ian that's interesting. The relevant sentence for me from quic-transport is \"Datagrams containing Initial packets MAY exceed 1200 bytes if the sender believes that the network path and peer both support the size that it chooses.\" In the general case, from where does that belief arise? In starting at 1330 (which I assume is the v6 size) it would work fine on the EE network but it would fail in traversing a network with the IPv6 minimum MTU. Are you relying on successful PMTU discovery from the INITIAL packet to catch that situation?",
               "createdAt": "2021-02-09T12:56:43Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14588,7 +14602,7 @@
               "originalPosition": 10,
               "body": "Yes happy to make this clearer in the text.",
               "createdAt": "2021-02-09T12:57:25Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14608,7 +14622,7 @@
               "originalPosition": 19,
               "body": "HTTP/3 has to handle fallback to TCP no matter what, and too large a packet and UDP being dropped look identical to a client attempting a handshake.\r\n\r\nIn this case, the belief that networks support 1330/1350 byte size is based on historical data we gathered showing what MTUs were supported by most networks, so it's not path specific.",
               "createdAt": "2021-02-09T17:22:52Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14641,25 +14655,25 @@
               "originalPosition": 13,
               "body": "This makes it sound like the current method is very wrong - It is **OK* for a lower layer (including a tunnel) to fragment and reassemble to the MTU it supports. However, in some cases it **CAN** fragmentation and reassembly below IP can add to the processing cost and memory requirements - and hence can become a bottleneck. This text isn't clear yet  - but the text might be heading in the correct direction",
               "createdAt": "2021-02-16T12:27:04Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 15,
               "body": "/majority use/majority of traffic use/\r\n... although I really do think it better to avoid /can/ and say /is/... \r\n\r\nI suggest:\r\n\r\n/For TCP, MSS-clamping is currently used to change the sender's maximum TCP segment size, but QUIC.../",
               "createdAt": "2021-02-16T12:30:55Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 19,
               "body": "I believe the recommendation needs to be that path needs to support the minimum QUIC packet size (aka 1200B).  If the path performance is limited when sending larger packets, the devices on-path need to decide consistently send all packets for a flow, or should drop all packets that exceed a specific size. This avoids creating an anomaly that has unpredictable consequences on QUIC protocol mechanisms that probe a path. ((The same predictability is needing when choosing a forwarding path, etc)). ",
               "createdAt": "2021-02-16T12:41:15Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 28,
               "body": "When a device drops an IP packet, it ought to send an ICMP PTB message indicating the supported MTU, and quoting the discarded packet. However, endpoints do not necessarily receive these PTB Messages, and QUIC is robust to their loss.",
               "createdAt": "2021-02-16T12:43:08Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14679,7 +14693,7 @@
               "originalPosition": 13,
               "body": "Would it be better to say this?\r\n\r\n\"Some networks are required to support 1500-byte packets but can only do so by fragmenting at a lower layer before traversing a smaller MTU segment, and then reassembling. This is permissible even when the IP layer is IPv6 or has DF bit set, because it occurs at that lower layer. However this process can add to compute and memory costs, leading to a bottleneck that limits network capacity. In such networks this generates a desire to influence a majority of senders to use smaller packets, so that the limited reassembly capacity is not exceeded.\"",
               "createdAt": "2021-02-22T18:24:07Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14699,7 +14713,7 @@
               "originalPosition": 15,
               "body": "Happy with the new suggestion, so I'll merge it. I think I should also cite RFC4459 here.",
               "createdAt": "2021-02-22T18:32:53Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14719,7 +14733,7 @@
               "originalPosition": 19,
               "body": "Agree that \"If the path performance is limited when sending larger packets, the devices on-path need to decide consistently send all packets for a flow, or should drop all packets that exceed a specific size. \"\r\nThis is however a very limited consistency (one flow). I feel we should go further and ask for consistency for all flows of a particular transport protocol (QUIC in this case). This would permit endpoints to make use of historic knowledge such as \"on this network, QUIC only works up to size x\".\r\n\r\nWe should also state the desired goal that it should be consistent for all IP packets, regardless of protocol, but recognise that network may be cautious here, especially when there is a large diversity of protocols.",
               "createdAt": "2021-02-22T18:41:14Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14739,7 +14753,7 @@
               "originalPosition": 28,
               "body": "Agree. Are you suggesting the wording should be tightened, so that dropping the packet and not bothering with the PTB is called out as less-desirable?",
               "createdAt": "2021-02-22T18:43:34Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14759,7 +14773,7 @@
               "originalPosition": 15,
               "body": "https://github.com/chris-box/ops-drafts/commit/4dbf7d8137ab17dc7de54644c2df18e6c172d380",
               "createdAt": "2021-02-22T19:02:16Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14779,25 +14793,25 @@
               "originalPosition": 13,
               "body": "Looks near, I suggest: \"Some networks support 1500-byte packets, but can only do so by fragmenting at a lower layer before traversing a smaller MTU segment, and then reassembling. This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set, because it occurs below the IP layer. However, this process can add to compute and memory costs, leading to a bottleneck that limits network capacity. In such networks this generates a desire to influence a majority of senders to use smaller packets, so that the limited reassembly capacity is not exceeded.\"",
               "createdAt": "2021-02-24T08:49:30Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 19,
               "body": "Aha, I suggest: \"If the path performance is limited when sending larger packets, the devices on-path ought to support a maximum packet size for a specific transport flow and then to consistently drop all packets that exceed the configured MTU size (when the inner IPv4 packet has DF set, or IPv6 is used). Endpoints can cache PMTU information between IP flows, in the IP-layer cache, so short-term consistency between the PMTU for flows can help avoid an endpoint using a PMTU that is inefficient.\"",
               "createdAt": "2021-02-24T09:15:38Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 28,
               "body": "Now I see where this is heading, I think we should encourage PTB ... and perhaps say something like:\r\n\r\n\"({{sec-identifying}}) and taking action whenever packets exceed the desired size. For DPLPMTUD it is sufficient for the path to silently drop a packet larger than the supported size. (A QUIC probe packet is used to discover the PMTU. If lost, this does not impact the flow of QUIC data.) \r\n\r\nIPv4 routers generate an ICMP message when a packet is dropped because the link MTU was exceeded. {{RFC8504}} specifies how an IPv6 node generates an ICMPv6 Packet Too Big message (PTB) in this case. \r\n\r\nPMTUD relies upon an endpoint receiving such PTB messages {{RFC8201}},  whereas DPLPMTUD does not reply upon these messages, but still can optionally utilise these to improve performance {{Section 4.6 of DPLPMTUD}}. \r\n\r\nSince a network cannot know in advance which discovery method a QUIC endpoint is using, it ought to send a PTB message in addition to dropping any oversized packet.  A generated PTB message should be compliant with the validation requirements of {{section 14.2.1 of QUIC-TRANSPORT}}, otherwise it will be ignored by DPLPMTUD.\"\r\n\r\n- choose: /ought to send a PTB message/needs to send/ - choose appropriate words!\r\n",
               "createdAt": "2021-02-24T10:41:12Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 28,
               "body": "Details:\r\n- Unwelcome detail: In some cases, a PMTUD implementation *might* accept any ICMP  message to update the IP cache, but that isn't a great choice, and text in recent RFCs seeks to discourage this.\r\n- As far as I recall, the RFC series is very murky for IPv4. \r\n- For IPv6 the advice is clear, despite the current state of affairs reported in RFC8899, and that this alone can't really solve the problem. It says: \"For IPv6, \"a Packet Too Big MUST be sent by a router in response to a packet that it cannot forward because the packet is larger than the MTU of the outgoing link\"{{RFC4443}}. These PTB messages \"MUST NOT be filtered\" {{RFC8504}}.\r\n- We likely do not wish to cite that - because also it does not solve the problems of PTB message delivery, but we ought to strongly encourage PTB where it can work.",
               "createdAt": "2021-02-24T10:42:33Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14817,7 +14831,7 @@
               "originalPosition": 19,
               "body": "Yes, happy with that.",
               "createdAt": "2021-02-24T18:35:17Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14837,7 +14851,7 @@
               "originalPosition": 13,
               "body": "Great - now applied.",
               "createdAt": "2021-02-24T18:39:47Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14857,7 +14871,7 @@
               "originalPosition": 28,
               "body": "Happy with the new wording. Regarding \"ought to send\" my inclination is to use SHOULD but I'm not sure if normative language is permitted here. Otherwise \"should\".",
               "createdAt": "2021-02-24T18:49:23Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14890,7 +14904,7 @@
               "originalPosition": 28,
               "body": "The document is not presently not using RFC2119 language, so \"should\" would seem OK personally, from my side propose what seems best.",
               "createdAt": "2021-02-25T09:30:16Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14910,19 +14924,19 @@
               "originalPosition": 16,
               "body": "```suggestion\r\n{{Section 14 of QUIC-TRANSPORT}} advises senders to probe larger sizes using\r\n```",
               "createdAt": "2021-02-25T21:55:44Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 20,
               "body": "```suggestion\r\nThis mechanism will encourage senders to approach the maximum size, which\r\ncould cause fragmentation that they may not be aware of.\r\n```",
               "createdAt": "2021-02-25T21:56:07Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 34,
               "body": "```suggestion\r\nvalidation requirements of {{Section 14.2.1 of QUIC-TRANSPORT}} otherwise it\r\n```",
               "createdAt": "2021-02-25T21:57:02Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14942,7 +14956,7 @@
               "originalPosition": 28,
               "body": "Applied this in the latest commit.",
               "createdAt": "2021-02-26T20:16:30Z",
-              "updatedAt": "2021-02-26T20:20:41Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14962,7 +14976,7 @@
               "originalPosition": 34,
               "body": "Why does this format give me the error \"Error: IDREF attribute target references an unknown ID \"section_14.2.1_of_QUIC-TRANSPORT\", at None\"?",
               "createdAt": "2021-02-26T20:22:26Z",
-              "updatedAt": "2021-02-26T20:22:26Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             }
           ]
         },
@@ -14982,13 +14996,113 @@
               "originalPosition": 30,
               "body": "/more limited implementation of ... packet drops/  does read rather odd, I think this needs to say /drops to avoid fragmentation/. e.g.;\r\n\"if network operators wish to start to drop large packets to avoid fragmentation, ",
               "createdAt": "2021-02-27T08:35:15Z",
-              "updatedAt": "2021-02-27T08:36:38Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
             },
             {
               "originalPosition": 20,
               "body": "could this be /fragmentation with a network segment/ ... just to be clear that this isn't something else?",
               "createdAt": "2021-02-27T08:35:57Z",
-              "updatedAt": "2021-02-27T08:36:38Z"
+              "updatedAt": "2021-03-01T12:48:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjAwMzk1NzA5",
+          "commit": {
+            "abbreviatedOid": "254aad3"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-01T05:18:09Z",
+          "updatedAt": "2021-03-01T05:18:10Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "Try updating kramdown-rfc2629; it's a recent feature.",
+              "createdAt": "2021-03-01T05:18:09Z",
+              "updatedAt": "2021-03-01T12:48:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjAwNjEzMzQ2",
+          "commit": {
+            "abbreviatedOid": "254aad3"
+          },
+          "author": "chris-box",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-01T11:01:02Z",
+          "updatedAt": "2021-03-01T11:01:03Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "I was using version 1.3.35; updating to 1.3.37 didn't help. However in debugging I realised that it's a case sensitivity problem. When the feature was introduced in 1.3.21 the notes said \"Limitations for now: Only recognizes Section/Sections\".\r\n\r\nThis means you cannot write {{section 14.2.1 of RFC1149}} but must write {{Section 14.2.1 of RFC1149}}. I know that was exactly the change you suggested but the resulting I-D then has an incongruous capital S in the middle of the sentence: \"validation requirements of Section 14.2.1 of \". The output format is a feature of xml2rfc so I guess I have to accept that it must always be written as Section rather than section.",
+              "createdAt": "2021-03-01T11:01:02Z",
+              "updatedAt": "2021-03-01T12:48:17Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjAwNjk1MzEy",
+          "commit": {
+            "abbreviatedOid": "8747cb4"
+          },
+          "author": "chris-box",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-01T12:48:29Z",
+          "updatedAt": "2021-03-01T12:48:29Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "Done",
+              "createdAt": "2021-03-01T12:48:29Z",
+              "updatedAt": "2021-03-01T12:48:29Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjAwNjk1NDA3",
+          "commit": {
+            "abbreviatedOid": "8747cb4"
+          },
+          "author": "chris-box",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-01T12:48:37Z",
+          "updatedAt": "2021-03-01T12:48:37Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "Done",
+              "createdAt": "2021-03-01T12:48:37Z",
+              "updatedAt": "2021-03-01T12:48:37Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjAxMjgxOTU0",
+          "commit": {
+            "abbreviatedOid": "8747cb4"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-01T23:59:37Z",
+          "updatedAt": "2021-03-01T23:59:38Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "It's not Carsten being obstinately German, it's good writing apparently.  Section is always capitalized as a proper noun.  It might not being especially proper, but that's the convention I was taught.",
+              "createdAt": "2021-03-01T23:59:38Z",
+              "updatedAt": "2021-03-01T23:59:38Z"
             }
           ]
         }
