@@ -51,6 +51,8 @@ informative:
         ins: B. Trammell
     target: https://arxiv.org/abs/1612.02902
     date: 2016-12-09
+  RFC7605:
+  QUIC-RECOVERY: I-D.ietf-quic-recovery
 
 --- abstract
 
@@ -142,7 +144,7 @@ QUIC:
 
 - version number: the version number is present in the long header, and
   identifies the version used for that packet. During Version
-  Negotiation (see {{version}} and Section 17.2.1 of {{QUIC-TRANSPORT}}), the
+  Negotiation (see {{Section 17.2.1 of QUIC-TRANSPORT}} and {{version}}), the
   version number field has a special value (0x00000000) that identifies the
   packet as a Version Negotiation packet. Upon time of publishing of this
   document, QUIC versions that start with 0xff implement IETF drafts. QUIC
@@ -176,7 +178,7 @@ In version 1 of QUIC, the following additional information is exposed:
 
 - header type: The long header has a 2 bit packet type field following the
   Header Form and fixed bits. Header types correspond to stages of the
-  handshake; see Section 17.2 of {{QUIC-TRANSPORT}} for details.
+  handshake; see {{Section 17.2 of QUIC-TRANSPORT}} for details.
 
 - length: The length of the remaining QUIC packet after the length field,
   present on long headers. This field is used to implement coalesced packets
@@ -188,8 +190,8 @@ In version 1 of QUIC, the following additional information is exposed:
   in an Initial packet on a subsequent connection attempt. The length of the
   token is explicit in both cases.
 
-Retry (Section 17.2.5 of {{QUIC-TRANSPORT}}) and Version Negotiation (Section
-17.2.1 of {{QUIC-TRANSPORT}}) packets are not encrypted or obfuscated in any
+Retry ({{Section 17.2.5 of QUIC-TRANSPORT}}) and Version Negotiation ({{Section
+17.2.1 of QUIC-TRANSPORT}}) packets are not encrypted or obfuscated in any
 way. For other kinds of packets, version 1 of QUIC cryptographically obfuscates
 other information in the packet headers:
 
@@ -209,10 +211,10 @@ other information in the packet headers:
 Multiple QUIC packets may be coalesced into a UDP datagram, with a datagram
 carrying one or more long header packets followed by zero or one short header
 packets. When packets are coalesced, the Length fields in the long headers are
-used to separate QUIC packets; see Section 12.2 of {{QUIC-TRANSPORT}}.
+used to separate QUIC packets; see {{Section 12.2 of QUIC-TRANSPORT}}.
 The length header field is variable length, and its position in the header is
 also variable depending on the length of the source and destination connection
-ID; see Section 17.2 of {{QUIC-TRANSPORT}}.
+ID; see {{Section 17.2 of QUIC-TRANSPORT}}.
 
 ## Use of Port Numbers
 
@@ -283,8 +285,8 @@ some also include an Initial packet.
 Datagrams that contain a QUIC Initial Packet (Client Hello, Server Hello, and
 some Initial Completion) contain at least 1200 octets of UDP payload. This
 protects against amplification attacks and verifies that the network path meets
-the requirements for the minimum QUIC IP packet size; see Section 14 of
-{{QUIC-TRANSPORT}}. This is accomplished by either adding PADDING frames within
+the requirements for the minimum QUIC IP packet size; see {{Section 14 of
+QUIC-TRANSPORT}}. This is accomplished by either adding PADDING frames within
 the Initial packet, coalescing other packets with the Initial packet, or
 leaving unused payload in the UDP packet after the Initial packet. A network
 path needs to be able to forward at least this size of packet for QUIC to be
@@ -423,8 +425,8 @@ bytes. Additional datagrams containing only 0-RTT protected long header packets
 may be sent from the client to the server after the Client Hello datagram,
 containing the rest of the 0-RTT data. The amount of 0-RTT protected data
 that can be sent in the first round is limited by the initial congestion
-window, typically around 10 packets (see Section 7.2 of
-{{?QUIC-RECOVERY=I-D.ietf-quic-recovery}}).
+window, typically around 10 packets (see {{Section 7.2 of
+QUIC-RECOVERY}}).
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
@@ -450,7 +452,7 @@ change - usually the client. Client and server negotiate connection IDs during
 the handshake; typically, however, only the server will request a connection ID
 for the lifetime of the connection. Connection IDs for either endpoint may
 change during the lifetime of a connection, with the new connection ID being
-supplied via encrypted frames. See Section 5.1 of {{QUIC-TRANSPORT}}. Therefore,
+supplied via encrypted frames. See {{Section 5.1 of QUIC-TRANSPORT}}. Therefore,
 observing a new connection ID does not necessary indicate a new connection.
 
 Server-generated connection IDs should seek to obscure any encoded routing
@@ -482,7 +484,7 @@ observers.
 ## Version Negotiation and Greasing {#version}
 
 Version Negotiation packets are used by the server to indicate that a requested
-version from the client is not supported (see section 6 of {{QUIC-TRANSPORT}}.
+version from the client is not supported (see {{Section 6 of QUIC-TRANSPORT}}.
 Version Negotiation packets are not intrinsically protected, but future QUIC
 versions will use later encrypted messages to verify that they were authentic.
 Therefore any modification of this list will be detected and may cause the
@@ -528,7 +530,7 @@ QUIC traffic is HTTP/3 is not valid. HTTP/3 uses UDP port 443 by
 default, although URLs referring to resources available over HTTP/3
 may specify alternate port numbers. Simple assumptions about whether a
 given flow is using QUIC based upon a UDP port number may therefore not hold;
-see also Section 5 of {{?RFC7605}}.
+see also {{Section 5 of RFC7605}}.
 
 While the second-most-significant bit (0x40) of the first octet is set to 1 in
 most QUIC packets of the current version (see {{public-header}} and Section 17
@@ -642,18 +644,18 @@ When the version has been identified as QUIC version 1, the packet type needs to
 be verified as an Initial packet by checking that the third and fourth bits of
 the header are both set to 0. Then the Destination Connection ID needs to be
 extracted to calculate the Initial secret using the version-specific Initial
-salt, as described in Section 5.2 of {{QUIC-TLS}}. The length of the connection
+salt, as described in {{Section 5.2 of QUIC-TLS}}. The length of the connection
 ID is indicated in the 6th byte of the header followed by the connection ID
 itself.
 
 To determine the end of the header and find the start of the payload, the packet
 number length, the source connection ID length, and the token length need to be
 extracted. The packet number length is defined by the seventh and eight bits of
-the header as described in Section 17.2 of {{QUIC-TRANSPORT}}, but is obfuscated
-as described in Section 5.4 of {{QUIC-TLS}}. The source connection ID length is
+the header as described in {{Section 17.2 of QUIC-TRANSPORT}}, but is obfuscated
+as described in {{Section 5.4 of QUIC-TLS}}. The source connection ID length is
 specified in the byte after the destination connection ID. The token length,
 which follows the source connection ID, is a variable-length integer as
-specified in Section 16 of {{QUIC-TRANSPORT}}.
+specified in {{Section 16 of QUIC-TRANSPORT}}.
 
 After decryption, the client's Initial packet can be parsed to detect the CRYPTO
 frame that contains the TLS ClientHello, which then can be parsed similarly to
@@ -736,7 +738,7 @@ handshake) at both sides.
 
 The spin bit provides a version-specific method to measure per-flow RTT from
 observation points on the network path throughout the duration of a connection.
-See section 17.4 of {{?QUIC-TRANSPORT}} for the definition of the spin bit in
+See {{Section 17.4 of QUIC-TRANSPORT}} for the definition of the spin bit in
 Version 1 of QUIC. Endpoint participation in spin bit signaling is optional.
 That is, while its location is fixed in this version of QUIC, an endpoint can
 unilaterally choose to not support "spinning" the bit.
@@ -1031,8 +1033,8 @@ devices.
 Unfortunately, the change of IP address or port is an important signal to QUIC
 endpoints. It requires a review of path-dependent variables like congestion
 control parameters. It can also signify various attacks that mislead one
-endpoint about the best peer address for the connection (see section 9 of
-{{QUIC-TRANSPORT}}). The QUIC PATH_CHALLENGE and PATH_RESPONSE frames are
+endpoint about the best peer address for the connection (see {{Section 9 of
+QUIC-TRANSPORT}}). The QUIC PATH_CHALLENGE and PATH_RESPONSE frames are
 intended to detect and mitigate these attacks and verify connectivity to the
 new address. This mechanism cannot work if the NAT is bleaching peer address
 changes.
