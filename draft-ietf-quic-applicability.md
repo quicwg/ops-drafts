@@ -712,18 +712,17 @@ the old version is no longer accepted.
 # Unreliable Datagram Service over QUIC
 
 {{?I-D.draft-ietf-quic-datagram}} specifies an QUIC extension to enable sending
-and receiving unreliable datagrams over QUIC. Other than with the use of UDP
-only, the datagram service in QUIC is congestion-controlled, and thereby
-supporting application designers to address the requirements in {{?RFC8085}}.
+and receiving unreliable datagrams over QUIC. Unlike operating directly over UDP,
+applications that use the QUIC datagram service do not need to implement their own
+congestion control, per {{?RFC8085}}, as QUIC datagrams are congestion controlled.
 QUIC datagrams are not flow-controlled and data chunks may get drop if the
 receiver is overloaded.
 
-The reliable transmission service of QUIC usually provides a stream-based
-interface to send and received data over eventually multiple QUIC streams.
-The datagram service, however, usually provides a message-based interface,
-with the expectation that an application layer framing exists on top to
-recognise messages boundaries as well as the order of received message chunks
-if needed.
+The reliable transmission service of QUIC provides a stream-based
+interface to send and receive data over multiple QUIC streams.
+The datagram service, however, provides a message-based interface,
+Application layer framing can exist on top to recognise messages boundaries
+as well as the order of received message chunks if needed.
 
 
 # IANA Considerations
