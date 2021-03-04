@@ -715,14 +715,13 @@ the old version is no longer accepted.
 and receiving unreliable datagrams over QUIC. Unlike operating directly over UDP,
 applications that use the QUIC datagram service do not need to implement their own
 congestion control, per {{?RFC8085}}, as QUIC datagrams are congestion controlled.
-QUIC datagrams are not flow-controlled and data chunks may get drop if the
-receiver is overloaded.
 
-The reliable transmission service of QUIC provides a stream-based
-interface to send and receive data over multiple QUIC streams.
-The datagram service, however, provides a message-based interface,
-Application layer framing can exist on top to recognise messages boundaries
-as well as the order of received message chunks if needed.
+QUIC datagrams are not flow-controlled and as such data chunks may get drop if the
+receiver is overloaded. While the reliable transmission service of QUIC provides
+a stream-based interface to send and receive data in order over multiple QUIC
+streams, the datagram service has a unordered message-based interface. If needed,
+an application layer framing should be used on top to recognise the order of
+received message chunks.
 
 
 # IANA Considerations
