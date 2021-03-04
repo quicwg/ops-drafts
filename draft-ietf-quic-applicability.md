@@ -448,15 +448,11 @@ padding.
 
 # ACK-only packets on constrained links
 
-On network paths where there is significant asymmetry,
-the transmission of packets only containing ACK frames can reduce the efficient use of network
-capacity. This effect occurs
-when the return capacity is significantly more constrained than the
-forward capacity, or the cost of transmission per packet is a
-significant component of the total transmission cost. Reducing
-the ratio of acknowledgements to data at the QUIC receiver can improve
-link utilization and reduce link transmission costs.
-
+The cost of sending acknowledgments - in processing cost or link
+utilization - could be a significant proportion of available resources if
+these resources are constrained. Reducing the rate at which acknowledgments
+are generated can preserve these resources and improve overall performance,
+for both network processing as well as application-relevant metrics.
 
 # Port Selection and Application Endpoint Discovery {#ports}
 
