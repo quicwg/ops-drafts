@@ -824,27 +824,26 @@ breakage later on connection ID change.
 
 ## Address Rewriting to Ensure Routing Stability
 
-If the routers or switches in the server infrastructure rely on address-port
-4-tuple, a NAT rebinding or any other address migration on the client side,
-even if that could be handled by the QUIC server, will cause packets to be
-delivered to the wrong server. In this case it seems tempting to use NAT in
-front of the server infrastructure to provide a stable address 4-tuple,
-rather than changing the deployed routing infrastructure. As the connection
-ID can change and not-yet-used values are not observable on path, this would
-require servers cooperate to inform the NAT of all new connection IDs,
-similarly as described in {{QUIC_LB}} for load balancers. However, this
-approach is not recommended to be used with NAT functions, as hiding address
-changes from a server prevents the server from validating new addresses,
-which would facilitate amplification attacks (see
-{{Section 9 of QUIC-TRANSPORT}}).
+Use of address rewriting to ensure routing stablity as an approach to
+simplify operational routing conceals client address changes and will
+therefore mask important signals that drive security mechanisms, and
+as auch opens QUIC up to various attacks.
 
-For example, an attacker might copy a legitimate QUIC packet and change the
-source address to match its own. In the absence of a bleaching NAT, the
-receiving endpoint would interpret this as a potential NAT rebinding and use a
-PATH_CHALLENGE frame to prove that the peer endpoint is not truly at the new
-address, thus thwarting the attack. A bleaching NAT has no means of sending an
-encrypted PATH_CHALLENGE frame, so it might start redirecting all QUIC traffic
-to the attacker address and thus allow an observer to break the connection.
+While QUIC's migration capability makes it possible for an server to survive
+address changes, this does not work if the routers or switches in the server
+infrastructure rely on address-port 4-tuple as a NAT rebinding or address
+migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}
+described a way to addresses this problem by coordinating the selection and
+use of connection IDs between load-balancers and servers.
+
+An alternative, potentially simpler approach appears to be the use of NAT
+in front of such an infrastructure setup. However, hiding information about the
+change of the IP address or port conceals important and security relevant
+information from QUIC endpoints and as such would facilitate amplification
+attacks (see section 9 of {{QUIC-TRANSPORT}}). An NAT function that bleaches
+peer address changes, hinders the other end
+to detect and mitigate these attacks and verify connectivity to the
+new address based on QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
 
 In addition, a change of IP address or port is also an input signal to other
 internal mechanisms in QUIC. When a path change is detected, path-dependent
