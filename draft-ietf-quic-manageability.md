@@ -853,7 +853,7 @@ the new path from overload.
 
 ## Server Cooperation with Load Balancers {#sec-loadbalancing}
 
-In the case of content distribution networking architectures including load
+In the case of networking architectures including load
 balancers, the connection ID provides a way for the server to signal information
 about the desired treatment of a flow to the load balancers. Guidance on
 assigning connection IDs is given in
