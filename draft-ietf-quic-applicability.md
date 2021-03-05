@@ -722,7 +722,8 @@ if the receiver is overloaded. While the reliable transmission service of QUIC
 provides a stream-based interface to send and receive data in order over
 multiple QUIC streams, the datagram service has a unordered message-based
 interface. If needed, an application layer framing can be used on top to
-allow separate flows of unreliable datagrams to be multiplexed on one QUIC connection.
+allow separate flows of unreliable datagrams to be multiplexed on one QUIC
+connection.
 
 
 # IANA Considerations
