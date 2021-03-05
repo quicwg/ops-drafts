@@ -888,8 +888,8 @@ packets is to either drop them all or to throttle them based on the hash of the
 UDP datagram's source and destination addresses, blocking a portion of the hash
 space that corresponds to the fraction of UDP traffic one wishes to drop.
 When the handshake is blocked, QUIC-capable applications may failover to TCP
-(at least applications using well-known UDP ports). However, blindly blocking a
-significant fraction of QUIC packets will allow many QUIC handshakes
+(at least applications using well-known UDP ports). However, blocking a
+random fraction of QUIC packets across 4-tuples will allow many QUIC handshakes
 to complete, preventing a TCP failover, but the connections will suffer from
 severe packet loss.
 
