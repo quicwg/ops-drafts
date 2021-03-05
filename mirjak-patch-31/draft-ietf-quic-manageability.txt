@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 22 August 2021                                           Google
-                                                        18 February 2021
+Expires: 6 September 2021                                         Google
+                                                            5 March 2021
 
 
               Manageability of the QUIC Transport Protocol
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 August 2021.
+   This Internet-Draft will expire on 6 September 2021.
 
 Copyright Notice
 
@@ -925,10 +925,10 @@ Table of Contents
 
 4.4.  Server Cooperation with Load Balancers
 
-   In the case of content distribution networking architectures
-   including load balancers, the connection ID provides a way for the
-   server to signal information about the desired treatment of a flow to
-   the load balancers.  Guidance on assigning connection IDs is given in
+   In the case of networking architectures including load balancers, the
+   connection ID provides a way for the server to signal information
+   about the desired treatment of a flow to the load balancers.
+   Guidance on assigning connection IDs is given in
    [QUIC-APPLICABILITY].  [QUIC_LB] describes a system for coordinating
    selection and use of connection IDs between load-balancers and
    servers.
@@ -1220,9 +1220,9 @@ Table of Contents
    [I-D.ietf-quic-applicability]
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
-              draft-ietf-quic-applicability-09, 22 January 2021,
+              draft-ietf-quic-applicability-10, 22 February 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              applicability-09.txt>.
+              applicability-10.txt>.
 
    [IPIM]     Allman, M., Beverly, R., and B. Trammell, "In-Protocol
               Internet Measurement (arXiv preprint 1612.02902)", 9
@@ -1231,9 +1231,9 @@ Table of Contents
    [QUIC-APPLICABILITY]
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
-              draft-ietf-quic-applicability-09, 22 January 2021,
+              draft-ietf-quic-applicability-10, 22 February 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              applicability-09.txt>.
+              applicability-10.txt>.
 
    [QUIC-HTTP]
               Bishop, M., "Hypertext Transfer Protocol Version 3
