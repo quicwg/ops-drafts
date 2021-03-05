@@ -889,7 +889,8 @@ Table of Contents
    the initial packets of a flow (see also Section 4.5), which
    potentially triggers a fallback to TCP, than using the connection ID
    to muliplex mulitple connections on the same IP address port pair
-   which risks breakage later on connection ID change.
+   which risks connectivity breakage later, in case the connection ID
+   changes.
 
 4.3.  Address Rewriting to Ensure Routing Stability
 
