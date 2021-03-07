@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-03-04T00:54:29.273481+00:00",
+  "timestamp": "2021-03-07T00:58:23.556556+00:00",
   "repo": "quicwg/ops-drafts",
   "labels": [
     {
@@ -3258,7 +3258,7 @@
       "url": "https://github.com/quicwg/ops-drafts/issues/178",
       "state": "OPEN",
       "author": "gorryfair",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [
         "-manageability",
@@ -3266,9 +3266,17 @@
       ],
       "body": "Sect 2.7 contains a specific statement as a recommendations for middleboxes. At the moment this is buried within a section on version negotiation. The present text says:\r\n\u201cIn addition, due to the speed of evolution of the protocol, devices that attempt to distinguish QUIC traffic from non- QUIC traffic for purposes of network admission control should admit all QUIC traffic regardless of version.\u201d\r\n\r\nI think I understand the intent, and see the encouragement, but I really do not all buy this as a generic \"recommendation\". I think this topic that can be tricky for network ops people (e.g. protecting enterprise access). I've raised this a number of times in previous face-to-face IETF discussions.  There are good reasons why DDoS and other devices will have a policy that is based on a set of signatures that identify behaviours the administrators trust and for which they have appropriate management procedures.  Please can we adjust this as a motivation for allowing easy upgrade, rather than  boldly saying \u201cshould admit\u201d.\r\n\r\nIt might also be good for this change in thinking to be more highlighted, and the editors might want to call out the importance of thinking about the implications, In this respect I'd encourage this to be a separate subsection.\r\n",
       "createdAt": "2021-02-04T11:36:26Z",
-      "updatedAt": "2021-02-12T12:31:52Z",
+      "updatedAt": "2021-03-04T17:20:22Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@gorry there wasn't much discussion here yet, however when we say we might need a separate section to discussion this more differentiated, what would/should that section say? Can you maybe even propose text?",
+          "createdAt": "2021-03-04T17:20:22Z",
+          "updatedAt": "2021-03-04T17:20:22Z"
+        }
+      ]
     },
     {
       "number": 179,
@@ -5555,9 +5563,17 @@
       ],
       "body": "This is branched of #239.\r\n\r\n@martinthomson said:\r\n\r\n\"However, it needs to specify that the connection ID association needs to be directional. Maybe that is assumed, but it should be stated. And it needs to say that this is unlikely to apply when the connection ID is empty.\"",
       "createdAt": "2021-02-22T11:04:41Z",
-      "updatedAt": "2021-02-26T17:06:16Z",
+      "updatedAt": "2021-03-04T15:13:45Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@martinthomson I created PR #285. Does that address this point sufficiently?",
+          "createdAt": "2021-03-04T15:13:45Z",
+          "updatedAt": "2021-03-04T15:13:45Z"
+        }
+      ]
     },
     {
       "number": 283,
@@ -5571,9 +5587,31 @@
       "labels": [],
       "body": "Follow up to comment on #270 \r\n\r\nThe current text:\r\n\r\n> The method of allocating stream identifiers to streams opened by the application\r\nmight vary between transport implementations. Therefore, an application should\r\nnot assume a particular stream ID will be assigned to a stream that has not yet\r\nbeen allocated.  For example, HTTP/3 uses Stream IDs to refer to streams that\r\nhave already been opened, but makes no assumptions about future Stream IDs or\r\nthe way in which they are assigned.\r\n\r\nSpecifically \"An application should\r\nnot assume a particular stream ID will be assigned to a stream that has not yet\r\nbeen allocated. \"\r\n\r\nThis highly depends on the application protocol, not the QUIC transport API. It may be that a given QUIC transport protocol is unable to support the requirements of a QUIC application protocol, but it is the app protocol that decides. If a given  QUIC transport API only supports \"OpenNextStreamOfType(x)\" that might be enough to support HTTP/3. But it should be be that all app protocols follow the same constraints.\r\n\r\nHowever, it is reasonable to recommend that application level protocols attempts to avoid a dependency on a specific stream ID in order to be able to target a broader range of QUIC transport libraries and to avoid unnecessary dependencies while at the same time permitting this for specific use cases.",
       "createdAt": "2021-02-23T12:02:48Z",
-      "updatedAt": "2021-02-23T12:02:48Z",
+      "updatedAt": "2021-03-05T16:48:24Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I not sure what you are missing here or what you think should be changed. For me the text is inline with what you say, which basically is: to be on the safe side you better make no assumption about how non-yet assigned ID will be used because there is no unified way how this is specified in the protocol spec. So, basically saying even if the interface seem to provide that, be careful here!",
+          "createdAt": "2021-03-04T14:58:51Z",
+          "updatedAt": "2021-03-04T14:58:51Z"
+        },
+        {
+          "author": "mikkelfj",
+          "authorAssociation": "NONE",
+          "body": "The text\r\n\r\n\"An application should\r\nnot assume a particular stream ID will be assigned to a stream that has not yet\r\nbeen allocated. \"\r\n\r\nbasically says that you should not design protocols that rely on stream IDs have any particular meaning. But you could easily design such protocols safely, but it will only work for transport libraries that permit such close coordination.\r\n\r\nPersonally I think it is best to avoid such dependencies in most cases, but that shouldn't prevent special purpose protocols from existing. For example, a telemetric protocol might define that streams 1 through 100 (modulo stream type) each indicate a log level of implied severity.",
+          "createdAt": "2021-03-04T22:14:59Z",
+          "updatedAt": "2021-03-04T22:14:59Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This is a recommendation not a normative SHOULD. We are only trying to provide guidance but if you are a specialised application and you know what you are doing you can of course do that.",
+          "createdAt": "2021-03-05T16:48:24Z",
+          "updatedAt": "2021-03-05T16:48:24Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -14438,7 +14476,7 @@
       ],
       "body": "This is my suggestion to resolve #210.",
       "createdAt": "2021-02-08T16:16:19Z",
-      "updatedAt": "2021-03-01T23:59:38Z",
+      "updatedAt": "2021-03-04T17:55:49Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "3ded00f9cbd7a37a93074e9802b1bac5da52922d",
@@ -15105,6 +15143,26 @@
               "updatedAt": "2021-03-01T23:59:38Z"
             }
           ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA0Mzg4MDY0",
+          "commit": {
+            "abbreviatedOid": "8747cb4"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-04T17:53:41Z",
+          "updatedAt": "2021-03-04T17:53:41Z",
+          "comments": [
+            {
+              "originalPosition": 45,
+              "body": "```suggestion\r\nDropping QUIC packets that are used by DPLPMTUD to probe the path MTU\r\nwill not impact QUIC performance but can prevent a QUIC flow from\r\nincreasing its packet size.\r\nEven though QUIC packets cannot be unambiguously identified\r\nas probes {{sec-identifying}}, networks with configurations that would lead to\r\nfragmentation of large packets should rather drop large QUIC packet than\r\nfragmenting them. This will likely provide the right signal for the endpoint\r\nto keep the packet size small and thereby avoid network fragmentation for\r\nthat flow entirely.\r\n```",
+              "createdAt": "2021-03-04T17:53:41Z",
+              "updatedAt": "2021-03-04T17:55:49Z"
+            }
+          ]
         }
       ]
     },
@@ -15460,7 +15518,7 @@
       ],
       "body": "Fixes #183. Fixes #184.\r\n\r\nI don't have a strong opinion about the point of view in this PR, though I believe it accurately reflects the discussion in the issues so far.",
       "createdAt": "2021-02-12T17:10:33Z",
-      "updatedAt": "2021-02-22T11:22:21Z",
+      "updatedAt": "2021-03-04T18:11:01Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "9570d541e5c13558dcd3fbe7e428c2cb324380ce",
@@ -15691,6 +15749,26 @@
               "body": "```suggestion\r\nre-initializes the NAT binding. For these reasons, retain the {{?RFC4787}} limits is\r\nuseful, even where devices are able to distinguish QUIC traffic from other UDP payloads.\r\n```",
               "createdAt": "2021-02-17T01:36:05Z",
               "updatedAt": "2021-02-17T02:54:06Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA0NDA0MDE0",
+          "commit": {
+            "abbreviatedOid": "5bbc76d"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-04T18:10:53Z",
+          "updatedAt": "2021-03-04T18:11:01Z",
+          "comments": [
+            {
+              "originalPosition": 41,
+              "body": "Not sure if the advise is crystal clear here now. Initially the advise was more like \"even if you use too short time-outs for UDP, please please don't do that for QUIC and use at least two minutes\". While now the recommendation here rather reads like \"just do the same thing as you do for UDP\".",
+              "createdAt": "2021-03-04T18:10:53Z",
+              "updatedAt": "2021-03-04T18:11:01Z"
             }
           ]
         }
@@ -16514,18 +16592,33 @@
       ],
       "body": "This is text from Gorry. I created a new section in the applicability document but not fully sure yet where this belongs.",
       "createdAt": "2021-02-15T16:21:50Z",
-      "updatedAt": "2021-02-22T11:21:05Z",
+      "updatedAt": "2021-03-05T17:38:18Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "9570d541e5c13558dcd3fbe7e428c2cb324380ce",
       "headRepository": "quicwg/ops-drafts",
       "headRefName": "mirjak-patch-13",
-      "headRefOid": "51dc8ac863d39df3b34699f0dc337befe11ad2f4",
+      "headRefOid": "518010550902aacdb4b9561841205ae1b945ca17",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Okay. I updated the PR. Can people check again? But I think this is ready to merge (after the meeting).",
+          "createdAt": "2021-03-04T14:51:00Z",
+          "updatedAt": "2021-03-04T14:51:00Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "One more question: usually the ack rate is rather controller by the quic stack than the application. Should we add another sentence saying that an interface for indicating the maximum ack rate would be desirable....?",
+          "createdAt": "2021-03-04T14:54:12Z",
+          "updatedAt": "2021-03-04T14:54:12Z"
+        }
+      ],
       "reviews": [
         {
           "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTkwNjI0ODAy",
@@ -16543,25 +16636,25 @@
               "originalPosition": 4,
               "body": "```suggestion\r\n# ACK-only packets on constrained links\r\n```",
               "createdAt": "2021-02-15T16:32:38Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             },
             {
               "originalPosition": 7,
               "body": "```suggestion\r\nthe transmission of packets only containing ACK frames can reduce the efficient use of network\r\n```",
               "createdAt": "2021-02-15T16:33:08Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             },
             {
               "originalPosition": 8,
               "body": "```suggestion\r\ncapacity. This effect occurs\r\n```\r\nThis sentence is still a bit awkward, but I'm not sure what else to suggest.",
               "createdAt": "2021-02-15T16:34:53Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             },
             {
               "originalPosition": 9,
               "body": "I don't believe return and forward are used elsewhere, but this sentence also seems a bit redundant to the previous sentence which discusses asymmetric paths.",
               "createdAt": "2021-02-15T16:36:56Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             }
           ]
         },
@@ -16581,7 +16674,7 @@
               "originalPosition": 9,
               "body": "Maybe instead:\r\n\r\n> The cost of sending acknowledgments - in processing cost or link utilization - could be a significant proportion of available resources if these resources are constrained.  Reducing the rate at which acknowledgments are generated can preserve these resources and improve overall performance.",
               "createdAt": "2021-02-16T00:19:28Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             }
           ]
         },
@@ -16601,7 +16694,7 @@
               "originalPosition": 8,
               "body": "... Radio technologies can have costs per-packet, not per byte - and a sending packet high rate impacts that... in ways for QUIC that would not happen currently with TCP. \r\nI suggest a new additional sentence, something like:\r\n\"On some types of link, the rate of transmission of QUIC packets carrying control information can also impact the overall link efficiency and ultimately the user experience.\" ",
               "createdAt": "2021-02-16T10:11:05Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             }
           ]
         },
@@ -16621,7 +16714,7 @@
               "originalPosition": 9,
               "body": "This text (or similar) seems OK to me.\r\n\r\nIs \"overall\" here meaning QUIC user performance  (or overall link-layer?) I think impact on performance for the QUIC user is the more significant additional take-away. ",
               "createdAt": "2021-02-16T10:16:04Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             }
           ]
         },
@@ -16641,7 +16734,7 @@
               "originalPosition": 9,
               "body": "Overall was meant to be all-inclusive, which definitely includes application-relevant metrics like time to first byte, total transfer time, transfer rate, ....  It's clear that there are many ways in which this might help.",
               "createdAt": "2021-02-16T10:24:53Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             }
           ]
         },
@@ -16661,9 +16754,22 @@
               "originalPosition": 9,
               "body": "We agree. Although my question is, it is obvious to a QUIC user that there user performance can be impacted - for several decades they could have used TCP, where other mitigations exist? So can we add \"(including application-relevant metrics)\" or something? ",
               "createdAt": "2021-02-16T12:52:25Z",
-              "updatedAt": "2021-02-22T10:34:11Z"
+              "updatedAt": "2021-03-04T14:50:20Z"
             }
           ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA0MjA4NzQw",
+          "commit": {
+            "abbreviatedOid": "5180105"
+          },
+          "author": "ianswett",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-03-04T15:11:52Z",
+          "updatedAt": "2021-03-04T15:11:52Z",
+          "comments": []
         }
       ]
     },
@@ -18732,13 +18838,13 @@
       ],
       "body": "Note that the main point about using CID in a NAT can break connectivity was already covered the section \"Stateful Treatment of QUIC Traffic\". The new section now only covers the NAT for routing stability case.",
       "createdAt": "2021-02-18T01:22:31Z",
-      "updatedAt": "2021-02-23T19:26:16Z",
+      "updatedAt": "2021-03-05T17:34:01Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "1a5b60f913adad4ea0de8a107c12a4fb8da5e8b0",
       "headRepository": "quicwg/ops-drafts",
       "headRefName": "mirjak-patch-31",
-      "headRefOid": "668ee0c39c54c5ae827591b540ae3c44c83f03e6",
+      "headRefOid": "ef1fa1e2d374fdab6ce65f547236ab7f3be9719b",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -18750,6 +18856,13 @@
           "body": "Note also that this PR also contains some rearrangement of sections.",
           "createdAt": "2021-02-18T01:23:44Z",
           "updatedAt": "2021-02-18T01:23:44Z"
+        },
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I updated the text in the \"Address Rewriting to Ensure Routing Stability\" as agreed with @martinduke. The remaining comments are on sections where I didn't change any of the text but did move them to a different position in the document. Please open separate issue for them!\r\n\r\nI would really like to merge this PR now/first so we have all the pieces in the right place. We can then create new PRs on further changes needed. Is that okay?",
+          "createdAt": "2021-03-05T17:33:35Z",
+          "updatedAt": "2021-03-05T17:33:35Z"
         }
       ],
       "reviews": [
@@ -18769,73 +18882,73 @@
               "originalPosition": 20,
               "body": "```suggestion\r\ninitial packets of a flow (see also {{sec-filtering}}),\r\n```",
               "createdAt": "2021-02-18T02:25:54Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 30,
               "body": "This sentence is too long.",
               "createdAt": "2021-02-18T02:26:44Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 30,
               "body": "```suggestion\r\nIf the routers or switches in the server infrastructure rely on address-port\r\n4-tuple, a NAT rebinding or any other address migration on the client side,\r\neven if that could be handled by the QUIC server, will cause packets to be\r\ndelivered to the wrong server. In this case it seems tempting to use NAT in\r\n```",
               "createdAt": "2021-02-18T02:27:05Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 52,
               "body": "```suggestion\r\n```",
               "createdAt": "2021-02-18T02:27:58Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 65,
               "body": "```suggestion\r\n{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}}. {{QUIC_LB}}\r\n```",
               "createdAt": "2021-02-18T02:28:58Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 69,
               "body": "```suggestion\r\n## Filtering Behavior {#sec-filtering}\r\n```",
               "createdAt": "2021-02-18T02:29:12Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 76,
               "body": "```suggestion\r\nbased on UDP and there are known block of UDP (see {{sec-udp-1312}}).\r\n```",
               "createdAt": "2021-02-18T02:30:25Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 93,
               "body": "```suggestion\r\npackets is to either drop them all or to throttle them based on\r\n```",
               "createdAt": "2021-02-18T02:31:15Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 94,
               "body": "```suggestion\r\nonly source and destination addresses.\r\n```",
               "createdAt": "2021-02-18T02:31:38Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 95,
               "body": "```suggestion\r\n```\r\n\r\nThe extra words don't really help here.  If anything, you need to highlight the need to block only a subset of addresses rather than a subset of packets.",
               "createdAt": "2021-02-18T02:32:32Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 98,
               "body": "```suggestion\r\n(at least applications using well-known UDP ports). However, blocking a\r\nfraction of QUIC packets will allow many QUIC handshakes\r\n```",
               "createdAt": "2021-02-18T02:32:55Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 99,
               "body": "```suggestion\r\nto complete, which might discouraging endpoints from attempting to fall back to TCP.\r\nThe increased loss the connections experience will only degrade performance.\r\n```",
               "createdAt": "2021-02-18T02:34:39Z",
-              "updatedAt": "2021-02-18T10:45:49Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -18855,7 +18968,7 @@
               "originalPosition": 52,
               "body": "Okay for me to take this example text out.",
               "createdAt": "2021-02-18T10:46:37Z",
-              "updatedAt": "2021-02-18T10:46:37Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -18875,7 +18988,7 @@
               "originalPosition": 30,
               "body": "I know. That's my German gens come through. I will break it up in two sentences.",
               "createdAt": "2021-02-18T10:49:22Z",
-              "updatedAt": "2021-02-18T10:49:23Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -18895,7 +19008,7 @@
               "originalPosition": 95,
               "body": "Yes, that was the intention here and I think your proposed edit changes the meaning.\r\n\r\n(Also I only moved this part of the text in this PR but didn't change the wording. Maybe a separate PR would be better here.)",
               "createdAt": "2021-02-18T11:39:31Z",
-              "updatedAt": "2021-02-18T11:39:32Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -18915,7 +19028,7 @@
               "originalPosition": 98,
               "body": "This also changes the meaning completely. This sentence was supposed to say that if you instead just blindly block random QUIC packets without being flow-aware this is really bad.",
               "createdAt": "2021-02-18T11:40:37Z",
-              "updatedAt": "2021-02-18T11:40:37Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -18935,7 +19048,7 @@
               "originalPosition": 99,
               "body": "I think prevent fallback is more correct here.",
               "createdAt": "2021-02-18T11:41:11Z",
-              "updatedAt": "2021-02-18T11:41:11Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -18955,7 +19068,7 @@
               "originalPosition": 23,
               "body": "```suggestion\r\nconnectivity breakage later, in case the connection ID changes.\r\n```",
               "createdAt": "2021-02-18T11:42:50Z",
-              "updatedAt": "2021-02-18T11:42:50Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -18975,43 +19088,43 @@
               "originalPosition": 27,
               "body": "This section is fairly long, but seems to mostly advise:\r\n\r\n\"In QUIC, Connection IDs can change during the connection, even if the 4-tuple does not change.  Therefore, don't rely on Connection ID, unless you're aware of how Connection IDs are used in the server infrastructure, for example as described in QUIC-LB\"\r\n\r\nWhat about saying something simple like that, rather than what we have here, which I'm having a very difficult time following.",
               "createdAt": "2021-02-20T18:59:13Z",
-              "updatedAt": "2021-02-20T19:22:02Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 60,
               "body": "There are a lot of server architectures which are not CDNs and may want to use something like QUIC-LB.\r\n\r\n```suggestion\r\nIn the case of networking architectures including load\r\n```",
               "createdAt": "2021-02-20T19:01:40Z",
-              "updatedAt": "2021-02-20T19:22:02Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 19,
               "body": "I think the caution against using Connection ID needs to be a lot stronger.  Things will break, users will notice.  I realize that implementations have to use this to enforce that, but I believe some already are.  See a comment below as well.",
               "createdAt": "2021-02-20T19:06:36Z",
-              "updatedAt": "2021-02-20T19:22:03Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 81,
               "body": "Policing has a slightly different meaning(token bucket policer) that's widely used, so can we find a different term in this context?\r\n",
               "createdAt": "2021-02-20T19:10:28Z",
-              "updatedAt": "2021-02-20T19:22:03Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 98,
               "body": "```suggestion\r\n(at least applications using well-known UDP ports). However, blocking a\r\nrandom fraction of QUIC packets across 4-tuples will allow many QUIC handshakes\r\n```",
               "createdAt": "2021-02-20T19:16:27Z",
-              "updatedAt": "2021-02-20T19:22:03Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 92,
               "body": "This is recommending something that relies on the 4-tuple, but particularly if there's another NAT involved, the 4-tuple may not be stable.  So this puts connections in a situation where the handshake completes, they use the connection for a bit, a NAT rebind occurs, and then the connection is blackholed.\r\n\r\nThere are defenses against this problem, but this seems like a fairly dangerous recommendation.",
               "createdAt": "2021-02-20T19:19:07Z",
-              "updatedAt": "2021-02-20T19:22:03Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 87,
               "body": "If the port really is only used for QUIC, then we're in fairly good shape, it's if the port is used by QUIC, but isn't QUIC traffic.",
               "createdAt": "2021-02-20T19:20:59Z",
-              "updatedAt": "2021-02-20T19:22:03Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -19031,13 +19144,13 @@
               "originalPosition": 35,
               "body": "This is not how QUIC-LB works; the servers do not inform the LB about new connection IDs. In fact, there is no way in QUIC-LB to match two connection IDs to the same connection, merely to the same server.",
               "createdAt": "2021-02-22T22:14:12Z",
-              "updatedAt": "2021-02-22T22:29:01Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             },
             {
               "originalPosition": 27,
               "body": "I don't think this section captures the purpose of the text it's replacing.\r\n\r\n1.  Whether or not I have QUIC-LB, if there's some part of the infrastructure that wants stable 4tuples,  I could try to use the CID to catch NAT rebindings and just rewrite the source address to mask the change from the infrastructure. Yes, this will break if CIDs change; but even if the CID stays the same it will also break the security mechanisms that protect attacks related to NAT rebinding. This is the point of the original text.\r\n\r\n2. Whether or not I have QUIC-LB, if the CID and 4tuple change there is no way to maintain the original source and IP port for the connection.",
               "createdAt": "2021-02-22T22:28:57Z",
-              "updatedAt": "2021-02-22T22:29:01Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -19057,7 +19170,7 @@
               "originalPosition": 81,
               "body": "Blocking?",
               "createdAt": "2021-02-23T10:16:30Z",
-              "updatedAt": "2021-02-23T10:16:30Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -19077,7 +19190,7 @@
               "originalPosition": 34,
               "body": "```suggestion\r\nrequire servers cooperate with the in-network device about the use of connection IDs,\r\n```\r\n\r\nIs this okay @martinduke ?",
               "createdAt": "2021-02-23T10:24:45Z",
-              "updatedAt": "2021-02-23T10:24:45Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -19097,7 +19210,7 @@
               "originalPosition": 27,
               "body": "Regarding your point 1: I think this is covered by \r\n\"this approach is not recommended to be used with NAT functions, as hiding address\r\n changes from a server prevents the server from validating new addresses,\r\n which would facilitate amplification attacks\"\r\nWhat's missing?\r\n\r\nRegarding you point 2, I would think it is also possible to use similar mechanisms as described in the LB doc to not only encode with server but also the actual connection, no?",
               "createdAt": "2021-02-23T10:29:44Z",
-              "updatedAt": "2021-02-23T10:29:44Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -19117,7 +19230,7 @@
               "originalPosition": 34,
               "body": "Or should we keep the original text and remove the reference to the LB doc?",
               "createdAt": "2021-02-23T10:30:09Z",
-              "updatedAt": "2021-02-23T10:30:09Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -19137,7 +19250,7 @@
               "originalPosition": 27,
               "body": "This is the text from the other rewrite attempt:\r\n\r\n```\r\nConcealing client address changes in order to simplify operational routing\r\n issues will mask important signals that drive security mechanisms, and\r\n therefore opens QUIC up to various attacks.\r\n\r\nWhile QUIC's migration capability makes it possible for an server to survive\r\n address changes, this does not work if the routers or switches in the server\r\n infrastructure rely on address-port 4-tuple as a NAT rebinding or address\r\n migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}\r\n addresses this problem proposing a QUIC extension to allow server-load balancer\r\n coordination to routable CIDs.\r\n\r\nAn alternative, potentially simpler approach would seem to be the use of NAT\r\n in front of such an infrastructure setup. However, hiding information about the\r\n change of the IP address or port conceals important, and security relevant\r\n information from QUIC endpoints, and as such would facilitate amplification\r\n attacks (see section 9 of {{QUIC-TRANSPORT}}).\r\n\r\n An NAT that bleaches peer address changes, hinders the other end\r\n to detect and mitigate these attacks and verify connectivity to the\r\n new address based on QUIC PATH_CHALLENGE and PATH_RESPONSE frames.\r\n```\r\n\r\nOr is this a better starting point?",
               "createdAt": "2021-02-23T10:37:06Z",
-              "updatedAt": "2021-02-23T10:37:06Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
             }
           ]
         },
@@ -19157,7 +19270,127 @@
               "originalPosition": 27,
               "body": "I like the other rewrite text better, yes.\r\n\r\nOn point 1: what I'm saying is that QUIC-LB doesn't enter into it.\r\n\r\nOn point 2: yes, that is theoretically possible. However, I don't want to suggest in any way that we make CIDs absolutely linkable. Exposing the server mapping is bad enough!",
               "createdAt": "2021-02-23T19:26:15Z",
-              "updatedAt": "2021-02-23T19:26:16Z"
+              "updatedAt": "2021-03-05T17:24:08Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDQwNzU2",
+          "commit": {
+            "abbreviatedOid": "294ebd1"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T17:22:20Z",
+          "updatedAt": "2021-03-05T17:22:20Z",
+          "comments": [
+            {
+              "originalPosition": 87,
+              "body": "Yes that's what the text is trying to say.",
+              "createdAt": "2021-03-05T17:22:20Z",
+              "updatedAt": "2021-03-05T17:24:08Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDQxMzE2",
+          "commit": {
+            "abbreviatedOid": "294ebd1"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T17:23:02Z",
+          "updatedAt": "2021-03-05T17:23:03Z",
+          "comments": [
+            {
+              "originalPosition": 92,
+              "body": "I only copied this section to a different position in the draft. Can you please add a separate issue for this.",
+              "createdAt": "2021-03-05T17:23:02Z",
+              "updatedAt": "2021-03-05T17:24:08Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDQzNTA0",
+          "commit": {
+            "abbreviatedOid": "9507a73"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T17:25:43Z",
+          "updatedAt": "2021-03-05T17:25:43Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "Can you open a separate issue for this and propose some text (actually in the issue for now maybe, until this PR is merged) as this PR is only moving but not changing this part of the text.",
+              "createdAt": "2021-03-05T17:25:43Z",
+              "updatedAt": "2021-03-05T17:25:43Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDQ0MDI0",
+          "commit": {
+            "abbreviatedOid": "9507a73"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T17:26:20Z",
+          "updatedAt": "2021-03-05T17:26:20Z",
+          "comments": [
+            {
+              "originalPosition": 81,
+              "body": "or just filtering?",
+              "createdAt": "2021-03-05T17:26:20Z",
+              "updatedAt": "2021-03-05T17:26:20Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDQ1MzM3",
+          "commit": {
+            "abbreviatedOid": "9507a73"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T17:27:50Z",
+          "updatedAt": "2021-03-05T17:27:50Z",
+          "comments": [
+            {
+              "originalPosition": 81,
+              "body": "Maybe this and the previous section should be merged. But let me merge in the PR first and then do another PR if needed.",
+              "createdAt": "2021-03-05T17:27:50Z",
+              "updatedAt": "2021-03-05T17:27:50Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDQ2MzM3",
+          "commit": {
+            "abbreviatedOid": "9507a73"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T17:29:02Z",
+          "updatedAt": "2021-03-05T17:29:02Z",
+          "comments": [
+            {
+              "originalPosition": 95,
+              "body": "Also I also musst copied this text to a different place in the draft. Can you maybe open a separate issue for this.",
+              "createdAt": "2021-03-05T17:29:02Z",
+              "updatedAt": "2021-03-05T17:29:02Z"
             }
           ]
         }
@@ -19180,18 +19413,26 @@
       ],
       "body": "resolves #269 ",
       "createdAt": "2021-02-18T11:57:56Z",
-      "updatedAt": "2021-02-24T11:40:49Z",
+      "updatedAt": "2021-03-06T06:25:13Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "1a5b60f913adad4ea0de8a107c12a4fb8da5e8b0",
       "headRepository": "quicwg/ops-drafts",
       "headRefName": "mirjak-patch-32",
-      "headRefOid": "0672481dc516a76f947c756e457ca77d400ef545",
+      "headRefOid": "cc6dd84000087b1eab642718886bcd54f286ec03",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I updated the text of the second paragraph. If people could have another look that would be welcome. But I believe we are ready to merge (after the meeting).",
+          "createdAt": "2021-03-04T14:33:56Z",
+          "updatedAt": "2021-03-04T14:33:56Z"
+        }
+      ],
       "reviews": [
         {
           "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTk0Nzc4OTA5",
@@ -19209,31 +19450,31 @@
               "originalPosition": 8,
               "body": "What does \"Other than with the use of UDP only, the datagram service in QUIC is congestion-controlled,\" mean?",
               "createdAt": "2021-02-20T19:26:07Z",
-              "updatedAt": "2021-02-20T19:31:51Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             },
             {
               "originalPosition": 11,
               "body": "I'd move this last sentence into the next paragraph, because lack of flow control is just another way in which Datagrams are not reliable. ",
               "createdAt": "2021-02-20T19:28:11Z",
-              "updatedAt": "2021-02-20T19:31:51Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             },
             {
               "originalPosition": 14,
               "body": "```suggestion\r\nThe reliable transmission service of QUIC provides a stream-based\r\ninterface to send and receive data over multiple QUIC streams.\r\n```",
               "createdAt": "2021-02-20T19:29:25Z",
-              "updatedAt": "2021-02-20T19:31:51Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             },
             {
               "originalPosition": 15,
               "body": "```suggestion\r\nThe datagram service, however, provides a message-based interface,\r\n```\r\n\r\nUnless there's a reason to use usually and you're going to explain what happens when that's not the case, I think it's clearer without.",
               "createdAt": "2021-02-20T19:30:21Z",
-              "updatedAt": "2021-02-20T19:31:51Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             },
             {
               "originalPosition": 18,
               "body": "```suggestion\r\nApplication layer framing can exist on top to recognise messages boundaries\r\nas well as the order of received message chunks if needed.\r\n```",
               "createdAt": "2021-02-20T19:31:44Z",
-              "updatedAt": "2021-02-20T19:31:51Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             }
           ]
         },
@@ -19253,7 +19494,7 @@
               "originalPosition": 8,
               "body": "This probably would be cleared if it were phrased as being about unreliable datagrams, not UDP. Tunneling UDP is just one way to use datagram frames. ",
               "createdAt": "2021-02-22T01:28:25Z",
-              "updatedAt": "2021-02-22T01:28:25Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             }
           ]
         },
@@ -19273,7 +19514,7 @@
               "originalPosition": 8,
               "body": "I would rephrase this as \"Unlike operating directly over UDP, an applications that uses the QUIC datagram service need not provide its own congestion control, per {{?RFC8085}}, as QUIC datagrams are congestion controlled.\"",
               "createdAt": "2021-02-22T18:58:35Z",
-              "updatedAt": "2021-02-22T18:58:55Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             }
           ]
         },
@@ -19293,7 +19534,7 @@
               "originalPosition": 8,
               "body": "```suggestion\r\nand receiving unreliable datagrams over QUIC. Unlike operating directly over UDP,\r\napplications that use the QUIC datagram service do not need to implement their own\r\ncongestion control, per {{?RFC8085}}, as QUIC datagrams are congestion controlled.\r\n```",
               "createdAt": "2021-02-23T08:35:12Z",
-              "updatedAt": "2021-02-23T15:52:14Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             }
           ]
         },
@@ -19313,7 +19554,7 @@
               "originalPosition": 9,
               "body": "```suggestion\r\n\r\n```",
               "createdAt": "2021-02-23T08:36:34Z",
-              "updatedAt": "2021-02-23T08:37:03Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             }
           ]
         },
@@ -19333,7 +19574,7 @@
               "originalPosition": 15,
               "body": "Usually is there because you can also implement a message-based interface for streams (see taps) and there is nothing in the protocol spec that says anything about the interface.",
               "createdAt": "2021-02-23T08:38:54Z",
-              "updatedAt": "2021-02-23T08:39:18Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             }
           ]
         },
@@ -19353,9 +19594,80 @@
               "originalPosition": 8,
               "body": "Yes, thanks. That seems clearer to me, except s/its/their",
               "createdAt": "2021-02-23T15:42:43Z",
-              "updatedAt": "2021-02-23T15:42:43Z"
+              "updatedAt": "2021-03-05T20:00:28Z"
             }
           ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NDcxNTI3",
+          "commit": {
+            "abbreviatedOid": "72768bc"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2021-03-05T18:00:31Z",
+          "updatedAt": "2021-03-05T18:03:09Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "```suggestion\r\n{{?I-D.draft-ietf-quic-datagram}} specifies a QUIC extension to enable sending\r\n```",
+              "createdAt": "2021-03-05T18:00:31Z",
+              "updatedAt": "2021-03-05T20:00:28Z"
+            },
+            {
+              "originalPosition": 12,
+              "body": "```suggestion\r\nQUIC datagrams are not flow-controlled, and as such data chunks may be dropped\r\n```",
+              "createdAt": "2021-03-05T18:00:53Z",
+              "updatedAt": "2021-03-05T20:00:28Z"
+            },
+            {
+              "originalPosition": 16,
+              "body": "```suggestion\r\ninterface. If needed, an application layer framing can be used on top to\r\n```",
+              "createdAt": "2021-03-05T18:01:41Z",
+              "updatedAt": "2021-03-05T20:00:28Z"
+            },
+            {
+              "originalPosition": 17,
+              "body": "I think it's more about demultiplexing than ordering, since ordering is implicit in the QUIC packet numbers.\r\n\r\n```suggestion\r\nallow separate flows of unreliable datagrams to be multiplexed on one QUIC connection.\r\n```",
+              "createdAt": "2021-03-05T18:03:02Z",
+              "updatedAt": "2021-03-05T20:00:28Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NTU3NDk4",
+          "commit": {
+            "abbreviatedOid": "6f8062d"
+          },
+          "author": "mirjak",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-03-05T20:00:20Z",
+          "updatedAt": "2021-03-05T20:00:21Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "```suggestion\r\nallow separate flows of unreliable datagrams to be multiplexed on one QUIC\r\nconnection.\r\n```",
+              "createdAt": "2021-03-05T20:00:20Z",
+              "updatedAt": "2021-03-05T20:00:28Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1NzMzNDk3",
+          "commit": {
+            "abbreviatedOid": "cc6dd84"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-03-06T06:25:13Z",
+          "updatedAt": "2021-03-06T06:25:13Z",
+          "comments": []
         }
       ]
     },
@@ -19566,16 +19878,45 @@
       "author": "MikeBishop",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "-manageability",
+        "editorial"
+      ],
       "body": "Mostly nits, some text about versions.  Some reflow, and fixed up section references to other documents.  If there's anything you think needs to be lifted out to a separate PR/issue, I'm happy to do that.",
       "createdAt": "2021-03-02T16:17:54Z",
-      "updatedAt": "2021-03-02T16:20:37Z",
+      "updatedAt": "2021-03-05T17:35:05Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "cee71e08bbdd6188efce99db675cbf2c2b84c059",
       "headRepository": "MikeBishop/ops-drafts",
       "headRefName": "manage/mbishop_nits",
       "headRefOid": "156af49972838849e23091cd11a6f3bc981a7d10",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 285,
+      "id": "MDExOlB1bGxSZXF1ZXN0NTg0ODg0Nzk2",
+      "title": "CID must be present and is directional",
+      "url": "https://github.com/quicwg/ops-drafts/pull/285",
+      "state": "OPEN",
+      "author": "mirjak",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "fixes #280",
+      "createdAt": "2021-03-04T15:13:05Z",
+      "updatedAt": "2021-03-05T17:34:15Z",
+      "baseRepository": "quicwg/ops-drafts",
+      "baseRefName": "master",
+      "baseRefOid": "cee71e08bbdd6188efce99db675cbf2c2b84c059",
+      "headRepository": "quicwg/ops-drafts",
+      "headRefName": "mirjak-patch-17",
+      "headRefOid": "effda7df4100e1b1de9cb840bc26728aeaab6a7c",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
