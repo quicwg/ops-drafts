@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 5 September 2021                                         Google
-                                                            4 March 2021
+Expires: 9 September 2021                                         Google
+                                                            8 March 2021
 
 
               Manageability of the QUIC Transport Protocol
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 September 2021.
+   This Internet-Draft will expire on 9 September 2021.
 
 Copyright Notice
 
@@ -748,8 +748,9 @@ Table of Contents
    migration.  An observer keeping flow state can associate a connection
    ID, if present, with a given flow, and can associate a known flow
    with a new flow when when observing a packet sharing the same
-   connection ID in the same direction between client and server and one
-   endpoint address (IP address and port) with the known flow.
+   connection ID in the same direction between client and server and
+   sharing one endpoint address (IP address and port) with the known
+   flow.
 
    However, since the connection ID may change multiple times during the
    lifetime of a flow, and the negotiation of connection ID changes is

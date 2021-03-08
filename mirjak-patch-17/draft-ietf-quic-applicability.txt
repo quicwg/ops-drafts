@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 5 September 2021                                         Google
-                                                            4 March 2021
+Expires: 9 September 2021                                         Google
+                                                            8 March 2021
 
 
               Applicability of the QUIC Transport Protocol
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 September 2021.
+   This Internet-Draft will expire on 9 September 2021.
 
 Copyright Notice
 
