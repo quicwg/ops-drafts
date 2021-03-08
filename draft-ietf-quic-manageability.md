@@ -827,23 +827,25 @@ connectivity breakage later, in case the connection ID changes.
 Use of address rewriting to ensure routing stablity as an approach to
 simplify operational routing conceals client address changes and will
 therefore mask important signals that drive security mechanisms, and
-as auch opens QUIC up to various attacks.
+as such opens QUIC up to various attacks.
 
 While QUIC's migration capability makes it possible for an server to survive
 address changes, this does not work if the routers or switches in the server
-infrastructure rely on address-port 4-tuple as a NAT rebinding or address
+infrastructure route using the address-port 4-tuple. If infrastructure routes on
+addresses only, NAT rebinding or address
 migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}
 described a way to addresses this problem by coordinating the selection and
 use of connection IDs between load-balancers and servers.
 
-An alternative, potentially simpler approach appears to be the use of NAT
-in front of such an infrastructure setup. However, hiding information about the
-change of the IP address or port conceals important and security relevant
+Applying address translation at a middlebox to maintain a stable
+address-port mapping for flows based on connection ID might seem
+like a solution to this problem. However, hiding information about the
+change of the IP address or port conceals important and security-relevant
 information from QUIC endpoints and as such would facilitate amplification
-attacks (see section 9 of {{QUIC-TRANSPORT}}). An NAT function that bleaches
-peer address changes, hinders the other end
-to detect and mitigate these attacks and verify connectivity to the
-new address based on QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
+attacks (see section 9 of {{QUIC-TRANSPORT}}). An NAT function that hides
+peer address changes prevents the other end from
+detecting and mitigating attacks as the endpoint cannot verify connectivity to the
+new address using QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
 
 In addition, a change of IP address or port is also an input signal to other
 internal mechanisms in QUIC. When a path change is detected, path-dependent
