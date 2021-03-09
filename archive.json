@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-03-07T00:58:23.556556+00:00",
+  "timestamp": "2021-03-09T00:55:35.772562+00:00",
   "repo": "quicwg/ops-drafts",
   "labels": [
     {
@@ -5612,6 +5612,24 @@
           "updatedAt": "2021-03-05T16:48:24Z"
         }
       ]
+    },
+    {
+      "number": 286,
+      "id": "MDU6SXNzdWU4MjQ3Nzk1NjU=",
+      "title": "Make it more clear that streams are not ordered",
+      "url": "https://github.com/quicwg/ops-drafts/issues/286",
+      "state": "OPEN",
+      "author": "mirjak",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [
+        "-applicability"
+      ],
+      "body": "Based on the discussion in webtrans at IETF-110, I guess we could be more explicit that QUIC streams do not guarantee to be received in any particular order.",
+      "createdAt": "2021-03-08T17:24:11Z",
+      "updatedAt": "2021-03-08T17:24:11Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -16592,7 +16610,7 @@
       ],
       "body": "This is text from Gorry. I created a new section in the applicability document but not fully sure yet where this belongs.",
       "createdAt": "2021-02-15T16:21:50Z",
-      "updatedAt": "2021-03-05T17:38:18Z",
+      "updatedAt": "2021-03-08T09:21:00Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "9570d541e5c13558dcd3fbe7e428c2cb324380ce",
@@ -16617,6 +16635,13 @@
           "body": "One more question: usually the ack rate is rather controller by the quic stack than the application. Should we add another sentence saying that an interface for indicating the maximum ack rate would be desirable....?",
           "createdAt": "2021-03-04T14:54:12Z",
           "updatedAt": "2021-03-04T14:54:12Z"
+        },
+        {
+          "author": "gorryfair",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think the text we have might be minimal, but is ok. \r\n\r\n(A good app needs to be aware of this or choose to use a good stack. Since this is a transport feature that isn't always required by the spec, then the app designer needs either the stack to work appropriately and/or to allow some control.)",
+          "createdAt": "2021-03-08T09:21:00Z",
+          "updatedAt": "2021-03-08T09:21:00Z"
         }
       ],
       "reviews": [
@@ -18838,13 +18863,13 @@
       ],
       "body": "Note that the main point about using CID in a NAT can break connectivity was already covered the section \"Stateful Treatment of QUIC Traffic\". The new section now only covers the NAT for routing stability case.",
       "createdAt": "2021-02-18T01:22:31Z",
-      "updatedAt": "2021-03-05T17:34:01Z",
+      "updatedAt": "2021-03-08T10:36:04Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "1a5b60f913adad4ea0de8a107c12a4fb8da5e8b0",
       "headRepository": "quicwg/ops-drafts",
       "headRefName": "mirjak-patch-31",
-      "headRefOid": "ef1fa1e2d374fdab6ce65f547236ab7f3be9719b",
+      "headRefOid": "632a60c4f3528809ba3160d4ba228425b536d3d4",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -18882,73 +18907,73 @@
               "originalPosition": 20,
               "body": "```suggestion\r\ninitial packets of a flow (see also {{sec-filtering}}),\r\n```",
               "createdAt": "2021-02-18T02:25:54Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 30,
               "body": "This sentence is too long.",
               "createdAt": "2021-02-18T02:26:44Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 30,
               "body": "```suggestion\r\nIf the routers or switches in the server infrastructure rely on address-port\r\n4-tuple, a NAT rebinding or any other address migration on the client side,\r\neven if that could be handled by the QUIC server, will cause packets to be\r\ndelivered to the wrong server. In this case it seems tempting to use NAT in\r\n```",
               "createdAt": "2021-02-18T02:27:05Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 52,
               "body": "```suggestion\r\n```",
               "createdAt": "2021-02-18T02:27:58Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 65,
               "body": "```suggestion\r\n{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}}. {{QUIC_LB}}\r\n```",
               "createdAt": "2021-02-18T02:28:58Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 69,
               "body": "```suggestion\r\n## Filtering Behavior {#sec-filtering}\r\n```",
               "createdAt": "2021-02-18T02:29:12Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 76,
               "body": "```suggestion\r\nbased on UDP and there are known block of UDP (see {{sec-udp-1312}}).\r\n```",
               "createdAt": "2021-02-18T02:30:25Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 93,
               "body": "```suggestion\r\npackets is to either drop them all or to throttle them based on\r\n```",
               "createdAt": "2021-02-18T02:31:15Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 94,
               "body": "```suggestion\r\nonly source and destination addresses.\r\n```",
               "createdAt": "2021-02-18T02:31:38Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 95,
               "body": "```suggestion\r\n```\r\n\r\nThe extra words don't really help here.  If anything, you need to highlight the need to block only a subset of addresses rather than a subset of packets.",
               "createdAt": "2021-02-18T02:32:32Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 98,
               "body": "```suggestion\r\n(at least applications using well-known UDP ports). However, blocking a\r\nfraction of QUIC packets will allow many QUIC handshakes\r\n```",
               "createdAt": "2021-02-18T02:32:55Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 99,
               "body": "```suggestion\r\nto complete, which might discouraging endpoints from attempting to fall back to TCP.\r\nThe increased loss the connections experience will only degrade performance.\r\n```",
               "createdAt": "2021-02-18T02:34:39Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -18968,7 +18993,7 @@
               "originalPosition": 52,
               "body": "Okay for me to take this example text out.",
               "createdAt": "2021-02-18T10:46:37Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -18988,7 +19013,7 @@
               "originalPosition": 30,
               "body": "I know. That's my German gens come through. I will break it up in two sentences.",
               "createdAt": "2021-02-18T10:49:22Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19008,7 +19033,7 @@
               "originalPosition": 95,
               "body": "Yes, that was the intention here and I think your proposed edit changes the meaning.\r\n\r\n(Also I only moved this part of the text in this PR but didn't change the wording. Maybe a separate PR would be better here.)",
               "createdAt": "2021-02-18T11:39:31Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19028,7 +19053,7 @@
               "originalPosition": 98,
               "body": "This also changes the meaning completely. This sentence was supposed to say that if you instead just blindly block random QUIC packets without being flow-aware this is really bad.",
               "createdAt": "2021-02-18T11:40:37Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19048,7 +19073,7 @@
               "originalPosition": 99,
               "body": "I think prevent fallback is more correct here.",
               "createdAt": "2021-02-18T11:41:11Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19068,7 +19093,7 @@
               "originalPosition": 23,
               "body": "```suggestion\r\nconnectivity breakage later, in case the connection ID changes.\r\n```",
               "createdAt": "2021-02-18T11:42:50Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19088,43 +19113,43 @@
               "originalPosition": 27,
               "body": "This section is fairly long, but seems to mostly advise:\r\n\r\n\"In QUIC, Connection IDs can change during the connection, even if the 4-tuple does not change.  Therefore, don't rely on Connection ID, unless you're aware of how Connection IDs are used in the server infrastructure, for example as described in QUIC-LB\"\r\n\r\nWhat about saying something simple like that, rather than what we have here, which I'm having a very difficult time following.",
               "createdAt": "2021-02-20T18:59:13Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 60,
               "body": "There are a lot of server architectures which are not CDNs and may want to use something like QUIC-LB.\r\n\r\n```suggestion\r\nIn the case of networking architectures including load\r\n```",
               "createdAt": "2021-02-20T19:01:40Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 19,
               "body": "I think the caution against using Connection ID needs to be a lot stronger.  Things will break, users will notice.  I realize that implementations have to use this to enforce that, but I believe some already are.  See a comment below as well.",
               "createdAt": "2021-02-20T19:06:36Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 81,
               "body": "Policing has a slightly different meaning(token bucket policer) that's widely used, so can we find a different term in this context?\r\n",
               "createdAt": "2021-02-20T19:10:28Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 98,
               "body": "```suggestion\r\n(at least applications using well-known UDP ports). However, blocking a\r\nrandom fraction of QUIC packets across 4-tuples will allow many QUIC handshakes\r\n```",
               "createdAt": "2021-02-20T19:16:27Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 92,
               "body": "This is recommending something that relies on the 4-tuple, but particularly if there's another NAT involved, the 4-tuple may not be stable.  So this puts connections in a situation where the handshake completes, they use the connection for a bit, a NAT rebind occurs, and then the connection is blackholed.\r\n\r\nThere are defenses against this problem, but this seems like a fairly dangerous recommendation.",
               "createdAt": "2021-02-20T19:19:07Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 87,
               "body": "If the port really is only used for QUIC, then we're in fairly good shape, it's if the port is used by QUIC, but isn't QUIC traffic.",
               "createdAt": "2021-02-20T19:20:59Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19144,13 +19169,13 @@
               "originalPosition": 35,
               "body": "This is not how QUIC-LB works; the servers do not inform the LB about new connection IDs. In fact, there is no way in QUIC-LB to match two connection IDs to the same connection, merely to the same server.",
               "createdAt": "2021-02-22T22:14:12Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             },
             {
               "originalPosition": 27,
               "body": "I don't think this section captures the purpose of the text it's replacing.\r\n\r\n1.  Whether or not I have QUIC-LB, if there's some part of the infrastructure that wants stable 4tuples,  I could try to use the CID to catch NAT rebindings and just rewrite the source address to mask the change from the infrastructure. Yes, this will break if CIDs change; but even if the CID stays the same it will also break the security mechanisms that protect attacks related to NAT rebinding. This is the point of the original text.\r\n\r\n2. Whether or not I have QUIC-LB, if the CID and 4tuple change there is no way to maintain the original source and IP port for the connection.",
               "createdAt": "2021-02-22T22:28:57Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19170,7 +19195,7 @@
               "originalPosition": 81,
               "body": "Blocking?",
               "createdAt": "2021-02-23T10:16:30Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19190,7 +19215,7 @@
               "originalPosition": 34,
               "body": "```suggestion\r\nrequire servers cooperate with the in-network device about the use of connection IDs,\r\n```\r\n\r\nIs this okay @martinduke ?",
               "createdAt": "2021-02-23T10:24:45Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19210,7 +19235,7 @@
               "originalPosition": 27,
               "body": "Regarding your point 1: I think this is covered by \r\n\"this approach is not recommended to be used with NAT functions, as hiding address\r\n changes from a server prevents the server from validating new addresses,\r\n which would facilitate amplification attacks\"\r\nWhat's missing?\r\n\r\nRegarding you point 2, I would think it is also possible to use similar mechanisms as described in the LB doc to not only encode with server but also the actual connection, no?",
               "createdAt": "2021-02-23T10:29:44Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19230,7 +19255,7 @@
               "originalPosition": 34,
               "body": "Or should we keep the original text and remove the reference to the LB doc?",
               "createdAt": "2021-02-23T10:30:09Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19250,7 +19275,7 @@
               "originalPosition": 27,
               "body": "This is the text from the other rewrite attempt:\r\n\r\n```\r\nConcealing client address changes in order to simplify operational routing\r\n issues will mask important signals that drive security mechanisms, and\r\n therefore opens QUIC up to various attacks.\r\n\r\nWhile QUIC's migration capability makes it possible for an server to survive\r\n address changes, this does not work if the routers or switches in the server\r\n infrastructure rely on address-port 4-tuple as a NAT rebinding or address\r\n migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}\r\n addresses this problem proposing a QUIC extension to allow server-load balancer\r\n coordination to routable CIDs.\r\n\r\nAn alternative, potentially simpler approach would seem to be the use of NAT\r\n in front of such an infrastructure setup. However, hiding information about the\r\n change of the IP address or port conceals important, and security relevant\r\n information from QUIC endpoints, and as such would facilitate amplification\r\n attacks (see section 9 of {{QUIC-TRANSPORT}}).\r\n\r\n An NAT that bleaches peer address changes, hinders the other end\r\n to detect and mitigate these attacks and verify connectivity to the\r\n new address based on QUIC PATH_CHALLENGE and PATH_RESPONSE frames.\r\n```\r\n\r\nOr is this a better starting point?",
               "createdAt": "2021-02-23T10:37:06Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19270,7 +19295,7 @@
               "originalPosition": 27,
               "body": "I like the other rewrite text better, yes.\r\n\r\nOn point 1: what I'm saying is that QUIC-LB doesn't enter into it.\r\n\r\nOn point 2: yes, that is theoretically possible. However, I don't want to suggest in any way that we make CIDs absolutely linkable. Exposing the server mapping is bad enough!",
               "createdAt": "2021-02-23T19:26:15Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19290,7 +19315,7 @@
               "originalPosition": 87,
               "body": "Yes that's what the text is trying to say.",
               "createdAt": "2021-03-05T17:22:20Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19310,7 +19335,7 @@
               "originalPosition": 92,
               "body": "I only copied this section to a different position in the draft. Can you please add a separate issue for this.",
               "createdAt": "2021-03-05T17:23:02Z",
-              "updatedAt": "2021-03-05T17:24:08Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19330,7 +19355,7 @@
               "originalPosition": 19,
               "body": "Can you open a separate issue for this and propose some text (actually in the issue for now maybe, until this PR is merged) as this PR is only moving but not changing this part of the text.",
               "createdAt": "2021-03-05T17:25:43Z",
-              "updatedAt": "2021-03-05T17:25:43Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19350,7 +19375,7 @@
               "originalPosition": 81,
               "body": "or just filtering?",
               "createdAt": "2021-03-05T17:26:20Z",
-              "updatedAt": "2021-03-05T17:26:20Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19370,7 +19395,7 @@
               "originalPosition": 81,
               "body": "Maybe this and the previous section should be merged. But let me merge in the PR first and then do another PR if needed.",
               "createdAt": "2021-03-05T17:27:50Z",
-              "updatedAt": "2021-03-05T17:27:50Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         },
@@ -19390,7 +19415,69 @@
               "originalPosition": 95,
               "body": "Also I also musst copied this text to a different place in the draft. Can you maybe open a separate issue for this.",
               "createdAt": "2021-03-05T17:29:02Z",
-              "updatedAt": "2021-03-05T17:29:02Z"
+              "updatedAt": "2021-03-08T10:36:03Z"
+            }
+          ]
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1ODk5NTE0",
+          "commit": {
+            "abbreviatedOid": "ef1fa1e"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "Getting better.  Though this PR is now at the point that I can't follow all the different pieces.",
+          "createdAt": "2021-03-07T23:48:54Z",
+          "updatedAt": "2021-03-07T23:55:41Z",
+          "comments": [
+            {
+              "originalPosition": 35,
+              "body": "```suggestion\r\nas such opens QUIC up to various attacks.\r\n```",
+              "createdAt": "2021-03-07T23:48:54Z",
+              "updatedAt": "2021-03-08T10:36:03Z"
+            },
+            {
+              "originalPosition": 40,
+              "body": "```suggestion\r\ninfrastructure route using the address-port 4-tuple. If infrastructure routes on\r\naddresses only, NAT rebinding or address\r\nmigration will cause packets to be delivered to the wrong server. {{QUIC_LB}}\r\n```",
+              "createdAt": "2021-03-07T23:50:26Z",
+              "updatedAt": "2021-03-08T10:36:03Z"
+            },
+            {
+              "originalPosition": 45,
+              "body": "```suggestion\r\nApplying address translation at a middlebox to maintain a stable\r\naddress-port mapping for flows based on connection ID might seem\r\nlike a solution to this problem. However, hiding information about the\r\n```",
+              "createdAt": "2021-03-07T23:52:35Z",
+              "updatedAt": "2021-03-08T10:36:03Z"
+            },
+            {
+              "originalPosition": 46,
+              "body": "```suggestion\r\nchange of the IP address or port conceals important and security-relevant\r\n```",
+              "createdAt": "2021-03-07T23:52:42Z",
+              "updatedAt": "2021-03-08T10:36:03Z"
+            },
+            {
+              "originalPosition": 48,
+              "body": "```suggestion\r\nattacks (see section 9 of {{QUIC-TRANSPORT}}). An NAT function that hides\r\n```",
+              "createdAt": "2021-03-07T23:52:57Z",
+              "updatedAt": "2021-03-08T10:36:03Z"
+            },
+            {
+              "originalPosition": 49,
+              "body": "```suggestion\r\npeer address changes prevents the other end from\r\n```",
+              "createdAt": "2021-03-07T23:53:13Z",
+              "updatedAt": "2021-03-08T10:36:03Z"
+            },
+            {
+              "originalPosition": 50,
+              "body": "```suggestion\r\ndetecting and mitigating attacks as the endpoint cannot verify connectivity to the\r\n```",
+              "createdAt": "2021-03-07T23:54:06Z",
+              "updatedAt": "2021-03-08T10:36:03Z"
+            },
+            {
+              "originalPosition": 51,
+              "body": "```suggestion\r\nnew address using QUIC PATH_CHALLENGE and PATH_RESPONSE frames.\r\n```",
+              "createdAt": "2021-03-07T23:54:20Z",
+              "updatedAt": "2021-03-08T10:36:03Z"
             }
           ]
         }
@@ -19907,22 +19994,46 @@
       "author": "mirjak",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "-manageability",
+        "ready-to-merge"
+      ],
       "body": "fixes #280",
       "createdAt": "2021-03-04T15:13:05Z",
-      "updatedAt": "2021-03-05T17:34:15Z",
+      "updatedAt": "2021-03-08T10:37:46Z",
       "baseRepository": "quicwg/ops-drafts",
       "baseRefName": "master",
       "baseRefOid": "cee71e08bbdd6188efce99db675cbf2c2b84c059",
       "headRepository": "quicwg/ops-drafts",
       "headRefName": "mirjak-patch-17",
-      "headRefOid": "effda7df4100e1b1de9cb840bc26728aeaab6a7c",
+      "headRefOid": "8ec03cc9f1b0f9dbc17e2f8fc57c1e670834c8c0",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjA1OTAwMjk2",
+          "commit": {
+            "abbreviatedOid": "effda7d"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-03-07T23:56:39Z",
+          "updatedAt": "2021-03-07T23:56:44Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "```suggestion\r\nconnection ID in the same direction between client and server and sharing one\r\nendpoint address (IP address and port) with the known flow.\r\n```\r\n\r\nThis is a bit hard to follow without the extra word.",
+              "createdAt": "2021-03-07T23:56:39Z",
+              "updatedAt": "2021-03-08T10:37:09Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
