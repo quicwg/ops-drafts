@@ -844,8 +844,8 @@ change of the IP address or port conceals important and security-relevant
 information from QUIC endpoints and as such would facilitate amplification
 attacks (see section 9 of {{QUIC-TRANSPORT}}). An NAT function that hides
 peer address changes prevents the other end from
-detecting and mitigating attacks as the endpoint cannot verify connectivity to the
-new address using QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
+detecting and mitigating attacks as the endpoint cannot verify connectivity
+to the new address using QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
 
 In addition, a change of IP address or port is also an input signal to other
 internal mechanisms in QUIC. When a path change is detected, path-dependent
