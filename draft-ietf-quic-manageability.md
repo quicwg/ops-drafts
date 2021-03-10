@@ -1051,13 +1051,15 @@ PMTU information between IP flows, in the IP-layer cache, so short-term
 consistency between the PMTU for flows can help avoid an endpoint using a
 PMTU that is inefficient.
 
-If network operators wish to start to drop large packets to avoid
-fragmentation, they may wish to focus on QUIC. QUIC packets cannot always
-be identified ({{sec-identifying}}), but we assume that a set of candidate
-QUIC flows have been chosen. For QUIC endpoints using DPLPMTUD it is
-minimally sufficient for the path to silently drop a packet larger than the
-supported size. (A QUIC probe packet is used to discover the PMTU. If lost,
-this does not impact the flow of QUIC data.)
+Networks with configurations that would lead to fragmentation of large packets
+should drop such packets rather than fragmenting them. Network operators who
+plan to implement a more selective policy may start by focussing on QUIC.
+QUIC flows cannot always be easily distinguished from other UDP traffic, but
+we assume at least some portion of QUIC traffic can be identified
+(see {{sec-identifying}}). For QUIC endpoints using DPLPMTUD it is recommended
+for the path to drop a packet larger than the supported size. A QUIC probe
+packet is used to discover the PMTU. If lost, this does not impact the flow of
+QUIC data.
 
 IPv4 routers generate an ICMP message when a packet is dropped because the
 link MTU was exceeded. {{RFC8504}} specifies how an IPv6 node generates an
@@ -1070,7 +1072,9 @@ Since a network cannot know in advance which discovery method a QUIC endpoint
 is using, it should always send a PTB message in addition to dropping the
 oversized packet. A generated PTB message should be compliant with the
 validation requirements of {{Section 14.2.1 of QUIC-TRANSPORT}}, otherwise it
-will be ignored by DPLPMTUD.
+will be ignored by DPLPMTUD. This will likely provide the right signal for the
+endpoint to keep the packet size small and thereby avoid network fragmentation
+for that flow entirely.
 
 # IANA Considerations
 
