@@ -161,7 +161,8 @@ The following information is exposed in QUIC packet headers:
   packet as a Version Negotiation packet. QUIC
   version 1 uses version 0x00000001. Operators should expect to observe
   packets with other version numbers as a result of various Internet
-  experiments and future standards.
+  experiments, future standards, and greasing. All deployed version are
+  maintained in an IANA registry (see {{Section 22.2 of QUIC-TRANSPORT}}).
 
 - source and destination connection ID: short and long packet headers carry a
   destination connection ID, a variable-length field that can be used to
