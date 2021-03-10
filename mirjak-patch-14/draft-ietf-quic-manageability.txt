@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 26 August 2021                                           Google
-                                                        22 February 2021
+Expires: 11 September 2021                                        Google
+                                                           10 March 2021
 
 
               Manageability of the QUIC Transport Protocol
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 August 2021.
+   This Internet-Draft will expire on 11 September 2021.
 
 Copyright Notice
 
@@ -211,7 +211,9 @@ Table of Contents
       (0x00000000) that identifies the packet as a Version Negotiation
       packet.  QUIC version 1 uses version 0x00000001.  Operators should
       expect to observe packets with other version numbers as a result
-      of various Internet experiments and future standards.
+      of various Internet experiments, future standards, and greasing.
+      All deployed version are maintained in an IANA registry (see
+      Section 22.2 of [QUIC-TRANSPORT]).
 
    *  source and destination connection ID: short and long packet
       headers carry a destination connection ID, a variable-length field
@@ -1215,9 +1217,9 @@ Table of Contents
    [QUIC-APPLICABILITY]
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
-              draft-ietf-quic-applicability-09, 22 January 2021,
+              draft-ietf-quic-applicability-10, 22 February 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              applicability-09.txt>.
+              applicability-10.txt>.
 
    [QUIC-HTTP]
               Bishop, M., "Hypertext Transfer Protocol Version 3
@@ -1289,9 +1291,9 @@ Table of Contents
 
    [TLS-ESNI] Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-09, 16 December 2020,
+              draft-ietf-tls-esni-10, 8 March 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-09.txt>.
+              esni-10.txt>.
 
    [TMA-QOF]  Trammell, B., Gugelmann, D., and N. Brownlee, "Inline Data
               Integrity Signals for Passive Measurement (in Proc. TMA
