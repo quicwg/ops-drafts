@@ -472,8 +472,8 @@ to generate connection IDs at load balancers.
 
 ## Packet Numbers {#packetnumber}
 
-The packet number field is always present in the QUIC packet header in this
-version; however, it is always encrypted. The encryption key for packet number
+The packet number field is always present in the QUIC packet header in version
+1; however, it is always encrypted. The encryption key for packet number
 protection on handshake packets sent before cryptographic context establishment
 is specific to the QUIC version, while packet number protection on subsequent
 packets uses secrets derived from the end-to-end cryptographic context. Packet
