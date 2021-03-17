@@ -40,17 +40,19 @@ informative:
       -
         ins: N. Brownlee
     date: 2014-04
-  IPIM:	
-    title: In-Protocol Internet Measurement (arXiv preprint 1612.02902)	
-    author:	
-      -	
-        ins: M. Allman	
-      -	
-        ins: R. Beverly	
-      -	
-        ins: B. Trammell	
-    target: https://arxiv.org/abs/1612.02902	
+  IPIM:
+    title: In-Protocol Internet Measurement (arXiv preprint 1612.02902)
+    author:
+      -
+        ins: M. Allman
+      -
+        ins: R. Beverly
+      -
+        ins: B. Trammell
+    target: https://arxiv.org/abs/1612.02902
     date: 2016-12-09
+  RFC7605:
+  QUIC-RECOVERY: I-D.ietf-quic-recovery
 
 --- abstract
 
@@ -69,16 +71,16 @@ that is encapsulated in UDP. QUIC integrates TLS
 information. QUIC version 1 was designed primarily as a transport for HTTP, with
 the resulting protocol being known as HTTP/3 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
 
-Given that QUIC is an end-to-end transport protocol, all information in the
-protocol header, even that which can be inspected, is not meant to be
-mutable by the network, and is therefore integrity-protected. While less
-information is visible to the network than for TCP, integrity protection can
-also simplify troubleshooting, because none of the nodes on the network path
-can modify the transport layer information.
+Given that QUIC is an end-to-end transport protocol, no information in the
+protocol header -- even that which can be inspected -- is meant to be mutable by
+the network. Therefore, these headers are integrity-protected. While less
+information is visible to the network than in TCP, integrity protection can also
+simplify troubleshooting, because none of the nodes on the network path can
+modify the transport layer information.
 
 This document provides guidance for network operations that manage QUIC
 traffic. This includes guidance on how to interpret and utilize information that
-is exposed by QUIC to the network, requirements and assumptions that the QUIC
+is exposed by QUIC to the network, requirements and assumptions of the QUIC
 design with respect to network treatment, and a description of how common
 network management practices will be impacted by QUIC.
 
@@ -121,42 +123,28 @@ QUIC version 1 packets compared to some pre-standard versions.
 
 ## QUIC Packet Header Structure {#public-header}
 
-QUIC packets may have either a long header, or a short header. The first bit
+QUIC packets may have either a long header or a short header. The first bit
 of the QUIC header is the Header Form bit, and indicates which type of header
 is present. The purpose of this bit is invariant across QUIC versions.
 
-The long header exposes more information. It is used during connection
-establishment, including version negotiation, retry, and 0-RTT data. It
-contains a version number, as well as source and destination connection IDs
-for grouping packets belonging to the same flow. The definition and location
+The long header exposes more information. In version 1 of QUIC, it is used
+during connection establishment, including version negotiation, retry, and 0-RTT
+data. It contains a version number, as well as source and destination connection
+IDs for grouping packets belonging to the same flow. The definition and location
 of these fields in the QUIC long header are invariant for future versions of
-QUIC, although future versions of QUIC may provide additional fields in the
-long header {{QUIC-INVARIANTS}}.
+QUIC, although future versions of QUIC may provide additional fields in the long
+header {{QUIC-INVARIANTS}}.
 
-Short headers are used after connection establishment, and contain only an
-optional destination connection ID and the spin bit for RTT measurement.
+Short headers contain only an optional destination connection ID and the spin
+bit for RTT measurement. In version 1 of QUIC, they are used after connection
+establishment.
 
-The following information is exposed in QUIC packet headers:
-
-- "fixed bit": the second most significant bit of the first octet most QUIC
-  packets of the current version is currently set to 1, for endpoints to
-  demultiplex with other UDP-encapsulated protocols. Even thought this bit is
-  fixed in the QUICv1 specification, endpoints may use a version or extension
-  that varies the bit. Therefore, observers cannot depend on it as an
-  identifier for QUIC.
-
-- latency spin bit: the third most significant bit of first octet in the short
-  packet header. The spin bit is set by endpoints such that  tracking edge
-  transitions can be used to passively observe end-to-end RTT. See
-  {{spin-usage}} for further details.
-
-- header type: the long header has a 2 bit packet type field following the
-  Header Form and fixed bits. Header types correspond to stages of the
-  handshake; see Section 17.2 of {{QUIC-TRANSPORT}} for details.
+The following information is exposed in QUIC packet headers in all versions of
+QUIC:
 
 - version number: the version number is present in the long header, and
   identifies the version used for that packet. During Version
-  Negotiation (see {{version}} and Section 17.2.1 of {{QUIC-TRANSPORT}}), the
+  Negotiation (see {{Section 17.2.1 of QUIC-TRANSPORT}} and {{version}}), the
   version number field has a special value (0x00000000) that identifies the
   packet as a Version Negotiation packet. QUIC
   version 1 uses version 0x00000001. Operators should expect to observe
@@ -175,7 +163,24 @@ The following information is exposed in QUIC packet headers:
   IDs is also present; on short header packets, the length of the destination
   connection ID is implicit.
 
-- length: the length of the remaining QUIC packet after the length field,
+In version 1 of QUIC, the following additional information is exposed:
+
+- "fixed bit": The second-most-significant bit of the first octet of most QUIC
+  packets of the current version is set to 1, enabling endpoints to demultiplex
+  with other UDP-encapsulated protocols. Even though this bit is fixed in the
+  version 1 specification, endpoints might use an extension that varies the bit.
+  Therefore, observers cannot reliably use it as an identifier for QUIC.
+
+- latency spin bit: The third-most-significant bit of the first octet in the
+  short packet header for version 1. The spin bit is set by endpoints such that
+  tracking edge transitions can be used to passively observe end-to-end RTT. See
+  {{spin-usage}} for further details.
+
+- header type: The long header has a 2 bit packet type field following the
+  Header Form and fixed bits. Header types correspond to stages of the
+  handshake; see {{Section 17.2 of QUIC-TRANSPORT}} for details.
+
+- length: The length of the remaining QUIC packet after the length field,
   present on long headers. This field is used to implement coalesced packets
   during the handshake (see {{coalesced}}).
 
@@ -185,10 +190,10 @@ The following information is exposed in QUIC packet headers:
   in an Initial packet on a subsequent connection attempt. The length of the
   token is explicit in both cases.
 
-Retry (Section 17.2.5 of {{QUIC-TRANSPORT}}) and Version Negotiation (Section
-17.2.1 of {{QUIC-TRANSPORT}}) packets are not encrypted or obfuscated in any
-way. For other kinds of packets, other information in the packet headers is
-cryptographically obfuscated:
+Retry ({{Section 17.2.5 of QUIC-TRANSPORT}}) and Version Negotiation ({{Section
+17.2.1 of QUIC-TRANSPORT}}) packets are not encrypted or obfuscated in any
+way. For other kinds of packets, version 1 of QUIC cryptographically obfuscates
+other information in the packet headers:
 
 - packet number: All packets except Version Negotiation and
   Retry packets have an associated packet number; however, this packet number
@@ -206,10 +211,10 @@ cryptographically obfuscated:
 Multiple QUIC packets may be coalesced into a UDP datagram, with a datagram
 carrying one or more long header packets followed by zero or one short header
 packets. When packets are coalesced, the Length fields in the long headers are
-used to separate QUIC packets; see Section 12.2 of {{QUIC-TRANSPORT}}.
+used to separate QUIC packets; see {{Section 12.2 of QUIC-TRANSPORT}}.
 The length header field is variable length, and its position in the header is
 also variable depending on the length of the source and destination connection
-ID; see Section 17.2 of {{QUIC-TRANSPORT}}.
+ID; see {{Section 17.2 of QUIC-TRANSPORT}}.
 
 ## Use of Port Numbers
 
@@ -222,9 +227,8 @@ information is encrypted. For example, {{QUIC-HTTP}} specifies
 the use of Alt-Svc for discovery of HTTP/3 services on other ports.
 
 Further, as QUIC has a connection ID, it is also possible to maintain multiple
-QUIC connections over one 5-tuple. However, if the connection ID is not present
-in the packet header, all packets of the 5-tuple belong to the same QUIC
-connection.
+QUIC connections over one 5-tuple. However, if the connection ID is zero-length,
+all packets of the 5-tuple belong to the same QUIC connection.
 
 ## The QUIC Handshake {#handshake}
 
@@ -281,8 +285,8 @@ some also include an Initial packet.
 Datagrams that contain a QUIC Initial Packet (Client Hello, Server Hello, and
 some Initial Completion) contain at least 1200 octets of UDP payload. This
 protects against amplification attacks and verifies that the network path meets
-the requirements for the minimum QUIC IP packet size, see Section 14 of
-{{QUIC-TRANSPORT}}. This is accomplished by either adding PADDING frames within
+the requirements for the minimum QUIC IP packet size; see {{Section 14 of
+QUIC-TRANSPORT}}. This is accomplished by either adding PADDING frames within
 the Initial packet, coalescing other packets with the Initial packet, or
 leaving unused payload in the UDP packet after the Initial packet. A network
 path needs to be able to forward at least this size of packet for QUIC to be
@@ -322,7 +326,7 @@ The Client Hello datagram exposes version number, source and destination
 connection IDs without encryption. Information in the TLS Client Hello frame,
 including any TLS Server Name Indication (SNI) present, is obfuscated using the
 Initial secret. Note that the location of PADDING is implementation-dependent,
-and PADDING frames may not appear in a coalesced Initial packet.
+and PADDING frames might not appear in a coalesced Initial packet.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -347,9 +351,9 @@ and PADDING frames may not appear in a coalesced Initial packet.
 ~~~~~
 {: #fig-server-hello title="Typical QUIC Server Hello datagram pattern"}
 
-The Server Hello datagram also exposes version number, source and
-destination connection IDs and information in the TLS Server Hello message
-which is obfuscated using the Initial secret.
+The Server Hello datagram also exposes version number, source and destination
+connection IDs in the clear; information in the TLS Server Hello message is
+obfuscated using the Initial secret.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -421,38 +425,38 @@ bytes. Additional datagrams containing only 0-RTT protected long header packets
 may be sent from the client to the server after the Client Hello datagram,
 containing the rest of the 0-RTT data. The amount of 0-RTT protected data
 that can be sent in the first round is limited by the initial congestion
-window, typically around 10 packets (see Section 7.2 of
-{{?QUIC-RECOVERY=I-D.ietf-quic-recovery}}).
+window, typically around 10 packets (see {{Section 7.2 of
+QUIC-RECOVERY}}).
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
 
 As soon as the cryptographic context is established, all information in the QUIC
-header, including exposed information, is integrity
-protected. Further, information that was sent and exposed in handshake packets
-sent before the cryptographic context was established are validated later during
-the cryptographic handshake. Therefore, devices on path cannot alter any
-information or bits in QUIC packets. Such alterations would cause the integrity
-check to fail, which results in the receiver discarding the packet.
-Some parts of Initial packets could be altered by removing and re-applying the
-authenticated encryption without immediate discard at the receiver. However,
-the cryptographic handshake validates most fields and any modifications in
-those fields will result in connection establishment failing later on.
+header, including exposed information, is integrity-protected. Further,
+information that was exposed in packets sent before the cryptographic context
+was established is validated during the cryptographic handshake. Therefore,
+devices on path cannot alter any information or bits in QUIC packets. Such
+alterations would cause the integrity check to fail, which results in the
+receiver discarding the packet. Some parts of Initial packets could be altered
+by removing and re-applying the authenticated encryption without immediate
+discard at the receiver. However, the cryptographic handshake validates most
+fields and any modifications in those fields will result in connection
+establishment failing later on.
 
 ## Connection ID and Rebinding {#rebinding}
 
 The connection ID in the QUIC packet headers allows routing of QUIC packets at
-load balancers on other than five-tuple information, ensuring that related
-flows are appropriately balanced together; and to allow rebinding of a
-connection after one of the endpoint's addresses changes - usually the
-client's. Client and server negotiate
-connection IDs during the handshake; typically, however, only the server will
-request a connection ID for the lifetime of the connection. Connection IDs for
-either endpoint may change during the lifetime of a connection, with the new
-connection ID being negotiated via encrypted frames. See Section 5.1 of
-{{QUIC-TRANSPORT}}. Therefore, observing a new connection ID does not
-necessary indicate a new connection.
+load balancers using information independent of the five-tuple.  This helps
+ensure that related flows are appropriately balanced together and allows
+rebinding of a connection after one of the endpoints experiences an address
+change - usually the client. Client and server negotiate connection IDs during
+the handshake; typically, however, only the server will request a connection ID
+for the lifetime of the connection. Connection IDs for either endpoint may
+change during the lifetime of a connection, with the new connection ID being
+supplied via encrypted frames (see {{Section 5.1 of QUIC-TRANSPORT}}).
+Therefore, observing a new connection ID does not necessary indicate a new
+connection.
 
-Server-generated connection IDs should seek to obscure any encoding, of routing
+Server-generated connection IDs should seek to obscure any encoded routing
 identities or any other information. Exposing the server mapping would allow
 linkage of multiple IP addresses to the same host if the server also supports
 migration. Furthermore, this opens an attack vector on specific servers or
@@ -463,26 +467,27 @@ most rigorously achieved with encryption. Even when encrypted, a scheme could
 embed the unencrypted length of the connection ID in the connection ID itself,
 instead of remembering it.
 
-{{?QUIC_LB=I-D.ietf-quic-load-balancers}} further specified possible algorithms
+{{?QUIC_LB=I-D.ietf-quic-load-balancers}} further specifies possible algorithms
 to generate connection IDs at load balancers.
 
 
 ## Packet Numbers {#packetnumber}
 
-The packet number field is always present in the QUIC packet header; however,
-it is always encrypted. The encryption key for packet number protection on
-handshake packets sent before cryptographic context establishment is specific
-to the QUIC version, while packet number protection on subsequent packets uses
-secrets derived from the end-to-end cryptographic context. Packet numbers are
-therefore not part of the wire image that is visible to on-path observers.
+The packet number field is always present in the QUIC packet header in version
+1; however, it is always encrypted. The encryption key for packet number
+protection on handshake packets sent before cryptographic context establishment
+is specific to the QUIC version, while packet number protection on subsequent
+packets uses secrets derived from the end-to-end cryptographic context. Packet
+numbers are therefore not part of the wire image that is visible to on-path
+observers.
 
 
 ## Version Negotiation and Greasing {#version}
 
 Version Negotiation packets are used by the server to indicate that a requested
-version from the client is not supported (see section 6 of {{QUIC-TRANSPORT}}.
-Version Negotiation packets are not intrinsically protected, but QUIC versions
-can use later encrypted messages to verify that they were authentic.
+version from the client is not supported (see {{Section 6 of QUIC-TRANSPORT}}.
+Version Negotiation packets are not intrinsically protected, but future QUIC
+versions will use later encrypted messages to verify that they were authentic.
 Therefore any modification of this list will be detected and may cause the
 endpoints to terminate the connection attempt.
 
@@ -490,9 +495,9 @@ Also note that the list of versions in the Version Negotiation packet may
 contain reserved versions. This mechanism is used to avoid ossification in the
 implementation on the selection mechanism. Further, a client may send a Initial
 Client packet with a reserved version number to trigger version negotiation. In
-the Version Negotiation packet the connection ID and packet number of the Client
-Initial packet are reflected to provide a proof of return-routability. Therefore
-changing this information will also cause the connection to fail.
+the Version Negotiation packet, the connection IDs of the Client Initial packet
+are reflected to provide a proof of return-routability. Therefore, changing this
+information will also cause the connection to fail.
 
 QUIC is expected to evolve rapidly, so new versions, both experimental and IETF
 standard versions, will be deployed in the Internet more often than with
@@ -505,7 +510,7 @@ purposes of network admission control should admit all QUIC traffic regardless
 of version.
 
 
-# Network-visible Information about QUIC Flows
+# Network-Visible Information about QUIC Flows
 
 This section addresses the different kinds of observations and inferences that
 can be made about QUIC flows by a passive observer in the network based on the
@@ -522,76 +527,75 @@ other UDP traffic.
 The only application binding defined by the IETF QUIC WG is HTTP/3
 {{?QUIC-HTTP}} at the time of this writing; however, many other applications
 are currently being defined and deployed over QUIC, so an assumption that all
-QUIC traffic is HTTP/3 is not valid. HTTP over QUIC uses UDP port 443 by
+QUIC traffic is HTTP/3 is not valid. HTTP/3 uses UDP port 443 by
 default, although URLs referring to resources available over HTTP/3
 may specify alternate port numbers. Simple assumptions about whether a
 given flow is using QUIC based upon a UDP port number may therefore not hold;
-see also {{?RFC7605}} section 5.
+see also {{Section 5 of RFC7605}}.
 
-While the second most significant bit (0x40) of the first octet is set to
-1 in most QUIC packets of the current version (see {{public-header}} and
-section 17 of {{QUIC-TRANSPORT}}), this method of recognizing QUIC traffic
-is not reliable. First, it only provides one bit of information and is
-prone to collision with UDP-based protocols other than those that this static
-bit is meant to allow multiplexing with. Second, this feature of the wire
-image is not invariant {{QUIC-INVARIANTS}} and may change in future versions
-of the protocol, or even be negotiated during the handshake via the use of
-transport parameters.
+While the second-most-significant bit (0x40) of the first octet is set to 1 in
+most QUIC packets of the current version (see {{public-header}} and Section 17
+of {{QUIC-TRANSPORT}}), this method of recognizing QUIC traffic is not reliable.
+First, it only provides one bit of information and is prone to collision with
+UDP-based protocols other than those considered in {{?RFC7983}}. Second, this
+feature of the wire image is not invariant {{QUIC-INVARIANTS}} and may change in
+future versions of the protocol, or even be negotiated during the handshake via
+the use of an extension.
 
-Even though transport parameters transmitted in the client initial are
-obserable by the network, they cannot be modified by the network without
-risking connection failure. Further, the negotiated reply from the server
-cannot be observed, so observers on the network cannot know which
-parameters are actually in use.
+Even though transport parameters transmitted in the client's Initial packet are
+observable by the network, they cannot be modified by the network without
+risking connection failure. Further, the reply from the server cannot be
+observed, so observers on the network cannot know which parameters are actually
+in use.
 
 ### Identifying Negotiated Version
 
 An in-network observer assuming that a set of packets belongs to a QUIC flow
 can infer the version number in use by observing the handshake: for QUIC
-version 1 if the version number in the Initial packet from a client is the
-same as the version number in Initial packet of the server response, that
+version 1, if the version number in the Initial packet from a client is the
+same as the version number in the Initial packet of the server response, that
 version has been accepted by both endpoints to be used for the rest of the
 connection.
 
-Negotiated version cannot be identified for flows for which a handshake is not
-observed, such as in the case of connection migration; however, it might be
+The negotiated version cannot be identified for flows for which a handshake is
+not observed, such as in the case of connection migration; however, it might be
 possible to associate a flow with a flow for which a version has been
 identified; see {{sec-flow-association}}.
 
-This document focuses on QUIC Version 1, and this section applies only to
-packets belonging to Version 1 QUIC flows; for purposes of on-path observation,
+This document focuses on QUIC version 1, and this section applies only to
+packets belonging to QUIC version 1 flows; for purposes of on-path observation,
 it assumes that these packets have been identified as such through the
 observation of a version number exchange as described above.
 
 ### Rejection of Garbage Traffic {#sec-garbage}
 
-A related question is whether a first packet of a given flow on a known
-QUIC-associated port is a valid QUIC packet, to support in-network
-filtering of garbage UDP packets (reflection attacks, random backscatter). While
-heuristics based on the first byte of the packet (packet type) could be used to
-separate valid from invalid first packet types, the deployment of such
-heuristics is not recommended, as packet types may have different meanings in
-future versions of the protocol.
+A related question is whether the first packet of a given flow on a port known
+to be associated with QUIC is a valid QUIC packet.  This determination supports
+in-network filtering of garbage UDP packets (reflection attacks, random
+backscatter, etc.). While heuristics based on the first byte of the packet
+(packet type) could be used to separate valid from invalid first packet types,
+the deployment of such heuristics is not recommended, as bits in the first byte
+may have different meanings in future versions of the protocol.
 
 ## Connection Confirmation {#sec-confirm}
 
 Connection establishment uses Initial and Handshake packets containing a
 TLS handshake, and Retry packets that do not contain parts of the handshake.
 Connection establishment can therefore be detected using heuristics similar to
-those used to detect TLS over TCP. A client initiating a 0-RTT connection may
-also send data packets in 0-RTT Protected packets directly after the Initial
+those used to detect TLS over TCP. A client initiating a connection may
+also send data in 0-RTT packets directly after the Initial
 packet containing the TLS Client Hello. Since these packets may be reordered in
-the network, 0-RTT Protected data packets could be seen before the Initial
+the network, 0-RTT packets could be seen before the Initial
 packet.
 
-Note that clients send Initial packets before servers do, servers send Handshake
-packets before clients do, and only clients send Initial packets with tokens.
-Therefore, the role as a client or server can generally be confirmed by an on-
-path observer. An attempted connection after Retry can be detected by
-correlating the token on the Retry with the token on the subsequent Initial
-packet and the destination connection ID of the new Initial packet.
+Note that in this version of QUIC, clients send Initial packets before servers
+do, servers send Handshake packets before clients do, and only clients send
+Initial packets with tokens. Therefore, an endpoint can be identified as a
+client or server by an on-path observer. An attempted connection after Retry can
+be detected by correlating the contents of the Retry packet with the Token and
+the Destination Connection ID fields of the new Initial packet.
 
-## Distinguishing Acknowledgment traffic
+## Distinguishing Acknowledgment Traffic
 
 Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
 from packets carrying upper-layer data in order to attempt to enhance
@@ -606,74 +610,76 @@ use of extensions.
 
 ## Application Identification {#sec-server}
 
-The cleartext TLS handshake may contain Server Name Indication (SNI)
-{{?RFC6066}}, by which the client reveals the name of the server it intends to
-connect to, in order to allow the server to present a certificate based on
-that name. It may also contain information from Application-Layer Protocol
-Negotiation (ALPN) {{?RFC7301}}, by which the client exposes the names of
-application-layer protocols it supports; an observer can deduce that one of
+The client's TLS ClientHello may contain a Server Name Indication (SNI)
+{{?RFC6066}} extension, by which the client reveals the name of the server it
+intends to connect to, in order to allow the server to present a certificate
+based on that name. It may also contain an Application-Layer Protocol
+Negotiation (ALPN) {{?RFC7301}} extension, by which the client exposes the names
+of application-layer protocols it supports; an observer can deduce that one of
 those protocols will be used if the connection continues.
 
-Work is currently underway in the TLS working group to encrypt the SNI in TLS
-1.3 {{?TLS-ESNI=I-D.ietf-tls-esni}}. This would make SNI-based application
-identification impossible by on-path observation for QUIC and other
-protocols that use TLS.
+Work is currently underway in the TLS working group to encrypt the contents of
+the ClientHello in TLS 1.3 {{?TLS-ECH=I-D.ietf-tls-esni}}. This would make
+SNI-based application identification impossible by on-path observation for QUIC
+and other protocols that use TLS.
 
 ### Extracting Server Name Indication (SNI) Information
 
-If the SNI is not encrypted it can be derived from the QUIC Initial packet
-by calculating the Initial Secret to decrypt the packet payload and parse the
-QUIC CRYPTO Frame containing the TLS ClientHello.
+If the ClientHello is not encrypted, it can be derived from the client's Initial
+packet by calculating the Initial secret to decrypt the packet payload and
+parsing the QUIC CRYPTO Frame containing the TLS ClientHello.
 
-As both the initial salt for the Initial Secret as well as CRYPTO frame itself
-are version-specific, the first step is always to parse the version number
-(second to sixth byte of the long header). Note that only long header packets
-carry the version number, so it is necessary to also check the if first bit of
-the QUIC packet is set to 1, indicating a long header.
+As both the derivation of the Initial secret and the structure of the Initial
+packet itself are version-specific, the first step is always to parse the
+version number (second to sixth bytes of the long header). Note that only long
+header packets carry the version number, so it is necessary to also check if the
+first bit of the QUIC packet is set to 1, indicating a long header.
 
 Note that proprietary QUIC versions, that have been deployed before
-standardization, might not set the first bit in a QUIC long header packets to
+standardization, might not set the first bit in a QUIC long header packet to
 1. To parse these versions, example code is provided in the appendix (see
-{{sec-google-version}}), however, it is expected that these versions will
+{{sec-google-version}}). However, it is expected that these versions will
 gradually disappear over time.
 
-When the version has been identified as QUIC version 1, the packet type needs
-to be verified as an Initial packet by checking that the third and fourth bit
-of the header are both set to 0. Then the client destination connection ID
-needs to be extracted to calculate the Initial Secret together with the
-version specific initial salt, as described in {{QUIC-TLS}}. The length of
-the connection ID is indicated in the 6th byte of the header followed by the
-connection ID itself.
+When the version has been identified as QUIC version 1, the packet type needs to
+be verified as an Initial packet by checking that the third and fourth bits of
+the header are both set to 0. Then the Destination Connection ID needs to be
+extracted to calculate the Initial secret using the version-specific Initial
+salt, as described in {{Section 5.2 of QUIC-TLS}}. The length of the connection
+ID is indicated in the 6th byte of the header followed by the connection ID
+itself.
 
-To determine the end of the header and find the start of the payload,
-the packet number length, the source connection ID length, and the token
-length need to be extracted. The packet number length is defined by the seventh
-and eight bits of the header as described in section 17.2. of
-{{QUIC-TRANSPORT}}, but is obfuscated as described in {{QUIC-TLS}}. The source
-connection ID length is specified in the byte after the destination connection
-ID. And the token length, which follows the source connection ID, is a variable
-length integer as specified in Section 16 of {{QUIC-TRANSPORT}}.
+To determine the end of the header and find the start of the payload, the packet
+number length, the source connection ID length, and the token length need to be
+extracted. The packet number length is defined by the seventh and eight bits of
+the header as described in {{Section 17.2 of QUIC-TRANSPORT}}, but is obfuscated
+as described in {{Section 5.4 of QUIC-TLS}}. The source connection ID length is
+specified in the byte after the destination connection ID. The token length,
+which follows the source connection ID, is a variable-length integer as
+specified in {{Section 16 of QUIC-TRANSPORT}}.
 
-After decryption, the Initial Client packet can be parsed to detect the
-CRYPTO frame that contains the TLS Client Hello, which then can be parsed
-similarly to TLS over TCP connections. The Initial client packet may
-contain other frames, so the first bytes of each frame need to be checked to
-identify the frame type, and if needed skip over it. Note that the length of the
-frames is dependent on the frame type. In QUIC version 1, the packet is
-expected to only carry the CRYPTO frame and optionally padding frames. However,
-PADDING frames, each consisting of a single zero byte, may also occur before or
-after the CRYPTO frame.
+After decryption, the client's Initial packet can be parsed to detect the CRYPTO
+frame that contains the TLS ClientHello, which then can be parsed similarly to
+TLS over TCP connections. The client's Initial packet may contain other frames,
+so the first bytes of each frame need to be checked to identify the frame type,
+and if needed skip over it. Note that the length of the frames is dependent on
+the frame type. In QUIC version 1, the packet is expected to contain only CRYPTO
+frames and optionally PADDING frames. PADDING frames, each consisting of a
+single zero byte, may occur before, after, or between CRYPTO frames. There might
+be multiple CRYPTO frames.  Finally, an extension might define additional frame
+types which could be present.
 
-Note that client Initial packets after the first do not always use the
-destination connection ID that was used to generate the Initial keys. Therefore,
-attempts to decrypt these packets using the procedure above might fail.
+Note that subsequent Initial packets might contain a Destination Connection ID
+other than the one used to generate the Initial secret. Therefore, attempts to
+decrypt these packets using the procedure above might fail unless the Initial
+secret is retained by the observer.
 
 ## Flow Association {#sec-flow-association}
 
 The QUIC connection ID (see {{rebinding}}) is designed to allow an on-path
 device such as a load-balancer to associate two flows as identified by
 five-tuple when the address and port of one of the endpoints changes; e.g. due
-to NAT rebinding or server IP address migration. An observer keeping flow state
+to NAT rebinding or address migration. An observer keeping flow state
 can associate a connection ID, if present, with a given flow, and can associate
 a known flow with a new flow when when observing a packet sharing the same
 connection ID in the same direction between client and server and sharing one
@@ -681,19 +687,18 @@ endpoint address (IP address and port) with the known flow.
 
 However, since the connection ID may change multiple times during the lifetime
 of a flow, and the negotiation of connection ID changes is encrypted, packets
-with the same 5-tuple but different connection IDs may or may not belong to the
-same connection.
+with the same 5-tuple but different connection IDs might or might not belong to
+the same connection.
 
-The connection ID value should be treated as opaque; see {{sec-loadbalancing}}
+Connection IDs should be treated as opaque; see {{sec-loadbalancing}}
 for caveats regarding connection ID selection at servers.
 
-## Flow teardown {#sec-teardown}
+## Flow Teardown {#sec-teardown}
 
 QUIC does not expose the end of a connection; the only indication to on-path
 devices that a flow has ended is that packets are no longer observed. Stateful
 devices on path such as NATs and firewalls must therefore use idle timeouts to
-determine when to drop state for QUIC flows, see further section
-{{sec-stateful}}.
+determine when to drop state for QUIC flows; see {{sec-stateful}}.
 
 
 ## Flow Symmetry Measurement {#sec-symmetry}
@@ -707,27 +712,27 @@ traffic is protected and ACKs may be padded, padding is not required.
 
 ## Round-Trip Time (RTT) Measurement {#sec-rtt}
 
-Round-trip time of QUIC flows can be inferred by observation once per flow,
+The round-trip time of QUIC flows can be inferred by observation once per flow,
 during the handshake, as in passive TCP measurement; this requires parsing of
 the QUIC packet header and recognition of the handshake, as illustrated in
 {{handshake}}. It can also be inferred during the flow's lifetime, if the
-endpoints use the spin bit facility described below and in
-{{QUIC-TRANSPORT}}, section 17.3.1.
+endpoints use the spin bit facility described below and in Section 17.3.1 of
+{{QUIC-TRANSPORT}}.
 
 ### Measuring Initial RTT
 
-In the common case, the delay between the Initial packet containing the TLS
-Client Hello and the Handshake packet containing the TLS Server Hello
-represents the RTT component on the path between the observer and the server.
-The delay between the TLS Server Hello and the Handshake packet containing the
-TLS Finished message sent by the client represents the RTT component on the
-path between the observer and the client. While the client may send 0-RTT
-Protected packets after the Initial packet during 0-RTT connection
-re-establishment, these can be ignored for RTT measurement purposes.
+In the common case, the delay between the client's Initial packet (containing
+the TLS ClientHello) and the server's Initial packet (containing the TLS
+ServerHello) represents the RTT component on the path between the observer and
+the server. The delay between the server's first Handshake packet and the
+Handshake packet sent by the client represents the RTT component on the path
+between the observer and the client. While the client may send 0-RTT packets
+after the Initial packet during connection re-establishment, these can be
+ignored for RTT measurement purposes.
 
 Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
-includes any transport and application layer delay (the latter mainly
+includes any transport- and application-layer delay (the latter mainly
 caused by the asymmetric crypto operations associated with the TLS
 handshake) at both sides.
 
@@ -735,7 +740,7 @@ handshake) at both sides.
 
 The spin bit provides a version-specific method to measure per-flow RTT from
 observation points on the network path throughout the duration of a connection.
-See section 17.4 of {{?QUIC-TRANSPORT}} for the definition of the spin bit in
+See {{Section 17.4 of QUIC-TRANSPORT}} for the definition of the spin bit in
 Version 1 of QUIC. Endpoint participation in spin bit signaling is optional.
 That is, while its location is fixed in this version of QUIC, an endpoint can
 unilaterally choose to not support "spinning" the bit.
