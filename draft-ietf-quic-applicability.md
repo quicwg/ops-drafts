@@ -147,10 +147,11 @@ fallback to TLS over TCP, the most obvious difference is that TCP does not
 provide stream multiplexing and therefore stream multiplexing would need to be
 implemented in the application layer if needed. Further, TCP implementations
 and network paths often do not support the Fast Open option {{?RFC7413}}, which
-is required to to achieve true 0-RTT session resumption. Note that there is
+enables sending of payload data together with the first control packet of a new
+connection as also provided by 0-RTT session resumption in QUIC. Note that there is
 some evidence of middleboxes blocking SYN data even if TFO was successfully
 negotiated (see {{PaaschNanog}}). And even if Fast Open successfully operates
-end-to-end, it is limited to a single packet of payload, unlike QUIC 0-RTT.
+end-to-end, it is limited to a single packet of TLS handshake and application data, unlike QUIC 0-RTT.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
