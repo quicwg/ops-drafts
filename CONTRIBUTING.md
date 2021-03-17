@@ -13,14 +13,14 @@ The Working Group has a few venues for discussion:
 
 * Our [mailing list](https://www.ietf.org/mailman/listinfo/quic) is used for most communication, including notifications of meetings, new drafts, consensus calls and other business, as well as issue discussion.
 
-* We also discuss specific issues on the appropriate issues list in [Github](https://github.com/quicwg/). If you don't want to use Github to follow these discussions, you can subscribe to the [issue announce list](https://www.ietf.org/mailman/listinfo/quic-issues).
+* We also discuss specific issues on the appropriate issues list in [GitHub](https://github.com/quicwg/). If you don't want to use GitHub to follow these discussions, you can subscribe to the [issue announce list](https://www.ietf.org/mailman/listinfo/quic-issues).
 
 To be active in the Working Group, you can participate in any of these places. Most activity takes
 place on the mailing list, but if you just want to comment on and raise issues, that's fine too.
 
 ## Raising Issues
 
-We use our [Github](https://github.com/quicwg/ops-drafts) issues lists to track items for discussion and
+We use our [GitHub](https://github.com/quicwg/ops-drafts) issues lists to track items for discussion and
 their resolution.
 
 Before filing a new issue on the operations drafts, please consider a few things:
