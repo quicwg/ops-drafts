@@ -329,10 +329,10 @@ for that message.
 
 If a QUIC receiver has opened the maximum allowed concurrent
 streams, and the sender indicates that more streams are needed, it
-does not automatically lead to an increase of the maximum number of streams by
-the receiver. Therefore it can be valuable to expose the maximum number of
-allowed, currently open, and currently used streams to the application to make
-the mapping of data to streams dependent on this information.
+does not automatically lead to an increase of the maximum number of
+streams by the receiver. Therefore, an application can use the maximum
+number of allowed, currently open, and currently used streams when
+determining how to map data to streams.
 
 QUIC assigns a numerical identifier to each stream, called the Stream ID.  While
 the relationship between these identifiers and stream types is clearly defined
