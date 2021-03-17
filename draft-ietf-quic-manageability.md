@@ -674,8 +674,9 @@ The QUIC connection ID (see {{rebinding}}) is designed to allow an on-path
 device such as a load-balancer to associate two flows as identified by
 five-tuple when the address and port of one of the endpoints changes; e.g. due
 to NAT rebinding or server IP address migration. An observer keeping flow state
-can associate a connection ID with a given flow, and can associate a known flow
-with a new flow when when observing a packet sharing a connection ID and one
+can associate a connection ID, if present, with a given flow, and can associate
+a known flow with a new flow when when observing a packet sharing the same
+connection ID in the same direction between client and server and sharing one
 endpoint address (IP address and port) with the known flow.
 
 However, since the connection ID may change multiple times during the lifetime
