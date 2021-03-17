@@ -545,9 +545,9 @@ after path migration. Therefore migration usually has a performance impact.
 QUIC probing packets, which can be sent on multiple paths at once, are used
 to perform address validation as well as measure path characteristics as input
 for the switching decision. Probing packets cannot carry application data but
-endpoints can use information about their receipt as input to congestion
-control for that path. Applications could use information learned from probing
-to inform a decisions to switch paths.
+may contain padding frames. Endpoints can use information about their receipt
+as input to congestion control for that path. Applications could use
+information learned from probing to inform a decisions to switch paths.
 
 Only the client can actively migrate in version 1 of QUIC. However, servers can
 indicate during the handshake that they prefer to transfer the connection to a
