@@ -146,11 +146,13 @@ absence of features provided by QUIC not present in the fallback protocol. For
 fallback to TLS over TCP, the most obvious difference is that TCP does not
 provide stream multiplexing and therefore stream multiplexing would need to be
 implemented in the application layer if needed. Further, TCP implementations
-and network paths often do not support the Fast Open option, which is analogous
-to 0-RTT session resumption. Note that there is some evidence of middleboxes
-blocking SYN data even if TFO was successfully negotiated (see {{PaaschNanog}}).
-And even if Fast Open successfully operates end-to-end, it is limited to a
-single packet of payload, unlike QUIC 0-RTT.
+and network paths often do not support the Fast Open option {{?RFC7413}}, which
+enables sending of payload data together with the first control packet of a new
+connection as also provided by 0-RTT session resumption in QUIC. Note that
+there is some evidence of middleboxes blocking SYN data even if TFO was
+successfully negotiated (see {{PaaschNanog}}). And even if Fast Open
+successfully operates end-to-end, it is limited to a single packet of TLS
+handshake and application data, unlike QUIC 0-RTT.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
@@ -309,7 +311,7 @@ the ingress direction; these actions are fully independent of each other.
 QUIC does not provide an interface for exceptional handling of any stream.
 If a stream that is critical for an application is closed, the application can
 generate error messages on the application layer to inform the other end and/or
-the higher layer, which can eventually reset the QUIC connection.
+the higher layer, which can eventually terminate the QUIC connection.
 
 Mapping of application data to streams is application-specific and described for
 HTTP/3 in {{QUIC-HTTP}}. There are a few general principles to apply when
@@ -329,10 +331,10 @@ for that message.
 
 If a QUIC receiver has opened the maximum allowed concurrent
 streams, and the sender indicates that more streams are needed, it
-does not automatically lead to an increase of the maximum number of streams by
-the receiver. Therefore it can be valuable to expose the maximum number of
-allowed, currently open, and currently used streams to the application to make
-the mapping of data to streams dependent on this information.
+does not automatically lead to an increase of the maximum number of
+streams by the receiver. Therefore, an application can use the maximum
+number of allowed, currently open, and currently used streams when
+determining how to map data to streams.
 
 QUIC assigns a numerical identifier to each stream, called the Stream ID.  While
 the relationship between these identifiers and stream types is clearly defined
@@ -485,6 +487,13 @@ Padding can also be used by an application to reduce leakage of
 information about the data that is sent. A QUIC implementation can expose an
 interface that allows an application layer to specify how to apply padding.
 
+# ACK-only packets on constrained links
+
+The cost of sending acknowledgments - in processing cost or link
+utilization - could be a significant proportion of available resources if
+these resources are constrained. Reducing the rate at which acknowledgments
+are generated can preserve these resources and improve overall performance,
+for both network processing as well as application-relevant metrics.
 
 # Port Selection and Application Endpoint Discovery {#ports}
 
@@ -542,10 +551,12 @@ validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
 after path migration. Therefore migration usually has a performance impact.
 
-QUIC probing packets, which cannot carry application data, can be sent on
-multiple paths at once. Probing packets can be used to perform address
-validation, measure path characteristics as input for the switching decision,
-or prime the congestion controller in preparation for switching to the new path.
+QUIC probing packets, which can be sent on multiple paths at once, are used
+to perform address validation as well as measure path characteristics as input
+for the switching decision. Probing packets cannot carry application data but
+may contain padding frames. Endpoints can use information about their receipt
+as input to congestion control for that path. Applications could use
+information learned from probing to inform a decisions to switch paths.
 
 Only the client can actively migrate in version 1 of QUIC. However, servers can
 indicate during the handshake that they prefer to transfer the connection to a
@@ -748,6 +759,22 @@ new version uses the same process in reverse.  Servers disable validation of the
 old version, stop sending the old version in Version Negotiation packets, then
 the old version is no longer accepted.
 
+# Unreliable Datagram Service over QUIC
+
+{{?I-D.draft-ietf-quic-datagram}} specifies a QUIC extension to enable sending
+and receiving unreliable datagrams over QUIC. Unlike operating directly over
+UDP, applications that use the QUIC datagram service do not need to implement
+their own congestion control, per {{?RFC8085}}, as QUIC datagrams are
+congestion controlled.
+
+QUIC datagrams are not flow-controlled, and as such data chunks may be dropped
+if the receiver is overloaded. While the reliable transmission service of QUIC
+provides a stream-based interface to send and receive data in order over
+multiple QUIC streams, the datagram service has a unordered message-based
+interface. If needed, an application layer framing can be used on top to
+allow separate flows of unreliable datagrams to be multiplexed on one QUIC
+connection.
+
 
 # IANA Considerations
 
@@ -776,9 +803,16 @@ as well.
 
 # Contributors
 
-Igor Lubashev contributed text to {{connid}} on server-selected connection IDs.
+The following people have contributed text to this document:
+
+* Igor Lubashev
+* Mike Bishop
+* Martin Thomson
 
 # Acknowledgments
+
+Thanks also to Martin Duke, Gorry Fairhurst, Sean Turner, Lucas Pardue and
+Ian Swett for their reviews.
 
 This work is partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
