@@ -952,7 +952,7 @@ QUIC Connection IDs are opaque byte fields that are expressed consistently
 across all QUIC versions {{QUIC-INVARIANTS}}, see {{rebinding}}. This feature
 may appear to present opportunities to optimize NAT port usage and simplify the
 work of the QUIC server. In fact, NAT behavior that relies on CID may instead
-cause connection failure when endpoints change Connection ID and may disable
+cause connection failure when endpoints change Connection ID, and disable
 important protocol security features. NATs should retain their existing
 4-tuple-based operation and refrain from parsing or otherwise using QUIC
 connection IDs.
