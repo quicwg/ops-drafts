@@ -1078,11 +1078,13 @@ The following people have contributed text to sections of this document:
 * Marcus Ilhar
 * Igor Lubashev
 * David Schinazi
+* Gorry Fairhurst
 
 # Acknowledgments
 
 Special thanks to Martin Thomson and Martin Duke for the detailed reviews and
-feedback.
+feedback. Thanks also to Sean Turner and Mike Bishop for their last call
+reviews.
 
 This work is partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
