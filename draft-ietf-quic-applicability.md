@@ -485,6 +485,13 @@ Padding can also be used by an application to reduce leakage of
 information about the data that is sent. A QUIC implementation can expose an
 interface that allows an application layer to specify how to apply padding.
 
+# ACK-only packets on constrained links
+
+The cost of sending acknowledgments - in processing cost or link
+utilization - could be a significant proportion of available resources if
+these resources are constrained. Reducing the rate at which acknowledgments
+are generated can preserve these resources and improve overall performance,
+for both network processing as well as application-relevant metrics.
 
 # Port Selection and Application Endpoint Discovery {#ports}
 
