@@ -551,10 +551,12 @@ validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
 after path migration. Therefore migration usually has a performance impact.
 
-QUIC probing packets, which cannot carry application data, can be sent on
-multiple paths at once. Probing packets can be used to perform address
-validation, measure path characteristics as input for the switching decision,
-or prime the congestion controller in preparation for switching to the new path.
+QUIC probing packets, which can be sent on multiple paths at once, are used
+to perform address validation as well as measure path characteristics as input
+for the switching decision. Probing packets cannot carry application data but
+may contain padding frames. Endpoints can use information about their receipt
+as input to congestion control for that path. Applications could use
+information learned from probing to inform a decisions to switch paths.
 
 Only the client can actively migrate in version 1 of QUIC. However, servers can
 indicate during the handshake that they prefer to transfer the connection to a
