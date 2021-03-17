@@ -859,7 +859,7 @@ address changes, this does not work if the routers or switches in the server
 infrastructure route using the address-port 4-tuple. If infrastructure routes on
 addresses only, NAT rebinding or address
 migration will cause packets to be delivered to the wrong server. {{QUIC_LB}}
-described a way to addresses this problem by coordinating the selection and
+describes a way to addresses this problem by coordinating the selection and
 use of connection IDs between load-balancers and servers.
 
 Applying address translation at a middlebox to maintain a stable
