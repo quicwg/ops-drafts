@@ -778,8 +778,8 @@ as well.
 
 The following people have contributed text to this document:
 
-* Igor Lubashev 
-* Mike Bishop 
+* Igor Lubashev
+* Mike Bishop
 * Martin Thomson
 
 # Acknowledgments
