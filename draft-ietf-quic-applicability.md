@@ -776,8 +776,11 @@ as well.
 
 # Contributors
 
-Igor Lubashev contributed text to {{connid}} on server-selected connection IDs.
-Mike Bishop and Martin Thomson contributed text in various places.
+The following people have contributed text to this document:
+
+* Igor Lubashev 
+* Mike Bishop 
+* Martin Thomson
 
 # Acknowledgments
 
