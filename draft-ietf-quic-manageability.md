@@ -452,8 +452,9 @@ change - usually the client. Client and server negotiate connection IDs during
 the handshake; typically, however, only the server will request a connection ID
 for the lifetime of the connection. Connection IDs for either endpoint may
 change during the lifetime of a connection, with the new connection ID being
-supplied via encrypted frames (see {{Section 5.1 of QUIC-TRANSPORT}}). Therefore,
-observing a new connection ID does not necessary indicate a new connection.
+supplied via encrypted frames (see {{Section 5.1 of QUIC-TRANSPORT}}).
+Therefore, observing a new connection ID does not necessary indicate a new
+connection.
 
 Server-generated connection IDs should seek to obscure any encoded routing
 identities or any other information. Exposing the server mapping would allow
