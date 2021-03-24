@@ -846,13 +846,14 @@ client needs to expire before a re-establishment can happen (if at all), which
 would lead to unnecessary long delays in an otherwise working connection.
 	
 Furrther, not all endpoints use routing architectures where connections will
-survive a port or address change. So even when the client revives the connection,
-a NAT rebinding can cause a routing mismatch where a packet is not even delivered to
-the server that might support address migration. 
+survive a port or address change. So even when the client revives the
+connection, a NAT rebinding can cause a routing mismatch where a packet
+is not even delivered to the server that might support address migration.
 	
-For these reasons, the limits in {{?RFC4787}} are important to avoid black-holing
-of packets (and hence avoid interrupting the flow of data to the client), especially
-where devices are able to distinguish QUIC traffic from other UDP payloads.
+For these reasons, the limits in {{?RFC4787}} are important to avoid 
+black-holing of packets (and hence avoid interrupting the flow of data to the
+client), especially where devices are able to distinguish QUIC traffic from
+other UDP payloads.
 
 The QUIC header optionally contains a connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
