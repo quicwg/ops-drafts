@@ -850,7 +850,7 @@ survive a port or address change. So even when the client revives the
 connection, a NAT rebinding can cause a routing mismatch where a packet
 is not even delivered to the server that might support address migration.
 	
-For these reasons, the limits in {{?RFC4787}} are important to avoid 
+For these reasons, the limits in {{?RFC4787}} are important to avoid
 black-holing of packets (and hence avoid interrupting the flow of data to the
 client), especially where devices are able to distinguish QUIC traffic from
 other UDP payloads.
