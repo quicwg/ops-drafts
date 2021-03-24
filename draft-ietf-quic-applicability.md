@@ -407,7 +407,7 @@ change with its peer might encounter performance issues or deadlocks.
 
 ## Flow Control Deadlocks {#flow-control-deadlocks}
 
-Flow control provides a means of managing access to the limited buffers
+QUIC flow control provides a means of managing access to the limited buffers
 endpoints have for incoming data.  This mechanism limits the amount of data that
 can be in buffers in endpoints or in transit on the network.  However, there are
 several ways in which limits can produce conditions that can cause a connection
@@ -418,28 +418,34 @@ whether they become a problem depends on how implementations consume data and
 provide flow control credit.  Understanding what causes deadlocking might help
 implementations avoid deadlocks.
 
-Large messages can produce deadlocking if the recipient does not process the
-message incrementally.  If the message is larger than the flow control credit
-available and the recipient does not release additional flow control credit
-until the entire message is received and delivered, a deadlock can occur.  This
-is possible even where stream flow control limits are not reached because
-connection flow control limits can be consumed by other streams.
+Applications that use QUIC often have a data consumer that reads data from
+transport buffers. Timely updates of transport flow control credit can improve
+performance. A common flow control implementation technique is for a QUIC
+receiver to extend credit to the sender as the data consumer reads data.  Some
+implementations might have independent transport-layer and application-layer
+receive buffers. Consuming data does not always imply it is immediately
+processed. However, when data is consumed,
 
-A common flow control implementation technique is for a receiver to extend
-credit to the sender as a the data consumer reads data. In this setting, a
-length-prefixed message format makes it easier for the data consumer to leave
-data unread in the receiver's buffers and thereby withhold flow control credit.
-If flow control limits prevent the remainder of a message from being sent, a
+Large application messages can produce deadlocking if the recipient does not
+read data from the transport incrementally. If the message is larger than the
+flow control credit available and the recipient does not release additional flow
+control credit until the entire message is received and delivered, a deadlock
+can occur. This is possible even where stream flow control limits are not
+reached because connection flow control limits can be consumed by other streams.
+
+A length-prefixed message format makes it easier for a data consumer to leave
+data unread in the transport buffer and thereby withhold flow control credit. If
+flow control limits prevent the remainder of a message from being sent, a
 deadlock will result.  A length prefix might also enable the detection of this
-sort of deadlock.  Where protocols have messages that might be processed as a
-single unit, reserving flow control credit for the entire message atomically
-makes this style of deadlock less likely.
+sort of deadlock.  Where application protocols have messages that might be
+processed as a single unit, reserving flow control credit for the entire message
+atomically makes this style of deadlock less likely.
 
-A data consumer can read all data as it becomes available to cause the receiver
-to extend flow control credit to the sender and reduce the chances of a
-deadlock.  However, releasing flow control credit might mean that the data
-consumer might need other means for holding a peer accountable for the state it
-keeps for partially processed messages.
+A data consumer can eagerly read all data as it becomes available, in order to
+make the receiver extend flow control credit and reduce the chances of a
+deadlock.  However, such a data consumer might need other means for holding a
+peer accountable for the additional state it keeps for partially processed
+messages.
 
 Deadlocking can also occur if data on different streams is interdependent.
 Suppose that data on one stream arrives before the data on a second stream on
