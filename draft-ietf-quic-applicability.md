@@ -487,6 +487,30 @@ Padding can also be used by an application to reduce leakage of
 information about the data that is sent. A QUIC implementation can expose an
 interface that allows an application layer to specify how to apply padding.
 
+# Error Handling
+
+QUIC recommends that endpoints that detect errors should signal the occurance to
+the peer. Errors can occur at the transport level and the application level.
+Transport errors, such as a protocol violation, affect the entire connection.
+Applications that use QUIC can define their own error detection and signalling
+(see, for example, {{Section 8 of QUIC-HTTP}}). Application errors can affect an
+entire connection or a single stream.
+
+QUIC defines an error code space that is used for error handling. QUIC
+encourages endpoints to use the most-specific code, although any applicable code
+is permitted including generic ones. Applications using QUIC can define an error
+code space that is independent from QUIC or other applications (see, for
+example, {{Section 8.1 of QUIC-HTTP}}). The values in an application error code
+space are reused across connection-level and stream-level errors.
+
+Connection errors lead to connection termination. They are signaled using a
+CONNECTION_CLOSE frame, which contains an error code and a reason field that can
+be zero length. CONNECTION_CLOSE has two frame type values: 0x1c is used for
+QUIC-level errors, 0x1d is used for application-level errors.
+
+Stream errors lead to stream termination. The are signaled using STOP_SENDING or
+RESET_STREAM frames, which contain only an error code.
+
 # ACK-only packets on constrained links
 
 The cost of sending acknowledgments - in processing cost or link
