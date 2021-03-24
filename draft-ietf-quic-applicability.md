@@ -513,11 +513,17 @@ TCP port already registered for the application is appropriate. For example,
 the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
+Additionally, Application-Layer Version Negotiation {{?RFC7301}} permits the
+client and server to negotiate which of several protocols will be used on a
+given connection.  Therefore, multiple applications might be supported on a
+single UDP port based on the ALPN token offered.  Applications using QUIC
+should register an ALPN token for use in the TLS handshake.
+
 Applications could define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
 and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
 for an HTTP origin to advertise the availability of an equivalent HTTP/3
-endpoint on a certain UDP port by using the "h3" ALPN token {{?RFC7301}}.
+endpoint on a certain UDP port by using the "h3" ALPN token.
 Note that HTTP/3's ALPN token ("h3") identifies not only the version of the
 application protocol, but also the version of QUIC itself; this approach
 allows unambiguous agreement between the endpoints on the protocol stack in use.
