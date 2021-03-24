@@ -683,7 +683,6 @@ to NAT rebinding or address migration. An observer keeping flow state
 can associate a connection ID, if present, with a given flow, and can associate
 a known flow with a new flow when when observing a packet sharing the same
 connection ID in the same direction between client and server and sharing one
-endpoint address (IP address and port) with the known flow.
 
 However, since the connection ID may change multiple times during the lifetime
 of a flow, and the negotiation of connection ID changes is encrypted, packets
@@ -820,22 +819,40 @@ possible via the observation of CE markings on ECN-enabled QUIC traffic.
 ## Stateful Treatment of QUIC Traffic {#sec-stateful}
 
 Stateful treatment of QUIC traffic (e.g., at a firewall or NAT middlebox) is
-possible through QUIC traffic and version
-identification ({{sec-identifying}}) and observation of the handshake for
-connection confirmation ({{sec-confirm}}). The lack of any visible end-of-flow
-signal ({{sec-teardown}}) means that this state must be purged either through
-timers or through least-recently-used eviction, depending on application
-requirements.
+possible through QUIC traffic and version identification ({{sec-identifying}})
+and observation of the handshake for connection confirmation ({{sec-confirm}}).
+The lack of any visible end-of-flow signal ({{sec-teardown}}) means that this
+state must be purged either through timers or through least-recently-used
+eviction, depending on application requirements.
 
 {{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP
-traffic.
-However, in pratice, timers are often lower, in the range of 15 to 30 seconds.
-In contrast, {{?RFC5382}} recommends a timeout of more than 2 hours for TCP,
-given that TCP is a connection-oriented protocol with well-defined closure
-semantics. For network devices that are QUIC-aware, it is recommended to also
-use longer timeouts for QUIC traffic, as QUIC is connection-oriented. As such,
-a handshake packet from the server indicates the willingness of the server to
-communicate with the client.
+traffic.  However, in practice, timers are sometimes lower, in the range of 30
+to 60 seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2
+hours for TCP, given that TCP is a connection-oriented protocol with well-
+defined closure semantics.
+
+Even though QUIC has explicitly been designed to improve robustness to NAT
+rebindings, which might look like a tempting feature to further reduce the UDP
+timeout and thereby minimize state, this is not recommended.  Instead it is
+recommended, even when lower timers are used for other UDP traffic, to use a
+timer of at least two minutes for QUIC traffic.
+	
+While QUIC has no clear network-visible end-of-connection signal and therefore
+does require timer-based state removal, the QUIC handshake indicates
+confirmation of both ends that a valid bidirectional transmission is on-going.
+If state is removed too early, this could lead to black-holing of incoming
+packets after a short idle period. To detect this situation, a timer at the
+client needs to expire before a re-establishment can happen (if at all), which
+would lead to unnecessary long delays in an otherwise working connection.
+	
+Furrther, not all endpoints use routing architectures where connections will
+survive a port or address change. So even when the client revives the connection,
+a NAT rebinding can cause a routing mismatch where a packet is not even delivered to
+the server that might support address migration. 
+	
+For these reasons, the limits in {{?RFC4787}} are important to avoid black-holing
+of packets (and hence avoid interrupting the flow of data to the client), especially
+where devices are able to distinguish QUIC traffic from other UDP payloads.
 
 The QUIC header optionally contains a connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
