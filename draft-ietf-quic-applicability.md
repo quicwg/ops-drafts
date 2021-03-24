@@ -590,42 +590,49 @@ to the server instance. The server can provide an IPv4 and an IPv6 address in a
 transport parameter during the TLS handshake and the client can select between
 the two if both are provided. See also {{Section 9.6 of QUIC}}.
 
-# Connection Closure
+# Connection Termination
 
-QUIC connections are closed either by expiration of an idle timeout, as
-determined by transport parameters, or by an
-explicit indication of the application that a connection should be closed
-(immediate close). While data could still be received after the immediate close
-has been initiated by one endpoint (for a limited time period), the expectation
-is that an immediate close was negotiated at the application layer and
-therefore no additional data is expected from both sides.
+QUIC connections are terminated in one of three ways: implicit idle timeout,
+explicit immediate close, or explicit stateless reset.
 
-An immediate close will emit an CONNECTION_CLOSE frame. This frame has two
-sets of types: one for QUIC internal problems that might lead to connection
-closure, and one for closures initiated by the application. An application
-using QUIC can define application-specific error codes (see, for example,
-{{Section 8.1 of QUIC-HTTP}}).
+QUIC idle timeout is enabled via transport parameters. Client and server
+announce a timeout period and the effective value for the connection is the
+minimum of the two values. After the timeout period elapses, the connection is
+silently closed. An application therefore should be able to configure its own
+maximum value, as well as have access to the computed minimum value for this
+connection. An application may adjust the maximum idle timeout for new
+connections based on the number of open or expected connections, since shorter
+timeout values may free-up memory more quickly.
 
-The CONNECTION_CLOSE frame provides an optional reason field, that can be used
-to append human-readable information to an error code.  RESET_STREAM and
-STOP_SENDING frames also include an error code, but no reason string.
+As long as application data is exchanged, the idle timeout does not expire. If
+an application has no data to send but desires to keep the connection open for
+longer than the timeout period, it can send keep-alive messages. A QUIC
+implementation may provide an option to defer the time-out by sending keep-alive
+messages at the transport layer to avoid unnecessary load, as specified in
+{{Section 10.1.2 of QUIC}}. Alternatively, applications using QUIC could define
+their own mechanism, such as an application-layer ping, that achieves a similar
+result. See {{resumption-v-keepalive}} for further guidance on keep-alives.
 
-Alternatively, a QUIC connection can be silently closed by each endpoint
-separately after an idle timeout. If enabled as indicated by a transport
-parameter in the handshake, the idle timeout is announced for each endpoint
-during connection establishment and the effective value for this connection is
-the minimum of the two values advertised by client and server. An application
-therefore should be able to configure its own maximum value as well as have
-access to the computed minimum value for this connection. An application may
-adjust the maximum idle timeout for new connections based on the number of open
-or expected connections, since shorter timeout values may free-up memory more
-quickly.
+An immediate close is signalled by a CONNECTION_CLOSE frame (see
+{{error-handling}}). Immediate close causes all streams to become immediately
+closed. QUIC endpoints can manage the cumulative maximum number of streams they
+would allow to be opened using the MAX_STREAMS frames but there is no mechanism
+to reduce the value. An application that uses QUIC might commit to a number of
+openable streams but require the connection to be closed (for example, a
+scheduled maintenance period). Depending on how an application uses QUIC streams
+(see {{use-of-streams}}), abrupt closure of actively-used streams may be
+undesireable or detrimental. In contrast, waiting for an endpoint to exhaust the
+advertised limit may not suit application or operational needs. Applications
+using QUIC can use conservative stream limits and run to completion before
+enacting and immediate close. Alternatively, a graceful close mechanim can be
+used to commicate the intention to explicitly close the connection at some
+future point. QUIC does not provide any mechanism for graceful connection
+termination, applications using QUIC can define their own graceful termination
+process (see, for example, {{Section 5.2 of QUIC-HTTP}}).
 
-If an application desires to keep the connection open for longer than the
-announced timeout, it can send keep-alive messages; a QUIC implementation may
-provide an option to defer the time-out by sending keep-alive messages at the
-transport layer to avoid unnecessary load, as specified in {{Section 10.1.2 of
-QUIC}}. See {{resumption-v-keepalive}} for further guidance on keep-alives.
+A stateless reset is an option of last resort for an endpoint that does not have
+access to connection state. It is not expected that application using QUIC need
+information or knowledge that a stateless reset was triggered.
 
 
 # Information Exposure and the Connection ID {#connid}
