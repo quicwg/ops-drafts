@@ -837,16 +837,30 @@ use longer timeouts for QUIC traffic, as QUIC is connection-oriented. As such,
 a handshake packet from the server indicates the willingness of the server to
 communicate with the client.
 
-The QUIC header optionally contains a connection ID which can be used as
-additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
+The QUIC header optionally contains a connection ID which could provide
+additional entropy beyond the 5-tuple. The QUIC handshake needs
 to be observed in order to understand whether the connection ID is present and
-what length it has. However, connection IDs may be renegotiated during
-after the handshake, and this renegotiation is not visible to the path. Using
-the connection ID as a flow key field for stateful treatment of flows may
-therefore cause undetectable and unrecoverable loss
-of state in the middle of a connection. Use of connection IDs is specifically
-discouraged for NAT applications.
+what length it has. However, connection IDs may be renegotiated
+after the handshake, and this renegotiation is not visible to the path. 
+Therefore using the connection ID as a flow key field for stateful treatment
+of flows is not recommended as connection ID changes will cause undetectable
+and unrecoverable loss of state in the middle of a connection. Specially the
+use of the connection ID for functions that require state to make a forwarding
+decison is not viable as it will break connectivity or at minimum cause long
+timeout-based delays before this problem can be detect by the endpoints and
+the connection can potentially be re-established.
 
+The same problem may occure for state handling based on the 4-tuple though.
+QUIC endpoints support address migration and a QUIC connection can
+survive a change of the IP address or ports by mapping the connection ID,
+if present, to an existing connection. Ideally a new connection ID is used
+at the same time when the address/port changes to avoid linkability. As such,
+network devices are not able to perform the same mapping. When the 4-tuple
+changes, stateful devices loose their state and break connectivity if state
+if require for forwarding while the endpoints would otherwise survive such a
+change.
+
+Use of connection IDs is specifically discouraged for NAT applications.
 If a NAT hits an operational limit, it is recommended to rather drop the
 initial packets of a flow (see also {{sec-filtering}}),
 which potentially triggers a fallback to TCP, than using the connection ID to
