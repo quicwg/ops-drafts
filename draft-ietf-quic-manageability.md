@@ -841,7 +841,7 @@ The QUIC header optionally contains a connection ID which could provide
 additional entropy beyond the 5-tuple. The QUIC handshake needs
 to be observed in order to understand whether the connection ID is present and
 what length it has. However, connection IDs may be renegotiated
-after the handshake, and this renegotiation is not visible to the path. 
+after the handshake, and this renegotiation is not visible to the path.
 Therefore using the connection ID as a flow key field for stateful treatment
 of flows is not recommended as connection ID changes will cause undetectable
 and unrecoverable loss of state in the middle of a connection. Specially the
