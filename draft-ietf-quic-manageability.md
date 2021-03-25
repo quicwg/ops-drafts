@@ -905,26 +905,31 @@ Admitting a few packets allows the QUIC endpoint to determine that the path
 accepts QUIC. Sudden drops afterwards will result in slow and costly timeouts
 before abandoning the connection.
 
-## UDP Policing {#sec-udp-1312}
+## UDP Blocking or Throttling {#sec-udp-1312}
 
 Today, UDP is the most prevalent DDoS vector, since it is easy for compromised
 non-admin applications to send a flood of large UDP packets (while with TCP the
 attacker gets throttled by the congestion controller) or to craft reflection and
-amplification attacks. Networks should therefore be
-prepared for UDP flood attacks on ports used for QUIC traffic. One possible
-response to this threat is to police UDP traffic on the network, allocating a
-fixed portion of the network capacity to UDP and blocking UDP datagram over that
-cap.
+amplification attacks. Some networks therefore block UDP traffic.
+With increased deployment of QUIC, there is also an increased need to allow
+UDP traffic on ports used for QUIC. However, if UDP is generally enabled on these
+ports, UDP flood attacks may also used the same ports. One possible
+response to this threat is to throttle UDP traffic on the network, allocating a
+fixed portion of the network capacity to UDP and blocking UDP datagrams over that
+cap. As the portion of QUIC traffic compared to TCP is also expected to
+increase over time, limits might need to be adopted dynamically.
 
-The recommended way to police QUIC
-packets is to either drop them all or to throttle them based on the hash of the
-UDP datagram's source and destination addresses, blocking a portion of the hash
-space that corresponds to the fraction of UDP traffic one wishes to drop.
-When the handshake is blocked, QUIC-capable applications may failover to TCP
+Further, if UDP traffic is throttle, it is reecommended to rather block
+QUIC flows entirely than dropping packets randomly. When the handshake is
+blocked, QUIC-capable applications may failover to TCP
 (at least applications using well-known UDP ports). However, blocking a
 random fraction of QUIC packets across 4-tuples will allow many QUIC handshakes
 to complete, preventing a TCP failover, but the connections will suffer from
-severe packet loss.
+severe packet loss (see also {{sec-filtering}}). Per-flow throttling can be
+realized based on the hash of the UDP datagram's source and destination
+addresses and blocking a portion of the hash space that corresponds to the
+fraction of UDP traffic one wishes to drop.
+
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
