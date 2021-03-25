@@ -919,7 +919,7 @@ fixed portion of the network capacity to UDP and blocking UDP datagrams over tha
 cap. As the portion of QUIC traffic compared to TCP is also expected to
 increase over time, limits might need to be adopted dynamically.
 
-Further, if UDP traffic is throttle, it is reecommended to rather block
+Further, if UDP traffic is throttle, it is recommended to rather block
 QUIC flows entirely than dropping packets randomly. When the handshake is
 blocked, QUIC-capable applications may failover to TCP
 (at least applications using well-known UDP ports). However, blocking a
