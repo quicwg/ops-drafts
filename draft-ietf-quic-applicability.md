@@ -716,7 +716,8 @@ light-weight versioning with different cryptographic handshakes.
 
 # Enabling New Versions
 
-QUIC provides integrity protection for its version negotiation process.  This
+QUIC version 1 does not specify a version negotation mechanism in the base spec
+but {{?I-D.draft-ietf-quic-version-negotiation}} proposes an extension. This
 process assumes that the set of versions that a server supports is fixed.  This
 complicates the process for deploying new QUIC versions or disabling old
 versions when servers operate in clusters.
