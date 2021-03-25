@@ -840,7 +840,7 @@ communicate with the client.
 The QUIC header optionally contains a connection ID which can be used as
 additional entropy beyond the 5-tuple, if needed. The QUIC handshake needs
 to be observed in order to understand whether the connection ID is present and
-what length it has. However, connection IDs may be renegotiated during
+what length it has. However, connection IDs may be renegotiated
 after the handshake, and this renegotiation is not visible to the path. Using
 the connection ID as a flow key field for stateful treatment of flows may
 therefore cause undetectable and unrecoverable loss
@@ -849,9 +849,10 @@ discouraged for NAT applications.
 
 If a NAT hits an operational limit, it is recommended to rather drop the
 initial packets of a flow (see also {{sec-filtering}}),
-which potentially triggers a fallback to TCP, than using the connection ID to
-muliplex mulitple connections on the same IP address port pair which risks
-connectivity breakage later, in case the connection ID changes.
+which potentially triggers a fallback to TCP. Use of the connection ID to
+muliplex mulitple connections on the same IP address/port pair is not a
+viable solution as it risks connectivity breakage, in case the connection
+ID changes.
 
 ## Address Rewriting to Ensure Routing Stability
 
