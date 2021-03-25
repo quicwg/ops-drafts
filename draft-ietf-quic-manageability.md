@@ -912,11 +912,11 @@ non-admin applications to send a flood of large UDP packets (while with TCP the
 attacker gets throttled by the congestion controller) or to craft reflection and
 amplification attacks. Some networks therefore block UDP traffic.
 With increased deployment of QUIC, there is also an increased need to allow
-UDP traffic on ports used for QUIC. However, if UDP is generally enabled on these
-ports, UDP flood attacks may also used the same ports. One possible
+UDP traffic on ports used for QUIC. However, if UDP is generally enabled on
+these ports, UDP flood attacks may also used the same ports. One possible
 response to this threat is to throttle UDP traffic on the network, allocating a
-fixed portion of the network capacity to UDP and blocking UDP datagrams over that
-cap. As the portion of QUIC traffic compared to TCP is also expected to
+fixed portion of the network capacity to UDP and blocking UDP datagrams over
+that cap. As the portion of QUIC traffic compared to TCP is also expected to
 increase over time, limits might need to be adopted dynamically.
 
 Further, if UDP traffic is throttle, it is recommended to rather block
