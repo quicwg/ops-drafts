@@ -857,7 +857,7 @@ if present, to an existing connection. Ideally a new connection ID is used
 at the same time when the address/port changes to avoid linkability. As such,
 network devices are not able to perform the same mapping. When the 4-tuple
 changes, stateful devices lose their state and break connectivity if state
-if require for forwarding while the endpoints would otherwise survive such a
+is required for forwarding, while the endpoints would otherwise survive such a
 change.
 
 Use of connection IDs is specifically discouraged for NAT applications.
