@@ -856,7 +856,7 @@ survive a change of the IP address or ports by mapping the connection ID,
 if present, to an existing connection. Ideally a new connection ID is used
 at the same time when the address/port changes to avoid linkability. As such,
 network devices are not able to perform the same mapping. When the 4-tuple
-changes, stateful devices loose their state and break connectivity if state
+changes, stateful devices lose their state and break connectivity if state
 if require for forwarding while the endpoints would otherwise survive such a
 change.
 
