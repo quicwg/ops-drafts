@@ -836,7 +836,6 @@ rebindings, which might look like a tempting feature to further reduce the UDP
 timeout and thereby minimize state, this is not recommended.  Instead it is
 recommended, even when lower timers are used for other UDP traffic, to use a
 timer of at least two minutes for QUIC traffic.
-	
 While QUIC has no clear network-visible end-of-connection signal and therefore
 does require timer-based state removal, the QUIC handshake indicates
 confirmation of both ends that a valid bidirectional transmission is on-going.
@@ -844,12 +843,10 @@ If state is removed too early, this could lead to black-holing of incoming
 packets after a short idle period. To detect this situation, a timer at the
 client needs to expire before a re-establishment can happen (if at all), which
 would lead to unnecessary long delays in an otherwise working connection.
-	
-Furrther, not all endpoints use routing architectures where connections will
-survive a port or address change. So even when the client revives the
+Furthermore, not all endpoints use routing architectures where connections
+will survive a port or address change. So even when the client revives the
 connection, a NAT rebinding can cause a routing mismatch where a packet
 is not even delivered to the server that might support address migration.
-	
 For these reasons, the limits in {{?RFC4787}} are important to avoid
 black-holing of packets (and hence avoid interrupting the flow of data to the
 client), especially where devices are able to distinguish QUIC traffic from
