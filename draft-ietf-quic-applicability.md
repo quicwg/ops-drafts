@@ -84,7 +84,6 @@ informative:
         ins: P. Sarolahti
       -
         ins: M. Kojo
-  I-D.nottingham-httpbis-retry:
   RFC5077:
   QUIC-HTTP: I-D.ietf-quic-http
   RFC8085:
@@ -266,7 +265,7 @@ periods may result in excessive unproductive traffic in some situations, and to
 unacceptable power usage for power-constrained (mobile) devices. Additionally,
 timeouts shorter than 30 seconds can make it harder to handle transient network
 interruptions, such as VM migration or coverage loss during mobilty.
-See {{?RFC8085}}, especially Section 3.5.
+See {{RFC8085}}, especially Section 3.5.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
@@ -764,7 +763,7 @@ the old version is no longer accepted.
 {{?I-D.ietf-quic-datagram}} specifies a QUIC extension to enable sending
 and receiving unreliable datagrams over QUIC. Unlike operating directly over
 UDP, applications that use the QUIC datagram service do not need to implement
-their own congestion control, per {{?RFC8085}}, as QUIC datagrams are
+their own congestion control, per {{RFC8085}}, as QUIC datagrams are
 congestion controlled.
 
 QUIC datagrams are not flow-controlled, and as such data chunks may be dropped
