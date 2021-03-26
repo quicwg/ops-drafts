@@ -87,6 +87,7 @@ informative:
   I-D.nottingham-httpbis-retry:
   RFC5077:
   QUIC-HTTP: I-D.ietf-quic-http
+  RFC8085:
 
 
 --- abstract
@@ -218,8 +219,8 @@ period of at least 124 minutes, though there is not evidence of widespread
 implementation of this guideline in the literature. Short network timeout for
 UDP, however, is well-documented. According to a 2010 study
 ({{Hatonen10}}), UDP applications can assume that any NAT binding or other
-state entry can expire after just thirty seconds of inactivity.  Section 3.5
-of {{?RFC8085}} further discusses keep-alive intervals for UDP: it
+state entry can expire after just thirty seconds of inactivity.  {{Section 3.5
+of RFC8085}} further discusses keep-alive intervals for UDP: it
 requires a minimum value of 15 seconds, but recommends larger values, or
 omitting keep-alive entirely.
 
@@ -476,12 +477,11 @@ wait before bundle frames into a packet.
 
 Similarly, an application has usually no control about the length of a QUIC
 packet on the wire. QUIC provides the ability to add a PADDING frame to
-arbitrarily increase the size of packets. Padding is used by QUIC to ensure
-that the path is capable of transferring datagrams of at least a certain size,
-during the handshake (see Sections 8.1 and 14.1 of {{!QUIC}}) and for path
-validation after connection migration (see {{Section 8.2 of QUIC}}) as well
-as for Datagram Packetization Layer PMTU Discovery (DPLMTUD) (see Section 14.3
-of {{!QUIC}}).
+arbitrarily increase the size of packets. Padding is used by QUIC to ensure that
+the path is capable of transferring datagrams of at least a certain size, during
+the handshake (see {{Sections 8.1 and 14.1 of QUIC}}) and for path validation
+after connection migration (see {{Section 8.2 of QUIC}}) as well as for Datagram
+Packetization Layer PMTU Discovery (DPLMTUD) (see {{Section 14.3 of QUIC}}).
 
 Padding can also be used by an application to reduce leakage of
 information about the data that is sent. A QUIC implementation can expose an

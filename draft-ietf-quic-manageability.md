@@ -53,6 +53,7 @@ informative:
     date: 2016-12-09
   RFC7605:
   QUIC-RECOVERY: I-D.ietf-quic-recovery
+  RFC4459:
 
 --- abstract
 
@@ -534,8 +535,8 @@ given flow is using QUIC based upon a UDP port number may therefore not hold;
 see also {{Section 5 of RFC7605}}.
 
 While the second-most-significant bit (0x40) of the first octet is set to 1 in
-most QUIC packets of the current version (see {{public-header}} and Section 17
-of {{QUIC-TRANSPORT}}), this method of recognizing QUIC traffic is not reliable.
+most QUIC packets of the current version (see {{public-header}} and {{Section 17
+of QUIC-TRANSPORT}}), this method of recognizing QUIC traffic is not reliable.
 First, it only provides one bit of information and is prone to collision with
 UDP-based protocols other than those considered in {{?RFC7983}}. Second, this
 feature of the wire image is not invariant {{QUIC-INVARIANTS}} and may change in
@@ -716,8 +717,8 @@ The round-trip time of QUIC flows can be inferred by observation once per flow,
 during the handshake, as in passive TCP measurement; this requires parsing of
 the QUIC packet header and recognition of the handshake, as illustrated in
 {{handshake}}. It can also be inferred during the flow's lifetime, if the
-endpoints use the spin bit facility described below and in Section 17.3.1 of
-{{QUIC-TRANSPORT}}.
+endpoints use the spin bit facility described below and in {{Section 17.3.1 of
+QUIC-TRANSPORT}}.
 
 ### Measuring Initial RTT
 
@@ -873,7 +874,7 @@ address-port mapping for flows based on connection ID might seem
 like a solution to this problem. However, hiding information about the
 change of the IP address or port conceals important and security-relevant
 information from QUIC endpoints and as such would facilitate amplification
-attacks (see section 9 of {{QUIC-TRANSPORT}}). An NAT function that hides
+attacks (see {{Section 9 of QUIC-TRANSPORT}}). A NAT function that hides
 peer address changes prevents the other end from
 detecting and mitigating attacks as the endpoint cannot verify connectivity
 to the new address using QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
@@ -1008,7 +1009,7 @@ and memory costs, leading to a bottleneck that limits network capacity. In such
 networks this generates a desire to influence a majority of senders to use
 smaller packets, so that the limited reassembly capacity is not exceeded.
 
-For TCP, MSS clamping (Section 3.2 of {?RFC4459}}) is often used to change
+For TCP, MSS clamping ({{Section 3.2 of RFC4459}}) is often used to change
 the sender's maximum TCP segment size, but QUIC requires a different approach.
 {{Section 14 of QUIC-TRANSPORT}} advises senders to probe larger sizes using
 Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
