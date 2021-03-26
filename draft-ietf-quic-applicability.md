@@ -761,7 +761,7 @@ the old version is no longer accepted.
 
 # Unreliable Datagram Service over QUIC
 
-{{?I-D.draft-ietf-quic-datagram}} specifies a QUIC extension to enable sending
+{{?I-D.ietf-quic-datagram}} specifies a QUIC extension to enable sending
 and receiving unreliable datagrams over QUIC. Unlike operating directly over
 UDP, applications that use the QUIC datagram service do not need to implement
 their own congestion control, per {{?RFC8085}}, as QUIC datagrams are
