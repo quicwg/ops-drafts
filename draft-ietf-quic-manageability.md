@@ -683,6 +683,7 @@ to NAT rebinding or address migration. An observer keeping flow state
 can associate a connection ID, if present, with a given flow, and can associate
 a known flow with a new flow when when observing a packet sharing the same
 connection ID in the same direction between client and server and sharing one
+endpoint address (IP address and port) with the known flow.
 
 However, since the connection ID may change multiple times during the lifetime
 of a flow, and the negotiation of connection ID changes is encrypted, packets
