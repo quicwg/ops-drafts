@@ -418,9 +418,9 @@ whether they become a problem depends on how implementations consume data and
 provide flow control credit.  Understanding what causes deadlocking might help
 implementations avoid deadlocks.
 
+Timely updates of transport flow control credit can improve performance.
 Applications that use QUIC often have a data consumer that reads data from
-transport buffers. Timely updates of transport flow control credit can improve
-performance. A common flow control implementation technique is for a QUIC
+transport buffers. A common flow control implementation technique is for a QUIC
 receiver to extend credit to the sender as the data consumer reads data.  Some
 implementations might have independent transport-layer and application-layer
 receive buffers. Consuming data does not always imply it is immediately
