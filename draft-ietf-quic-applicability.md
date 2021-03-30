@@ -489,15 +489,15 @@ interface that allows an application layer to specify how to apply padding.
 
 # Error Handling
 
-QUIC recommends that endpoints that detect errors should signal the occurance to
+QUIC recommends that endpoints signal any detected errors to
 the peer. Errors can occur at the transport level and the application level.
 Transport errors, such as a protocol violation, affect the entire connection.
 Applications that use QUIC can define their own error detection and signalling
 (see, for example, {{Section 8 of QUIC-HTTP}}). Application errors can affect an
 entire connection or a single stream.
 
-QUIC defines an error code space that is used for error handling. QUIC
-encourages endpoints to use the most-specific code, although any applicable code
+QUIC defines an error code space that is used for error handling at the transport layer. QUIC
+encourages endpoints to use the most specific code, although any applicable code
 is permitted including generic ones. Applications using QUIC can define an error
 code space that is independent from QUIC or other applications (see, for
 example, {{Section 8.1 of QUIC-HTTP}}). The values in an application error code
@@ -505,8 +505,8 @@ space are reused across connection-level and stream-level errors.
 
 Connection errors lead to connection termination. They are signaled using a
 CONNECTION_CLOSE frame, which contains an error code and a reason field that can
-be zero length. CONNECTION_CLOSE has two frame type values: 0x1c is used for
-QUIC-level errors, 0x1d is used for application-level errors.
+be zero length. Different types of CONNECTION_CLOSE frame are used to
+signal transport and application errors.
 
 Stream errors lead to stream termination. The are signaled using STOP_SENDING or
 RESET_STREAM frames, which contain only an error code.
@@ -602,7 +602,7 @@ silently closed. An application therefore should be able to configure its own
 maximum value, as well as have access to the computed minimum value for this
 connection. An application may adjust the maximum idle timeout for new
 connections based on the number of open or expected connections, since shorter
-timeout values may free-up memory more quickly.
+timeout values may free-up resources more quickly.
 
 As long as application data is exchanged, the idle timeout does not expire. If
 an application has no data to send but desires to keep the connection open for
@@ -616,18 +616,18 @@ result. See {{resumption-v-keepalive}} for further guidance on keep-alives.
 An immediate close is signalled by a CONNECTION_CLOSE frame (see
 {{error-handling}}). Immediate close causes all streams to become immediately
 closed. QUIC endpoints can manage the cumulative maximum number of streams they
-would allow to be opened using the MAX_STREAMS frames but there is no mechanism
+would allow to be opened using the MAX_STREAMS frame, but there is no mechanism
 to reduce the value. An application that uses QUIC might commit to a number of
 openable streams but require the connection to be closed (for example, a
 scheduled maintenance period). Depending on how an application uses QUIC streams
-(see {{use-of-streams}}), abrupt closure of actively-used streams may be
+(see {{use-of-streams}}), abrupt closure of actively used streams may be
 undesireable or detrimental. In contrast, waiting for an endpoint to exhaust the
 advertised limit may not suit application or operational needs. Applications
 using QUIC can use conservative stream limits and run to completion before
-enacting and immediate close. Alternatively, a graceful close mechanim can be
-used to commicate the intention to explicitly close the connection at some
+enacting an immediate close. Alternatively, a graceful close mechanism can be
+used to communicate the intention to explicitly close the connection at some
 future point. QUIC does not provide any mechanism for graceful connection
-termination, applications using QUIC can define their own graceful termination
+termination; applications using QUIC can define their own graceful termination
 process (see, for example, {{Section 5.2 of QUIC-HTTP}}).
 
 A stateless reset is an option of last resort for an endpoint that does not have
