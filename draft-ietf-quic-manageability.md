@@ -850,7 +850,7 @@ discouraged for NAT applications.
 If a NAT hits an operational limit, it is recommended to rather drop the
 initial packets of a flow (see also {{sec-filtering}}),
 which potentially triggers a fallback to TCP. Use of the connection ID to
-muliplex mulitple connections on the same IP address/port pair is not a
+multiplex multiple connections on the same IP address/port pair is not a
 viable solution as it risks connectivity breakage, in case the connection
 ID changes.
 
