@@ -371,7 +371,8 @@ Prioritization is managed by the sender, and the QUIC transport should
 provide an interface for applications to prioritize streams {{QUIC}}.
 Applications can implement their own prioritization scheme on top of QUIC: an
 application protocol that runs on top of QUIC can define explicit messages
-for signaling priority, such as those defined for HTTP/2; it can define rules
+for signaling priority, such as those defined in
+{{?I-D.draft-ietf-httpbis-priority}} for HTTP; it can define rules
 that allow an endpoint to determine priority based on context; or it can
 provide a higher level interface and leave the determination to the
 application on top.
