@@ -837,6 +837,7 @@ rebindings, which might look like a tempting feature to further reduce the UDP
 timeout and thereby minimize state, this is not recommended.  Instead it is
 recommended, even when lower timers are used for other UDP traffic, to use a
 timer of at least two minutes for QUIC traffic.
+
 While QUIC has no clear network-visible end-of-connection signal and therefore
 does require timer-based state removal, the QUIC handshake indicates
 confirmation of both ends that a valid bidirectional transmission is on-going.
