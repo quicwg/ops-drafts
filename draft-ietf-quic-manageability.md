@@ -855,9 +855,8 @@ survive a change of the IP address or ports by mapping the connection ID,
 if present, to an existing connection. Ideally a new connection ID is used
 at the same time when the address/port changes to avoid linkability. As new
 connection IDs belonging to the same connection are not known to on-path
-devices,
-network devices are not able to map QUIC connections after a 4-tuple
-change. As such, when the 4-tuple
+devices, network devices are not able to map QUIC connections
+after a 4-tuple change. As such, when the 4-tuple
 changes, stateful devices lose their state and break connectivity if state
 is required for forwarding, while the endpoints would otherwise survive such a
 change.
