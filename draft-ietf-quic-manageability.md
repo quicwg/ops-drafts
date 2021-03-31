@@ -844,6 +844,7 @@ If state is removed too early, this could lead to black-holing of incoming
 packets after a short idle period. To detect this situation, a timer at the
 client needs to expire before a re-establishment can happen (if at all), which
 would lead to unnecessary long delays in an otherwise working connection.
+
 Furthermore, not all endpoints use routing architectures where connections
 will survive a port or address change. So even when the client revives the
 connection, a NAT rebinding can cause a routing mismatch where a packet
