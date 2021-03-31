@@ -844,18 +844,20 @@ what length it has. However, connection IDs may be renegotiated
 after the handshake, and this renegotiation is not visible to the path.
 Therefore using the connection ID as a flow key field for stateful treatment
 of flows is not recommended as connection ID changes will cause undetectable
-and unrecoverable loss of state in the middle of a connection. Specially the
+and unrecoverable loss of state in the middle of a connection. Specially, the
 use of the connection ID for functions that require state to make a forwarding
 decison is not viable as it will break connectivity or at minimum cause long
-timeout-based delays before this problem can be detect by the endpoints and
+timeout-based delays before this problem is detected by the endpoints and
 the connection can potentially be re-established.
 
-The same problem may occure for state handling based on the 4-tuple though.
 QUIC endpoints support address migration and a QUIC connection can
 survive a change of the IP address or ports by mapping the connection ID,
 if present, to an existing connection. Ideally a new connection ID is used
-at the same time when the address/port changes to avoid linkability. As such,
-network devices are not able to perform the same mapping. When the 4-tuple
+at the same time when the address/port changes to avoid linkability. As new
+connection IDs belonging to the same connection are not known to on-path
+devices,
+network devices are not able to map QUIC connections after a 4-tuple
+change. As such, when the 4-tuple
 changes, stateful devices lose their state and break connectivity if state
 is required for forwarding, while the endpoints would otherwise survive such a
 change.
