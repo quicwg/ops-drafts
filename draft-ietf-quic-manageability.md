@@ -681,6 +681,10 @@ on-path device, such as a load-balancer, associate two flows when one of the
 endpoints change address or port.  This change can be due to NAT rebinding or
 address migration.
 
+The connection ID must change upon intentional address change by an endpoint,
+so it is only possible for a passive observer to link unintended changes of
+address using the connection ID.
+
 Since the connection ID may change multiple times during the lifetime
 of a connection, and connection ID negotiation is encrypted, packets with the
 same five-tuple but different connection IDs might or might not belong to
