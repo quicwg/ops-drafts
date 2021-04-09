@@ -840,7 +840,7 @@ timer of at least two minutes for QUIC traffic.
 
 While QUIC has no clear network-visible end-of-connection signal and therefore
 does require timer-based state removal, the QUIC handshake indicates
-confirmation of both ends that a valid bidirectional transmission is on-going.
+confirmation by both ends of a valid bidirectional transmission.
 If state is removed too early, this could lead to black-holing of incoming
 packets after a short idle period. To detect this situation, a timer at the
 client needs to expire before a re-establishment can happen (if at all), which
