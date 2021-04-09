@@ -919,16 +919,20 @@ fixed portion of the network capacity to UDP and blocking UDP datagrams over
 that cap. As the portion of QUIC traffic compared to TCP is also expected to
 increase over time, limits might need to be adopted dynamically.
 
-Further, if UDP traffic is throttle, it is recommended to block individual
+Further, if UDP traffic is throttled, it is recommended to block individual
 QUIC flows entirely rather than dropping packets randomly. When the handshake is
 blocked, QUIC-capable applications may failover to TCP
-(at least applications using well-known UDP ports). However, blocking a
+However, blocking a
 random fraction of QUIC packets across 4-tuples will allow many QUIC handshakes
 to complete, preventing a TCP failover, but the connections will suffer from
-severe packet loss (see also {{sec-filtering}}). Per-flow throttling can be
-realized based on the hash of the UDP datagram's source and destination
+severe packet loss (see also {{sec-filtering}}). Therefore UDP throttling
+should be rather realised by per-flow policing, e.g, based on the hash
+of the UDP datagram's source and destination
 addresses and blocking a portion of the hash space that corresponds to the
 fraction of UDP traffic one wishes to drop.
+While QUIC endpoints are often able to survive address changes, e.g. by NAT rebindings,
+blocking a portion of the traffic based on 5-tuple hashing increases the risk of
+blackholing an active connection when the address changes.
 
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
