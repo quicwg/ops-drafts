@@ -930,9 +930,9 @@ should be rather realised by per-flow policing, e.g, based on the hash
 of the UDP datagram's source and destination
 addresses and blocking a portion of the hash space that corresponds to the
 fraction of UDP traffic one wishes to drop.
-While QUIC endpoints are often able to survive address changes, e.g. by NAT rebindings,
-blocking a portion of the traffic based on 5-tuple hashing increases the risk of
-blackholing an active connection when the address changes.
+While QUIC endpoints are often able to survive address changes, e.g. by NAT
+rebindings, blocking a portion of the traffic based on 5-tuple hashing increases
+the risk of black-holing an active connection when the address changes.
 
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
