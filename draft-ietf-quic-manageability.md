@@ -832,11 +832,12 @@ to 60 seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2
 hours for TCP, given that TCP is a connection-oriented protocol with well-
 defined closure semantics.
 
-Even though QUIC has explicitly been designed tolerate NAT rebindings, decreasing the
-NAT timeout is not recommended, as it may negatively impact application performance
-or incentivize endpoints to send very frequent keep-alive packets.  Instead it is
-recommended, even when lower timers are used for other UDP traffic, to use a
-timer of at least two minutes for QUIC traffic.
+Even though QUIC has explicitly been designed tolerate NAT rebindings,
+decreasing the NAT timeout is not recommended, as it may negatively impact
+application performance or incentivize endpoints to send very frequent
+keep-alive packets. Instead it is recommended, even when lower timers are
+used for other UDP traffic, to use a timer of at least two minutes for QUIC
+traffic.
 
 While QUIC has no clear network-visible end-of-connection signal and therefore
 does require timer-based state removal, the QUIC handshake indicates
