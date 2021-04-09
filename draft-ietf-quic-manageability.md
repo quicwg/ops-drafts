@@ -458,7 +458,7 @@ Therefore, observing a new connection ID does not necessary indicate a new
 connection.
 
 {{?QUIC_LB=I-D.ietf-quic-load-balancers}} specifies algorithms for
-encoding the server mapping in a connection ID in order to share this 
+encoding the server mapping in a connection ID in order to share this
 information with selected on-path devices such as load balancers. Server
 mappings should only be exposed to selected entities. Uncontrollied exposure
 would allow linkage of multiple IP addresses to the same host if the server
