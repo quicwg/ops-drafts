@@ -457,19 +457,16 @@ supplied via encrypted frames (see {{Section 5.1 of QUIC-TRANSPORT}}).
 Therefore, observing a new connection ID does not necessary indicate a new
 connection.
 
-Server-generated connection IDs should seek to obscure any encoded routing
-identities or any other information. Exposing the server mapping would allow
-linkage of multiple IP addresses to the same host if the server also supports
-migration. Furthermore, this opens an attack vector on specific servers or
-pools.
-
-The best way to obscure an encoding is to appear random to observers, which is
-most rigorously achieved with encryption. Even when encrypted, a scheme could
-embed the unencrypted length of the connection ID in the connection ID itself,
-instead of remembering it.
-
-{{?QUIC_LB=I-D.ietf-quic-load-balancers}} further specifies possible algorithms
-to generate connection IDs at load balancers.
+{{?QUIC_LB=I-D.ietf-quic-load-balancers}} specifies algorithms for
+encoding the server mapping in a connection ID in order to share this 
+information with selected on-path devices such as load balancers. Server
+mappings should only be exposed to selected entities. Uncontrollied exposure
+would allow linkage of multiple IP addresses to the same host if the server
+also supports migration which opens an attack vector on specific servers or
+pools. The best way to obscure an encoding is to appear random to any other
+observers, which is most rigorously achieved with encryption. Even when
+encrypted, a scheme could embed the unencrypted length of the connection ID
+in the connection ID itself, instead of remembering it.
 
 
 ## Packet Numbers {#packetnumber}
