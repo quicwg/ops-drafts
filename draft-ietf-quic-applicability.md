@@ -468,7 +468,7 @@ close; see {{sec-termination}}).
 
 An application that uses QUIC might communicate a cumulative stream limit but
 require the connection to be closed before the limit is reached. For example,
-stopping the server to perform scheduled maintenance. Immediate connection close
+to stop the server to perform scheduled maintenance. Immediate connection close
 causes abrupt closure of actively used streams. Depending on how an application
 uses QUIC streams, this could be undesirable or detrimental to behavior or
 performance. A more graceful closure technique is to stop sending increases to
