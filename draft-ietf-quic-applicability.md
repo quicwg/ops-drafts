@@ -425,7 +425,8 @@ transport-layer and application-layer receive buffers. Consuming data does not
 always imply it is immediately processed. However, a common flow control
 implementation technique is to extend credit to the sender, by emitting MAX_DATA
 and/or MAX_STREAM_DATA frames, as data is consumed. Delivery of these frames
-is affected by uplink latency. If credit is not extended in a timely manner, the
+is affected by the latency of the back channel from the receiver to the data sender.
+If credit is not extended in a timely manner, the
 sending application can be blocked, effectively throttling the downlink.
 
 Large application messages can produce deadlocking if the recipient does not
