@@ -456,18 +456,32 @@ being terminated in some protocols.
 
 # Stream Limit Commitments
 
-QUIC endpoints can manage the cumulative maximum number of streams they would
-allow to be opened using the MAX_STREAMS frame, but there is no mechanism to
-reduce the value. An application that uses QUIC might commit to a number of
-openable streams but require the connection to be closed (for example, a
-scheduled maintenance period). Depending on how an application uses QUIC
-streams, abrupt closure of actively used streams may be undesireable or
-detrimental. In contrast, waiting for an endpoint to exhaust the advertised
-limit may not suit application or operational needs. Applications using QUIC can
-use conservative stream limits and run to completion before enacting an
-immediate close. Alternatively, an application-layer graceful close mechanism
-can be used to communicate the intention to explicitly close the connection at
-some future point.
+QUIC endpoints are responsible for communicating the cumulative limit of streams
+they would allow to be opened by their peer. Initial limits are advertised
+using the initial_max_streams_bidi and initial_max_streams_uni transport
+parameters. As streams are opened and closed they are consumed and the cumulative
+total is incremented. Limits can be increased using the MAX_STREAMS frame but
+there is no mechanism to reduce limits. 
+
+An application that uses QUIC might communicate a cumulative stream limit
+but require the connection to be closed before the limit is reached. For example,
+stopping the server to perform scheduled maintenance. Immediate connection close
+(see {{connection-termination}}) causes abrupt closure of actively used streams.
+Depending on how an application uses QUIC streams, this could be undesireable
+or detrimental to behaviour or performance. An alternative to immediate close
+is to wait for a peer to consume all of the advertised stream limit. However, the
+period of time it takes to do so is dependent on the client and an unpredictable
+closing period might not fit application or operational needs. Applications using
+QUIC can be conservative with open stream limits in order to reduce the commitment
+and indeterminism. However, being overly conservative with stream limits affects
+stream concurrency. Balancing these aspects can be specific to applications and
+their deployments. Instead of relying on stream limits to avoid abrupt closure,
+an application-layer graceful close mechanism can be used to communicate the
+intention to explicitly close the connection at some future point. HTTP/3 provides
+such a mechanism using the GOWAWAY frame. When received by a client, it
+stops opening new streams even if the cumulative stream limit would allow. The 
+client can create a new connection on which to open further streams, once all
+streams close on the old connection it can be closed safely.
 
 # Packetization and Latency
 
