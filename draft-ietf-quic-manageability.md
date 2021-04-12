@@ -678,7 +678,7 @@ secret is retained by the observer.
 
 The QUIC connection ID (see {{rebinding}}) is designed to allow a coordinating
 on-path device, such as a load-balancer, associate two flows when one of the
-endpoints change address or port.  This change can be due to NAT rebinding or
+endpoints changes address or port.  This change can be due to NAT rebinding or
 address migration.
 
 The connection ID must change upon intentional address change by an endpoint,
