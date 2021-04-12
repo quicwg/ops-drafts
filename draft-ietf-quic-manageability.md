@@ -779,7 +779,7 @@ not the network RTT.
 Since the spin bit logic at each endpoint considers only samples from packets
 that advance the largest packet number, signal generation itself is
 resistant to reordering. However, reordering can cause problems at an observer
-by causing spurious edge detection and therefore inaccurate (i.e., lower) RTT
+by causing spurious edge \ and therefore inaccurate (i.e., lower) RTT
 estimates, if reordering occurs across a spin-bit flip in the stream.
 
 Simple heuristics based on the observed data rate per flow or changes in the RTT
@@ -953,11 +953,19 @@ good traffic. This operation is often done in a separate specialized mitigation
 environment through which all traffic is filtered; a generalized architecture
 for separation of concerns in mitigation is given in
  {{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
+ 
+On-path observation of the transport headers of packets can be used for
+DDoS mitigation against the infrastructure or against an
+endpoint can be detected and mitigated by characterising anomalous traffic.
+Other uses include support for security audits (e.g., verifying the
+compliance with ciphersuites); client and application fingerprinting for
+inventory; and to provide alerts for network intrusion detection and other
+next generation firewall functions.
 
-Key to successful DDoS mitigation is efficient classification of this traffic in
-the mitigation environment.  Limited first-packet garbage detection as in
-{{sec-garbage}} and stateful tracking of QUIC traffic as in {{sec-stateful}}
-above may be useful during classification.
+Efficient classification of this DDoS traffic in the mitigation environment
+is key to the success of this approach. Limited first-packet garbage detection
+as in {{sec-garbage}} and stateful tracking of QUIC traffic as in 
+{{sec-stateful}} above may be useful during classification.
 
 Note that the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient and requires more state to be maintained by
@@ -974,6 +982,13 @@ system under attack. As soon as the connection blocking is detected by the
 client, the client may rely on the fast resumption mechanism provided by
 QUIC. When clients migrate to a new path, they should be prepared for the
 migration to fail and attempt to reconnect quickly.
+
+When using an encrypted transport, it
+is possible for endpoints to directly support these security functions.
+Endpoints can cooperate with an on-path device directly by e.g. sharing
+information about connection IDs. Another potential method could use an
+on-path network device that relies on pattern inferences in the traffic and
+heuristics or machine learning instead of processing observed header information.
 
 TCP syncookies {{?RFC4937}} are a well-established method of mitigating some
 kinds of TCP DDoS attacks. QUIC Retry packets are the functional analogue to
