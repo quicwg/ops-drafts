@@ -503,7 +503,7 @@ is permitted, including generic ones.
 Applications using QUIC define an error
 code space that is independent from QUIC or other applications (see, for
 example, {{Section 8.1 of QUIC-HTTP}}). The values in an application error code
-space are reused across connection-level and stream-level errors.
+space can be reused across connection-level and stream-level errors.
 
 Connection errors lead to connection termination. They are signaled using a
 CONNECTION_CLOSE frame, which contains an error code and a reason field that can
