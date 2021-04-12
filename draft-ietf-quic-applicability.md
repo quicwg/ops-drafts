@@ -461,29 +461,32 @@ they would allow to be opened by their peer. Initial limits are advertised
 using the initial_max_streams_bidi and initial_max_streams_uni transport
 parameters. As streams are opened and closed they are consumed and the cumulative
 total is incremented. Limits can be increased using the MAX_STREAMS frame but
-there is no mechanism to reduce limits. 
+there is no mechanism to reduce limits. Once stream limits are reached, no more
+streams can be opened, which prevents applications using QUIC from making further
+progress. At this stage connections can be terminated via idle timeout or explicit
+close; see {{sec-termination}}).
 
-An application that uses QUIC might communicate a cumulative stream limit
-but require the connection to be closed before the limit is reached. For example,
+An application that uses QUIC might communicate a cumulative stream limit but
+require the connection to be closed before the limit is reached. For example,
 stopping the server to perform scheduled maintenance. Immediate connection close
-(see {{connection-termination}}) causes abrupt closure of actively used streams.
-Depending on how an application uses QUIC streams, this could be undesireable
-or detrimental to behaviour or performance. An alternative to immediate close
-is to wait for a peer to consume all of the advertised stream limit. However, the
-period of time it takes to do so is dependent on the client and an unpredictable
-closing period might not fit application or operational needs. Applications using
-QUIC can be conservative with open stream limits in order to reduce the commitment
-and indeterminism. However, being overly conservative with stream limits affects
-stream concurrency. Balancing these aspects can be specific to applications and
-their deployments. Instead of relying on stream limits to avoid abrupt closure,
-an application-layer graceful close mechanism can be used to communicate the
-intention to explicitly close the connection at some future point. HTTP/3 provides
-such a mechanism using the GOWAWAY frame. In HTTP/3,
-when the GOAWAY frame is received by a client, it
+causes abrupt closure of actively used streams. Depending on how an application
+uses QUIC streams, this could be undesirable or detrimental to behavior or
+performance. A more graceful closure technique is to stop sending increases to
+stream limits and allow the connection to naturally terminate once remaining
+streams are consumed. However, the period of time it takes to do so is dependent
+on the client and an unpredictable closing period might not fit application or
+operational needs. Applications using QUIC can be conservative with open stream
+limits in order to reduce the commitment and indeterminism. However, being
+overly conservative with stream limits affects stream concurrency. Balancing
+these aspects can be specific to applications and their deployments. Instead of
+relying on stream limits to avoid abrupt closure, an application-layer graceful
+close mechanism can be used to communicate the intention to explicitly close the
+connection at some future point. HTTP/3 provides such a mechanism using the
+GOWAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
 stops opening new streams even if the cumulative stream limit would allow.
 Instead the client would create a new connection on which to open further
-streams.  Once all streams are closed on the old connection, it can be terminated
-safely be a connection close or after expiration of the idle time out
+streams.  Once all streams are closed on the old connection, it can be
+terminated safely by a connection close or after expiration of the idle time out
 (see also {{sec-termination}}).
 
 # Packetization and Latency
