@@ -418,13 +418,15 @@ whether they become a problem depends on how implementations consume data and
 provide flow control credit.  Understanding what causes deadlocking might help
 implementations avoid deadlocks.
 
-Timely updates of transport flow control credit can improve performance.
-Applications that use QUIC often have a data consumer that reads data from
-transport buffers. A common flow control implementation technique is for a QUIC
-receiver to extend credit to the sender as the data consumer reads data.  Some
-implementations might have independent transport-layer and application-layer
-receive buffers. Consuming data does not always imply it is immediately
-processed. However, when data is consumed,
+The size and rate of transport flow control credit updates can affect
+performance. Applications that use QUIC often have a data consumer that reads
+data from transport buffers. Some implementations might have independent
+transport-layer and application-layer receive buffers. Consuming data does not
+always imply it is immediately processed. However, a common flow control
+implementation technique is to extend credit to the sender, by emitting MAX_DATA
+and/or MAX_STREAM_DATA frames, as data is consumed. Delivery of these frames
+is affected by uplink latency. If credit is not extended in a timely manner, the
+sending application can be blocked, effectively throttling the downlink.
 
 Large application messages can produce deadlocking if the recipient does not
 read data from the transport incrementally. If the message is larger than the
