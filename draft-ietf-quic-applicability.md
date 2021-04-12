@@ -465,9 +465,9 @@ streams, abrupt closure of actively used streams may be undesireable or
 detrimental. In contrast, waiting for an endpoint to exhaust the advertised
 limit may not suit application or operational needs. Applications using QUIC can
 use conservative stream limits and run to completion before enacting an
-immediate close. Alternatively, a graceful close mechanism can be used to
-communicate the intention to explicitly close the connection at some future
-point.
+immediate close. Alternatively, an application-layer graceful close mechanism
+can be used to communicate the intention to explicitly close the connection at
+some future point.
 
 # Packetization and Latency
 
