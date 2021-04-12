@@ -478,10 +478,13 @@ stream concurrency. Balancing these aspects can be specific to applications and
 their deployments. Instead of relying on stream limits to avoid abrupt closure,
 an application-layer graceful close mechanism can be used to communicate the
 intention to explicitly close the connection at some future point. HTTP/3 provides
-such a mechanism using the GOWAWAY frame. When received by a client, it
-stops opening new streams even if the cumulative stream limit would allow. The 
-client can create a new connection on which to open further streams, once all
-streams close on the old connection it can be closed safely.
+such a mechanism using the GOWAWAY frame. In HTTP/3,
+when the GOAWAY frame is received by a client, it
+stops opening new streams even if the cumulative stream limit would allow.
+Instead the client would create a new connection on which to open further
+streams.  Once all streams are closed on the old connection, it can be terminated
+safely be a connection close or after expiration of the idle time out
+(see also {{sec-termination}}).
 
 # Packetization and Latency
 
@@ -621,7 +624,7 @@ to the server instance. The server can provide an IPv4 and an IPv6 address in a
 transport parameter during the TLS handshake and the client can select between
 the two if both are provided. See also {{Section 9.6 of QUIC}}.
 
-# Connection Termination
+# Connection Termination {#sec-termination}
 
 QUIC connections are terminated in one of three ways: implicit idle timeout,
 explicit immediate close, or explicit stateless reset.
