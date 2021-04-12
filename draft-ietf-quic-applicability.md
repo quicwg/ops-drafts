@@ -645,14 +645,13 @@ connection. An application may adjust the maximum idle timeout for new
 connections based on the number of open or expected connections, since shorter
 timeout values may free-up resources more quickly.
 
-As long as application data is exchanged, the idle timeout does not expire. If
-an application has no data to send but desires to keep the connection open for
-longer than the timeout period, it can send keep-alive messages. A QUIC
-implementation may provide an option to defer the time-out by sending keep-alive
-messages at the transport layer to avoid unnecessary load, as specified in
-{{Section 10.1.2 of QUIC}}. Alternatively, applications using QUIC could define
-their own mechanism, such as an application-layer ping, that achieves a similar
-result. See {{resumption-v-keepalive}} for further guidance on keep-alives.
+Application data exchanged on streams or in datagrams defers the QUIC idle
+timeout. Applications that provide their own keep-alive mechanisms will
+therefore keep a QUIC connection alive. Applications that don't provide their
+own keep-alive might be able to use transport-layer mechanisms (see {{Section
+10.1.2 of QUIC}}, and {{resumption-v-keepalive}}). However, QUIC implementation
+interfaces for controlling such transport behavior can vary, affecting the
+robustness of such approaches.
 
 An immediate close is signaled by a CONNECTION_CLOSE frame (see
 {{error-handling}}). Immediate close causes all streams to become immediately
