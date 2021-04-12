@@ -454,6 +454,21 @@ Some deadlocking scenarios might be resolved by cancelling affected streams with
 STOP_SENDING or RESET_STREAM.  Cancelling some streams results in the connection
 being terminated in some protocols.
 
+# Stream Limit Commitments
+
+QUIC endpoints can manage the cumulative maximum number of streams they would
+allow to be opened using the MAX_STREAMS frame, but there is no mechanism to
+reduce the value. An application that uses QUIC might commit to a number of
+openable streams but require the connection to be closed (for example, a
+scheduled maintenance period). Depending on how an application uses QUIC
+streams, abrupt closure of actively used streams may be undesireable or
+detrimental. In contrast, waiting for an endpoint to exhaust the advertised
+limit may not suit application or operational needs. Applications using QUIC can
+use conservative stream limits and run to completion before enacting an
+immediate close. Alternatively, a graceful close mechanism can be used to
+communicate the intention to explicitly close the connection at some future
+point.
+
 # Packetization and Latency
 
 QUIC exposes an interface that provides multiple streams to the application;
@@ -597,6 +612,10 @@ the two if both are provided. See also {{Section 9.6 of QUIC}}.
 QUIC connections are terminated in one of three ways: implicit idle timeout,
 explicit immediate close, or explicit stateless reset.
 
+QUIC does not provide any mechanism for graceful connection termination;
+applications using QUIC can define their own graceful termination process (see,
+for example, {{Section 5.2 of QUIC-HTTP}}).
+
 QUIC idle timeout is enabled via transport parameters. Client and server
 announce a timeout period and the effective value for the connection is the
 minimum of the two values. After the timeout period elapses, the connection is
@@ -617,20 +636,7 @@ result. See {{resumption-v-keepalive}} for further guidance on keep-alives.
 
 An immediate close is signaled by a CONNECTION_CLOSE frame (see
 {{error-handling}}). Immediate close causes all streams to become immediately
-closed. QUIC endpoints can manage the cumulative maximum number of streams they
-would allow to be opened using the MAX_STREAMS frame, but there is no mechanism
-to reduce the value. An application that uses QUIC might commit to a number of
-openable streams but require the connection to be closed (for example, a
-scheduled maintenance period). Depending on how an application uses QUIC streams
-(see {{use-of-streams}}), abrupt closure of actively used streams may be
-undesireable or detrimental. In contrast, waiting for an endpoint to exhaust the
-advertised limit may not suit application or operational needs. Applications
-using QUIC can use conservative stream limits and run to completion before
-enacting an immediate close. Alternatively, a graceful close mechanism can be
-used to communicate the intention to explicitly close the connection at some
-future point. QUIC does not provide any mechanism for graceful connection
-termination; applications using QUIC can define their own graceful termination
-process (see, for example, {{Section 5.2 of QUIC-HTTP}}).
+closed, which may affect applications; see {{stream-limit-commitments}}.
 
 A stateless reset is an option of last resort for an endpoint that does not have
 access to connection state. Receiving a stateless reset is an indication of an
