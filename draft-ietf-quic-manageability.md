@@ -952,8 +952,8 @@ packets, flows, or some other aggregate) into "good" (productive) and "bad"
 good traffic. This operation is often done in a separate specialized mitigation
 environment through which all traffic is filtered; a generalized architecture
 for separation of concerns in mitigation is given in
- {{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
- 
+{{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
+
 On-path observation of the transport headers of packets can be used for
 DDoS mitigation against the infrastructure or against an
 endpoint can be detected and mitigated by characterising anomalous traffic.
@@ -964,7 +964,7 @@ next generation firewall functions.
 
 Efficient classification of this DDoS traffic in the mitigation environment
 is key to the success of this approach. Limited first-packet garbage detection
-as in {{sec-garbage}} and stateful tracking of QUIC traffic as in 
+as in {{sec-garbage}} and stateful tracking of QUIC traffic as in
 {{sec-stateful}} above may be useful during classification.
 
 Note that the use of a connection ID to support connection migration renders
@@ -988,7 +988,8 @@ is possible for endpoints to directly support these security functions.
 Endpoints can cooperate with an on-path device directly by e.g. sharing
 information about connection IDs. Another potential method could use an
 on-path network device that relies on pattern inferences in the traffic and
-heuristics or machine learning instead of processing observed header information.
+heuristics or machine learning instead of processing observed header
+information.
 
 TCP syncookies {{?RFC4937}} are a well-established method of mitigating some
 kinds of TCP DDoS attacks. QUIC Retry packets are the functional analogue to
