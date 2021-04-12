@@ -945,6 +945,15 @@ severe packet loss.
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
+On-path observation of the transport headers of packets can be used for various
+security functions. For example, Denial of Service (DOS) and Distributed DOS
+(DDOS) attacks against the infrastructure or against an endpoint can be
+detected and mitigated by characterising anomalous traffic.
+Other uses include support for security audits (e.g., verifying the
+compliance with ciphersuites); client and application fingerprinting for
+inventory; and to provide alerts for network intrusion detection and other
+next generation firewall functions.
+
 Current practices in detection and mitigation of Distributed Denial of Service
 (DDoS) attacks generally involve classification of incoming traffic (as
 packets, flows, or some other aggregate) into "good" (productive) and "bad"
@@ -954,14 +963,6 @@ environment through which all traffic is filtered; a generalized architecture
 for separation of concerns in mitigation is given in
 {{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
 
-On-path observation of the transport headers of packets can be used for
-DDoS mitigation against the infrastructure or against an
-endpoint can be detected and mitigated by characterising anomalous traffic.
-Other uses include support for security audits (e.g., verifying the
-compliance with ciphersuites); client and application fingerprinting for
-inventory; and to provide alerts for network intrusion detection and other
-next generation firewall functions.
-
 Efficient classification of this DDoS traffic in the mitigation environment
 is key to the success of this approach. Limited first-packet garbage detection
 as in {{sec-garbage}} and stateful tracking of QUIC traffic as in
@@ -969,29 +970,34 @@ as in {{sec-garbage}} and stateful tracking of QUIC traffic as in
 
 Note that the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient and requires more state to be maintained by
-DDoS defense systems. For the common case of NAT rebinding, DDoS defense systems
+DDoS defense systems. For the common case of NAT rebinding, where the client's
+address changes without the client's intent or knowedge, DDoS defense systems
 can detect a change in the client's endpoint address by linking flows based on
-the server's connection IDs. QUIC's linkability resistance ensures that
+the server's connection IDs. However, QUIC's linkability resistance ensures that
 a deliberate connection migration is accompanied by a change in the connection
-ID.
+ID. In this case, the connection ID can not be used to distinguish valid, active
+traffic from new attacl traffic.
 
-It is questionable whether connection migrations must be supported during a DDoS
-attack. If the connection migration is not visible to the network that performs
-the DDoS detection, an active, migrated QUIC connection may be blocked by such a
-system under attack. As soon as the connection blocking is detected by the
-client, the client may rely on the fast resumption mechanism provided by
-QUIC. When clients migrate to a new path, they should be prepared for the
-migration to fail and attempt to reconnect quickly.
-
-When using an encrypted transport, it
-is possible for endpoints to directly support these security functions.
+Alternatively, when an encrypted transport is used, it is also possible for
+endpoints to directly support these security functions.
 Endpoints can cooperate with an on-path device directly by e.g. sharing
-information about connection IDs. Another potential method could use an
+information about connection IDs.
+
+Another potential method could use an
 on-path network device that relies on pattern inferences in the traffic and
 heuristics or machine learning instead of processing observed header
 information.
 
-TCP syncookies {{?RFC4937}} are a well-established method of mitigating some
+However, it is questionable whether connection migrations must be supported
+during a DDoS attack. If the connection migration is not visible to the network
+that performs the DDoS detection, an active, migrated QUIC connection may be
+blocked by such a system under attack. As soon as the connection blocking is
+detected by the client, the client may rely on the fast resumption mechanism
+provided by QUIC. When clients migrate to a new path, they should be prepared
+for the migration to fail and attempt to reconnect quickly.
+
+Beyond in-network DDoS protection mechanisms, TCP syncookies {{?RFC4937}}
+are a well-established method of mitigating some
 kinds of TCP DDoS attacks. QUIC Retry packets are the functional analogue to
 syncookies, forcing clients to prove possession of their IP address before
 committing server state.  However, there are safeguards in QUIC against
