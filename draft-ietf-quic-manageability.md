@@ -677,7 +677,7 @@ secret is retained by the observer.
 ## Flow Association {#sec-flow-association}
 
 The QUIC connection ID (see {{rebinding}}) is designed to allow a coordinating
-on-path device, such as a load-balancer, associate two flows when one of the
+on-path device, such as a load-balancer, to associate two flows when one of the
 endpoints changes address or port.  This change can be due to NAT rebinding or
 address migration.
 
