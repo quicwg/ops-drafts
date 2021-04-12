@@ -492,7 +492,7 @@ interface that allows an application layer to specify how to apply padding.
 QUIC recommends that endpoints signal any detected errors to
 the peer. Errors can occur at the transport level and the application level.
 Transport errors, such as a protocol violation, affect the entire connection.
-Applications that use QUIC can define their own error detection and signalling
+Applications that use QUIC can define their own error detection and signaling
 (see, for example, {{Section 8 of QUIC-HTTP}}). Application errors can affect an
 entire connection or a single stream.
 
@@ -615,7 +615,7 @@ messages at the transport layer to avoid unnecessary load, as specified in
 their own mechanism, such as an application-layer ping, that achieves a similar
 result. See {{resumption-v-keepalive}} for further guidance on keep-alives.
 
-An immediate close is signalled by a CONNECTION_CLOSE frame (see
+An immediate close is signaled by a CONNECTION_CLOSE frame (see
 {{error-handling}}). Immediate close causes all streams to become immediately
 closed. QUIC endpoints can manage the cumulative maximum number of streams they
 would allow to be opened using the MAX_STREAMS frame, but there is no mechanism
