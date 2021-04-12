@@ -498,7 +498,9 @@ entire connection or a single stream.
 
 QUIC defines an error code space that is used for error handling at the transport layer. QUIC
 encourages endpoints to use the most specific code, although any applicable code
-is permitted including generic ones. Applications using QUIC can define an error
+is permitted, including generic ones.
+
+Applications using QUIC define an error
 code space that is independent from QUIC or other applications (see, for
 example, {{Section 8.1 of QUIC-HTTP}}). The values in an application error code
 space are reused across connection-level and stream-level errors.
