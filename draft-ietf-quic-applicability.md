@@ -633,8 +633,7 @@ termination; applications using QUIC can define their own graceful termination
 process (see, for example, {{Section 5.2 of QUIC-HTTP}}).
 
 A stateless reset is an option of last resort for an endpoint that does not have
-access to connection state. It is not expected that application using QUIC need
-information or knowledge that a stateless reset was triggered.
+access to connection state. Receiving a stateless reset is an indication of an unrecoverable error distinct from connection errors in that there is no application-layer information provided.
 
 
 # Information Exposure and the Connection ID {#connid}
