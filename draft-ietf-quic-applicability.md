@@ -457,14 +457,14 @@ being terminated in some protocols.
 # Stream Limit Commitments
 
 QUIC endpoints are responsible for communicating the cumulative limit of streams
-they would allow to be opened by their peer. Initial limits are advertised
-using the initial_max_streams_bidi and initial_max_streams_uni transport
-parameters. As streams are opened and closed they are consumed and the cumulative
-total is incremented. Limits can be increased using the MAX_STREAMS frame but
-there is no mechanism to reduce limits. Once stream limits are reached, no more
-streams can be opened, which prevents applications using QUIC from making further
-progress. At this stage connections can be terminated via idle timeout or explicit
-close; see {{sec-termination}}).
+they would allow to be opened by their peer. Initial limits are advertised using
+the initial_max_streams_bidi and initial_max_streams_uni transport parameters.
+As streams are opened and closed they are consumed and the cumulative total is
+incremented. Limits can be increased using the MAX_STREAMS frame but there is no
+mechanism to reduce limits. Once stream limits are reached, no more streams can
+be opened, which prevents applications using QUIC from making further progress.
+At this stage connections can be terminated via idle timeout or explicit close;
+see {{sec-termination}}).
 
 An application that uses QUIC might communicate a cumulative stream limit but
 require the connection to be closed before the limit is reached. For example,
