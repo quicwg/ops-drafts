@@ -156,9 +156,9 @@ handshake and application data, unlike QUIC 0-RTT.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
-supported, the connection should be aborted instead, in order to enable
-the application to present a suitable prompt to the user that secure
-communication is unavailable.
+supported, the connection should be aborted, and the application then ought
+to present a suitable prompt to the user that secure communication is
+unavailable.
 
 In summary, any fallback mechanism is likely to impose a degradation of
 performance and can degrade security; however, fallback must not silently
