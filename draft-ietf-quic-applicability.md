@@ -496,9 +496,9 @@ Applications that use QUIC can define their own error detection and signaling
 (see, for example, {{Section 8 of QUIC-HTTP}}). Application errors can affect an
 entire connection or a single stream.
 
-QUIC defines an error code space that is used for error handling at the transport layer. QUIC
-encourages endpoints to use the most specific code, although any applicable code
-is permitted, including generic ones.
+QUIC defines an error code space that is used for error handling at the
+transport layer. QUIC encourages endpoints to use the most specific code,
+although any applicable code is permitted, including generic ones.
 
 Applications using QUIC define an error
 code space that is independent from QUIC or other applications (see, for
