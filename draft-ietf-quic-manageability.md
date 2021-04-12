@@ -779,7 +779,7 @@ not the network RTT.
 Since the spin bit logic at each endpoint considers only samples from packets
 that advance the largest packet number, signal generation itself is
 resistant to reordering. However, reordering can cause problems at an observer
-by causing spurious edge \ and therefore inaccurate (i.e., lower) RTT
+by causing spurious edge detection and therefore inaccurate (i.e., lower) RTT
 estimates, if reordering occurs across a spin-bit flip in the stream.
 
 Simple heuristics based on the observed data rate per flow or changes in the RTT
