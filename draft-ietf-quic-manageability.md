@@ -976,7 +976,7 @@ can detect a change in the client's endpoint address by linking flows based on
 the server's connection IDs. However, QUIC's linkability resistance ensures that
 a deliberate connection migration is accompanied by a change in the connection
 ID. In this case, the connection ID can not be used to distinguish valid, active
-traffic from new attacl traffic.
+traffic from new attack traffic.
 
 Alternatively, when an encrypted transport is used, it is also possible for
 endpoints to directly support these security functions.
