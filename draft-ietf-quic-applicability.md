@@ -318,7 +318,8 @@ HTTP/3 in {{QUIC-HTTP}}. There are a few general principles to apply when
 designing an application's use of streams:
 
 - A single stream provides ordering. If the application requires certain data to
-be received in order, that data should be sent on the same stream.
+be received in order, that data should be sent on the same stream. There is
+no guarantee of transmission ordering across streams.
 
 - Multiple streams provide concurrency. Data that can be processed
 independently, and therefore would suffer from head of line blocking if forced
