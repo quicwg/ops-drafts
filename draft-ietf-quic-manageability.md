@@ -917,7 +917,8 @@ these ports, UDP flood attacks may also use the same ports. One possible
 response to this threat is to throttle UDP traffic on the network, allocating a
 fixed portion of the network capacity to UDP and blocking UDP datagrams over
 that cap. As the portion of QUIC traffic compared to TCP is also expected to
-increase over time, limits might need to be adopted dynamically.
+increase over time, using such a limit is not recommended but if done,
+limits might need to be adapted dynamically.
 
 Further, if UDP traffic is throttled, it is recommended to block individual
 QUIC flows entirely rather than dropping packets randomly. When the handshake is
