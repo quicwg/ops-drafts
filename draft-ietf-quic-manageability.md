@@ -460,13 +460,13 @@ connection.
 {{?QUIC_LB=I-D.ietf-quic-load-balancers}} specifies algorithms for
 encoding the server mapping in a connection ID in order to share this
 information with selected on-path devices such as load balancers. Server
-mappings should only be exposed to selected entities. Uncontrollied exposure
+mappings should only be exposed to selected entities. Uncontrolled exposure
 would allow linkage of multiple IP addresses to the same host if the server
 also supports migration which opens an attack vector on specific servers or
 pools. The best way to obscure an encoding is to appear random to any other
-observers, which is most rigorously achieved with encryption. Even when
-encrypted, a scheme could embed the unencrypted length of the connection ID
-in the connection ID itself, instead of remembering it.
+observers, which is most rigorously achieved with encryption. As a result
+any attempt to infer information from specific parts of a connection ID is
+unlikely to be useful.
 
 
 ## Packet Numbers {#packetnumber}
