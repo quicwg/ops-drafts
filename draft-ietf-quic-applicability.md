@@ -464,6 +464,41 @@ Some deadlocking scenarios might be resolved by cancelling affected streams with
 STOP_SENDING or RESET_STREAM.  Cancelling some streams results in the connection
 being terminated in some protocols.
 
+# Stream Limit Commitments
+
+QUIC endpoints are responsible for communicating the cumulative limit of streams
+they would allow to be opened by their peer. Initial limits are advertised using
+the initial_max_streams_bidi and initial_max_streams_uni transport parameters.
+As streams are opened and closed they are consumed and the cumulative total is
+incremented. Limits can be increased using the MAX_STREAMS frame but there is no
+mechanism to reduce limits. Once stream limits are reached, no more streams can
+be opened, which prevents applications using QUIC from making further progress.
+At this stage connections can be terminated via idle timeout or explicit close;
+see {{sec-termination}}).
+
+An application that uses QUIC might communicate a cumulative stream limit but
+require the connection to be closed before the limit is reached. For example,
+to stop the server to perform scheduled maintenance. Immediate connection close
+causes abrupt closure of actively used streams. Depending on how an application
+uses QUIC streams, this could be undesirable or detrimental to behavior or
+performance. A more graceful closure technique is to stop sending increases to
+stream limits and allow the connection to naturally terminate once remaining
+streams are consumed. However, the period of time it takes to do so is dependent
+on the client and an unpredictable closing period might not fit application or
+operational needs. Applications using QUIC can be conservative with open stream
+limits in order to reduce the commitment and indeterminism. However, being
+overly conservative with stream limits affects stream concurrency. Balancing
+these aspects can be specific to applications and their deployments. Instead of
+relying on stream limits to avoid abrupt closure, an application-layer graceful
+close mechanism can be used to communicate the intention to explicitly close the
+connection at some future point. HTTP/3 provides such a mechanism using the
+GOWAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
+stops opening new streams even if the cumulative stream limit would allow.
+Instead the client would create a new connection on which to open further
+streams.  Once all streams are closed on the old connection, it can be
+terminated safely by a connection close or after expiration of the idle time out
+(see also {{sec-termination}}).
+
 # Packetization and Latency
 
 QUIC exposes an interface that provides multiple streams to the application;
@@ -495,6 +530,32 @@ Packetization Layer PMTU Discovery (DPLMTUD) (see {{Section 14.3 of QUIC}}).
 Padding can also be used by an application to reduce leakage of
 information about the data that is sent. A QUIC implementation can expose an
 interface that allows an application layer to specify how to apply padding.
+
+# Error Handling
+
+QUIC recommends that endpoints signal any detected errors to
+the peer. Errors can occur at the transport level and the application level.
+Transport errors, such as a protocol violation, affect the entire connection.
+Applications that use QUIC can define their own error detection and signaling
+(see, for example, {{Section 8 of QUIC-HTTP}}). Application errors can affect an
+entire connection or a single stream.
+
+QUIC defines an error code space that is used for error handling at the
+transport layer. QUIC encourages endpoints to use the most specific code,
+although any applicable code is permitted, including generic ones.
+
+Applications using QUIC define an error
+code space that is independent from QUIC or other applications (see, for
+example, {{Section 8.1 of QUIC-HTTP}}). The values in an application error code
+space can be reused across connection-level and stream-level errors.
+
+Connection errors lead to connection termination. They are signaled using a
+CONNECTION_CLOSE frame, which contains an error code and a reason field that can
+be zero length. Different types of CONNECTION_CLOSE frame are used to
+signal transport and application errors.
+
+Stream errors lead to stream termination. The are signaled using STOP_SENDING or
+RESET_STREAM frames, which contain only an error code.
 
 # ACK-only packets on constrained links
 
@@ -581,42 +642,40 @@ to the server instance. The server can provide an IPv4 and an IPv6 address in a
 transport parameter during the TLS handshake and the client can select between
 the two if both are provided. See also {{Section 9.6 of QUIC}}.
 
-# Connection Closure
+# Connection Termination {#sec-termination}
 
-QUIC connections are closed either by expiration of an idle timeout, as
-determined by transport parameters, or by an
-explicit indication of the application that a connection should be closed
-(immediate close). While data could still be received after the immediate close
-has been initiated by one endpoint (for a limited time period), the expectation
-is that an immediate close was negotiated at the application layer and
-therefore no additional data is expected from both sides.
+QUIC connections are terminated in one of three ways: implicit idle timeout,
+explicit immediate close, or explicit stateless reset.
 
-An immediate close will emit an CONNECTION_CLOSE frame. This frame has two
-sets of types: one for QUIC internal problems that might lead to connection
-closure, and one for closures initiated by the application. An application
-using QUIC can define application-specific error codes (see, for example,
-{{Section 8.1 of QUIC-HTTP}}).
+QUIC does not provide any mechanism for graceful connection termination;
+applications using QUIC can define their own graceful termination process (see,
+for example, {{Section 5.2 of QUIC-HTTP}}).
 
-The CONNECTION_CLOSE frame provides an optional reason field, that can be used
-to append human-readable information to an error code.  RESET_STREAM and
-STOP_SENDING frames also include an error code, but no reason string.
+QUIC idle timeout is enabled via transport parameters. Client and server
+announce a timeout period and the effective value for the connection is the
+minimum of the two values. After the timeout period elapses, the connection is
+silently closed. An application therefore should be able to configure its own
+maximum value, as well as have access to the computed minimum value for this
+connection. An application may adjust the maximum idle timeout for new
+connections based on the number of open or expected connections, since shorter
+timeout values may free-up resources more quickly.
 
-Alternatively, a QUIC connection can be silently closed by each endpoint
-separately after an idle timeout. If enabled as indicated by a transport
-parameter in the handshake, the idle timeout is announced for each endpoint
-during connection establishment and the effective value for this connection is
-the minimum of the two values advertised by client and server. An application
-therefore should be able to configure its own maximum value as well as have
-access to the computed minimum value for this connection. An application may
-adjust the maximum idle timeout for new connections based on the number of open
-or expected connections, since shorter timeout values may free-up memory more
-quickly.
+Application data exchanged on streams or in datagrams defers the QUIC idle
+timeout. Applications that provide their own keep-alive mechanisms will
+therefore keep a QUIC connection alive. Applications that do not provide their
+own keep-alive can use transport-layer mechanisms (see {{Section
+10.1.2 of QUIC}}, and {{resumption-v-keepalive}}). However, QUIC implementation
+interfaces for controlling such transport behavior can vary, affecting the
+robustness of such approaches.
 
-If an application desires to keep the connection open for longer than the
-announced timeout, it can send keep-alive messages; a QUIC implementation may
-provide an option to defer the time-out by sending keep-alive messages at the
-transport layer to avoid unnecessary load, as specified in {{Section 10.1.2 of
-QUIC}}. See {{resumption-v-keepalive}} for further guidance on keep-alives.
+An immediate close is signaled by a CONNECTION_CLOSE frame (see
+{{error-handling}}). Immediate close causes all streams to become immediately
+closed, which may affect applications; see {{stream-limit-commitments}}.
+
+A stateless reset is an option of last resort for an endpoint that does not have
+access to connection state. Receiving a stateless reset is an indication of an
+unrecoverable error distinct from connection errors in that there is no
+application-layer information provided.
 
 
 # Information Exposure and the Connection ID {#connid}
