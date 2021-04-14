@@ -928,10 +928,11 @@ However, blocking a
 random fraction of QUIC packets across 4-tuples will allow many QUIC handshakes
 to complete, preventing a TCP failover, but the connections will suffer from
 severe packet loss (see also {{sec-filtering}}). Therefore UDP throttling
-should be rather realised by per-flow policing, e.g, based on the hash
-of the UDP datagram's source and destination
-addresses and blocking a portion of the hash space that corresponds to the
-fraction of UDP traffic one wishes to drop.
+should be realized by per-flow policing as opposed to per-packet
+policing. Note that this per-flow policing should be stateless to avoid
+problems with stateful treatment of QUIC flows (see {{sec-stateful}}),
+for example blocking a portion of the space of values of a hash function
+over the addresses and ports in the UDP datagram.
 While QUIC endpoints are often able to survive address changes, e.g. by NAT
 rebindings, blocking a portion of the traffic based on 5-tuple hashing increases
 the risk of black-holing an active connection when the address changes.
