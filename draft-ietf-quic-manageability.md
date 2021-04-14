@@ -920,7 +920,7 @@ that cap. As the portion of QUIC traffic compared to TCP is also expected to
 increase over time, using such a limit is not recommended but if done,
 limits might need to be adapted dynamically.
 
-Further, if UDP traffic is throttled, it is recommended to block individual
+Further, if UDP traffic is desired to be throttled, it is recommended to block individual
 QUIC flows entirely rather than dropping packets randomly. When the handshake is
 blocked, QUIC-capable applications may failover to TCP
 However, blocking a
