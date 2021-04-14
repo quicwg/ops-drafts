@@ -283,15 +283,15 @@ the server's side of the TLS handshake, and initial 1-RTT data, if present.
 The Client Completion datagram contains at least one Handshake packet and
 some also include an Initial packet.
 
-Datagrams that contain a Client Initial Packet (Client Initial, Server Initial, and
-some Client Completion) contain at least 1200 octets of UDP payload. This
-protects against amplification attacks and verifies that the network path meets
-the requirements for the minimum QUIC IP packet size; see {{Section 14 of
-QUIC-TRANSPORT}}. This is accomplished by either adding PADDING frames within
-the Initial packet, coalescing other packets with the Initial packet, or
-leaving unused payload in the UDP packet after the Initial packet. A network
-path needs to be able to forward at least this size of packet for QUIC to be
-used.
+Datagrams that contain a Client Initial Packet (Client Initial, Server
+Initial, and some Client Completion) contain at least 1200 octets of UDP
+payload. This protects against amplification attacks and verifies that the
+network path meets the requirements for the minimum QUIC IP packet size;
+see {{Section 14 of QUIC-TRANSPORT}}. This is accomplished by either adding
+PADDING frames within the Initial packet, coalescing other packets with the
+Initial packet, or leaving unused payload in the UDP packet after the Initial
+packet. A network path needs to be able to forward at least this size of
+packet for QUIC to be used.
 
 The content of Client Initial packets are encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
