@@ -954,8 +954,8 @@ compliance with ciphersuites); client and application fingerprinting for
 inventory; and to provide alerts for network intrusion detection and other
 next generation firewall functions.
 
-Current practices in detection and mitigation of Distributed Denial of Service
-(DDoS) attacks generally involve classification of incoming traffic (as
+Current practices in detection and mitigation of DDoS
+attacks generally involve classification of incoming traffic (as
 packets, flows, or some other aggregate) into "good" (productive) and "bad"
 (DDoS) traffic, and then differential treatment of this traffic to forward only
 good traffic. This operation is often done in a separate specialized mitigation
@@ -971,17 +971,18 @@ as in {{sec-garbage}} and stateful tracking of QUIC traffic as in
 Note that the use of a connection ID to support connection migration renders
 5-tuple based filtering insufficient and requires more state to be maintained by
 DDoS defense systems. For the common case of NAT rebinding, where the client's
-address changes without the client's intent or knowedge, DDoS defense systems
+address changes without the client's intent or knowledge, DDoS defense systems
 can detect a change in the client's endpoint address by linking flows based on
 the server's connection IDs. However, QUIC's linkability resistance ensures that
 a deliberate connection migration is accompanied by a change in the connection
 ID. In this case, the connection ID can not be used to distinguish valid, active
 traffic from new attack traffic.
 
-Alternatively, when an encrypted transport is used, it is also possible for
-endpoints to directly support these security functions.
-Endpoints can cooperate with an on-path device directly by e.g. sharing
-information about connection IDs.
+It is also possible for
+endpoints to directly support security functions such as DoS
+classification and mitigation.
+Endpoints can cooperate with an in-network device directly by e.g.
+sharing information about connection IDs.
 
 Another potential method could use an
 on-path network device that relies on pattern inferences in the traffic and
@@ -989,7 +990,10 @@ heuristics or machine learning instead of processing observed header
 information.
 
 However, it is questionable whether connection migrations must be supported
-during a DDoS attack. If the connection migration is not visible to the network
+during a DDoS attack. However, for unintentional mitigations, as is usually the
+case for NAT rebindings, the connection ID can be used to track
+connections (see {{sec-flow-association}}). If the connection
+migration is not visible to the network
 that performs the DDoS detection, an active, migrated QUIC connection may be
 blocked by such a system under attack. As soon as the connection blocking is
 detected by the client, the client may rely on the fast resumption mechanism
