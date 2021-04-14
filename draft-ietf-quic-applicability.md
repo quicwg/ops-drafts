@@ -647,8 +647,8 @@ timeout values may free-up resources more quickly.
 
 Application data exchanged on streams or in datagrams defers the QUIC idle
 timeout. Applications that provide their own keep-alive mechanisms will
-therefore keep a QUIC connection alive. Applications that don't provide their
-own keep-alive might be able to use transport-layer mechanisms (see {{Section
+therefore keep a QUIC connection alive. Applications that do not provide their
+own keep-alive can use transport-layer mechanisms (see {{Section
 10.1.2 of QUIC}}, and {{resumption-v-keepalive}}). However, QUIC implementation
 interfaces for controlling such transport behavior can vary, affecting the
 robustness of such approaches.
