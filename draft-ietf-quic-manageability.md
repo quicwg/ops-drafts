@@ -918,8 +918,8 @@ the new path from overload.
 
 ## Server Cooperation with Load Balancers {#sec-loadbalancing}
 
-In the case of networking architectures including load
-balancers, the connection ID provides a way for the server to signal information
+In the case of networking architectures that include load balancers,
+the connection ID can be used as a way for the server to signal information
 about the desired treatment of a flow to the load balancers. Guidance on
 assigning connection IDs is given in
 {{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}}. {{QUIC_LB}}
