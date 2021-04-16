@@ -888,11 +888,6 @@ ID changes.
 
 ## Address Rewriting to Ensure Routing Stability
 
-Use of address rewriting to ensure routing stablity as an approach to
-simplify operational routing conceals client address changes and will
-therefore mask important signals that drive security mechanisms, and
-as such opens QUIC up to various attacks.
-
 While QUIC's migration capability makes it possible for an server to survive
 address changes, this does not work if the routers or switches in the server
 infrastructure route using the address-port 4-tuple. If infrastructure routes on
@@ -915,6 +910,11 @@ In addition, a change of IP address or port is also an input signal to other
 internal mechanisms in QUIC. When a path change is detected, path-dependent
 variables like congestion control parameters will be reset protecting
 the new path from overload.
+
+Therefore use of address rewriting to ensure routing stablity as an approach
+to simplify existing operations can open QUIC up to various attacks as it 
+conceals client address changes and as such masks important signals that
+drive security mechanisms.
 
 ## Server Cooperation with Load Balancers {#sec-loadbalancing}
 
