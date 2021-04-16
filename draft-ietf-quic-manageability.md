@@ -1037,19 +1037,6 @@ unsolicited injection of these packets by intermediaries who do not have consent
 of the end server. See {{QUIC_LB}} for standard ways for intermediaries to send
 Retry packets on behalf of consenting servers.
 
-## Handling ICMP Messages
-
-Datagram Packetization Layer PMTU Discovery (PLPMTUD) can be used by QUIC to
-probe for the supported PMTU. PLPMTUD optionally uses ICMP messages (e.g.,
-IPv6 Packet Too Big messages). Given known attacks with the use of ICMP
-messages, the use of PLPMTUD in QUIC has been designed to safely use but
-not rely on receiving ICMP feedback (see
-{{Section 14.2.1. of QUIC-TRANSPORT}}).
-
-Networks are recommended to forward these ICMP messages and retain as much of
-the original packet as possible without exceeding the minimum MTU for the IP
-version when generating ICMP messages as recommended in {{?RFC1812}}
-and {{?RFC4443}}.
 
 ## Quality of Service handling and ECMP
 
@@ -1068,6 +1055,20 @@ more tolerant of packet re-ordering than traditional TCP traffic (see
 {{packetnumber}}). However, it cannot be known by the network which exact
 recovery mechanism is used and therefore reordering tolerance should be
 considered as unknown.
+
+## Handling ICMP Messages
+
+Datagram Packetization Layer PMTU Discovery (PLPMTUD) can be used by QUIC to
+probe for the supported PMTU. PLPMTUD optionally uses ICMP messages (e.g.,
+IPv6 Packet Too Big messages). Given known attacks with the use of ICMP
+messages, the use of PLPMTUD in QUIC has been designed to safely use but
+not rely on receiving ICMP feedback (see
+{{Section 14.2.1. of QUIC-TRANSPORT}}).
+
+Networks are recommended to forward these ICMP messages and retain as much of
+the original packet as possible without exceeding the minimum MTU for the IP
+version when generating ICMP messages as recommended in {{?RFC1812}}
+and {{?RFC4443}}.
 
 ## Guiding Path MTU
 
