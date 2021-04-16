@@ -679,7 +679,7 @@ device such as a load-balancer to associate two flows as identified by
 five-tuple when the address and port of one of the endpoints changes; e.g. due
 to NAT rebinding or address migration. An observer keeping flow state
 can associate a connection ID, if present, with a given flow, and can associate
-a known flow with a new flow when when observing a packet sharing the same
+a known flow with a new flow when observing a packet sharing the same
 connection ID in the same direction between client and server and sharing one
 endpoint address (IP address and port) with the known flow.
 
