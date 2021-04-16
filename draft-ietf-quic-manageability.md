@@ -912,7 +912,7 @@ variables like congestion control parameters will be reset protecting
 the new path from overload.
 
 Therefore use of address rewriting to ensure routing stablity as an approach
-to simplify existing operations can open QUIC up to various attacks as it 
+to simplify existing operations can open QUIC up to various attacks as it
 conceals client address changes and as such masks important signals that
 drive security mechanisms.
 
