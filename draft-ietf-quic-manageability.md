@@ -997,8 +997,9 @@ as in {{sec-garbage}} and stateful tracking of QUIC traffic as in
 {{sec-stateful}} above may be useful during classification.
 
 Note that the use of a connection ID to support connection migration renders
-5-tuple based filtering insufficient and requires more state to be maintained by
-DDoS defense systems. For the common case of NAT rebinding, where the client's
+5-tuple based filtering insufficient to detect active flows and requires more
+state to be maintained by DDoS defense systems if support of migration of QUIC
+flows is desired. For the common case of NAT rebinding, where the client's
 address changes without the client's intent or knowledge, DDoS defense systems
 can detect a change in the client's endpoint address by linking flows based on
 the server's connection IDs. However, QUIC's linkability resistance ensures that
@@ -1018,13 +1019,12 @@ heuristics or machine learning instead of processing observed header
 information.
 
 However, it is questionable whether connection migrations must be supported
-during a DDoS attack. However, for unintentional mitigations, as is usually the
-case for NAT rebindings, the connection ID can be used to track
-connections (see {{sec-flow-association}}). If the connection
-migration is not visible to the network
-that performs the DDoS detection, an active, migrated QUIC connection may be
-blocked by such a system under attack. As soon as the connection blocking is
-detected by the client, the client may rely on the fast resumption mechanism
+during a DDoS attack. While unintended migration where the connection ID
+stays unchanged can be more easiliy supported, it might be acceptable that
+connection migrations of active QUIC connections that are not visible to
+the network that performs the DDoS detection may be blocked by such a system
+under attack. As soon as the connection blocking is detected by the client,
+the client may be able to rely on the fast resumption mechanism
 provided by QUIC. When clients migrate to a new path, they should be prepared
 for the migration to fail and attempt to reconnect quickly.
 
