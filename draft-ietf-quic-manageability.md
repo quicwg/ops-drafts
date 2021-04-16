@@ -560,11 +560,6 @@ not observed, such as in the case of connection migration; however, it might be
 possible to associate a flow with a flow for which a version has been
 identified; see {{sec-flow-association}}.
 
-This document focuses on QUIC version 1, and this section applies only to
-packets belonging to QUIC version 1 flows; for purposes of on-path observation,
-it assumes that these packets have been identified as such through the
-observation of a version number exchange as described above.
-
 ### Rejection of Garbage Traffic {#sec-garbage}
 
 A related question is whether the first packet of a given flow on a port known
@@ -576,6 +571,11 @@ the deployment of such heuristics is not recommended, as bits in the first byte
 may have different meanings in future versions of the protocol.
 
 ## Connection Confirmation {#sec-confirm}
+
+This document focuses on QUIC version 1, and this section applies only to
+packets belonging to QUIC version 1 flows; for purposes of on-path observation,
+it assumes that these packets have been identified as such through the
+observation of a version number exchange as described above.
 
 Connection establishment uses Initial and Handshake packets containing a
 TLS handshake, and Retry packets that do not contain parts of the handshake.
