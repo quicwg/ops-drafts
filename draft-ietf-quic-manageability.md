@@ -933,7 +933,7 @@ Though the guidance there holds, a particularly unwise behavior is to admit a
 handful of UDP packets and then make a decision as to whether or not to filter
 it. QUIC applications are encouraged to fail over to TCP if early packets do
 not arrive at their destination {{?I-D.ietf-quic-applicability}}, as QUIC is
-based on UDP and there are known block of UDP (see {{sec-udp-1312}}).
+based on UDP and there are known blocks of UDP traffic (see {{sec-udp-1312}}).
 Admitting a few packets allows the QUIC endpoint to determine that the path
 accepts QUIC. Sudden drops afterwards will result in slow and costly timeouts
 before abandoning the connection.
