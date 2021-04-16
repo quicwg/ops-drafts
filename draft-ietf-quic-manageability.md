@@ -867,17 +867,6 @@ decison is not viable as it will break connectivity or at minimum cause long
 timeout-based delays before this problem is detected by the endpoints and
 the connection can potentially be re-established.
 
-QUIC endpoints support address migration and a QUIC connection can
-survive a change of the IP address or ports by mapping the connection ID,
-if present, to an existing connection. Ideally a new connection ID is used
-at the same time when the address/port changes to avoid linkability. As new
-connection IDs belonging to the same connection are not known to on-path
-devices, network devices are not able to map QUIC connections
-after a 4-tuple change. As such, when the 4-tuple
-changes, stateful devices lose their state and break connectivity if state
-is required for forwarding, while the endpoints would otherwise survive such a
-change.
-
 Use of connection IDs is specifically discouraged for NAT applications.
 If a NAT hits an operational limit, it is recommended to rather drop the
 initial packets of a flow (see also {{sec-filtering}}),
