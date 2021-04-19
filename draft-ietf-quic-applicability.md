@@ -624,7 +624,7 @@ any clients are behind a NAT or could be. A non-zero-length connection ID is
 also strongly recommended when migration is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
-time, and only when the new path is validated all traffic can be switched over
+time; and only when the new path is validated, all traffic can be switched over
 to that new path. Path validation means that the remote endpoint is required to
 validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
