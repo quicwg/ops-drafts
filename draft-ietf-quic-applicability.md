@@ -465,7 +465,7 @@ Some deadlocking scenarios might be resolved by cancelling affected streams with
 STOP_SENDING or RESET_STREAM.  Cancelling some streams results in the connection
 being terminated in some protocols.
 
-# Stream Limit Commitments
+## Stream Limit Commitments
 
 QUIC endpoints are responsible for communicating the cumulative limit of streams
 they would allow to be opened by their peer. Initial limits are advertised using
@@ -492,7 +492,9 @@ overly conservative with stream limits affects stream concurrency. Balancing
 these aspects can be specific to applications and their deployments. Instead of
 relying on stream limits to avoid abrupt closure, an application-layer graceful
 close mechanism can be used to communicate the intention to explicitly close the
-connection at some future point. HTTP/3 provides such a mechanism using the
+connection at some future point. 
+
+HTTP/3 provides such a mechanism using the
 GOWAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
 stops opening new streams even if the cumulative stream limit would allow.
 Instead the client would create a new connection on which to open further
