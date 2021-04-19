@@ -560,7 +560,7 @@ not observed, such as in the case of connection migration; however, it might be
 possible to associate a flow with a flow for which a version has been
 identified; see {{sec-flow-association}}.
 
-### Identifying the First Pachet to Reject of Garbage Traffic {#sec-garbage}
+### First Packet Identification for Garbage Rejection {#sec-garbage}
 
 A related question is whether the first packet of a given flow on a port known
 to be associated with QUIC is a valid QUIC packet.  This determination supports
