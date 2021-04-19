@@ -923,7 +923,8 @@ load-balancers and servers.
 
 ## Filtering Behavior {#sec-filtering}
 
-{{?RFC4787}} describes possible packet filtering behaviors that relate to NATs.
+{{?RFC4787}} describes possible packet filtering behaviors that relate to NATs
+but is often also used is other scenarios where packet filtering is desired.
 Though the guidance there holds, a particularly unwise behavior is to admit a
 handful of UDP packets and then make a decision as to whether or not to filter
 it. QUIC applications are encouraged to fail over to TCP if early packets do
