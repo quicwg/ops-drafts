@@ -445,11 +445,14 @@ establishment failing later on.
 
 ## Connection ID and Rebinding {#rebinding}
 
-The connection ID in the QUIC packet headers allows routing of QUIC packets at
-load balancers using information independent of the five-tuple.  This helps
-ensure that related flows are appropriately balanced together and allows
-rebinding of a connection after one of the endpoints experiences an address
-change - usually the client. Client and server negotiate connection IDs during
+The connection ID in the QUIC packet headers allows association of QUIC
+packets using information independent of the five-tuple. This
+allows rebinding of a connection after one of one endpoint experienced
+an address change - usually the client. Further it can be used by
+in-network devices to ensure that related 5-tuple flows are appropriately
+balanced together.
+
+Client and server negotiate connection IDs during
 the handshake; typically, however, only the server will request a connection ID
 for the lifetime of the connection. Connection IDs for either endpoint may
 change during the lifetime of a connection, with the new connection ID being
