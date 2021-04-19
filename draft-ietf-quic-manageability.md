@@ -827,6 +827,12 @@ The lack of any visible end-of-flow signal ({{sec-teardown}}) means that this
 state must be purged either through timers or through least-recently-used
 eviction, depending on application requirements.
 
+While QUIC has no clear network-visible end-of-connection signal and therefore
+does require timer-based state removal, the QUIC handshake indicates
+confirmation by both ends of a valid bidirectional transmission. As soon
+as the handshake completed, timers should be set long enough to also
+allow for short idle time during a valid transmission.
+
 {{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP
 traffic.  However, in practice, timers are sometimes lower, in the range of 30
 to 60 seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2
@@ -840,9 +846,6 @@ keep-alive packets. Instead it is recommended, even when lower timers are
 used for other UDP traffic, to use a timer of at least two minutes for QUIC
 traffic.
 
-While QUIC has no clear network-visible end-of-connection signal and therefore
-does require timer-based state removal, the QUIC handshake indicates
-confirmation by both ends of a valid bidirectional transmission.
 If state is removed too early, this could lead to black-holing of incoming
 packets after a short idle period. To detect this situation, a timer at the
 client needs to expire before a re-establishment can happen (if at all), which
