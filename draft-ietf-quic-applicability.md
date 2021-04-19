@@ -84,9 +84,9 @@ informative:
         ins: P. Sarolahti
       -
         ins: M. Kojo
-  I-D.nottingham-httpbis-retry:
   RFC5077:
   QUIC-HTTP: I-D.ietf-quic-http
+  RFC8085:
 
 
 --- abstract
@@ -156,9 +156,9 @@ handshake and application data, unlike QUIC 0-RTT.
 
 Moreover, while encryption (in this case TLS) is inseparably integrated with
 QUIC, TLS negotiation over TCP can be blocked. If TLS over TCP cannot be
-supported, the connection should be aborted instead, in order to enable
-the application to present a suitable prompt to the user that secure
-communication is unavailable.
+supported, the connection should be aborted, and the application then ought
+to present a suitable prompt to the user that secure communication is
+unavailable.
 
 In summary, any fallback mechanism is likely to impose a degradation of
 performance and can degrade security; however, fallback must not silently
@@ -218,8 +218,8 @@ period of at least 124 minutes, though there is not evidence of widespread
 implementation of this guideline in the literature. Short network timeout for
 UDP, however, is well-documented. According to a 2010 study
 ({{Hatonen10}}), UDP applications can assume that any NAT binding or other
-state entry can expire after just thirty seconds of inactivity.  Section 3.5
-of {{?RFC8085}} further discusses keep-alive intervals for UDP: it
+state entry can expire after just thirty seconds of inactivity.  {{Section 3.5
+of RFC8085}} further discusses keep-alive intervals for UDP: it
 requires a minimum value of 15 seconds, but recommends larger values, or
 omitting keep-alive entirely.
 
@@ -265,7 +265,7 @@ periods may result in excessive unproductive traffic in some situations, and to
 unacceptable power usage for power-constrained (mobile) devices. Additionally,
 timeouts shorter than 30 seconds can make it harder to handle transient network
 interruptions, such as VM migration or coverage loss during mobilty.
-See {{?RFC8085}}, especially Section 3.5.
+See {{RFC8085}}, especially Section 3.5.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
@@ -318,7 +318,8 @@ HTTP/3 in {{QUIC-HTTP}}. There are a few general principles to apply when
 designing an application's use of streams:
 
 - A single stream provides ordering. If the application requires certain data to
-be received in order, that data should be sent on the same stream.
+be received in order, that data should be sent on the same stream. There is
+no guarantee of transmission, reception, or delivery order across streams.
 
 - Multiple streams provide concurrency. Data that can be processed
 independently, and therefore would suffer from head of line blocking if forced
@@ -371,7 +372,8 @@ Prioritization is managed by the sender, and the QUIC transport should
 provide an interface for applications to prioritize streams {{QUIC}}.
 Applications can implement their own prioritization scheme on top of QUIC: an
 application protocol that runs on top of QUIC can define explicit messages
-for signaling priority, such as those defined for HTTP/2; it can define rules
+for signaling priority, such as those defined in
+{{?I-D.draft-ietf-httpbis-priority}} for HTTP; it can define rules
 that allow an endpoint to determine priority based on context; or it can
 provide a higher level interface and leave the determination to the
 application on top.
@@ -407,7 +409,7 @@ change with its peer might encounter performance issues or deadlocks.
 
 ## Flow Control Deadlocks {#flow-control-deadlocks}
 
-Flow control provides a means of managing access to the limited buffers
+QUIC flow control provides a means of managing access to the limited buffers
 endpoints have for incoming data.  This mechanism limits the amount of data that
 can be in buffers in endpoints or in transit on the network.  However, there are
 several ways in which limits can produce conditions that can cause a connection
@@ -418,28 +420,37 @@ whether they become a problem depends on how implementations consume data and
 provide flow control credit.  Understanding what causes deadlocking might help
 implementations avoid deadlocks.
 
-Large messages can produce deadlocking if the recipient does not process the
-message incrementally.  If the message is larger than the flow control credit
-available and the recipient does not release additional flow control credit
-until the entire message is received and delivered, a deadlock can occur.  This
-is possible even where stream flow control limits are not reached because
-connection flow control limits can be consumed by other streams.
+The size and rate of transport flow control credit updates can affect
+performance. Applications that use QUIC often have a data consumer that reads
+data from transport buffers. Some implementations might have independent
+transport-layer and application-layer receive buffers. Consuming data does not
+always imply it is immediately processed. However, a common flow control
+implementation technique is to extend credit to the sender, by emitting MAX_DATA
+and/or MAX_STREAM_DATA frames, as data is consumed. Delivery of these frames
+is affected by the latency of the back channel from the receiver to the data
+sender. If credit is not extended in a timely manner, the
+sending application can be blocked, effectively throttling the sender.
 
-A common flow control implementation technique is for a receiver to extend
-credit to the sender as a the data consumer reads data. In this setting, a
-length-prefixed message format makes it easier for the data consumer to leave
-data unread in the receiver's buffers and thereby withhold flow control credit.
-If flow control limits prevent the remainder of a message from being sent, a
+Large application messages can produce deadlocking if the recipient does not
+read data from the transport incrementally. If the message is larger than the
+flow control credit available and the recipient does not release additional flow
+control credit until the entire message is received and delivered, a deadlock
+can occur. This is possible even where stream flow control limits are not
+reached because connection flow control limits can be consumed by other streams.
+
+A length-prefixed message format makes it easier for a data consumer to leave
+data unread in the transport buffer and thereby withhold flow control credit. If
+flow control limits prevent the remainder of a message from being sent, a
 deadlock will result.  A length prefix might also enable the detection of this
-sort of deadlock.  Where protocols have messages that might be processed as a
-single unit, reserving flow control credit for the entire message atomically
-makes this style of deadlock less likely.
+sort of deadlock.  Where application protocols have messages that might be
+processed as a single unit, reserving flow control credit for the entire message
+atomically makes this style of deadlock less likely.
 
-A data consumer can read all data as it becomes available to cause the receiver
-to extend flow control credit to the sender and reduce the chances of a
-deadlock.  However, releasing flow control credit might mean that the data
-consumer might need other means for holding a peer accountable for the state it
-keeps for partially processed messages.
+A data consumer can eagerly read all data as it becomes available, in order to
+make the receiver extend flow control credit and reduce the chances of a
+deadlock.  However, such a data consumer might need other means for holding a
+peer accountable for the additional state it keeps for partially processed
+messages.
 
 Deadlocking can also occur if data on different streams is interdependent.
 Suppose that data on one stream arrives before the data on a second stream on
@@ -453,6 +464,43 @@ control credit.
 Some deadlocking scenarios might be resolved by cancelling affected streams with
 STOP_SENDING or RESET_STREAM.  Cancelling some streams results in the connection
 being terminated in some protocols.
+
+## Stream Limit Commitments
+
+QUIC endpoints are responsible for communicating the cumulative limit of streams
+they would allow to be opened by their peer. Initial limits are advertised using
+the initial_max_streams_bidi and initial_max_streams_uni transport parameters.
+As streams are opened and closed they are consumed and the cumulative total is
+incremented. Limits can be increased using the MAX_STREAMS frame but there is no
+mechanism to reduce limits. Once stream limits are reached, no more streams can
+be opened, which prevents applications using QUIC from making further progress.
+At this stage connections can be terminated via idle timeout or explicit close;
+see {{sec-termination}}).
+
+An application that uses QUIC might communicate a cumulative stream limit but
+require the connection to be closed before the limit is reached. For example,
+to stop the server to perform scheduled maintenance. Immediate connection close
+causes abrupt closure of actively used streams. Depending on how an application
+uses QUIC streams, this could be undesirable or detrimental to behavior or
+performance. A more graceful closure technique is to stop sending increases to
+stream limits and allow the connection to naturally terminate once remaining
+streams are consumed. However, the period of time it takes to do so is dependent
+on the client and an unpredictable closing period might not fit application or
+operational needs. Applications using QUIC can be conservative with open stream
+limits in order to reduce the commitment and indeterminism. However, being
+overly conservative with stream limits affects stream concurrency. Balancing
+these aspects can be specific to applications and their deployments. Instead of
+relying on stream limits to avoid abrupt closure, an application-layer graceful
+close mechanism can be used to communicate the intention to explicitly close the
+connection at some future point. 
+
+HTTP/3 provides such a mechanism using the
+GOWAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
+stops opening new streams even if the cumulative stream limit would allow.
+Instead the client would create a new connection on which to open further
+streams.  Once all streams are closed on the old connection, it can be
+terminated safely by a connection close or after expiration of the idle time out
+(see also {{sec-termination}}).
 
 # Packetization and Latency
 
@@ -476,16 +524,41 @@ wait before bundle frames into a packet.
 
 Similarly, an application has usually no control about the length of a QUIC
 packet on the wire. QUIC provides the ability to add a PADDING frame to
-arbitrarily increase the size of packets. Padding is used by QUIC to ensure
-that the path is capable of transferring datagrams of at least a certain size,
-during the handshake (see Sections 8.1 and 14.1 of {{!QUIC}}) and for path
-validation after connection migration (see {{Section 8.2 of QUIC}}) as well
-as for Datagram Packetization Layer PMTU Discovery (DPLMTUD) (see Section 14.3
-of {{!QUIC}}).
+arbitrarily increase the size of packets. Padding is used by QUIC to ensure that
+the path is capable of transferring datagrams of at least a certain size, during
+the handshake (see {{Sections 8.1 and 14.1 of QUIC}}) and for path validation
+after connection migration (see {{Section 8.2 of QUIC}}) as well as for Datagram
+Packetization Layer PMTU Discovery (DPLMTUD) (see {{Section 14.3 of QUIC}}).
 
 Padding can also be used by an application to reduce leakage of
 information about the data that is sent. A QUIC implementation can expose an
 interface that allows an application layer to specify how to apply padding.
+
+# Error Handling
+
+QUIC recommends that endpoints signal any detected errors to
+the peer. Errors can occur at the transport level and the application level.
+Transport errors, such as a protocol violation, affect the entire connection.
+Applications that use QUIC can define their own error detection and signaling
+(see, for example, {{Section 8 of QUIC-HTTP}}). Application errors can affect an
+entire connection or a single stream.
+
+QUIC defines an error code space that is used for error handling at the
+transport layer. QUIC encourages endpoints to use the most specific code,
+although any applicable code is permitted, including generic ones.
+
+Applications using QUIC define an error
+code space that is independent from QUIC or other applications (see, for
+example, {{Section 8.1 of QUIC-HTTP}}). The values in an application error code
+space can be reused across connection-level and stream-level errors.
+
+Connection errors lead to connection termination. They are signaled using a
+CONNECTION_CLOSE frame, which contains an error code and a reason field that can
+be zero length. Different types of CONNECTION_CLOSE frame are used to
+signal transport and application errors.
+
+Stream errors lead to stream termination. The are signaled using STOP_SENDING or
+RESET_STREAM frames, which contain only an error code.
 
 # ACK-only packets on constrained links
 
@@ -513,11 +586,17 @@ TCP port already registered for the application is appropriate. For example,
 the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
+Additionally, Application-Layer Version Negotiation {{?RFC7301}} permits the
+client and server to negotiate which of several protocols will be used on a
+given connection.  Therefore, multiple applications might be supported on a
+single UDP port based on the ALPN token offered.  Applications using QUIC
+should register an ALPN token for use in the TLS handshake.
+
 Applications could define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
 and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
 for an HTTP origin to advertise the availability of an equivalent HTTP/3
-endpoint on a certain UDP port by using the "h3" ALPN token {{?RFC7301}}.
+endpoint on a certain UDP port by using the "h3" ALPN token.
 Note that HTTP/3's ALPN token ("h3") identifies not only the version of the
 application protocol, but also the version of QUIC itself; this approach
 allows unambiguous agreement between the endpoints on the protocol stack in use.
@@ -545,7 +624,7 @@ any clients are behind a NAT or could be. A non-zero-length connection ID is
 also strongly recommended when migration is supported.
 
 Currently QUIC only supports failover cases. Only one "path" can be used at a
-time, and only when the new path is validated all traffic can be switched over
+time; and only when the new path is validated, all traffic can be switched over
 to that new path. Path validation means that the remote endpoint is required to
 validate the new path before use in order to avoid address spoofing attacks.
 Path validation takes at least one RTT and congestion control will also be reset
@@ -566,42 +645,40 @@ to the server instance. The server can provide an IPv4 and an IPv6 address in a
 transport parameter during the TLS handshake and the client can select between
 the two if both are provided. See also {{Section 9.6 of QUIC}}.
 
-# Connection Closure
+# Connection Termination {#sec-termination}
 
-QUIC connections are closed either by expiration of an idle timeout, as
-determined by transport parameters, or by an
-explicit indication of the application that a connection should be closed
-(immediate close). While data could still be received after the immediate close
-has been initiated by one endpoint (for a limited time period), the expectation
-is that an immediate close was negotiated at the application layer and
-therefore no additional data is expected from both sides.
+QUIC connections are terminated in one of three ways: implicit idle timeout,
+explicit immediate close, or explicit stateless reset.
 
-An immediate close will emit an CONNECTION_CLOSE frame. This frame has two
-sets of types: one for QUIC internal problems that might lead to connection
-closure, and one for closures initiated by the application. An application
-using QUIC can define application-specific error codes (see, for example,
-{{Section 8.1 of QUIC-HTTP}}).
+QUIC does not provide any mechanism for graceful connection termination;
+applications using QUIC can define their own graceful termination process (see,
+for example, {{Section 5.2 of QUIC-HTTP}}).
 
-The CONNECTION_CLOSE frame provides an optional reason field, that can be used
-to append human-readable information to an error code.  RESET_STREAM and
-STOP_SENDING frames also include an error code, but no reason string.
+QUIC idle timeout is enabled via transport parameters. Client and server
+announce a timeout period and the effective value for the connection is the
+minimum of the two values. After the timeout period elapses, the connection is
+silently closed. An application therefore should be able to configure its own
+maximum value, as well as have access to the computed minimum value for this
+connection. An application may adjust the maximum idle timeout for new
+connections based on the number of open or expected connections, since shorter
+timeout values may free-up resources more quickly.
 
-Alternatively, a QUIC connection can be silently closed by each endpoint
-separately after an idle timeout. If enabled as indicated by a transport
-parameter in the handshake, the idle timeout is announced for each endpoint
-during connection establishment and the effective value for this connection is
-the minimum of the two values advertised by client and server. An application
-therefore should be able to configure its own maximum value as well as have
-access to the computed minimum value for this connection. An application may
-adjust the maximum idle timeout for new connections based on the number of open
-or expected connections, since shorter timeout values may free-up memory more
-quickly.
+Application data exchanged on streams or in datagrams defers the QUIC idle
+timeout. Applications that provide their own keep-alive mechanisms will
+therefore keep a QUIC connection alive. Applications that do not provide their
+own keep-alive can use transport-layer mechanisms (see {{Section
+10.1.2 of QUIC}}, and {{resumption-v-keepalive}}). However, QUIC implementation
+interfaces for controlling such transport behavior can vary, affecting the
+robustness of such approaches.
 
-If an application desires to keep the connection open for longer than the
-announced timeout, it can send keep-alive messages; a QUIC implementation may
-provide an option to defer the time-out by sending keep-alive messages at the
-transport layer to avoid unnecessary load, as specified in {{Section 10.1.2 of
-QUIC}}. See {{resumption-v-keepalive}} for further guidance on keep-alives.
+An immediate close is signaled by a CONNECTION_CLOSE frame (see
+{{error-handling}}). Immediate close causes all streams to become immediately
+closed, which may affect applications; see {{stream-limit-commitments}}.
+
+A stateless reset is an option of last resort for an endpoint that does not have
+access to connection state. Receiving a stateless reset is an indication of an
+unrecoverable error distinct from connection errors in that there is no
+application-layer information provided.
 
 
 # Information Exposure and the Connection ID {#connid}
@@ -716,7 +793,8 @@ light-weight versioning with different cryptographic handshakes.
 
 # Enabling New Versions
 
-QUIC provides integrity protection for its version negotiation process.  This
+QUIC version 1 does not specify a version negotation mechanism in the base spec
+but {{?I-D.draft-ietf-quic-version-negotiation}} proposes an extension. This
 process assumes that the set of versions that a server supports is fixed.  This
 complicates the process for deploying new QUIC versions or disabling old
 versions when servers operate in clusters.
@@ -761,10 +839,10 @@ the old version is no longer accepted.
 
 # Unreliable Datagram Service over QUIC
 
-{{?I-D.draft-ietf-quic-datagram}} specifies a QUIC extension to enable sending
+{{?I-D.ietf-quic-datagram}} specifies a QUIC extension to enable sending
 and receiving unreliable datagrams over QUIC. Unlike operating directly over
 UDP, applications that use the QUIC datagram service do not need to implement
-their own congestion control, per {{?RFC8085}}, as QUIC datagrams are
+their own congestion control, per {{RFC8085}}, as QUIC datagrams are
 congestion controlled.
 
 QUIC datagrams are not flow-controlled, and as such data chunks may be dropped
@@ -808,11 +886,12 @@ The following people have contributed text to this document:
 * Igor Lubashev
 * Mike Bishop
 * Martin Thomson
+* Lucas Pardue
+* Gorry Fairhurst
 
 # Acknowledgments
 
-Thanks also to Martin Duke, Gorry Fairhurst, Sean Turner, Lucas Pardue and
-Ian Swett for their reviews.
+Thanks also to Martin Duke, Sean Turner, and Ian Swett for their reviews.
 
 This work is partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
