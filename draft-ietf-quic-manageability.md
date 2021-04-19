@@ -1022,7 +1022,7 @@ However, it is questionable whether connection migrations must be supported
 during a DDoS attack. While unintended migration without a connection ID
 change can be more easily supported, it might be acceptable to not
 support migrations of active QUIC connections that are not visible to
-the network functions performing the DDoS detection. 
+the network functions performing the DDoS detection.
 As soon as the connection blocking is detected by the client,
 the client may be able to rely on the fast resumption mechanism
 provided by QUIC. When clients migrate to a new path, they should be prepared
