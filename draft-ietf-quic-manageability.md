@@ -1171,10 +1171,10 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.
 # Appendix
 
 This appendix uses the following conventions:
-array\[i\] – one byte at index i of array
-array\[i:j\] – subset of array starting with index i (inclusive) up to j-1
+* array\[i\] – one byte at index i of array
+* array\[i:j\] – subset of array starting with index i (inclusive) up to j-1
 (inclusive)
-array\[i:\] – subset of array starting with index i (inclusive) up to the
+* array\[i:\] – subset of array starting with index i (inclusive) up to the
 end of the array
 
 ## Distinguishing IETF QUIC and Google QUIC Versions {#sec-google-version}
