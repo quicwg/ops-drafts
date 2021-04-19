@@ -1019,11 +1019,11 @@ heuristics or machine learning instead of processing observed header
 information.
 
 However, it is questionable whether connection migrations must be supported
-during a DDoS attack. While unintended migration where the connection ID
-stays unchanged can be more easiliy supported, it might be acceptable that
-connection migrations of active QUIC connections that are not visible to
-the network that performs the DDoS detection may be blocked by such a system
-under attack. As soon as the connection blocking is detected by the client,
+during a DDoS attack. While unintended migration without a connection ID
+change can be more easily supported, it might be acceptable to not
+support migrations of active QUIC connections that are not visible to
+the network functions performing the DDoS detection. 
+As soon as the connection blocking is detected by the client,
 the client may be able to rely on the fast resumption mechanism
 provided by QUIC. When clients migrate to a new path, they should be prepared
 for the migration to fail and attempt to reconnect quickly.
