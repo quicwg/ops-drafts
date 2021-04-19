@@ -446,7 +446,7 @@ establishment failing later on.
 ## Connection ID and Rebinding {#rebinding}
 
 The connection ID in the QUIC packet headers allows association of QUIC
-packets using information independent of the five-tuple. This helps
+packets using information independent of the five-tuple. This
 allows rebinding of a connection after one of one endpoint experienced
 an address change - usually the client. Further it can be used by
 in-network devices to ensure that related 5-tuple flows are appropriately
