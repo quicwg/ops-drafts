@@ -563,7 +563,7 @@ not observed, such as in the case of connection migration; however, it might be
 possible to associate a flow with a flow for which a version has been
 identified; see {{sec-flow-association}}.
 
-### Rejection of Garbage Traffic {#sec-garbage}
+### First Packet Identification for Garbage Rejection {#sec-garbage}
 
 A related question is whether the first packet of a given flow on a port known
 to be associated with QUIC is a valid QUIC packet.  This determination supports
@@ -609,7 +609,7 @@ are likely to fail, and are not recommended to use as a way to construe
 internals of QUIC's operation as those mechanisms can change, e.g., due to the
 use of extensions.
 
-## Application Identification {#sec-server}
+## Server Name Indication (SNI) {#sec-server}
 
 The client's TLS ClientHello may contain a Server Name Indication (SNI)
 {{?RFC6066}} extension, by which the client reveals the name of the server it
