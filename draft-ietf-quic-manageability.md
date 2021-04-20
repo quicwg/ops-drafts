@@ -683,13 +683,12 @@ endpoints changes address or port.  This change can be due to NAT rebinding or
 address migration.
 
 The connection ID must change upon intentional address change by an endpoint,
-and connection ID negotiation is encrypted, so it is only possible for a
-passive observer to link unintended changes of address using the connection ID.
+and connection ID negotiation is encrypted, so it is not possible for a
+passive observer to link intended changes of address using the connection ID.
 
-In the case of the unintentional address change on a single endpoint,
-as is the case with NAT rebinding, an on-path observer can in most cases
-associate the flow on the new address with the flow on the old address, using
-the connection ID.
+When one endpoint unintentionally changes its address, as is the case with NAT
+rebinding, an on-path observer may be able to use the connection ID to
+associate the flow on the new address with the flow on the old address.
 
 A network function that attempts to use the connection ID to associate flows
 must be robust to the failure of this technique. Since the connection ID may
