@@ -492,7 +492,7 @@ overly conservative with stream limits affects stream concurrency. Balancing
 these aspects can be specific to applications and their deployments. Instead of
 relying on stream limits to avoid abrupt closure, an application-layer graceful
 close mechanism can be used to communicate the intention to explicitly close the
-connection at some future point. 
+connection at some future point.
 
 HTTP/3 provides such a mechanism using the
 GOWAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
