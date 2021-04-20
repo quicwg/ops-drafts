@@ -677,19 +677,25 @@ secret is retained by the observer.
 
 ## Flow Association {#sec-flow-association}
 
-The QUIC connection ID (see {{rebinding}}) is designed to allow an on-path
-device such as a load-balancer to associate two flows as identified by
-five-tuple when the address and port of one of the endpoints changes; e.g. due
-to NAT rebinding or address migration. An observer keeping flow state
-can associate a connection ID, if present, with a given flow, and can associate
-a known flow with a new flow when observing a packet sharing the same
-connection ID in the same direction between client and server and sharing one
-endpoint address (IP address and port) with the known flow.
+The QUIC connection ID (see {{rebinding}}) is designed to allow a coordinating
+on-path device, such as a load-balancer, to associate two flows when one of the
+endpoints changes address or port.  This change can be due to NAT rebinding or
+address migration.
 
-However, since the connection ID may change multiple times during the lifetime
-of a flow, and the negotiation of connection ID changes is encrypted, packets
-with the same 5-tuple but different connection IDs might or might not belong to
-the same connection.
+The connection ID must change upon intentional address change by an endpoint,
+and connection ID negotiation is encrypted, so it is not possible for a
+passive observer to link intended changes of address using the connection ID.
+
+When one endpoint unintentionally changes its address, as is the case with NAT
+rebinding, an on-path observer may be able to use the connection ID to
+associate the flow on the new address with the flow on the old address.
+
+A network function that attempts to use the connection ID to associate flows
+must be robust to the failure of this technique. Since the connection ID may
+change multiple times during the lifetime of a connection, packets with the
+same five-tuple but different connection IDs might or might not belong to
+the same connection. Likewise, packets with the same connection ID but
+different five-tuples might not belong to the same connection, either.
 
 Connection IDs should be treated as opaque; see {{sec-loadbalancing}}
 for caveats regarding connection ID selection at servers.
