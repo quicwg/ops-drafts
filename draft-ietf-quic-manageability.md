@@ -58,9 +58,10 @@ informative:
 --- abstract
 
 This document discusses manageability of the QUIC transport protocol, focusing
-on caveats impacting network operations involving QUIC traffic. Its intended
-audience is network operators, as well as content providers that rely on the use
-of QUIC-aware middleboxes, e.g. for load balancing.
+on the implications of QUIC's design and wire image on network operations 
+involving QUIC traffic. Its intended audience is network and service 
+operators who rely on the use of transport-aware network functions, e.g. for 
+security or load balancing, as well as the implementors of those functions.
 
 --- middle
 
