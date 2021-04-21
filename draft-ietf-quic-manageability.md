@@ -1174,16 +1174,7 @@ Innovation under contract no. 15.0268. This support does not imply endorsement.
 
 --- back
 
-# Appendix
-
-This appendix uses the following conventions:
-* array\[i\] – one byte at index i of array
-* array\[i:j\] – subset of array starting with index i (inclusive) up to j-1
-(inclusive)
-* array\[i:\] – subset of array starting with index i (inclusive) up to the
-end of the array
-
-## Distinguishing IETF QUIC and Google QUIC Versions {#sec-google-version}
+# Distinguishing IETF QUIC and Google QUIC Versions {#sec-google-version}
 
 This section contains algorithms that allows parsing versions from both
 Google QUIC and IETF QUIC. These mechanisms will become
@@ -1192,6 +1183,13 @@ irrelevant when IETF QUIC is fully deployed and Google QUIC is deprecated.
 Note that other than this appendix, nothing in this document applies to
 Google QUIC. And the purpose of this appendix is merely to distinguish IETF QUIC
 from any versions of Google QUIC.
+
+This appendix uses the following conventions:
+* array\[i\] – one byte at index i of array
+* array\[i:j\] – subset of array starting with index i (inclusive) up to j-1
+(inclusive)
+* array\[i:\] – subset of array starting with index i (inclusive) up to the
+end of the array
 
 Conceptually, a Google QUIC version is an opaque 32bit field. When we refer to a
 version with four printable characters, we use its ASCII representation:
