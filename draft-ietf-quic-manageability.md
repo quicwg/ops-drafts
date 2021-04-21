@@ -61,7 +61,7 @@ This document discusses manageability of the QUIC transport protocol, focusing
 on the implications of QUIC's design and wire image on network operations
 involving QUIC traffic. Its intended audience is network operators and
 equipment vendors who rely on the use of transport-aware network
-functions and the implementors of those functions.
+functions.
 
 --- middle
 
