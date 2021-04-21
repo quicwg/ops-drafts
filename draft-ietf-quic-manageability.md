@@ -72,23 +72,26 @@ that is encapsulated in UDP. QUIC integrates TLS
 information. QUIC version 1 was designed primarily as a transport for HTTP, with
 the resulting protocol being known as HTTP/3 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
 
-Given that QUIC is an end-to-end transport protocol, no information in the
-protocol header -- even that which can be inspected -- is meant to be mutable by
-the network. Therefore, these headers are integrity-protected. While less
-information is visible to the network than in TCP, integrity protection can also
-simplify troubleshooting, because none of the nodes on the network path can
-modify the transport layer information.
-
 This document provides guidance for network operations that manage QUIC
 traffic. This includes guidance on how to interpret and utilize information that
 is exposed by QUIC to the network, requirements and assumptions of the QUIC
 design with respect to network treatment, and a description of how common
 network management practices will be impacted by QUIC.
 
-Since QUIC's wire image {{?WIRE-IMAGE=RFC8546}} is integrity-protected,
-in-network operations that depend on modification of data are not possible
-without the cooperation of an endpoint. Network operation practices that alter
-data are only possible if performed as a QUIC endpoint; this might be possible
+Given that QUIC is an end-to-end transport protocol, no information in the
+protocol header -- even that which can be inspected -- is meant to be mutable by
+the network. Therefore, these headers are integrity-protected. 
+
+QUIC is an end-to-end transport protocol. No information in the protocol header,
+even that which can be inspected, is meant to be mutable by the network. This is
+achieved through integrity protection of the wire image {{?WIRE-IMAGE=RFC8546}}.
+Encryption of most control signaling means that less information is visible to
+the network than is the case with TCP.
+
+Integrity protection can also simplify troubleshooting, because none of the
+nodes on the network path can modify transport layer information. However, it
+does imply that in-network operations that depend on modification of data are
+not possible without the cooperation of an QUIC endpoint. This might be possible
 with the introduction of a proxy which authenticates as an endpoint.
 Proxy operations are not in scope for this document.
 
