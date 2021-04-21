@@ -11,6 +11,7 @@ keyword: Internet-Draft
 stand_alone: yes
 pi: [toc, sortrefs, symrefs]
 
+
 author:
   -
     ins: M. Kuehlewind
@@ -25,7 +26,6 @@ author:
     street: Gustav-Gull-Platz 1
     city: 8004 Zurich
     country: Switzerland
-
 
 normative:
 
