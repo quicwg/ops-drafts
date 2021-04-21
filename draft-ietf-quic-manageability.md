@@ -20,7 +20,7 @@ author:
   -
     ins: B. Trammell
     name: Brian Trammell
-    org: Google
+    org: Google Switzerland GmbH
     email: ietf@trammell.ch
     street: Gustav-Gull-Platz 1
     city: 8004 Zurich
