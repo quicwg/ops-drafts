@@ -78,10 +78,6 @@ is exposed by QUIC to the network, requirements and assumptions of the QUIC
 design with respect to network treatment, and a description of how common
 network management practices will be impacted by QUIC.
 
-Given that QUIC is an end-to-end transport protocol, no information in the
-protocol header -- even that which can be inspected -- is meant to be mutable by
-the network. Therefore, these headers are integrity-protected. 
-
 QUIC is an end-to-end transport protocol. No information in the protocol header,
 even that which can be inspected, is meant to be mutable by the network. This is
 achieved through integrity protection of the wire image {{?WIRE-IMAGE=RFC8546}}.
