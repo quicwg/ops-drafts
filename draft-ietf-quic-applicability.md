@@ -269,14 +269,14 @@ See {{RFC8085}}, especially Section 3.5.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
-data to a server over a connection idle longer than the server's idle timeout
-(available from the idle_timeout transport parameter) can simply reconnect. When
-possible, this reconnection can use 0-RTT session resumption, reducing the
-latency involved with restarting the connection. Of course, this approach is
-only valid in cases in which it is safe to use 0-RTT and when the client is the
-restarting peer. It is also not applicable when the application binds external
-state to the connection, as this state cannot reliably be transferred to a
-resumed connection.
+data to a server over a connection that has been idle longer than the server's
+idle timeout (available from the idle_timeout transport parameter) can simply
+reconnect. When possible, this reconnection can use 0-RTT session resumption,
+reducing the latency involved with restarting the connection. Of course, this
+approach is only valid in cases in which it is safe to use 0-RTT and when the
+client is the restarting peer. It is also not applicable when the application
+binds external state to the connection, as this state cannot reliably be
+transferred to a resumed connection.
 
 The tradeoffs between resumption and keep-alives need to be evaluated on a
 per-application basis. In general, applications should use keep-alives only in
