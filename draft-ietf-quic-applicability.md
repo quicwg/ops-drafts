@@ -595,11 +595,11 @@ should register an ALPN token for use in the TLS handshake.
 Applications could define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
 and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
-for an HTTP origin to advertise the availability of an equivalent HTTP/3
-endpoint on a certain UDP port by using the "h3" ALPN token.
-Note that HTTP/3's ALPN token ("h3") identifies not only the version of the
-application protocol, but also the version of QUIC itself; this approach
-allows unambiguous agreement between the endpoints on the protocol stack in use.
+{{?RFC7838}} for an HTTP origin to advertise the availability of an equivalent
+HTTP/3 endpoint on a certain UDP port by using the "h3" ALPN token.  Note that
+HTTP/3's ALPN token ("h3") identifies not only the version of the application
+protocol, but also the version of QUIC itself; this approach allows unambiguous
+agreement between the endpoints on the protocol stack in use.
 
 Given the prevalence of the assumption in network management
 practice that a port number maps unambiguously to an application, the
