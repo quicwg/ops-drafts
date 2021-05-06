@@ -229,7 +229,7 @@ the use of Alt-Svc for discovery of HTTP/3 services on other ports.
 
 Further, as QUIC has a connection ID, it is also possible to maintain multiple
 QUIC connections over one 5-tuple. However, if the connection ID is zero-length,
-all packets of the 5-tuple belong to the same QUIC connection.
+all packets of the 5-tuple likely belong to the same QUIC connection.
 
 ## The QUIC Handshake {#handshake}
 
