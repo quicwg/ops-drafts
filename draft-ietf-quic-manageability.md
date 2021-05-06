@@ -283,7 +283,7 @@ the server's side of the TLS handshake, and initial 1-RTT data, if present.
 The Client Completion datagram contains at least one Handshake packet and
 some also include an Initial packet.
 
-Datagrams that contain a Client Initial Packet (Client Initial, Server
+Datagrams that contain an Initial Packet (Client Initial, Server
 Initial, and some Client Completion) contain at least 1200 octets of UDP
 payload. This protects against amplification attacks and verifies that the
 network path meets the requirements for the minimum QUIC IP packet size;
