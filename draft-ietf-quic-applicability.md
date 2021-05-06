@@ -745,19 +745,20 @@ migrations at a given time, or through other means.
 
 ## Using Server Retry for Redirection
 
-QUIC provides a Server Retry packet that can be sent by a server in response to
-the Client Initial packet. The server may choose a new connection ID in that
-packet and the client will retry by sending another Client Initial packet with
+QUIC provides a Retry packet that can be sent by a server in response to
+the client Initial packet. The server may choose a new connection ID in that
+packet and the client will retry by sending another client Initial packet with
 the server-selected connection ID. This mechanism can be used to redirect a
-connection to a different server, e.g. due to performance reasons or when
+connection to a different server, e.g., due to performance reasons or when
 servers in a server pool are upgraded gradually, and therefore may support
-different versions of QUIC. In this case, it is assumed that all servers
-belonging to a certain pool are served in cooperation with load balancers that
-forward the traffic based on the connection ID. A server can choose the
-connection ID in the Server Retry packet such that the load balancer will
-redirect the next Client Initial packet to a different server in that pool.
-Alternatively the load balancer can directly offer a Retry service as further
-described in {{?QUIC-LB}}.
+different versions of QUIC.
+
+In this case, it is assumed that all servers belonging to a certain pool are
+served in cooperation with load balancers that forward the traffic based on the
+connection ID. A server can choose the connection ID in the Retry packet such
+that the load balancer will redirect the next Initial packet to a different
+server in that pool.  Alternatively the load balancer can directly offer a Retry
+service as further described in {{?QUIC-LB}}.
 
 {{Section 4 of RFC5077}} describes an example approach for constructing
 TLS resumption tickets that can be also applied for validation tokens,
