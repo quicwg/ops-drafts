@@ -840,12 +840,7 @@ as the handshake completed, timers should be set long enough to also
 allow for short idle time during a valid transmission.
 
 {{?RFC4787}} requires a timeout that is not less than 2 minutes for most UDP
-traffic.  However, in practice, timers are sometimes lower, in the range of 30
-to 60 seconds. In contrast, {{?RFC5382}} recommends a timeout of more than 2
-hours for TCP, given that TCP is a connection-oriented protocol with well-
-defined closure semantics.
-
-Even though QUIC has explicitly been designed tolerate NAT rebindings,
+traffic.  Even though QUIC has explicitly been designed tolerate NAT rebindings,
 decreasing the NAT timeout is not recommended, as it may negatively impact
 application performance or incentivize endpoints to send very frequent
 keep-alive packets. Instead it is recommended, even when lower timers are
