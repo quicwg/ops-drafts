@@ -523,7 +523,7 @@ carried on the wire) unless noted.
 ## Identifying QUIC Traffic {#sec-identifying}
 
 The QUIC wire image is not specifically designed to be distinguishable from
-other UDP traffic.
+other UDP traffic by a passive observer in the network.
 
 The only application binding defined by the IETF QUIC WG is HTTP/3
 {{?QUIC-HTTP}} at the time of this writing; however, many other applications
