@@ -679,12 +679,12 @@ secret is retained by the observer.
 
 The QUIC connection ID (see {{rebinding}}) is designed to allow a coordinating
 on-path device, such as a load-balancer, to associate two flows when one of the
-endpoints changes address or port.  This change can be due to NAT rebinding or
-address migration.
+endpoints changes address.  This change can be due to NAT rebinding or address
+migration.
 
-The connection ID must change upon intentional address change by an endpoint,
-and connection ID negotiation is encrypted, so it is not possible for a
-passive observer to link intended changes of address using the connection ID.
+The connection ID must change upon intentional address change by an
+endpoint, and connection ID negotiation is encrypted, so it is not possible for
+a passive observer to link intended changes of address using the connection ID.
 
 When one endpoint unintentionally changes its address, as is the case with NAT
 rebinding, an on-path observer may be able to use the connection ID to
@@ -958,7 +958,7 @@ limits might need to be adapted dynamically.
 Further, if UDP traffic is desired to be throttled, it is recommended to
 block individual
 QUIC flows entirely rather than dropping packets randomly. When the handshake is
-blocked, QUIC-capable applications may failover to TCP
+blocked, QUIC-capable applications may failover to TCP.
 However, blocking a
 random fraction of QUIC packets across 4-tuples will allow many QUIC handshakes
 to complete, preventing a TCP failover, but the connections will suffer from
