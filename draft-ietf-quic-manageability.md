@@ -1100,7 +1100,7 @@ PMTU that is inefficient.
 
 Networks with configurations that would lead to fragmentation of large packets
 should drop such packets rather than fragmenting them. Network operators who
-plan to implement a more selective policy may start by focussing on QUIC.
+plan to implement a more selective policy may start by focusing on QUIC.
 QUIC flows cannot always be easily distinguished from other UDP traffic, but
 we assume at least some portion of QUIC traffic can be identified
 (see {{sec-identifying}}). For QUIC endpoints using DPLPMTUD it is recommended
