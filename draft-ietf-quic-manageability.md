@@ -1074,7 +1074,8 @@ and {{?RFC4443}}.
 
 ## Guiding Path MTU
 
-Some network segments support 1500-byte packets, but can only do so by fragmenting at a
+Some network segments support 1500-byte packets, 
+but can only do so by fragmenting at a
 lower layer before traversing a network segment with a smaller MTU, 
 and then reassembling within the network segment.
 This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set,
@@ -1116,17 +1117,17 @@ reply upon these messages, but still can optionally use these to improve
 performance {{Section 4.6 of DPLPMTUD}}.
 
 A network cannot know in advance which discovery method is used by a QUIC 
-endpoint, so it should send a PTB message in addition to dropping an oversized packet. 
-A generated PTB message should be compliant with the
-validation requirements of {{Section 14.2.1 of QUIC-TRANSPORT}}, otherwise it
-will be ignored for PMTU discovery. This provides a signal to the 
+endpoint, so it should send a PTB message in addition to dropping an 
+oversized packet. A generated PTB message should be compliant with the
+validation requirements of {{Section 14.2.1 of QUIC-TRANSPORT}}, otherwise
+it will be ignored for PMTU discovery. This provides a signal to the 
 endpoint to prevent the packet size from growing too large, which can 
 entirely avoid network segment fragmentation for that flow.
 
 Endpoints can cache PMTU information, in the IP-layer cache. This short-term
 consistency between the PMTU for flows can help avoid an endpoint using a
 PMTU that is inefficient. The IP cache can also influence the PMTU value of
-other IP flows that use the same path {{?RFC8201}}{{?DPLPMTUD=RFC8899}}, 
+other IP flows that use the same path {{?RFC8201}}{{?DPLPMTUD=RFC8899}},
 including IP packets carrying
 protocols other than QUIC. The representation of an IP path is 
 implementation-specific {{?RFC8201}}.
