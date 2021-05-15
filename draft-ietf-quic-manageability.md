@@ -1074,39 +1074,39 @@ and {{?RFC4443}}.
 
 ## Guiding Path MTU
 
-Some networks support 1500-byte packets, but can only do so by fragmenting at a
-lower layer before traversing a smaller MTU segment, and then reassembling.
+Some network segments support 1500-byte packets, but can only do so by fragmenting at a
+lower layer before traversing a network segment with a smaller MTU, 
+and then reassembling within the network segment.
 This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set,
-because it occurs below the IP layer. However, this process can add to compute
+because fragmention occurs below the IP layer. However, this process can add to compute
 and memory costs, leading to a bottleneck that limits network capacity. In such
 networks this generates a desire to influence a majority of senders to use
-smaller packets, so that the limited reassembly capacity is not exceeded.
+smaller packets, to avoid exceeding limited reassembly capacity.
 
 For TCP, MSS clamping ({{Section 3.2 of RFC4459}}) is often used to change
-the sender's maximum TCP segment size, but QUIC requires a different approach.
+the sender's TCP maximum segment size, but QUIC requires a different approach.
 {{Section 14 of QUIC-TRANSPORT}} advises senders to probe larger sizes using
 Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
 Maximum Transmission Unit Discovery (PMTUD: {{?RFC1191}} and {{?RFC8201}}).
-This mechanism will encourage senders to approach the maximum size, which
-could cause fragmentation with a network segment that they may not be aware of.
+This mechanism encourages senders to approach the maximum packet size, which
+could then cause fragmentation within a network segment of which they may not be aware.
 
-If path performance is limited when sending larger packets, an on-path
+If path performance is limited when forwarding larger packets, an on-path
 device should support a maximum packet size for a specific transport flow
 and then consistently drop all packets that exceed the configured size
-when the inner IPv4 packet has DF set, or IPv6 is used. Endpoints can cache
-PMTU information between IP flows, in the IP-layer cache, so short-term
-consistency between the PMTU for flows can help avoid an endpoint using a
-PMTU that is inefficient.
+when the inner IPv4 packet has DF set, or IPv6 is used. 
 
-Networks with configurations that would lead to fragmentation of large packets
-should drop such packets rather than fragmenting them. Network operators who
+Networks with configurations that would lead to fragmenting large packets
+within a network sgement should drop such packets rather than fragmenting them. 
+Network operators who
 plan to implement a more selective policy may start by focussing on QUIC.
 QUIC flows cannot always be easily distinguished from other UDP traffic, but
 we assume at least some portion of QUIC traffic can be identified
-(see {{sec-identifying}}). For QUIC endpoints using DPLPMTUD it is recommended
-for the path to drop a packet larger than the supported size. A QUIC probe
-packet is used to discover the PMTU. If lost, this does not impact the flow of
-QUIC data.
+(see {{sec-identifying}}). For networks supporting QUIC, it is recommended 
+that a path drops any packet larger than the fragmentation size. 
+When a QUIC endpoint uses DPLPMTUD, it will use a QUIC probe packet to 
+discover the PMTU. If this probe is lost, it will not impact the flow of 
+QUIC data. 
 
 IPv4 routers generate an ICMP message when a packet is dropped because the
 link MTU was exceeded. {{?RFC8504}} specifies how an IPv6 node generates an
@@ -1115,13 +1115,20 @@ endpoint receiving such PTB messages {{RFC8201}}, whereas DPLPMTUD does not
 reply upon these messages, but still can optionally use these to improve
 performance {{Section 4.6 of DPLPMTUD}}.
 
-Since a network cannot know in advance which discovery method a QUIC endpoint
-is using, it should always send a PTB message in addition to dropping the
-oversized packet. A generated PTB message should be compliant with the
+A network cannot know in advance which discovery method is used by a QUIC 
+endpoint, so it should send a PTB message in addition to dropping an oversized packet. 
+A generated PTB message should be compliant with the
 validation requirements of {{Section 14.2.1 of QUIC-TRANSPORT}}, otherwise it
-will be ignored by DPLPMTUD. This will likely provide the right signal for the
-endpoint to keep the packet size small and thereby avoid network fragmentation
-for that flow entirely.
+will be ignored for PMTU discovery. This provides a signal to the 
+endpoint to prevent the packet size from growing too large, which can 
+entirely avoid network segment fragmentation for that flow.
+
+Endpoints can cache PMTU information, in the IP-layer cache. This short-term
+consistency between the PMTU for flows can help avoid an endpoint using a
+PMTU that is inefficient. The IP cache can also influence the PMTU value of
+other IP flows that use the same path {{RFC8201}}{{RFC8899}}, including packets carrying
+protocols other than QUIC. The representation of an IP path is 
+implementation-specific {{RFC8201}}.
 
 # IANA Considerations
 
