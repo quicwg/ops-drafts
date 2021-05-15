@@ -1079,7 +1079,8 @@ but can only do so by fragmenting at a
 lower layer before traversing a network segment with a smaller MTU, 
 and then reassembling within the network segment.
 This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set,
-because fragmention occurs below the IP layer. However, this process can add to compute
+because fragmention occurs below the IP layer. 
+However, this process can add to compute
 and memory costs, leading to a bottleneck that limits network capacity. In such
 networks this generates a desire to influence a majority of senders to use
 smaller packets, to avoid exceeding limited reassembly capacity.
@@ -1090,7 +1091,8 @@ the sender's TCP maximum segment size, but QUIC requires a different approach.
 Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
 Maximum Transmission Unit Discovery (PMTUD: {{?RFC1191}} and {{?RFC8201}}).
 This mechanism encourages senders to approach the maximum packet size, which
-could then cause fragmentation within a network segment of which they may not be aware.
+could then cause fragmentation within a network segment of which 
+they may not be aware.
 
 If path performance is limited when forwarding larger packets, an on-path
 device should support a maximum packet size for a specific transport flow
