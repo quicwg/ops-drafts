@@ -601,7 +601,7 @@ the Destination Connection ID fields of the new Initial packet.
 Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
 from packets carrying upper-layer data in order to attempt to enhance
 performance, for example by queueing ACKs differently or manipulating ACK
-signaling {{RFC3449}}. Distinguishing ACK packets is possible in TCP, 
+signaling {{?RFC3449}}. Distinguishing ACK packets is possible in TCP, 
 but not supported by
 QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
 and ACK manipulation is impossible. Specifically, heuristics attempting to
