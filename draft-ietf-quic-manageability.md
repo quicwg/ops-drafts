@@ -957,11 +957,11 @@ limits might need to be adapted dynamically.
 
 Further, if UDP traffic is desired to be throttled, it is recommended to
 block individual
-QUIC flows entirely rather than dropping packets indiscriminately. When the handshake is
-blocked, QUIC-capable applications may failover to TCP
-However, blocking a
-random fraction of QUIC packets across 4-tuples will allow many QUIC handshakes
-to complete, preventing a TCP failover, but resulting in connections then suffering
+QUIC flows entirely rather than dropping packets indiscriminately. 
+When the handshake is blocked, QUIC-capable applications may failover to TCP
+However, blocking a random fraction of QUIC packets across 4-tuples will 
+allow many QUIC handshakes to complete, preventing a TCP failover, 
+but resulting in connections then suffering
 severe packet loss (see also {{sec-filtering}}). Therefore UDP throttling
 should be realized by per-flow policing, as opposed to per-packet
 policing. Note that this per-flow policing should be stateless to avoid
