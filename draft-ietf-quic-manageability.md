@@ -221,7 +221,7 @@ ID; see {{Section 17.2 of QUIC-TRANSPORT}}.
 
 Applications that have a mapping for TCP as well as QUIC are expected to
 use the same port number for both services. However, as for all other IETF
-transports {{RFC7605}}, there is no guarantee that a specific application
+transports {{?RFC7605}}, there is no guarantee that a specific application
 will use a given registered port, or that a given port carries traffic belonging
 to the respective registered service, especially when application layer
 information is encrypted. For example, {{QUIC-HTTP}} specifies
@@ -1111,7 +1111,7 @@ QUIC data.
 IPv4 routers generate an ICMP message when a packet is dropped because the
 link MTU was exceeded. {{?RFC8504}} specifies how an IPv6 node generates an
 ICMPv6 Packet Too Big message (PTB) in this case. PMTUD relies upon an
-endpoint receiving such PTB messages {{RFC8201}}, whereas DPLPMTUD does not
+endpoint receiving such PTB messages {{?RFC8201}}, whereas DPLPMTUD does not
 reply upon these messages, but still can optionally use these to improve
 performance {{Section 4.6 of DPLPMTUD}}.
 
@@ -1128,7 +1128,7 @@ consistency between the PMTU for flows can help avoid an endpoint using a
 PMTU that is inefficient. The IP cache can also influence the PMTU value of
 other IP flows that use the same path {{?RFC8201}}{{?DPLPMTUD=RFC8899}}, including packets carrying
 protocols other than QUIC. The representation of an IP path is 
-implementation-specific {{RFC8201}}.
+implementation-specific {{?RFC8201}}.
 
 # IANA Considerations
 
