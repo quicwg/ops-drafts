@@ -1126,7 +1126,7 @@ entirely avoid network segment fragmentation for that flow.
 Endpoints can cache PMTU information, in the IP-layer cache. This short-term
 consistency between the PMTU for flows can help avoid an endpoint using a
 PMTU that is inefficient. The IP cache can also influence the PMTU value of
-other IP flows that use the same path {{RFC8201}}{{RFC8899}}, including packets carrying
+other IP flows that use the same path {{?RFC8201}}{{?DPLPMTUD=RFC8899}}, including packets carrying
 protocols other than QUIC. The representation of an IP path is 
 implementation-specific {{RFC8201}}.
 
