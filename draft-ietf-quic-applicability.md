@@ -495,7 +495,7 @@ close mechanism can be used to communicate the intention to explicitly close the
 connection at some future point.
 
 HTTP/3 provides such a mechanism using the
-GOWAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
+GOAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
 stops opening new streams even if the cumulative stream limit would allow.
 Instead the client would create a new connection on which to open further
 streams.  Once all streams are closed on the old connection, it can be
