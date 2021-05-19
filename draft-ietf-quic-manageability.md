@@ -959,7 +959,7 @@ Further, if UDP traffic is desired to be throttled, it is recommended to
 block individual
 QUIC flows entirely rather than dropping packets indiscriminately. 
 When the handshake is blocked, QUIC-capable applications may failover to TCP
-However, blocking a random fraction of QUIC packets across 4-tuples will 
+However, blocking a random fraction of QUIC packets across 4-tuples will
 allow many QUIC handshakes to complete, preventing a TCP failover, 
 but resulting in connections then suffering
 severe packet loss (see also {{sec-filtering}}). Therefore UDP throttling
