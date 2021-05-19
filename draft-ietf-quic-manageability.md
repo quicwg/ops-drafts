@@ -763,7 +763,7 @@ signaling for a given connection can use a fixed spin value for the duration of
 the connection, or can set the bit randomly on each packet sent.
 
 When in use, the latency spin bit in each direction changes value once per
-round-trip time (RTT) any time that both endpoints are sending packet
+round-trip time (RTT) any time that both endpoints are sending packets
 continuously. An on-path observer can observe the time difference between edges
 (changes from 1 to 0 or 0 to 1) in the spin bit signal in a single direction to
 measure one sample of end-to-end RTT. This mechanism follows the principles of
