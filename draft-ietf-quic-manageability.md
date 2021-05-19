@@ -850,8 +850,8 @@ decreasing the NAT timeout is not recommended, as it may negatively impact
 application performance or incentivize endpoints to send very frequent
 keep-alive packets. 
 
-The recommendation is therefore that even when lower state timeouts are
-used for other UDP traffic, to use a state tiemout of at least two minutes 
+The recommendation is therefore that, even when lower state timeouts are
+used for other UDP traffic, a state timeout of at least two minutes 
 ought to be used for QUIC traffic.
 
 If state is removed too early, this could lead to black-holing of incoming
