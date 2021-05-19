@@ -337,19 +337,19 @@ streams by the receiver. Therefore, an application can use the maximum
 number of allowed, currently open, and currently used streams when
 determining how to map data to streams.
 
-QUIC assigns a numerical identifier to each stream, called the Stream ID.  While
+QUIC assigns a numerical identifier to each stream, called the stream ID.  While
 the relationship between these identifiers and stream types is clearly defined
 in version 1 of QUIC, future versions might change this relationship for various
 reasons. QUIC implementations should expose the properties of each stream
 (which endpoint initiated the stream, whether the stream is unidirectional or
-bidirectional, the Stream ID used for the stream); applications should query for
-these properties rather than attempting to infer them from the Stream ID.
+bidirectional, the stream ID used for the stream); applications should query for
+these properties rather than attempting to infer them from the stream ID.
 
 The method of allocating stream identifiers to streams opened by the application
 might vary between transport implementations. Therefore, an application should
 not assume a particular stream ID will be assigned to a stream that has not yet
-been allocated.  For example, HTTP/3 uses Stream IDs to refer to streams that
-have already been opened, but makes no assumptions about future Stream IDs or
+been allocated.  For example, HTTP/3 uses stream IDs to refer to streams that
+have already been opened, but makes no assumptions about future stream IDs or
 the way in which they are assigned {{Section 6 of QUIC-HTTP}}).
 
 ## Stream versus Flow Multiplexing
