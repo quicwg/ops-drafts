@@ -632,9 +632,9 @@ parsing the QUIC CRYPTO Frame containing the TLS ClientHello.
 
 As both the derivation of the Initial secret and the structure of the Initial
 packet itself are version-specific, the first step is always to parse the
-version number (second to sixth bytes of the long header). Note that only long
-header packets carry the version number, so it is necessary to also check if the
-first bit of the QUIC packet is set to 1, indicating a long header.
+version number (the second through fifth bytes of the long header). Note that
+only long header packets carry the version number, so it is necessary to also
+check if the first bit of the QUIC packet is set to 1, indicating a long header.
 
 Note that proprietary QUIC versions, that have been deployed before
 standardization, might not set the first bit in a QUIC long header packet to
