@@ -847,18 +847,18 @@ allow for short idle time during a valid transmission.
 
 {{?RFC4787}} requires a network state timeout that is not less than 2 minutes
 for most UDP traffic.  However, in practice, a QUIC endpoint can experience
-lower timeouts, in the range of 30 to 60 seconds. 
+lower timeouts, in the range of 30 to 60 seconds.
 
 In contrast, {{?RFC5382}} recommends a state timeout of more than 2
 hours for TCP, given that TCP is a connection-oriented protocol with well-
-defined closure semantics. 
+defined closure semantics.
 Even though QUIC has explicitly been designed to tolerate NAT rebindings,
 decreasing the NAT timeout is not recommended, as it may negatively impact
 application performance or incentivize endpoints to send very frequent
-keep-alive packets. 
+keep-alive packets.
 
 The recommendation is therefore that, even when lower state timeouts are
-used for other UDP traffic, a state timeout of at least two minutes 
+used for other UDP traffic, a state timeout of at least two minutes
 ought to be used for QUIC traffic.
 
 If state is removed too early, this could lead to black-holing of incoming
