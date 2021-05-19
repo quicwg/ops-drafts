@@ -286,10 +286,9 @@ instance, recommends using keep-alives only when a request is outstanding.
 # Use of Streams
 
 QUIC's stream multiplexing feature allows applications to run multiple streams
-over a single connection, without head-of-line blocking between streams,
-associated at a point in time with a single five-tuple. Stream data is carried
-within frames, where one QUIC packet on the wire can carry one or multiple
-stream frames.
+over a single connection, without head-of-line blocking between streams.  Stream
+data is carried within frames, where one QUIC packet on the wire can carry one
+or multiple stream frames.
 
 Streams can be unidirectional or bidirectional, and a stream may be initiated
 either by client or server. Only the initiator of a unidirectional stream can
