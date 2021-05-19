@@ -209,7 +209,8 @@ other information in the packet headers:
 
 ## Coalesced Packets {#coalesced}
 
-Multiple QUIC packets may be coalesced into a single UDP datagram, with a datagram
+Multiple QUIC packets may be coalesced into a single UDP datagram,
+with a datagram
 carrying one or more long header packets followed by zero or one short header
 packets. When packets are coalesced, the Length fields in the long headers are
 used to separate QUIC packets; see {{Section 12.2 of QUIC-TRANSPORT}}.
@@ -497,7 +498,8 @@ Also note that the list of versions in the Version Negotiation packet may
 contain reserved versions. This mechanism is used to avoid ossification in the
 implementation on the selection mechanism. Further, a client may send an Initial
 packet with a reserved version number to trigger version negotiation. In
-the Version Negotiation packet, the connection IDs of the client's Initial packet
+the Version Negotiation packet, the connection IDs of the client's
+Initial packet
 are reflected to provide a proof of return-routability. Therefore, changing this
 information will also cause the connection to fail.
 
