@@ -1083,12 +1083,12 @@ and {{?RFC4443}}.
 
 ## Guiding Path MTU
 
-Some network segments support 1500-byte packets, 
+Some network segments support 1500-byte packets,
 but can only do so by fragmenting at a
-lower layer before traversing a network segment with a smaller MTU, 
+lower layer before traversing a network segment with a smaller MTU,
 and then reassembling within the network segment.
 This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set,
-because fragmention occurs below the IP layer. 
+because fragmention occurs below the IP layer.
 However, this process can add to compute
 and memory costs, leading to a bottleneck that limits network capacity. In such
 networks this generates a desire to influence a majority of senders to use
@@ -1100,7 +1100,7 @@ the sender's TCP maximum segment size, but QUIC requires a different approach.
 Datagram Packetization Layer PMTU Discovery ({{?DPLPMTUD=RFC8899}}) or Path
 Maximum Transmission Unit Discovery (PMTUD: {{?RFC1191}} and {{?RFC8201}}).
 This mechanism encourages senders to approach the maximum packet size, which
-could then cause fragmentation within a network segment of which 
+could then cause fragmentation within a network segment of which
 they may not be aware.
 
 If path performance is limited when forwarding larger packets, an on-path
@@ -1128,20 +1128,20 @@ endpoint receiving such PTB messages {{?RFC8201}}, whereas DPLPMTUD does not
 reply upon these messages, but still can optionally use these to improve
 performance {{Section 4.6 of DPLPMTUD}}.
 
-A network cannot know in advance which discovery method is used by a QUIC 
-endpoint, so it should send a PTB message in addition to dropping an 
+A network cannot know in advance which discovery method is used by a QUIC
+endpoint, so it should send a PTB message in addition to dropping an
 oversized packet. A generated PTB message should be compliant with the
 validation requirements of {{Section 14.2.1 of QUIC-TRANSPORT}}, otherwise
-it will be ignored for PMTU discovery. This provides a signal to the 
-endpoint to prevent the packet size from growing too large, which can 
+it will be ignored for PMTU discovery. This provides a signal to the
+endpoint to prevent the packet size from growing too large, which can
 entirely avoid network segment fragmentation for that flow.
 
 Endpoints can cache PMTU information, in the IP-layer cache. This short-term
 consistency between the PMTU for flows can help avoid an endpoint using a
 PMTU that is inefficient. The IP cache can also influence the PMTU value of
-other IP flows that use the same path {{?RFC8201}}{{?DPLPMTUD=RFC8899}},
+other IP flows that use the same path {{?RFC8201}}{{?RFC8899}},
 including IP packets carrying
-protocols other than QUIC. The representation of an IP path is 
+protocols other than QUIC. The representation of an IP path is
 implementation-specific {{?RFC8201}}.
 
 # IANA Considerations
