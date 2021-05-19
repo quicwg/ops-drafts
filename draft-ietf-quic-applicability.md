@@ -269,14 +269,14 @@ See {{RFC8085}}, especially Section 3.5.
 
 Alternatively, the client (but not the server) can use session resumption
 instead of sending keepalive traffic. In this case, a client that wants to send
-data to a server over a connection idle longer than the server's idle timeout
-(available from the idle_timeout transport parameter) can simply reconnect. When
-possible, this reconnection can use 0-RTT session resumption, reducing the
-latency involved with restarting the connection. Of course, this approach is
-only valid in cases in which 0-RTT data is safe, when the client is the
-restarting peer, and when the data to be sent is idempotent. It is also not
-applicable when the application binds external state to the connection, as this
-state cannot reliably be transferred to a resumed connection.
+data to a server over a connection that has been idle longer than the server's
+idle timeout (available from the idle_timeout transport parameter) can simply
+reconnect. When possible, this reconnection can use 0-RTT session resumption,
+reducing the latency involved with restarting the connection. Of course, this
+approach is only valid in cases in which it is safe to use 0-RTT and when the
+client is the restarting peer. It is also not applicable when the application
+binds external state to the connection, as this state cannot reliably be
+transferred to a resumed connection.
 
 The tradeoffs between resumption and keep-alives need to be evaluated on a
 per-application basis. In general, applications should use keep-alives only in
@@ -286,10 +286,9 @@ instance, recommends using keep-alives only when a request is outstanding.
 # Use of Streams
 
 QUIC's stream multiplexing feature allows applications to run multiple streams
-over a single connection, without head-of-line blocking between streams,
-associated at a point in time with a single five-tuple. Stream data is carried
-within frames, where one QUIC packet on the wire can carry one or multiple
-stream frames.
+over a single connection, without head-of-line blocking between streams.  Stream
+data is carried within frames, where one QUIC packet on the wire can carry one
+or multiple stream frames.
 
 Streams can be unidirectional or bidirectional, and a stream may be initiated
 either by client or server. Only the initiator of a unidirectional stream can
@@ -337,19 +336,19 @@ streams by the receiver. Therefore, an application can use the maximum
 number of allowed, currently open, and currently used streams when
 determining how to map data to streams.
 
-QUIC assigns a numerical identifier to each stream, called the Stream ID.  While
+QUIC assigns a numerical identifier to each stream, called the stream ID.  While
 the relationship between these identifiers and stream types is clearly defined
 in version 1 of QUIC, future versions might change this relationship for various
 reasons. QUIC implementations should expose the properties of each stream
 (which endpoint initiated the stream, whether the stream is unidirectional or
-bidirectional, the Stream ID used for the stream); applications should query for
-these properties rather than attempting to infer them from the Stream ID.
+bidirectional, the stream ID used for the stream); applications should query for
+these properties rather than attempting to infer them from the stream ID.
 
 The method of allocating stream identifiers to streams opened by the application
 might vary between transport implementations. Therefore, an application should
 not assume a particular stream ID will be assigned to a stream that has not yet
-been allocated.  For example, HTTP/3 uses Stream IDs to refer to streams that
-have already been opened, but makes no assumptions about future Stream IDs or
+been allocated.  For example, HTTP/3 uses stream IDs to refer to streams that
+have already been opened, but makes no assumptions about future stream IDs or
 the way in which they are assigned {{Section 6 of QUIC-HTTP}}).
 
 ## Stream versus Flow Multiplexing
@@ -495,7 +494,7 @@ close mechanism can be used to communicate the intention to explicitly close the
 connection at some future point.
 
 HTTP/3 provides such a mechanism using the
-GOWAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
+GOAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
 stops opening new streams even if the cumulative stream limit would allow.
 Instead the client would create a new connection on which to open further
 streams.  Once all streams are closed on the old connection, it can be
@@ -595,11 +594,11 @@ should register an ALPN token for use in the TLS handshake.
 Applications could define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
 and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
-for an HTTP origin to advertise the availability of an equivalent HTTP/3
-endpoint on a certain UDP port by using the "h3" ALPN token.
-Note that HTTP/3's ALPN token ("h3") identifies not only the version of the
-application protocol, but also the version of QUIC itself; this approach
-allows unambiguous agreement between the endpoints on the protocol stack in use.
+{{?RFC7838}} for an HTTP origin to advertise the availability of an equivalent
+HTTP/3 endpoint on a certain UDP port by using the "h3" ALPN token.  Note that
+HTTP/3's ALPN token ("h3") identifies not only the version of the application
+protocol, but also the version of QUIC itself; this approach allows unambiguous
+agreement between the endpoints on the protocol stack in use.
 
 Given the prevalence of the assumption in network management
 practice that a port number maps unambiguously to an application, the
@@ -613,8 +612,8 @@ identification.
 
 QUIC supports connection migration by the client. If an IP address
 changes, a QUIC endpoint can still associate packets with an existing
-transport connection using the destination connection ID field
-(see also {{connid}}) in the QUIC header, unless a zero-length value is used.
+transport connection using the Destination Connection ID field
+(see also {{connid}}) in the QUIC header.
 This supports cases where address information changes, such as NAT rebinding,
 intentional change of the local interface, or based on an indication in the
 handshake of the server for a preferred address to be used.
@@ -623,19 +622,18 @@ Use of a non-zero-length connection ID for the server is strongly recommended if
 any clients are behind a NAT or could be. A non-zero-length connection ID is
 also strongly recommended when migration is supported.
 
-Currently QUIC only supports failover cases. Only one "path" can be used at a
-time; and only when the new path is validated, all traffic can be switched over
-to that new path. Path validation means that the remote endpoint is required to
-validate the new path before use in order to avoid address spoofing attacks.
-Path validation takes at least one RTT and congestion control will also be reset
-after path migration. Therefore migration usually has a performance impact.
+Currently QUIC only supports the use of a single network path at a time, which
+enables failover use cases.  Path validation is required so that endpoints
+validate paths before use to avoid address spoofing attacks.  Path validation
+takes at least one RTT and congestion control will also be reset after path
+migration. Therefore migration usually has a performance impact.
 
-QUIC probing packets, which can be sent on multiple paths at once, are used
-to perform address validation as well as measure path characteristics as input
-for the switching decision. Probing packets cannot carry application data but
-may contain padding frames. Endpoints can use information about their receipt
-as input to congestion control for that path. Applications could use
-information learned from probing to inform a decisions to switch paths.
+QUIC probing packets, which can be sent on multiple paths at once, are used to
+perform address validation as well as measure path characteristics.  Probing
+packets cannot carry application data but likely contain padding frames.
+Endpoints can use information about their receipt as input to congestion control
+for that path. Applications could use information learned from probing to inform
+a decisions to switch paths.
 
 Only the client can actively migrate in version 1 of QUIC. However, servers can
 indicate during the handshake that they prefer to transfer the connection to a
@@ -745,19 +743,20 @@ migrations at a given time, or through other means.
 
 ## Using Server Retry for Redirection
 
-QUIC provides a Server Retry packet that can be sent by a server in response to
-the Client Initial packet. The server may choose a new connection ID in that
-packet and the client will retry by sending another Client Initial packet with
+QUIC provides a Retry packet that can be sent by a server in response to
+the client Initial packet. The server may choose a new connection ID in that
+packet and the client will retry by sending another client Initial packet with
 the server-selected connection ID. This mechanism can be used to redirect a
-connection to a different server, e.g. due to performance reasons or when
+connection to a different server, e.g., due to performance reasons or when
 servers in a server pool are upgraded gradually, and therefore may support
-different versions of QUIC. In this case, it is assumed that all servers
-belonging to a certain pool are served in cooperation with load balancers that
-forward the traffic based on the connection ID. A server can choose the
-connection ID in the Server Retry packet such that the load balancer will
-redirect the next Client Initial packet to a different server in that pool.
-Alternatively the load balancer can directly offer a Retry service as further
-described in {{?QUIC-LB}}.
+different versions of QUIC.
+
+In this case, it is assumed that all servers belonging to a certain pool are
+served in cooperation with load balancers that forward the traffic based on the
+connection ID. A server can choose the connection ID in the Retry packet such
+that the load balancer will redirect the next Initial packet to a different
+server in that pool.  Alternatively the load balancer can directly offer a Retry
+service as further described in {{?QUIC-LB}}.
 
 {{Section 4 of RFC5077}} describes an example approach for constructing
 TLS resumption tickets that can be also applied for validation tokens,
