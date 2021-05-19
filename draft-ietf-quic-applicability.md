@@ -137,7 +137,8 @@ insecure protocols or to weaker versions of secure protocols.
 An application that implements fallback needs to consider the security
 consequences. A fallback to TCP and TLS exposes control information to
 modification and manipulation in the network. Further downgrades to older TLS
-versions than used in QUIC, which is 1.3, might result in significantly weaker
+versions than 1.3, which is used in QUIC version 1, might result in
+significantly weaker
 cryptographic protection. For example, the results of protocol negotiation
 {{?RFC7301}} only have confidentiality protection if TLS 1.3 is used.
 
@@ -379,10 +380,10 @@ application on top.
 
 Priority handling of retransmissions can be implemented by the sender in the
 transport layer. {{QUIC}} recommends retransmitting lost data before new data,
-unless indicated differently by the application. Currently, QUIC only provides
-fully reliable stream transmission, which means that prioritization of
-retransmissions will be beneficial in most cases, by filling in gaps and freeing
-up the flow control window. For partially reliable or unreliable streams,
+unless indicated differently by the application. When a QUIC endpoint uses
+fully reliable streams for transmission, prioritization of retransmissions will
+be beneficial in most cases, as filling in gaps and freeing up the flow
+control window. For partially reliable or unreliable streams,
 priority scheduling of retransmissions over data of higher-priority streams
 might not be desirable. For such streams, QUIC could either provide an
 explicit interface to control prioritization, or derive the prioritization
@@ -476,24 +477,26 @@ be opened, which prevents applications using QUIC from making further progress.
 At this stage connections can be terminated via idle timeout or explicit close;
 see {{sec-termination}}).
 
-An application that uses QUIC might communicate a cumulative stream limit but
+An application that uses QUIC and communicated a cumulative stream limit might
 require the connection to be closed before the limit is reached. For example,
 to stop the server to perform scheduled maintenance. Immediate connection close
 causes abrupt closure of actively used streams. Depending on how an application
 uses QUIC streams, this could be undesirable or detrimental to behavior or
-performance. A more graceful closure technique is to stop sending increases to
+performance.
+
+A more graceful closure technique is to stop sending increases to
 stream limits and allow the connection to naturally terminate once remaining
 streams are consumed. However, the period of time it takes to do so is dependent
 on the client and an unpredictable closing period might not fit application or
 operational needs. Applications using QUIC can be conservative with open stream
 limits in order to reduce the commitment and indeterminism. However, being
 overly conservative with stream limits affects stream concurrency. Balancing
-these aspects can be specific to applications and their deployments. Instead of
+these aspects can be specific to applications and their deployments.
+
+Instead of
 relying on stream limits to avoid abrupt closure, an application-layer graceful
 close mechanism can be used to communicate the intention to explicitly close the
-connection at some future point.
-
-HTTP/3 provides such a mechanism using the
+connection at some future point. HTTP/3 provides such a mechanism using the
 GOAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
 stops opening new streams even if the cumulative stream limit would allow.
 Instead the client would create a new connection on which to open further
@@ -622,7 +625,8 @@ Use of a non-zero-length connection ID for the server is strongly recommended if
 any clients are behind a NAT or could be. A non-zero-length connection ID is
 also strongly recommended when migration is supported.
 
-Currently QUIC only supports the use of a single network path at a time, which
+The base specification of QUIC version 1 only supports the use of a single
+network path at a time, which
 enables failover use cases.  Path validation is required so that endpoints
 validate paths before use to avoid address spoofing attacks.  Path validation
 takes at least one RTT and congestion control will also be reset after path
@@ -683,7 +687,9 @@ application-layer information provided.
 
 QUIC exposes some information to the network in the unencrypted part of the
 header, either before the encryption context is established or because the
-information is intended to be used by the network. QUIC has a long header that
+information is intended to be used by the network. For more information on
+manageability of QUIC ofsee also {{?I-D.ietf-quic-manageability}}.
+QUIC has a long header that
 exposes some additional information (the version and the source connection ID),
 while the short header exposes only the destination connection ID.
 In QUIC version 1, the long header is used during connection establishment,
