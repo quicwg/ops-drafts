@@ -682,8 +682,8 @@ secret is retained by the observer.
 
 The QUIC connection ID (see {{rebinding}}) is designed to allow a coordinating
 on-path device, such as a load-balancer, to associate two flows when one of the
-endpoints changes address or port.  This change can be due to NAT rebinding or
-address migration.
+endpoints changes address.  This change can be due to NAT rebinding or address
+migration.
 
 The connection ID must change upon intentional address change by an endpoint,
 and connection ID negotiation is encrypted, so it is not possible for a
@@ -961,10 +961,10 @@ limits might need to be adapted dynamically.
 Further, if UDP traffic is desired to be throttled, it is recommended to
 block individual
 QUIC flows entirely rather than dropping packets indiscriminately.
-When the handshake is blocked, QUIC-capable applications may failover to TCP
-However, blocking a random fraction of QUIC packets across 4-tuples will
-allow many QUIC handshakes to complete, preventing a TCP failover,
-but resulting in connections then suffering
+When the handshake is blocked, QUIC-capable applications may fail over
+to TCP. However, blocking a random fraction of QUIC packets across
+4-tuples will allow many QUIC handshakes to complete, preventing a
+TCP failover, but these connections will suffer from
 severe packet loss (see also {{sec-filtering}}). Therefore UDP throttling
 should be realized by per-flow policing, as opposed to per-packet
 policing. Note that this per-flow policing should be stateless to avoid
