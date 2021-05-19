@@ -478,11 +478,11 @@ unlikely to be useful.
 
 The Packet Number field is always present in the QUIC packet header in version
 1; however, it is always encrypted. The encryption key for packet number
-protection on Handshake packets sent before cryptographic context establishment
-is specific to the QUIC version, while packet number protection on subsequent
-packets uses secrets derived from the end-to-end cryptographic context. Packet
-numbers are therefore not part of the wire image that is visible to on-path
-observers.
+protection on Initial packets -- which are sent before cryptographic context
+establishment -- is specific to the QUIC version, while packet number protection
+on subsequent packets uses secrets derived from the end-to-end cryptographic
+context. Packet numbers are therefore not part of the wire image that is visible
+to on-path observers.
 
 
 ## Version Negotiation and Greasing {#version}
@@ -532,10 +532,9 @@ The only application binding defined by the IETF QUIC WG is HTTP/3
 {{?QUIC-HTTP}} at the time of this writing; however, many other applications
 are currently being defined and deployed over QUIC, so an assumption that all
 QUIC traffic is HTTP/3 is not valid. HTTP/3 uses UDP port 443 by
-default, although URLs referring to resources available over HTTP/3
-may specify alternate port numbers. Simple assumptions about whether a
-given flow is using QUIC based upon a UDP port number may therefore not hold;
-see also {{Section 5 of RFC7605}}.
+convention but various methods can be used to specify alternate port numbers.
+Simple assumptions about whether a given flow is using QUIC based upon a UDP
+port number may therefore not hold; see also {{Section 5 of RFC7605}}.
 
 While the second-most-significant bit (0x40) of the first octet is set to 1 in
 most QUIC packets of the current version (see {{public-header}} and {{Section 17
@@ -604,7 +603,8 @@ the Destination Connection ID fields of the new Initial packet.
 Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
 from packets carrying upper-layer data in order to attempt to enhance
 performance, for example by queueing ACKs differently or manipulating ACK
-signaling. Distinguishing ACK packets is trivial in TCP, but not supported by
+signaling {{?RFC3449}}. Distinguishing ACK packets is possible in TCP,
+but is not supported by
 QUIC, since acknowledgment signaling is carried inside QUIC's encrypted payload,
 and ACK manipulation is impossible. Specifically, heuristics attempting to
 distinguish ACK-only packets from payload-carrying packets based on packet size
@@ -635,9 +635,9 @@ parsing the QUIC CRYPTO Frame containing the TLS ClientHello.
 
 As both the derivation of the Initial secret and the structure of the Initial
 packet itself are version-specific, the first step is always to parse the
-version number (second to sixth bytes of the long header). Note that only long
-header packets carry the version number, so it is necessary to also check if the
-first bit of the QUIC packet is set to 1, indicating a long header.
+version number (the second through fifth bytes of the long header). Note that
+only long header packets carry the version number, so it is necessary to also
+check if the first bit of the QUIC packet is set to 1, indicating a long header.
 
 Note that proprietary QUIC versions, that have been deployed before
 standardization, might not set the first bit in a QUIC long header packet to
@@ -765,12 +765,12 @@ even if otherwise enabled by default. An endpoint not participating in spin bit
 signaling for a given connection can use a fixed spin value for the duration of
 the connection, or can set the bit randomly on each packet sent.
 
-When in use and a QUIC flow sends data continuously, the latency spin bit in
-each direction changes value once per round-trip time (RTT). An on-path observer
-can observe the time difference between edges (changes from 1 to 0 or 0 to 1) in
-the spin bit signal in a single direction to measure one sample of end-to-end
-RTT. This mechanism follows the principles of protocol measurability laid out
-in {{IPIM}}.
+When in use, the latency spin bit in each direction changes value once per
+round-trip time (RTT) any time that both endpoints are sending packets
+continuously. An on-path observer can observe the time difference between edges
+(changes from 1 to 0 or 0 to 1) in the spin bit signal in a single direction to
+measure one sample of end-to-end RTT. This mechanism follows the principles of
+protocol measurability laid out in {{IPIM}}.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
 any transport protocol delay (e.g., delayed sending of acknowledgements) and/or
@@ -960,13 +960,13 @@ limits might need to be adapted dynamically.
 
 Further, if UDP traffic is desired to be throttled, it is recommended to
 block individual
-QUIC flows entirely rather than dropping packets randomly. When the handshake is
-blocked, QUIC-capable applications may failover to TCP
-However, blocking a
-random fraction of QUIC packets across 4-tuples will allow many QUIC handshakes
-to complete, preventing a TCP failover, but the connections will suffer from
+QUIC flows entirely rather than dropping packets indiscriminately.
+When the handshake is blocked, QUIC-capable applications may failover to TCP
+However, blocking a random fraction of QUIC packets across 4-tuples will
+allow many QUIC handshakes to complete, preventing a TCP failover,
+but resulting in connections then suffering
 severe packet loss (see also {{sec-filtering}}). Therefore UDP throttling
-should be realized by per-flow policing as opposed to per-packet
+should be realized by per-flow policing, as opposed to per-packet
 policing. Note that this per-flow policing should be stateless to avoid
 problems with stateful treatment of QUIC flows (see {{sec-stateful}}),
 for example blocking a portion of the space of values of a hash function
@@ -1103,7 +1103,7 @@ PMTU that is inefficient.
 
 Networks with configurations that would lead to fragmentation of large packets
 should drop such packets rather than fragmenting them. Network operators who
-plan to implement a more selective policy may start by focussing on QUIC.
+plan to implement a more selective policy may start by focusing on QUIC.
 QUIC flows cannot always be easily distinguished from other UDP traffic, but
 we assume at least some portion of QUIC traffic can be identified
 (see {{sec-identifying}}). For QUIC endpoints using DPLPMTUD it is recommended
