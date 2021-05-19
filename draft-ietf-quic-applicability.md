@@ -612,8 +612,8 @@ identification.
 
 QUIC supports connection migration by the client. If an IP address
 changes, a QUIC endpoint can still associate packets with an existing
-transport connection using the destination connection ID field
-(see also {{connid}}) in the QUIC header, unless a zero-length value is used.
+transport connection using the Destination Connection ID field
+(see also {{connid}}) in the QUIC header.
 This supports cases where address information changes, such as NAT rebinding,
 intentional change of the local interface, or based on an indication in the
 handshake of the server for a preferred address to be used.
