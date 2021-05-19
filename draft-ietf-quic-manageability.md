@@ -762,12 +762,12 @@ even if otherwise enabled by default. An endpoint not participating in spin bit
 signaling for a given connection can use a fixed spin value for the duration of
 the connection, or can set the bit randomly on each packet sent.
 
-When in use and a QUIC flow sends data continuously, the latency spin bit in
-each direction changes value once per round-trip time (RTT). An on-path observer
-can observe the time difference between edges (changes from 1 to 0 or 0 to 1) in
-the spin bit signal in a single direction to measure one sample of end-to-end
-RTT. This mechanism follows the principles of protocol measurability laid out
-in {{IPIM}}.
+When in use, the latency spin bit in each direction changes value once per
+round-trip time (RTT) any time that both endpoints are sending packets
+continuously. An on-path observer can observe the time difference between edges
+(changes from 1 to 0 or 0 to 1) in the spin bit signal in a single direction to
+measure one sample of end-to-end RTT. This mechanism follows the principles of
+protocol measurability laid out in {{IPIM}}.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
 any transport protocol delay (e.g., delayed sending of acknowledgements) and/or
