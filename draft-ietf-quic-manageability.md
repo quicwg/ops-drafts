@@ -80,15 +80,15 @@ design with respect to network treatment, and a description of how common
 network management practices will be impacted by QUIC.
 
 QUIC is an end-to-end transport protocol. No information in the protocol header,
-even that which can be inspected, is meant to be mutable by the network. This is
+even that which can be inspected, is mutable by the network. This is
 achieved through integrity protection of the wire image {{?WIRE-IMAGE=RFC8546}}.
 Encryption of most control signaling means that less information is visible to
 the network than is the case with TCP.
 
 Integrity protection can also simplify troubleshooting, because none of the
 nodes on the network path can modify transport layer information. However, it
-does imply that in-network operations that depend on modification of data are
-not possible without the cooperation of a QUIC endpoint. This might be possible
+means in-network operations that depend on modification of data are not
+possible without the cooperation of an QUIC endpoint. This might be possible
 with the introduction of a proxy which authenticates as an endpoint.
 Proxy operations are not in scope for this document.
 
@@ -128,13 +128,15 @@ QUIC packets may have either a long header or a short header. The first bit
 of the QUIC header is the Header Form bit, and indicates which type of header
 is present. The purpose of this bit is invariant across QUIC versions.
 
-The long header exposes more information. In version 1 of QUIC, it is used
-during connection establishment, including version negotiation, retry, and 0-RTT
-data. It contains a version number, as well as source and destination connection
-IDs for grouping packets belonging to the same flow. The definition and location
-of these fields in the QUIC long header are invariant for future versions of
-QUIC, although future versions of QUIC may provide additional fields in the long
-header {{QUIC-INVARIANTS}}.
+The long header exposes more information. It contains a version number, as well
+as source and destination connection IDs for associating packets with a QUIC
+connection. The definition and location of these fields in the QUIC long header
+are invariant for future versions of QUIC, although future versions of QUIC may
+provide additional fields in the long header {{QUIC-INVARIANTS}}.
+
+In version 1 of QUIC, the long header is used during connection establishment
+to transmit crypto handshake data, perform version negotiation, retry, and
+send 0-RTT data.
 
 Short headers contain only an optional destination connection ID and the spin
 bit for RTT measurement. In version 1 of QUIC, they are used after connection
@@ -150,8 +152,9 @@ QUIC:
   packet as a Version Negotiation packet. QUIC
   version 1 uses version 0x00000001. Operators should expect to observe
   packets with other version numbers as a result of various Internet
-  experiments, future standards, and greasing. All deployed versions are
-  maintained in an IANA registry (see {{Section 22.2 of QUIC-TRANSPORT}}).
+  experiments, future standards, and greasing ({{?RFC7801}}). All deployed
+  versions are maintained in an IANA registry
+  (see {{Section 22.2 of QUIC-TRANSPORT}}).
 
 - source and destination connection ID: short and long packet headers carry a
   destination connection ID, a variable-length field that can be used to
@@ -199,7 +202,7 @@ other information in the packet headers:
 - packet number: All packets except Version Negotiation and
   Retry packets have an associated packet number; however, this packet number
   is encrypted, and therefore not of use to on-path observers. The offset of the
-  packet number is encoded in long headers, while it
+  packet number can be decoded in long headers, while it
   is implicit (depending on destination connection ID length) in short headers.
   The length of the packet number is cryptographically obfuscated.
 
@@ -280,7 +283,7 @@ datagram as shown in {{fig-client-initial}}, which elicits a Server Initial
 datagram as shown in {{fig-server-initial}} typically containing three packets:
 an Initial packet with the beginning of the server's side of the TLS handshake,
 a Handshake packet with the rest of the server's side of the TLS handshake, and
-initial 1-RTT data, if present.
+1-RTT data, if present.
 
 The Client Completion datagram contains at least one Handshake packet and
 could also include an Initial packet.
@@ -547,7 +550,7 @@ the use of an extension.
 
 Even though transport parameters transmitted in the client's Initial packet are
 observable by the network, they cannot be modified by the network without
-risking connection failure. Further, the reply from the server cannot be
+causing connection failure. Further, the reply from the server cannot be
 observed, so observers on the network cannot know which parameters are actually
 in use.
 
@@ -577,18 +580,18 @@ may have different meanings in future versions of the protocol.
 
 ## Connection Confirmation {#sec-confirm}
 
-This document focuses on QUIC version 1, and this section applies only to
-packets belonging to QUIC version 1 flows; for purposes of on-path observation,
-it assumes that these packets have been identified as such through the
-observation of a version number exchange as described above.
+This document focuses on QUIC version 1, and this Connection Confirmation
+section applies only to packets belonging to QUIC version 1 flows; for purposes
+of on-path observation, it assumes that these packets have been identified as
+such through the observation of a version number exchange as described above.
 
 Connection establishment uses Initial and Handshake packets containing a
 TLS handshake, and Retry packets that do not contain parts of the handshake.
 Connection establishment can therefore be detected using heuristics similar to
 those used to detect TLS over TCP. A client initiating a connection may
 also send data in 0-RTT packets directly after the Initial
-packet containing the TLS Client Hello. Since these packets may be reordered in
-the network, 0-RTT packets could be seen before the Initial
+packet containing the TLS Client Hello. Since packets may be reordered or lost
+in the network, 0-RTT packets could be seen before the Initial
 packet.
 
 Note that in this version of QUIC, clients send Initial packets before servers
@@ -629,9 +632,9 @@ and other protocols that use TLS.
 
 ### Extracting Server Name Indication (SNI) Information
 
-If the ClientHello is not encrypted, it can be derived from the client's Initial
-packet by calculating the Initial secret to decrypt the packet payload and
-parsing the QUIC CRYPTO Frame containing the TLS ClientHello.
+If the ClientHello is not encrypted, SNI can be derived from the client's
+Initial packet by calculating the Initial secret to decrypt the packet payload
+and parsing the QUIC CRYPTO Frame containing the TLS ClientHello.
 
 As both the derivation of the Initial secret and the structure of the Initial
 packet itself are version-specific, the first step is always to parse the
