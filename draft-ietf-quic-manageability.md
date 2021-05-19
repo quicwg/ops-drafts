@@ -529,10 +529,9 @@ The only application binding defined by the IETF QUIC WG is HTTP/3
 {{?QUIC-HTTP}} at the time of this writing; however, many other applications
 are currently being defined and deployed over QUIC, so an assumption that all
 QUIC traffic is HTTP/3 is not valid. HTTP/3 uses UDP port 443 by
-default, although URLs referring to resources available over HTTP/3
-may specify alternate port numbers. Simple assumptions about whether a
-given flow is using QUIC based upon a UDP port number may therefore not hold;
-see also {{Section 5 of RFC7605}}.
+convention but various methods can be used to specify alternate port numbers.
+Simple assumptions about whether a given flow is using QUIC based upon a UDP
+port number may therefore not hold; see also {{Section 5 of RFC7605}}.
 
 While the second-most-significant bit (0x40) of the first octet is set to 1 in
 most QUIC packets of the current version (see {{public-header}} and {{Section 17
