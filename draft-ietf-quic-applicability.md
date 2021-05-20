@@ -382,7 +382,7 @@ Priority handling of retransmissions can be implemented by the sender in the
 transport layer. {{QUIC}} recommends retransmitting lost data before new data,
 unless indicated differently by the application. When a QUIC endpoint uses
 fully reliable streams for transmission, prioritization of retransmissions will
-be beneficial in most cases, as filling in gaps and freeing up the flow
+be beneficial in most cases, filling in gaps and freeing up the flow
 control window. For partially reliable or unreliable streams,
 priority scheduling of retransmissions over data of higher-priority streams
 might not be desirable. For such streams, QUIC could either provide an
@@ -487,7 +487,7 @@ performance.
 A more graceful closure technique is to stop sending increases to
 stream limits and allow the connection to naturally terminate once remaining
 streams are consumed. However, the period of time it takes to do so is dependent
-on the client and an unpredictable closing period might not fit application or
+on the peer and an unpredictable closing period might not fit application or
 operational needs. Applications using QUIC can be conservative with open stream
 limits in order to reduce the commitment and indeterminism. However, being
 overly conservative with stream limits affects stream concurrency. Balancing
@@ -688,7 +688,7 @@ application-layer information provided.
 QUIC exposes some information to the network in the unencrypted part of the
 header, either before the encryption context is established or because the
 information is intended to be used by the network. For more information on
-manageability of QUIC ofsee also {{?I-D.ietf-quic-manageability}}.
+manageability of QUIC see also {{?I-D.ietf-quic-manageability}}.
 QUIC has a long header that
 exposes some additional information (the version and the source connection ID),
 while the short header exposes only the destination connection ID.
