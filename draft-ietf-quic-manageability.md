@@ -1068,13 +1068,13 @@ more tolerant of packet re-ordering than traditional TCP traffic (see
 known by the network and therefore reordering tolerance should be
 considered as unknown.
 
-If a packet enters a network segment that does not support the DSCP value, 
-this could result in the connection not receiving the network treatment 
-it expects. The DSCP value in this packet could also be remarked as the 
+If a packet enters a network segment that does not support the DSCP value,
+this could result in the connection not receiving the network treatment
+it expects. The DSCP value in this packet could also be remarked as the
 packet travels along the network path, changing the requested treatment.
 
-When multiplexing multiple flows over a QUIC connection, the selected 
-DSCP value should be the one associated with the highest priority requested 
+When multiplexing multiple flows over a QUIC connection, the selected
+DSCP value should be the one associated with the highest priority requested
 for all multiplexed flows.
 
 ## Handling ICMP Messages
