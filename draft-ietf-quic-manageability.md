@@ -107,10 +107,11 @@ have an impact on the design and operation of devices that forward QUIC packets.
 This section is therefore primarily considering the unencrypted part of QUIC's
 wire image {{WIRE-IMAGE}}, which is defined as the information available in the
 packet header in each QUIC packet, and the dynamics of that information. Since
-QUIC is a versioned protocol, the wire image of the header format can also change
-from version to version. However, the field that identifies the QUIC version in
-some packets, and the format of the Version Negotiation Packet, are both
-inspectable and invariant {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
+QUIC is a versioned protocol, the wire image of the header format can also
+change from version to version. However, the field that identifies the QUIC
+version in some packets, and the format of the Version Negotiation Packet,
+are both inspectable and invariant
+{{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
 This document describes version 1 of the QUIC protocol, whose wire image
 is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Features of the wire
