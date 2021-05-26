@@ -1055,7 +1055,7 @@ It is expected that any QoS handling in the network, e.g. based on use of
 DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
 Multi-Path (ECMP) routing, is applied on a per flow-basis (and not per-packet)
 and as such that all packets belonging to the same QUIC connection get uniform
-treatment. 
+treatment.
 
 Using ECMP to distribute packets from a single flow across multiple
 network paths or any other non-uniform treatment of packets belong to the same
