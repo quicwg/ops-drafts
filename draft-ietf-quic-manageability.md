@@ -1064,7 +1064,7 @@ As feedback about loss or delay of each packet is used as input to
 the congestion controller, these variations could adversely affect performance.
 Depending on the loss recovery mechanism implemented, QUIC may be
 more tolerant of packet re-ordering than traditional TCP traffic (see
-{{packetnumber}}). However, the recovery mechanism used by a flow cannot be 
+{{packetnumber}}). However, the recovery mechanism used by a flow cannot be
 known by the network and therefore reordering tolerance should be
 considered as unknown.
 
