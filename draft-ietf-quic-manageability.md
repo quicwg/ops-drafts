@@ -662,7 +662,7 @@ which follows the source connection ID, is a variable-length integer as
 specified in {{Section 16 of QUIC-TRANSPORT}}.
 
 After decryption, the client's Initial packet can be parsed to detect the CRYPTO
-frame that contains the TLS ClientHello, which then can be parsed similarly to
+frame(s) that contains the TLS ClientHello, which then can be parsed similarly to
 TLS over TCP connections. The client's Initial packet may contain other frames,
 so the first bytes of each frame need to be checked to identify the frame type,
 and if needed skip over it. Note that the length of the frames is dependent on
