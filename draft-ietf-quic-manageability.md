@@ -102,7 +102,7 @@ protocol as defined.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
-Tthis section discusses those aspects of the QUIC transport protocol that
+This section discusses those aspects of the QUIC transport protocol that
 have an impact on the design and operation of devices that forward QUIC packets.
 This section is concerned primarily with the unencrypted part of QUIC's wire image
 {{WIRE-IMAGE}}, which is defined as the information available in the packet
@@ -1050,7 +1050,7 @@ of the end server. See {{QUIC_LB}} for standard ways for intermediaries to send
 Retry packets on behalf of consenting servers.
 
 
-## Quality of Service handling and ECMP routing
+## Quality of Service Handling and ECMP Routing
 
 It is expected that any QoS handling in the network, e.g. based on use of
 DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
