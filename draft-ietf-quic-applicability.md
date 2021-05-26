@@ -775,10 +775,9 @@ same 5-tuple {dest addr, source addr, protocol, dest port, source port}, will
 receive similar network treatment since feedback about loss or delay
 of each packet is used as input to the congestion controller. Therefore it is
 not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
-packets belonging to the same connection. 
-When multiplexing multiple flows over a single QUIC connection, the selected
-DSCP value should be the one associated with the highest priority requested
-for all multiplexed flows.
+packets belonging to the same connection. When multiplexing multiple flows
+over a single QUIC connection, the selected DSCP value should be the one
+associated with the highest priority requested for all multiplexed flows.
 If differential network treatment,
 e.g. by the use of different DSCPs, is desired, multiple QUIC
 connections to the same server may be used. However, in general it is
