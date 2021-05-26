@@ -299,7 +299,7 @@ Initial packet, or leaving unused payload in the UDP packet after the Initial
 packet. A network path needs to be able to forward at least this size of
 packet for QUIC to be used.
 
-The content of Initial packets are encrypted using Initial Secrets, which
+The content of Initial packets is encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
 ID; they are therefore observable by any on-path device that knows the
 per-version constant. They are therefore considered visible in this
@@ -368,7 +368,7 @@ obfuscated using the Initial secret.
 +------------------------------------------------------------+
 | QUIC long header (type = Initial, Version, DCID, SCID)   (Length)
 +------------------------------------------------------------+  |
-| QUIC ACK frame (acknowledging Server Initial Initial)        |  |
+| QUIC ACK frame (acknowledging Server Initial)              |  |
 +------------------------------------------------------------+<-+
 | QUIC long header (type = Handshake, Version, DCID, SCID) (Length)
 +------------------------------------------------------------+  |
@@ -463,7 +463,7 @@ example, a server might request that a client use a connection ID, whereas the
 client might choose a zero-length value. Connection IDs for either endpoint may
 change during the lifetime of a connection, with the new connection ID being
 supplied via encrypted frames (see {{Section 5.1 of QUIC-TRANSPORT}}).
-Therefore, observing a new connection ID does not necessary indicate a new
+Therefore, observing a new connection ID does not necessarily indicate a new
 connection.
 
 {{?QUIC_LB=I-D.ietf-quic-load-balancers}} specifies algorithms for
@@ -495,7 +495,7 @@ Version Negotiation packets are used by the server to indicate that a requested
 version from the client is not supported (see {{Section 6 of QUIC-TRANSPORT}}.
 Version Negotiation packets are not intrinsically protected, but future QUIC
 versions will use later encrypted messages to verify that they were authentic.
-Therefore any modification of this list will be detected and may cause the
+Therefore, any modification of this list will be detected and may cause the
 endpoints to terminate the connection attempt.
 
 Also note that the list of versions in the Version Negotiation packet may
@@ -508,7 +508,7 @@ are reflected to provide a proof of return-routability. Therefore, changing this
 information will also cause the connection to fail.
 
 QUIC is expected to evolve rapidly, so new versions, both experimental and IETF
-standard versions, will be deployed in the Internet more often than with
+standard versions, will be deployed on the Internet more often than with
 traditional Internet- and transport-layer protocols. Using a particular version
 number to recognize valid QUIC traffic is likely to persistently miss a fraction
 of QUIC flows and completely fail in the near future, and is therefore
@@ -778,7 +778,7 @@ measure one sample of end-to-end RTT. This mechanism follows the principles of
 protocol measurability laid out in {{IPIM}}.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
-any transport protocol delay (e.g., delayed sending of acknowledgements) and/or
+any transport protocol delay (e.g., delayed sending of acknowledgments) and/or
 application layer delay (e.g., waiting for a response to be generated). It
 therefore provides devices on path a good instantaneous estimate of the RTT as
 experienced by the application.
@@ -882,7 +882,7 @@ additional entropy beyond the 5-tuple. The QUIC handshake needs
 to be observed in order to understand whether the connection ID is present and
 what length it has. However, connection IDs may be renegotiated
 after the handshake, and this renegotiation is not visible to the path.
-Therefore using the connection ID as a flow key field for stateful treatment
+Therefore, using the connection ID as a flow key field for stateful treatment
 of flows is not recommended as connection ID changes will cause undetectable
 and unrecoverable loss of state in the middle of a connection. Specially, the
 use of the connection ID for functions that require state to make a forwarding
@@ -943,7 +943,7 @@ load-balancers and servers.
 {{?RFC4787}} describes possible packet filtering behaviors that relate to NATs
 but is often also used is other scenarios where packet filtering is desired.
 Though the guidance there holds, a particularly unwise behavior admits a
-handful of UDP packets and then makes a decision as to whether or not to filter
+handful of UDP packets and then makes a decision to whether or not filter
 later packets in the same connection.
 QUIC applications are encouraged to fail over to TCP if early packets do
 not arrive at their destination {{?I-D.ietf-quic-applicability}}, as QUIC is
@@ -974,7 +974,7 @@ When the handshake is blocked, QUIC-capable applications may fail over
 to TCP. However, blocking a random fraction of QUIC packets across
 4-tuples will allow many QUIC handshakes to complete, preventing a
 TCP failover, but these connections will suffer from
-severe packet loss (see also {{sec-filtering}}). Therefore UDP throttling
+severe packet loss (see also {{sec-filtering}}). Therefore, UDP throttling
 should be realized by per-flow policing, as opposed to per-packet
 policing. Note that this per-flow policing should be stateless to avoid
 problems with stateful treatment of QUIC flows (see {{sec-stateful}}),
@@ -1003,7 +1003,7 @@ packets, flows, or some other aggregate) into "good" (productive) and "bad"
 good traffic. This operation is often done in a separate specialized mitigation
 environment through which all traffic is filtered; a generalized architecture
 for separation of concerns in mitigation is given in
-{{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
+{{?DOTS-ARCH=RFC8811}}.
 
 Efficient classification of this DDoS traffic in the mitigation environment
 is key to the success of this approach. Limited first-packet garbage detection
@@ -1168,8 +1168,8 @@ network as well as attacks on specific QUIC mechanism.
 
 Version Negotiation packets do not contain any mechanism to prevent version
 downgrade attacks. However, future versions of QUIC that use Version Negotiation
-packets are require to define a mechanism that is robust against version
-downgrade attacks. Therefore a network node should not attempt to impact version
+packets are required to define a mechanism that is robust against version
+downgrade attacks. Therefore, a network node should not attempt to impact version
 selection, as version downgrade may result in connection failure.
 
 # Contributors
