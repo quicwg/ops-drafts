@@ -119,9 +119,6 @@ when specified as an invariant {{QUIC-INVARIANTS}},
 and cannot be used to identify QUIC as a protocol or
 to infer the behavior of future versions of QUIC.
 
-{{sec-google-version}} provides non-normative guidance on the identification of
-QUIC version 1 packets compared to some pre-standard versions.
-
 ## QUIC Packet Header Structure {#public-header}
 
 QUIC packets may have either a long header or a short header. The first bit
@@ -644,8 +641,7 @@ check if the first bit of the QUIC packet is set to 1, indicating a long header.
 
 Note that proprietary QUIC versions, that have been deployed before
 standardization, might not set the first bit in a QUIC long header packet to
-1. To parse these versions, example code is provided in the appendix (see
-{{sec-google-version}}). However, it is expected that these versions will
+1. However, it is expected that these versions will
 gradually disappear over time.
 
 When the version has been identified as QUIC version 1, the packet type needs to
@@ -1191,94 +1187,3 @@ This work is partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
 Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and
 Innovation under contract no. 15.0268. This support does not imply endorsement.
-
-
---- back
-
-# Distinguishing IETF QUIC and Google QUIC Versions {#sec-google-version}
-
-This section contains algorithms that allows parsing versions from both
-Google QUIC and IETF QUIC. These mechanisms will become
-irrelevant when IETF QUIC is fully deployed and Google QUIC is deprecated.
-
-Note that other than this appendix, nothing in this document applies to
-Google QUIC. And the purpose of this appendix is merely to distinguish IETF QUIC
-from any versions of Google QUIC.
-
-This appendix uses the following conventions:
-* array\[i\] – one byte at index i of array
-* array\[i:j\] – subset of array starting with index i (inclusive) up to j-1
-(inclusive)
-* array\[i:\] – subset of array starting with index i (inclusive) up to the
-end of the array
-
-Conceptually, a Google QUIC version is an opaque 32bit field. When we refer to a
-version with four printable characters, we use its ASCII representation:
-for example, Q050 refers to \{'Q', '0', '5', '0'\} which is equal to
-\{0x51, 0x30, 0x35, 0x30\}. Otherwise, we use its hexadecimal representation:
-for example, 0xff00001d refers to {0xff, 0x00, 0x00, 0x1d}.
-
-QUIC versions that start with 'Q' or 'T' followed by three digits are
-Google QUIC versions. Versions up to and including 43 are documented by
-<https://docs.google.com/document/d/
-1WJvyZflAO2pq77yOLbp9NsGjC1CHetAXV8I0fQe-B_U/preview>.
-Versions Q046, Q050, T050, and T051 are not fully documented, but this appendix
-should contain enough information to allow parsing Client Hellos for those
-versions.
-
-To extract the version number itself, one needs to look at the first byte of
-the QUIC packet, in other words the first byte of the UDP payload.
-
-~~~
-  first_byte = packet[0]
-  first_byte_bit1 = ((first_byte & 0x80) != 0)
-  first_byte_bit2 = ((first_byte & 0x40) != 0)
-  first_byte_bit3 = ((first_byte & 0x20) != 0)
-  first_byte_bit4 = ((first_byte & 0x10) != 0)
-  first_byte_bit5 = ((first_byte & 0x08) != 0)
-  first_byte_bit6 = ((first_byte & 0x04) != 0)
-  first_byte_bit7 = ((first_byte & 0x02) != 0)
-  first_byte_bit8 = ((first_byte & 0x01) != 0)
-  if (first_byte_bit1) {
-    version = packet[1:5]
-  } else if (first_byte_bit5 && !first_byte_bit2) {
-    if (!first_byte_bit8) {
-      abort("Packet without version")
-    }
-    if (first_byte_bit5) {
-      version = packet[9:13]
-    } else {
-      version = packet[5:9]
-    }
-  } else {
-    abort("Packet without version")
-  }
-~~~
-
-## Extracting the CRYPTO frame
-
-~~~
-  counter = 0
-  while (payload[counter] == 0) {
-    counter += 1
-  }
-  first_nonzero_payload_byte = payload[counter]
-  fnz_payload_byte_bit3 = ((first_nonzero_payload_byte & 0x20) != 0)
-
-  if (first_nonzero_payload_byte != 0x06) {
-    abort("Unexpected frame")
-  }
-  if (payload[counter+1] != 0x00) {
-    abort("Unexpected crypto stream offset")
-  }
-  counter += 2
-  if ((payload[counter] & 0xc0) == 0) {
-    crypto_data_length = payload[counter]
-    counter += 1
-  } else {
-    crypto_data_length = payload[counter:counter+2]
-    counter += 2
-  }
-  crypto_data = payload[counter:counter+crypto_data_length]
-  ParseTLS(crypto_data)
-~~~
