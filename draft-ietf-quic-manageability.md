@@ -662,15 +662,15 @@ which follows the source connection ID, is a variable-length integer as
 specified in {{Section 16 of QUIC-TRANSPORT}}.
 
 After decryption, the client's Initial packet can be parsed to detect the CRYPTO
-frame(s) that contains the TLS ClientHello, which then can be parsed similarly to
-TLS over TCP connections. The client's Initial packet may contain other frames,
-so the first bytes of each frame need to be checked to identify the frame type,
-and if needed skip over it. Note that the length of the frames is dependent on
-the frame type. In QUIC version 1, the packet is expected to contain only CRYPTO
-frames and optionally PADDING frames. PADDING frames, each consisting of a
-single zero byte, may occur before, after, or between CRYPTO frames. There might
-be multiple CRYPTO frames.  Finally, an extension might define additional frame
-types which could be present.
+frame(s) that contains the TLS ClientHello, which then can be parsed similarly
+to TLS over TCP connections. The client's Initial packet may contain other
+frames, so the first bytes of each frame need to be checked to identify the
+frame type, and if needed skip over it. Note that the length of the frames is
+dependent on the frame type. In QUIC version 1, the packet is expected to
+contain only CRYPTO frames and optionally PADDING frames. PADDING frames, each
+consisting of a single zero byte, may occur before, after, or between CRYPTO
+frames. There might be multiple CRYPTO frames.  Finally, an extension might
+define additional frame types which could be present.
 
 Note that subsequent Initial packets might contain a Destination Connection ID
 other than the one used to generate the Initial secret. Therefore, attempts to
