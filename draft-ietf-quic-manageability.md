@@ -921,11 +921,6 @@ internal mechanisms in QUIC. When a path change is detected, path-dependent
 variables like congestion control parameters will be reset protecting
 the new path from overload.
 
-Therefore, the use of address rewriting to ensure routing stability
-can open QUIC up to various attacks, as it
-conceals client address changes, and as such masks important signals that
-drive security mechanisms.
-
 ## Server Cooperation with Load Balancers {#sec-loadbalancing}
 
 In the case of networking architectures that include load balancers,
