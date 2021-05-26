@@ -775,11 +775,21 @@ same 5-tuple {dest addr, source addr, protocol, dest port, source port}, will
 receive similar network treatment since feedback about loss or delay
 of each packet is used as input to the congestion controller. Therefore it is
 not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
-packets belonging to the same connection. If differential network treatment,
+packets belonging to the same connection. 
+When multiplexing multiple flows over a single QUIC connection, the selected
+DSCP value should be the one associated with the highest priority requested
+for all multiplexed flows.
+If differential network treatment,
 e.g. by the use of different DSCPs, is desired, multiple QUIC
 connections to the same server may be used. However, in general it is
 recommended to minimize the number of QUIC connections to the same server, to
 avoid increased overheads and, more importantly, competing congestion control.
+
+As in other uses of DiffServ,
+when a packet enters a network segment that does not support the DSCP value,
+this could result in the connection not receiving the network treatment
+it expects. The DSCP value in this packet could also be remarked as the
+packet travels along the network path, changing the requested treatment.
 
 # Use of Versions and Cryptographic Handshake
 
