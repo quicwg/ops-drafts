@@ -136,7 +136,7 @@ insecure protocols or to weaker versions of secure protocols.
 
 An application that implements fallback needs to consider the security
 consequences. A fallback to TCP and TLS exposes control information to
-modification and manipulation in the network. Further downgrades to older TLS
+modification and manipulation in the network. Further, downgrades to older TLS
 versions than 1.3, which is used in QUIC version 1, might result in
 significantly weaker
 cryptographic protection. For example, the results of protocol negotiation
@@ -215,7 +215,7 @@ Because QUIC is encapsulated in UDP, applications using QUIC must deal with
 short network idle timeouts. Deployed stateful middleboxes will generally
 establish state for UDP flows on the first packet sent, and keep state for
 much shorter idle periods than for TCP. {{?RFC5382}} suggests a TCP idle
-period of at least 124 minutes, though there is not evidence of widespread
+period of at least 124 minutes, though there is no evidence of widespread
 implementation of this guideline in the literature. Short network timeout for
 UDP, however, is well-documented. According to a 2010 study
 ({{Hatonen10}}), UDP applications can assume that any NAT binding or other
@@ -357,7 +357,7 @@ the way in which they are assigned {{Section 6 of QUIC-HTTP}}).
 Streams are meaningful only to the application; since stream information is
 carried inside QUIC's encryption boundary, no information about the stream(s)
 whose frames are carried by a given packet is visible to the network.
-Therefore stream multiplexing is not intended to be used for differentiating
+Therefore, stream multiplexing is not intended to be used for differentiating
 streams in terms of network treatment. Application traffic requiring different
 network treatment should therefore be carried over different five-tuples (i.e.
 multiple QUIC connections). Given QUIC's ability to send application data in
@@ -499,7 +499,7 @@ close mechanism can be used to communicate the intention to explicitly close the
 connection at some future point. HTTP/3 provides such a mechanism using the
 GOAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
 stops opening new streams even if the cumulative stream limit would allow.
-Instead the client would create a new connection on which to open further
+Instead, the client would create a new connection on which to open further
 streams.  Once all streams are closed on the old connection, it can be
 terminated safely by a connection close or after expiration of the idle time out
 (see also {{sec-termination}}).
@@ -519,7 +519,7 @@ pre-configured or dynamically adjusted based on the observed sending pattern of
 the application.
 
 If the application requires low latency, with only small chunks of data to
-send, it may be valuable to indicate to QUIC that all data should be send out
+send, it may be valuable to indicate to QUIC that all data should be sent out
 immediately. Alternatively, if the application expects to use a specific
 sending pattern, it can also provide a suggested delay to QUIC for how long to
 wait before bundle frames into a packet.
@@ -630,14 +630,14 @@ network path at a time, which
 enables failover use cases.  Path validation is required so that endpoints
 validate paths before use to avoid address spoofing attacks.  Path validation
 takes at least one RTT and congestion control will also be reset after path
-migration. Therefore migration usually has a performance impact.
+migration. Therefore, migration usually has a performance impact.
 
 QUIC probing packets, which can be sent on multiple paths at once, are used to
 perform address validation as well as measure path characteristics.  Probing
 packets cannot carry application data but likely contain padding frames.
 Endpoints can use information about their receipt as input to congestion control
 for that path. Applications could use information learned from probing to inform
-a decisions to switch paths.
+a decision to switch paths.
 
 Only the client can actively migrate in version 1 of QUIC. However, servers can
 indicate during the handshake that they prefer to transfer the connection to a
@@ -773,7 +773,7 @@ however, the use of more modern cryptographic algorithms is highly recommended.
 QUIC assumes that all packets of a QUIC connection, or at least with the
 same 5-tuple {dest addr, source addr, protocol, dest port, source port}, will
 receive similar network treatment since feedback about loss or delay
-of each packet is used as input to the congestion controller. Therefore it is
+of each packet is used as input to the congestion controller. Therefore, it is
 not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
 packets belonging to the same connection. If differential network treatment,
 e.g. by the use of different DSCPs, is desired, multiple QUIC
@@ -824,7 +824,7 @@ version.  Other clients might have successfully connected with the new version
 and so will believe that the server supports the new version.  Therefore,
 servers need to allow for this ambiguity when validating the negotiated version.
 
-The second stage of deployment commences once all server instances are able
+The second stage of deployment commences once all server instances are able to
 accept new connections with the new version.  At this point, all servers can
 start sending the new version in Version Negotiation packets.
 
@@ -853,7 +853,7 @@ congestion controlled.
 QUIC datagrams are not flow-controlled, and as such data chunks may be dropped
 if the receiver is overloaded. While the reliable transmission service of QUIC
 provides a stream-based interface to send and receive data in order over
-multiple QUIC streams, the datagram service has a unordered message-based
+multiple QUIC streams, the datagram service has an unordered message-based
 interface. If needed, an application layer framing can be used on top to
 allow separate flows of unreliable datagrams to be multiplexed on one QUIC
 connection.
