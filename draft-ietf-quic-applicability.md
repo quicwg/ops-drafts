@@ -595,7 +595,7 @@ Applications could define an alternate endpoint discovery mechanism to allow
 the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
 and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
 {{?RFC7838}} for an HTTP origin to advertise the availability of an equivalent
-HTTP/3 endpoint on a certain UDP port by using the "h3" ALPN token.  
+HTTP/3 endpoint on a certain UDP port by using the "h3" ALPN token.
 
 Since QUIC version 1 deferred defining a version negotiation mechanism, HTTP/3
 also deferred deciding how it would map to other QUIC versions. HTTP/3 requires
