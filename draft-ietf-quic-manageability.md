@@ -246,7 +246,7 @@ datagrams containing the QUIC handshake, then examine each of the datagrams in
 detail.
 
 The QUIC handshake can normally be recognized on the wire through at
-least four datagrams we'll call "Client Initial", "Server Initial", and
+least four datagrams called "Client Initial", "Server Initial", and
 "Client Completion", and "Server Completion", for purposes of this
 illustration, as shown in {{fig-handshake}}.
 
@@ -405,7 +405,7 @@ information; observing it serves only to determine that the handshake has
 completed.
 
 When the client uses 0-RTT connection resumption, 0-RTT data may also be
-seen in the Client Initial datagram, as shown in {{fig-client-initial-0rtt}}.
+present in the Client Initial datagram, as shown in {{fig-client-initial-0rtt}}.
 
 ~~~~~
 +----------------------------------------------------------+
@@ -446,20 +446,20 @@ receiver discarding the packet. Some parts of Initial packets could be altered
 by removing and re-applying the authenticated encryption without immediate
 discard at the receiver. However, the cryptographic handshake validates most
 fields and any modifications in those fields will result in connection
-establishment failing later on.
+establishment failing later.
 
 ## Connection ID and Rebinding {#rebinding}
 
 The connection ID in the QUIC packet headers allows association of QUIC
 packets using information independent of the five-tuple. This
-allows rebinding of a connection after one of one endpoint experienced
+allows rebinding of a connection after one of the endpoints experienced
 an address change - usually the client. Further it can be used by
 in-network devices to ensure that related 5-tuple flows are appropriately
 balanced together.
 
-Client and server negotiate connection IDs during
-the handshake; typically, however, only the server will request a connection ID
-for the lifetime of the connection. Connection IDs for either endpoint may
+Client and server each choose a connection ID during the handshake; for
+example, a server might request that a client use a connection ID, whereas the
+client might choose a zero-length value. Connection IDs for either endpoint may
 change during the lifetime of a connection, with the new connection ID being
 supplied via encrypted frames (see {{Section 5.1 of QUIC-TRANSPORT}}).
 Therefore, observing a new connection ID does not necessary indicate a new
@@ -470,7 +470,7 @@ encoding the server mapping in a connection ID in order to share this
 information with selected on-path devices such as load balancers. Server
 mappings should only be exposed to selected entities. Uncontrolled exposure
 would allow linkage of multiple IP addresses to the same host if the server
-also supports migration which opens an attack vector on specific servers or
+also supports migration that opens an attack vector on specific servers or
 pools. The best way to obscure an encoding is to appear random to any other
 observers, which is most rigorously achieved with encryption. As a result,
 any attempt to infer information from specific parts of a connection ID is
@@ -523,7 +523,8 @@ This section addresses the different kinds of observations and inferences that
 can be made about QUIC flows by a passive observer in the network based on the
 wire image in {{sec-wire-image}}. Here we assume a bidirectional observer (one
 that can see packets in both directions in the sequence in which they are
-carried on the wire) unless noted.
+carried on the wire) unless noted, but typically without access to any keying
+information.
 
 
 ## Identifying QUIC Traffic {#sec-identifying}
@@ -557,7 +558,7 @@ in use.
 ### Identifying Negotiated Version
 
 An in-network observer assuming that a set of packets belongs to a QUIC flow
-can infer the version number in use by observing the handshake: for QUIC
+might infer the version number in use by observing the handshake: for QUIC
 version 1, if the version number in the Initial packet from a client is the
 same as the version number in the Initial packet of the server response, that
 version has been accepted by both endpoints to be used for the rest of the
@@ -692,7 +693,7 @@ The connection ID must change upon intentional address change by an endpoint,
 and connection ID negotiation is encrypted, so it is not possible for a
 passive observer to link intended changes of address using the connection ID.
 
-When one endpoint unintentionally changes its address, as is the case with NAT
+When one endpoint's address unintentionally changes, as is the case with NAT
 rebinding, an on-path observer may be able to use the connection ID to
 associate the flow on the new address with the flow on the old address.
 
@@ -942,7 +943,8 @@ load-balancers and servers.
 but is often also used is other scenarios where packet filtering is desired.
 Though the guidance there holds, a particularly unwise behavior is to admit a
 handful of UDP packets and then make a decision as to whether or not to filter
-it. QUIC applications are encouraged to fail over to TCP if early packets do
+later packets in the flow. QUIC applications are encouraged to fail over to
+TCP if early packets do
 not arrive at their destination {{?I-D.ietf-quic-applicability}}, as QUIC is
 based on UDP and there are known blocks of UDP traffic (see {{sec-udp-1312}}).
 Admitting a few packets allows the QUIC endpoint to determine that the path
@@ -1049,7 +1051,7 @@ of the end server. See {{QUIC_LB}} for standard ways for intermediaries to send
 Retry packets on behalf of consenting servers.
 
 
-## Quality of Service handling and ECMP
+## Quality of Service Handling and ECMP Routing
 
 It is expected that any QoS handling in the network, e.g. based on use of
 DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
