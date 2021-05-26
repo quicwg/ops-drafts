@@ -102,10 +102,10 @@ protocol as defined.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
-In this section, we discuss those aspects of the QUIC transport protocol that
+Tthis section discusses those aspects of the QUIC transport protocol that
 have an impact on the design and operation of devices that forward QUIC packets.
-Here, we are concerned primarily with the unencrypted part of QUIC's wire image
-{{WIRE-IMAGE}}, which we define as the information available in the packet
+This section is concerned primarily with the unencrypted part of QUIC's wire image
+{{WIRE-IMAGE}}, which is defined as the information available in the packet
 header in each QUIC packet, and the dynamics of that information. Since QUIC is
 a versioned protocol, the wire image of the header format can also change from
 version to version. However, the field that identifies the QUIC version in some
@@ -246,9 +246,9 @@ datagrams containing the QUIC handshake, then examine each of the datagrams in
 detail.
 
 The QUIC handshake can normally be recognized on the wire through at
-least four datagrams we'll call "Client Initial", "Server Initial", and
-"Client Completion", and "Server Completion", for purposes of this
-illustration, as shown in {{fig-handshake}}.
+least four datagrams, labelled "Client Initial", "Server Initial", and
+"Client Completion", and "Server Completion", in the
+illustration shown in {{fig-handshake}}.
 
 Packets in the handshake belong to three separate cryptographic and transport
 contexts ("Initial", which contains observable payload, and "Handshake" and
@@ -404,8 +404,8 @@ Similar to Client Completion, Server Completion also exposes no additional
 information; observing it serves only to determine that the handshake has
 completed.
 
-When the client uses 0-RTT connection resumption, 0-RTT data may also be
-seen in the Client Initial datagram, as shown in {{fig-client-initial-0rtt}}.
+When the client uses 0-RTT connection resumption, the Client Initial d
+datagram may also carry 0-RTT data, as shown in {{fig-client-initial-0rtt}}.
 
 ~~~~~
 +----------------------------------------------------------+
@@ -431,7 +431,7 @@ bytes. Additional datagrams containing only 0-RTT packets with long headers
 could be sent from the client to the server after the Client Initial datagram,
 containing the rest of the 0-RTT data. The amount of 0-RTT protected data
 that can be sent in the first flight is limited by the initial congestion
-window, typically around 10 packets (see {{Section 7.2 of
+window, typically to around 10 packets (see {{Section 7.2 of
 QUIC-RECOVERY}}).
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
@@ -445,14 +445,14 @@ alterations would cause the integrity check to fail, which results in the
 receiver discarding the packet. Some parts of Initial packets could be altered
 by removing and re-applying the authenticated encryption without immediate
 discard at the receiver. However, the cryptographic handshake validates most
-fields and any modifications in those fields will result in connection
-establishment failing later on.
+fields and any modifications in those fields will later result in connection
+establishment failing.
 
 ## Connection ID and Rebinding {#rebinding}
 
 The connection ID in the QUIC packet headers allows association of QUIC
 packets using information independent of the five-tuple. This
-allows rebinding of a connection after one of one endpoint experienced
+allows rebinding of a connection after an endpoint experienced
 an address change - usually the client. Further it can be used by
 in-network devices to ensure that related 5-tuple flows are appropriately
 balanced together.
@@ -470,7 +470,7 @@ encoding the server mapping in a connection ID in order to share this
 information with selected on-path devices such as load balancers. Server
 mappings should only be exposed to selected entities. Uncontrolled exposure
 would allow linkage of multiple IP addresses to the same host if the server
-also supports migration which opens an attack vector on specific servers or
+also supports migration, which opens an attack vector on specific servers or
 pools. The best way to obscure an encoding is to appear random to any other
 observers, which is most rigorously achieved with encryption. As a result,
 any attempt to infer information from specific parts of a connection ID is
@@ -940,9 +940,10 @@ load-balancers and servers.
 
 {{?RFC4787}} describes possible packet filtering behaviors that relate to NATs
 but is often also used is other scenarios where packet filtering is desired.
-Though the guidance there holds, a particularly unwise behavior is to admit a
-handful of UDP packets and then make a decision as to whether or not to filter
-it. QUIC applications are encouraged to fail over to TCP if early packets do
+Though the guidance there holds, a particularly unwise behavior admits a
+handful of UDP packets and then makes a decision as to whether or not to filter
+later packets in the same connection. 
+QUIC applications are encouraged to fail over to TCP if early packets do
 not arrive at their destination {{?I-D.ietf-quic-applicability}}, as QUIC is
 based on UDP and there are known blocks of UDP traffic (see {{sec-udp-1312}}).
 Admitting a few packets allows the QUIC endpoint to determine that the path
@@ -1049,7 +1050,7 @@ of the end server. See {{QUIC_LB}} for standard ways for intermediaries to send
 Retry packets on behalf of consenting servers.
 
 
-## Quality of Service handling and ECMP
+## Quality of Service handling and ECMP routing
 
 It is expected that any QoS handling in the network, e.g. based on use of
 DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
