@@ -828,7 +828,7 @@ wire image. Limited observation of upstream congestion may be
 possible via the observation of CE markings on ECN-enabled QUIC traffic.
 
 On-path devices can also make measurements of RTT, loss and other 
-performance metrics when information is carried in an additional network-layer 
+performance metrics when information is carried in an additional network-layer
 packet header (Section 6 of
 {{?I-D.ietf-tsvwg-transport-encrypt}} describes use of operations,
 administration and management (OAM) information).
