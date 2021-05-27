@@ -721,7 +721,8 @@ traffic is protected and ACKs may be padded, padding is not required.
 
 ## Round-Trip Time (RTT) Measurement {#sec-rtt}
 
-The round-trip time (RTT) of QUIC flows can be inferred by observation once per flow,
+The round-trip time (RTT) of QUIC flows can be inferred 
+by observation once per flow,
 during the handshake, as in passive TCP measurement; this requires parsing of
 the QUIC packet header and recognition of the handshake, as illustrated in
 {{handshake}}. It can also be inferred during the flow's lifetime, if the
