@@ -770,14 +770,14 @@ however, the use of more modern cryptographic algorithms is highly recommended.
 
 # Quality of Service (QoS) and DSCP
 
-QUIC, as defined in {{!RFC9000}}, has a single congestion controller and 
-recovery handler. This design 
+QUIC, as defined in {{!RFC9000}}, has a single congestion controller and
+recovery handler. This design
 assumes that all packets of a QUIC connection, or at least with the
-same 5-tuple {dest addr, source addr, protocol, dest port, source port}, will
+same 5-tuple {dest addr, source addr, protocol, dest port, source port}
+that same the same DiffServ Code Point (DSCP) {{?RFC2475}}, will
 receive similar network treatment since feedback about loss or delay
 of each packet is used as input to the congestion controller. Therefore,
-packets belonging to the same connection should use a single 
-DiffServ Code Point (DSCP) {{?RFC2475}}.
+packets belonging to the same connection should use a single DSCP.
 Section 5.1 of {{?RFC7657}} provides a discussion of diffserv interactions
 with datagram transport protocols {{?RFC7657}} (in this respect the
 interactions with QUIC resemble those of SCTP).
