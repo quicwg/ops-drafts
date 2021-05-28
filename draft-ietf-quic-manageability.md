@@ -833,7 +833,9 @@ packet header (Section 6 of
 {{?I-D.ietf-tsvwg-transport-encrypt}} describes use of operations,
 administration and management (OAM) information).
 Using network-layer approaches also has the advantage that common observation
-and analysis tools can be consistently used by multiple transport protocols.
+and analysis tools can be consistently used by multiple transport protocols,
+however, these techniques are often limited to measurements within one or
+multiple cooperating domains.
 
 ## Stateful Treatment of QUIC Traffic {#sec-stateful}
 
