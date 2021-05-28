@@ -770,16 +770,24 @@ however, the use of more modern cryptographic algorithms is highly recommended.
 
 # Quality of Service (QoS) and DSCP
 
-QUIC assumes that all packets of a QUIC connection, or at least with the
+QUIC, as defined in {{!RFC9000}}, has a single congestion controller and 
+recovery handler. This design 
+assumes that all packets of a QUIC connection, or at least with the
 same 5-tuple {dest addr, source addr, protocol, dest port, source port}, will
 receive similar network treatment since feedback about loss or delay
-of each packet is used as input to the congestion controller. Therefore it is
-not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
-packets belonging to the same connection. When multiplexing multiple flows
+of each packet is used as input to the congestion controller. Therefore,
+packets belonging to the same connection should use a single 
+DiffServ Code Point (DSCP) {{?RFC2475}. 
+Section 5.1 of {{?RFC7657}} provides a discussion of diffserv interactions
+with datagram transport protocols {{?RFC7657}} (in this respect the
+interactions with QUIC resemble those of SCTP).
+
+When multiplexing multiple flows
 over a single QUIC connection, the selected DSCP value should be the one
-associated with the highest priority requested for all multiplexed flows.
-If differential network treatment,
-e.g. by the use of different DSCPs, is desired, multiple QUIC
+associated with the highest priority requested for all multiplexed flows
+
+If differential network treatment is desired,
+e.g., by the use of different DSCPs, multiple QUIC
 connections to the same server may be used. However, in general it is
 recommended to minimize the number of QUIC connections to the same server, to
 avoid increased overheads and, more importantly, competing congestion control.
