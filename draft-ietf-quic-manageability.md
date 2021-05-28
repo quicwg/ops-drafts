@@ -832,7 +832,7 @@ performance metrics when information is carried in an additional network-layer
 packet header (Section 6 of
 {{?I-D.ietf-tsvwg-transport-encrypt}} describes use of operations,
 administration and management (OAM) information).
-Using network-layer approaches also has the potential that common observation
+Using network-layer approaches also has the advantage that common observation
 and analysis tools can be consistently used by multiple transport protocols.
 
 ## Stateful Treatment of QUIC Traffic {#sec-stateful}
