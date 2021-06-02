@@ -102,15 +102,16 @@ protocol as defined.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
-In this section, we discuss those aspects of the QUIC transport protocol that
+This section discusses those aspects of the QUIC transport protocol that
 have an impact on the design and operation of devices that forward QUIC packets.
-Here, we are concerned primarily with the unencrypted part of QUIC's wire image
-{{WIRE-IMAGE}}, which we define as the information available in the packet
-header in each QUIC packet, and the dynamics of that information. Since QUIC is
-a versioned protocol, the wire image of the header format can also change from
-version to version. However, the field that identifies the QUIC version in some
-packets, and the format of the Version Negotiation Packet, are both inspectable
-and invariant {{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
+This section is therefore primarily considering the unencrypted part of QUIC's
+wire image {{WIRE-IMAGE}}, which is defined as the information available in the
+packet header in each QUIC packet, and the dynamics of that information. Since
+QUIC is a versioned protocol, the wire image of the header format can also
+change from version to version. However, the field that identifies the QUIC
+version in some packets, and the format of the Version Negotiation Packet,
+are both inspectable and invariant
+{{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
 
 This document describes version 1 of the QUIC protocol, whose wire image
 is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Features of the wire
@@ -243,9 +244,9 @@ datagrams containing the QUIC handshake, then examine each of the datagrams in
 detail.
 
 The QUIC handshake can normally be recognized on the wire through at
-least four datagrams we'll call "Client Initial", "Server Initial", and
-"Client Completion", and "Server Completion", for purposes of this
-illustration, as shown in {{fig-handshake}}.
+least four datagrams labelled "Client Initial", "Server Initial", and
+"Client Completion", and "Server Completion", in the illustration shown in
+{{fig-handshake}}.
 
 Packets in the handshake belong to three separate cryptographic and transport
 contexts ("Initial", which contains observable payload, and "Handshake" and
@@ -295,7 +296,7 @@ Initial packet, or leaving unused payload in the UDP packet after the Initial
 packet. A network path needs to be able to forward at least this size of
 packet for QUIC to be used.
 
-The content of Initial packets are encrypted using Initial Secrets, which
+The content of Initial packets is encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
 ID; they are therefore observable by any on-path device that knows the
 per-version constant. They are therefore considered visible in this
@@ -364,7 +365,7 @@ obfuscated using the Initial secret.
 +------------------------------------------------------------+
 | QUIC long header (type = Initial, Version, DCID, SCID)   (Length)
 +------------------------------------------------------------+  |
-| QUIC ACK frame (acknowledging Server Initial Initial)        |  |
+| QUIC ACK frame (acknowledging Server Initial)              |  |
 +------------------------------------------------------------+<-+
 | QUIC long header (type = Handshake, Version, DCID, SCID) (Length)
 +------------------------------------------------------------+  |
@@ -401,8 +402,8 @@ Similar to Client Completion, Server Completion also exposes no additional
 information; observing it serves only to determine that the handshake has
 completed.
 
-When the client uses 0-RTT connection resumption, 0-RTT data may also be
-seen in the Client Initial datagram, as shown in {{fig-client-initial-0rtt}}.
+When the client uses 0-RTT connection resumption, the Client Initial
+datagram can also carry 0-RTT data, as shown in {{fig-client-initial-0rtt}}.
 
 ~~~~~
 +----------------------------------------------------------+
@@ -428,7 +429,7 @@ bytes. Additional datagrams containing only 0-RTT packets with long headers
 could be sent from the client to the server after the Client Initial datagram,
 containing the rest of the 0-RTT data. The amount of 0-RTT protected data
 that can be sent in the first flight is limited by the initial congestion
-window, typically around 10 packets (see {{Section 7.2 of
+window, typically to around 10 packets (see {{Section 7.2 of
 QUIC-RECOVERY}}).
 
 ## Integrity Protection of the Wire Image {#wire-integrity}
@@ -443,23 +444,23 @@ receiver discarding the packet. Some parts of Initial packets could be altered
 by removing and re-applying the authenticated encryption without immediate
 discard at the receiver. However, the cryptographic handshake validates most
 fields and any modifications in those fields will result in connection
-establishment failing later on.
+establishment failing later.
 
 ## Connection ID and Rebinding {#rebinding}
 
 The connection ID in the QUIC packet headers allows association of QUIC
 packets using information independent of the five-tuple. This
-allows rebinding of a connection after one of one endpoint experienced
+allows rebinding of a connection after one of the endpoints experienced
 an address change - usually the client. Further it can be used by
 in-network devices to ensure that related 5-tuple flows are appropriately
 balanced together.
 
-Client and server negotiate connection IDs during
-the handshake; typically, however, only the server will request a connection ID
-for the lifetime of the connection. Connection IDs for either endpoint may
+Client and server each choose a connection ID during the handshake; for
+example, a server might request that a client use a connection ID, whereas the
+client might choose a zero-length value. Connection IDs for either endpoint may
 change during the lifetime of a connection, with the new connection ID being
 supplied via encrypted frames (see {{Section 5.1 of QUIC-TRANSPORT}}).
-Therefore, observing a new connection ID does not necessary indicate a new
+Therefore, observing a new connection ID does not necessarily indicate a new
 connection.
 
 {{?QUIC_LB=I-D.ietf-quic-load-balancers}} specifies algorithms for
@@ -467,7 +468,7 @@ encoding the server mapping in a connection ID in order to share this
 information with selected on-path devices such as load balancers. Server
 mappings should only be exposed to selected entities. Uncontrolled exposure
 would allow linkage of multiple IP addresses to the same host if the server
-also supports migration which opens an attack vector on specific servers or
+also supports migration that opens an attack vector on specific servers or
 pools. The best way to obscure an encoding is to appear random to any other
 observers, which is most rigorously achieved with encryption. As a result,
 any attempt to infer information from specific parts of a connection ID is
@@ -491,7 +492,7 @@ Version Negotiation packets are used by the server to indicate that a requested
 version from the client is not supported (see {{Section 6 of QUIC-TRANSPORT}}.
 Version Negotiation packets are not intrinsically protected, but future QUIC
 versions will use later encrypted messages to verify that they were authentic.
-Therefore any modification of this list will be detected and may cause the
+Therefore, any modification of this list will be detected and may cause the
 endpoints to terminate the connection attempt.
 
 Also note that the list of versions in the Version Negotiation packet may
@@ -504,7 +505,7 @@ are reflected to provide a proof of return-routability. Therefore, changing this
 information will also cause the connection to fail.
 
 QUIC is expected to evolve rapidly, so new versions, both experimental and IETF
-standard versions, will be deployed in the Internet more often than with
+standard versions, will be deployed on the Internet more often than with
 traditional Internet- and transport-layer protocols. Using a particular version
 number to recognize valid QUIC traffic is likely to persistently miss a fraction
 of QUIC flows and completely fail in the near future, and is therefore
@@ -520,7 +521,8 @@ This section addresses the different kinds of observations and inferences that
 can be made about QUIC flows by a passive observer in the network based on the
 wire image in {{sec-wire-image}}. Here we assume a bidirectional observer (one
 that can see packets in both directions in the sequence in which they are
-carried on the wire) unless noted.
+carried on the wire) unless noted, but typically without access to any keying
+information.
 
 
 ## Identifying QUIC Traffic {#sec-identifying}
@@ -554,7 +556,7 @@ in use.
 ### Identifying Negotiated Version
 
 An in-network observer assuming that a set of packets belongs to a QUIC flow
-can infer the version number in use by observing the handshake: for QUIC
+might infer the version number in use by observing the handshake: for QUIC
 version 1, if the version number in the Initial packet from a client is the
 same as the version number in the Initial packet of the server response, that
 version has been accepted by both endpoints to be used for the rest of the
@@ -688,7 +690,7 @@ The connection ID must change upon intentional address change by an endpoint,
 and connection ID negotiation is encrypted, so it is not possible for a
 passive observer to link intended changes of address using the connection ID.
 
-When one endpoint unintentionally changes its address, as is the case with NAT
+When one endpoint's address unintentionally changes, as is the case with NAT
 rebinding, an on-path observer may be able to use the connection ID to
 associate the flow on the new address with the flow on the old address.
 
@@ -772,7 +774,7 @@ measure one sample of end-to-end RTT. This mechanism follows the principles of
 protocol measurability laid out in {{IPIM}}.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
-any transport protocol delay (e.g., delayed sending of acknowledgements) and/or
+any transport protocol delay (e.g., delayed sending of acknowledgments) and/or
 application layer delay (e.g., waiting for a response to be generated). It
 therefore provides devices on path a good instantaneous estimate of the RTT as
 experienced by the application.
@@ -876,7 +878,7 @@ additional entropy beyond the 5-tuple. The QUIC handshake needs
 to be observed in order to understand whether the connection ID is present and
 what length it has. However, connection IDs may be renegotiated
 after the handshake, and this renegotiation is not visible to the path.
-Therefore using the connection ID as a flow key field for stateful treatment
+Therefore, using the connection ID as a flow key field for stateful treatment
 of flows is not recommended as connection ID changes will cause undetectable
 and unrecoverable loss of state in the middle of a connection. Specially, the
 use of the connection ID for functions that require state to make a forwarding
@@ -931,9 +933,10 @@ load-balancers and servers.
 
 {{?RFC4787}} describes possible packet filtering behaviors that relate to NATs
 but is often also used is other scenarios where packet filtering is desired.
-Though the guidance there holds, a particularly unwise behavior is to admit a
-handful of UDP packets and then make a decision as to whether or not to filter
-it. QUIC applications are encouraged to fail over to TCP if early packets do
+Though the guidance there holds, a particularly unwise behavior admits a
+handful of UDP packets and then makes a decision to whether or not filter
+later packets in the same connection.
+QUIC applications are encouraged to fail over to TCP if early packets do
 not arrive at their destination {{?I-D.ietf-quic-applicability}}, as QUIC is
 based on UDP and there are known blocks of UDP traffic (see {{sec-udp-1312}}).
 Admitting a few packets allows the QUIC endpoint to determine that the path
@@ -962,7 +965,7 @@ When the handshake is blocked, QUIC-capable applications may fail over
 to TCP. However, blocking a random fraction of QUIC packets across
 4-tuples will allow many QUIC handshakes to complete, preventing a
 TCP failover, but these connections will suffer from
-severe packet loss (see also {{sec-filtering}}). Therefore UDP throttling
+severe packet loss (see also {{sec-filtering}}). Therefore, UDP throttling
 should be realized by per-flow policing, as opposed to per-packet
 policing. Note that this per-flow policing should be stateless to avoid
 problems with stateful treatment of QUIC flows (see {{sec-stateful}}),
@@ -991,7 +994,7 @@ packets, flows, or some other aggregate) into "good" (productive) and "bad"
 good traffic. This operation is often done in a separate specialized mitigation
 environment through which all traffic is filtered; a generalized architecture
 for separation of concerns in mitigation is given in
-{{?DOTS-ARCH=I-D.ietf-dots-architecture}}.
+{{?DOTS-ARCH=RFC8811}}.
 
 Efficient classification of this DDoS traffic in the mitigation environment
 is key to the success of this approach. Limited first-packet garbage detection
@@ -1040,7 +1043,7 @@ of the end server. See {{QUIC_LB}} for standard ways for intermediaries to send
 Retry packets on behalf of consenting servers.
 
 
-## Quality of Service handling and ECMP
+## Quality of Service Handling and ECMP Routing
 
 It is expected that any QoS handling in the network, e.g. based on use of
 DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
@@ -1156,9 +1159,9 @@ network as well as attacks on specific QUIC mechanism.
 
 Version Negotiation packets do not contain any mechanism to prevent version
 downgrade attacks. However, future versions of QUIC that use Version Negotiation
-packets are require to define a mechanism that is robust against version
-downgrade attacks. Therefore a network node should not attempt to impact version
-selection, as version downgrade may result in connection failure.
+packets are required to define a mechanism that is robust against version
+downgrade attacks. Therefore, a network node should not attempt to impact
+version selection, as version downgrade may result in connection failure.
 
 # Contributors
 
