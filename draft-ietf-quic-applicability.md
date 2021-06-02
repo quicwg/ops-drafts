@@ -567,7 +567,7 @@ RESET_STREAM frames, which contain only an error code.
 
 The stragegy on sending acknowlegdements in QUIC version 1 is adopted from
 TCP, meaning that usually an QUIC implementation is expected to send one
-packet containing an ACK frame for each two packets received. 
+packet containing an ACK frame for each two packets received.
 The cost of sending acknowledgments - in processing cost or link
 utilization - could be a significant proportion of available resources if
 these resources are constrained. With TCP network based mechanisim exists
