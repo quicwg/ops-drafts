@@ -379,7 +379,9 @@ obfuscated using the Initial secret.
 {: #fig-init-complete title="Typical Client Completion datagram pattern"}
 
 The Client Completion datagram does not expose any additional information;
-however, recognizing it can be used to determine that a handshake has completed
+however, as the destination connection ID is server-selected, it usually
+is not the same ID than in the Client Initial datagram. Client Completion
+datagram can be used to determine that a handshake has completed
 (see {{sec-confirm}}), and for three-way handshake RTT estimation as in
 {{sec-rtt}}.
 
