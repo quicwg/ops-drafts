@@ -585,35 +585,39 @@ TCP port already registered for the application is appropriate. For example,
 the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
-Additionally, Application-Layer Version Negotiation {{?RFC7301}} permits the
-client and server to negotiate which of several protocols will be used on a
-given connection.  Therefore, multiple applications might be supported on a
-single UDP port based on the ALPN token offered.  Applications using QUIC
-should register an ALPN token for use in the TLS handshake.
-
-Applications could define an alternate endpoint discovery mechanism to allow
-the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
-and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
-{{?RFC7838}} for an HTTP origin to advertise the availability of an equivalent
-HTTP/3 endpoint on a certain UDP port by using the "h3" ALPN token.
-
-Since QUIC version 1 deferred defining a version negotiation mechanism, HTTP/3
-also deferred deciding how it would map to other QUIC versions. HTTP/3 requires
-QUIC version 1 and defines the ALPN token ("h3") to only apply to that version;
-this approach allows unambiguous agreement between the endpoints on the protocol
-stack in use but solves the versioning problem at the cost of future
-flexibility. Application protocol mappings written for QUIC version 1 or
-other QUIC versions may be able to benefit from version negotiation
-mechanisms that did not exist during the development of HTTP/3.
-Coupling QUIC version to ALPN tokens is one approach but not the
-only approach.
-
 Given the prevalence of the assumption in network management
 practice that a port number maps unambiguously to an application, the
 use of ports that cannot easily be mapped to a registered service name
 might lead to blocking or other changes to the forwarding behavior by network
 elements such as firewalls that use the port number for application
 identification.
+
+Applications could define an alternate endpoint discovery mechanism to allow
+the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
+and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
+{{?RFC7838}} for an HTTP origin to advertise the availability of an equivalent
+HTTP/3 endpoint on a certain UDP port by using the "h3" Application-Layer
+Protocol Negotiation (ALPN) {{?RFC7301}} token.
+
+Additionally, ALPN permits the
+client and server to negotiate which of several protocols will be used on a
+given connection.  Therefore, multiple applications might be supported on a
+single UDP port based on the ALPN token offered.  Applications using QUIC
+should register an ALPN token for use in the TLS handshake.
+
+As QUIC version 1 deferred defining a complete version negotiation mechanism,
+HTTP/3 requires QUIC version 1 and defines the
+ALPN token ("h3") to only apply to that version. This approach avoids
+ambiguity of the used version in absence of a version negotiation
+mechanism. So far no single approach has been selected for
+managing the use of different QUIC versions, neither in HTTP/3 nor in general.
+Coupling QUIC version to ALPN tokens is one approach but not the
+only approach. Other options may be suitable when a version negotiation
+scheme gets developed and new protocol versions (at both application and
+transport layers) are defined. Application protocols that use QUIC need to
+consider how the protocol will manage different QUIC versions.
+Decisions for those protocols might be informed by choices made by other
+protocols, like HTTP/3.
 
 
 # Connection Migration
