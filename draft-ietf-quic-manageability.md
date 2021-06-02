@@ -1050,16 +1050,17 @@ It is expected that any QoS handling in the network, e.g. based on use of
 DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
 Multi-Path (ECMP) routing, is applied on a per flow-basis (and not per-packet)
 and as such that all packets belonging to the same QUIC connection get uniform
-treatment. Using ECMP to distribute packets from a single flow across multiple
+treatment.
+
+Using ECMP to distribute packets from a single flow across multiple
 network paths or any other non-uniform treatment of packets belong to the same
 connection could result in variations in order, delivery rate, and drop rate.
 As feedback about loss or delay of each packet is used as input to
 the congestion controller, these variations could adversely affect performance.
-
 Depending on the loss recovery mechanism implemented, QUIC may be
 more tolerant of packet re-ordering than traditional TCP traffic (see
-{{packetnumber}}). However, it cannot be known by the network which exact
-recovery mechanism is used and therefore reordering tolerance should be
+{{packetnumber}}). However, the recovery mechanism used by a flow cannot be
+known by the network and therefore reordering tolerance should be
 considered as unknown.
 
 ## Handling ICMP Messages
