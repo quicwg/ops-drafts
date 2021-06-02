@@ -355,7 +355,8 @@ the way in which they are assigned {{Section 6 of QUIC-HTTP}}).
 ## Stream versus Flow Multiplexing
 
 Streams are meaningful only to the application; since stream information is
-carried inside QUIC's encryption boundary, a given packet exposes no information about which
+carried inside QUIC's encryption boundary, a given packet exposes
+no information about which
 stream(s) are carried within the packet.
 Therefore, stream multiplexing is not intended to be used for differentiating
 streams in terms of network treatment. Application traffic requiring different
