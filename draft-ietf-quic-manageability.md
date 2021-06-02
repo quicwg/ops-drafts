@@ -649,10 +649,16 @@ gradually disappear over time.
 When the version has been identified as QUIC version 1, the packet type needs to
 be verified as an Initial packet by checking that the third and fourth bits of
 the header are both set to 0. Then the Destination Connection ID needs to be
-extracted to calculate the Initial secret using the version-specific Initial
-salt, as described in {{Section 5.2 of QUIC-TLS}}. The length of the connection
-ID is indicated in the 6th byte of the header followed by the connection ID
-itself.
+extracted from the packet. The Initial secret is calculated using the
+version-specific Initial salt, as described in {{Section 5.2 of QUIC-TLS}}.
+The length of the connection ID is indicated in the 6th byte of the header
+followed by the connection ID itself.
+
+Note that subsequent Initial packets might contain a Destination Connection ID
+other than the one used to generate the Initial secret. Therefore, attempts to
+decrypt these packets using the procedure above might fail unless the Initial
+secret is retained by the observer.
+
 
 To determine the end of the header and find the start of the payload, the packet
 number length, the source connection ID length, and the token length need to be
@@ -673,11 +679,6 @@ contain only CRYPTO frames and optionally PADDING frames. PADDING frames, each
 consisting of a single zero byte, may occur before, after, or between CRYPTO
 frames. There might be multiple CRYPTO frames.  Finally, an extension might
 define additional frame types which could be present.
-
-Note that subsequent Initial packets might contain a Destination Connection ID
-other than the one used to generate the Initial secret. Therefore, attempts to
-decrypt these packets using the procedure above might fail unless the Initial
-secret is retained by the observer.
 
 ## Flow Association {#sec-flow-association}
 
