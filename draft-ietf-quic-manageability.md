@@ -647,7 +647,7 @@ gradually disappear over time.
 When the version has been identified as QUIC version 1, the packet type needs to
 be verified as an Initial packet by checking that the third and fourth bits of
 the header are both set to 0. Then the Destination Connection ID needs to be
-extracted from the Client Initial to calculate the Initial secret using the
+extracted from the packet. The Initial secret is calculated using the
 version-specific Initial salt, as described in {{Section 5.2 of QUIC-TLS}}.
 The length of the connection ID is indicated in the 6th byte of the header
 followed by the connection ID itself.
