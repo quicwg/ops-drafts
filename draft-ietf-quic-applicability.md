@@ -570,16 +570,14 @@ TCP, meaning that usually an QUIC implementation is expected to send one
 packet containing an ACK frame for each two packets received.
 The cost of sending acknowledgments - in processing cost or link
 utilization - could be a significant proportion of available resources if
-these resources are constrained. With TCP network based mechanisim exists
-that perform so called ACK thining in such situations. As "only-ACK" packets
-are not reliably detecable in QUIC and drop of those packets can have larger
-performance impcats than with TCP, network based ACK thining is not suitable
+these resources are constrained.  "ACK-only" packets are not reliably
+detectable in QUIC, so network ACK thinning done for TCP is not suitable
 for QUIC traffic. Instead QUIC endpoint need to control the ACK rate
 appropriately and some implenentation may even provide an interface to
 impact the amount of ACK traffic sent. Reducing the rate at which
-acknowledgments are generated can preserve constraint resources and
-in such a situation improve overall performance, for both network processing
-as well as application-relevant metrics.
+acknowledgments are generated in constrained situations can preserve resources
+and improve overall performance, for both network processing as well as
+application-relevant metrics.
 
 # Port Selection and Application Endpoint Discovery {#ports}
 
