@@ -356,7 +356,7 @@ QUIC Initial packets.
 {: #fig-server-initial title="Typical Server Initial datagram pattern"}
 
 The Server Initial datagram also exposes version number, source and destination
-connection IDs in the clear; the payload of the Initial packet is
+connection IDs in the clear; the payload of the Initial packet(s) is
 obfuscated using the Initial secret.
 
 ~~~~~
