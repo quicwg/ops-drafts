@@ -252,7 +252,7 @@ contexts ("Initial", which contains observable payload, and "Handshake" and
 "1-RTT", which do not). QUIC packets in separate contexts during the handshake
 can be coalesced (see {{coalesced}}) in order to reduce the number of UDP
 datagrams sent during the handshake.  QUIC packets can be lost and reordered,
-so packets within a flight may not be sent close in time, though the sequence
+so packets within a flight might not be sent close in time, though the sequence
 of the flights will not change, because one flight depends upon the peer's
 previous flight.
 
@@ -285,7 +285,7 @@ three types of packets: Initial packet(s) with the beginning of the server's
 side of the TLS handshake, Handshake packet(s) with the rest of the server's
 portion of the TLS handshake, and 1-RTT packet(s), if present.
 
-The Client Completion packets contain at least one Handshake packet and
+The Client Completion flight contains at least one Handshake packet and
 could also include an Initial packet.
 
 Datagrams that contain an Initial packet (Client Initial, Server
@@ -305,9 +305,9 @@ per-version constant and considered visible in this illustration. The content
 of QUIC Handshake packets are encrypted using keys established during the
 initial handshake exchange, and are therefore not visible.
 
-Initial, Handshake, and 1-RTT packets belong to cryptographic and transport
+Initial, Handshake, and 1-RTT packets belong to different cryptographic and transport
 contexts. The Client Completion {{fig-init-complete}} and the
-Server Completion {{fig-hs-complete}} flights conclude these first two
+Server Completion {{fig-hs-complete}} flights conclude the Initial and Handshake
 contexts, by sending final acknowledgments and CRYPTO frames.
 
 ~~~~~
