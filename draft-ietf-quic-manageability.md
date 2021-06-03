@@ -353,7 +353,7 @@ QUIC Initial packets.
 | 1-RTT encrypted payload                                    |
 +------------------------------------------------------------+
 ~~~~~
-{: #fig-server-initial title="Typical Server Initial datagram pattern"}
+{: #fig-server-initial title="Coalesced Server Initial datagram pattern"}
 
 The Server Initial datagram also exposes version number, source and destination
 connection IDs in the clear; the payload of the Initial packet(s) is
@@ -376,7 +376,7 @@ obfuscated using the Initial secret.
 | 1-RTT encrypted payload                                    |
 +------------------------------------------------------------+
 ~~~~~
-{: #fig-init-complete title="Typical Client Completion datagram pattern"}
+{: #fig-init-complete title="Coalesced Client Completion datagram pattern"}
 
 The Client Completion flight does not expose any additional information;
 however, as the destination connection ID is server-selected, it usually
@@ -398,7 +398,7 @@ estimation as in {{sec-rtt}}.
 | 1-RTT encrypted payload                                    |
 +------------------------------------------------------------+
 ~~~~~
-{: #fig-hs-complete title="Typical Server Completion datagram pattern"}
+{: #fig-hs-complete title="Coalesced Server Completion datagram pattern"}
 
 Similar to Client Completion, Server Completion also exposes no additional
 information; observing it serves only to determine that the handshake has
@@ -424,7 +424,7 @@ flight can also include one or more 0-RTT packets, as shown in
 +----------------------------------------------------------+<-+
 ~~~~~
 {: #fig-client-initial-0rtt
-   title="Typical 0-RTT Client Initial datagram pattern"}
+   title="Coalesced 0-RTT Client Initial datagram"}
 
 When a 0-RTT packet is coalesced with an Initial packet, the datagram
 will be padded to 1200 byes. Additional datagrams containing only 0-RTT
