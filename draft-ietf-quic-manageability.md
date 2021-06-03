@@ -305,8 +305,8 @@ per-version constant and considered visible in this illustration. The content
 of QUIC Handshake packets are encrypted using keys established during the
 initial handshake exchange, and are therefore not visible.
 
-Initial, Handshake, and 1-RTT packets belong to different cryptographic and transport
-contexts. The Client Completion {{fig-init-complete}} and the
+Initial, Handshake, and 1-RTT packets belong to different cryptographic and
+transport contexts. The Client Completion {{fig-init-complete}} and the
 Server Completion {{fig-hs-complete}} flights conclude the Initial and Handshake
 contexts, by sending final acknowledgments and CRYPTO frames.
 
