@@ -381,9 +381,9 @@ obfuscated using the Initial secret.
 The Client Completion flight does not expose any additional information;
 however, as the destination connection ID is server-selected, it usually
 is not the same ID than in the Client Initial. Client Completion
-flights can be used to determine that a handshake has completed
-(see {{sec-confirm}}), and for three-way handshake RTT estimation as in
-{{sec-rtt}}.
+flights contain 1-RTT packets which indicate the handshake has completed
+(see {{sec-confirm}}) on the client, and for three-way handshake RTT
+estimation as in {{sec-rtt}}.
 
 ~~~~~
 +------------------------------------------------------------+
