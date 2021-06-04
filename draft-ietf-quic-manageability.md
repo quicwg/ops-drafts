@@ -316,14 +316,14 @@ contexts, by sending final acknowledgments and CRYPTO frames.
 +----------------------------------------------------------+
 | QUIC long header (type = Initial, Version, DCID, SCID) (Length)
 +----------------------------------------------------------+  |
-| QUIC Frames (ie: CRYPTO, PADDING, PING)                  |  |
+| QUIC CRYPTO frame header                                 |  |
 +----------------------------------------------------------+  |
-| TLS Client Hello (incl. TLS SNI)                         |  |
+| | TLS Client Hello (incl. TLS SNI)                    |  |  |
 +----------------------------------------------------------+  |
 | QUIC PADDING frames                                      |  |
 +----------------------------------------------------------+<-+
 ~~~~~
-{: #fig-client-initial title="Client Initial datagram without 0-RTT"}
+{: #fig-client-initial title="Example Client Initial datagram without 0-RTT"}
 
 A Client Initial packet exposes the version, source and destination
 connection IDs without encryption. The payload of the Initial
