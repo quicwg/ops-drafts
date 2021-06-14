@@ -243,16 +243,18 @@ handshake, we first show the general communication pattern visible in the UDP
 datagrams containing the QUIC handshake, then examine each of the datagrams in
 detail.
 
-The QUIC handshake can normally be recognized on the wire through at
-least four datagrams labelled "Client Initial", "Server Initial", and
-"Client Completion", and "Server Completion", in the illustration shown in
-{{fig-handshake}}.
+The QUIC handshake can normally be recognized on the wire through four flights
+of datagrams labelled "Client Initial", "Server Initial", "Client Completion",
+and "Server Completion", in the illustration shown in {{fig-handshake}}.
 
 Packets in the handshake belong to three separate cryptographic and transport
 contexts ("Initial", which contains observable payload, and "Handshake" and
 "1-RTT", which do not). QUIC packets in separate contexts during the handshake
-are generally coalesced (see {{coalesced}}) in order to reduce the number of UDP
-datagrams sent during the handshake.
+can be coalesced (see {{coalesced}}) in order to reduce the number of UDP
+datagrams sent during the handshake.  QUIC packets can be lost and reordered,
+so packets within a flight might not be sent close in time, though the sequence
+of the flights will not change, because one flight depends upon the peer's
+previous flight.
 
 As shown here, the client can send 0-RTT data as soon as it has sent its Client
 Hello, and the server can send 1-RTT data as soon as it has sent its Server
@@ -276,14 +278,14 @@ Client                                    Server
 {: #fig-handshake
    title="General communication pattern visible in the QUIC handshake"}
 
-A typical handshake starts with the client sending of a Client Initial
-datagram as shown in {{fig-client-initial}}, which elicits a Server Initial
-datagram as shown in {{fig-server-initial}} typically containing three packets:
-an Initial packet with the beginning of the server's side of the TLS handshake,
-a Handshake packet with the rest of the server's side of the TLS handshake, and
-1-RTT data, if present.
+A handshake starts with the client sending one or more datagrams containing
+Initial packets as shown in {{fig-client-initial}}, which elicits the
+Server Initial response as shown in {{fig-server-initial}} typically containing
+three types of packets: Initial packet(s) with the beginning of the server's
+side of the TLS handshake, Handshake packet(s) with the rest of the server's
+portion of the TLS handshake, and 1-RTT packet(s), if present.
 
-The Client Completion datagram contains at least one Handshake packet and
+The Client Completion flight contains at least one Handshake packet and
 could also include an Initial packet.
 
 Datagrams that contain an Initial packet (Client Initial, Server
@@ -299,16 +301,14 @@ packet for QUIC to be used.
 The content of Initial packets is encrypted using Initial Secrets, which
 are derived from a per-version constant and the client's destination connection
 ID; they are therefore observable by any on-path device that knows the
-per-version constant. They are therefore considered visible in this
-illustration. The content of QUIC Handshake packets are encrypted using keys
-established during the initial handshake exchange, and are therefore not
-visible.
+per-version constant and considered visible in this illustration. The content
+of QUIC Handshake packets are encrypted using keys established during the
+initial handshake exchange, and are therefore not visible.
 
-Initial, Handshake, and the 1-RTT packets transmitted after the handshake
-belong to cryptographic and transport contexts. The Client Completion
-{{fig-init-complete}} and the Server Completion {{fig-hs-complete}} datagrams
-finish these first two contexts, by sending the final acknowledgment and
-finishing the transmission of CRYPTO frames.
+Initial, Handshake, and 1-RTT packets belong to different cryptographic and
+transport contexts. The Client Completion {{fig-init-complete}} and the
+Server Completion {{fig-hs-complete}} flights conclude the Initial and Handshake
+contexts, by sending final acknowledgments and CRYPTO frames.
 
 ~~~~~
 +----------------------------------------------------------+
@@ -318,19 +318,19 @@ finishing the transmission of CRYPTO frames.
 +----------------------------------------------------------+  |
 | QUIC CRYPTO frame header                                 |  |
 +----------------------------------------------------------+  |
-| TLS Client Hello (incl. TLS SNI)                         |  |
+| | TLS Client Hello (incl. TLS SNI)                    |  |  |
 +----------------------------------------------------------+  |
 | QUIC PADDING frames                                      |  |
 +----------------------------------------------------------+<-+
 ~~~~~
-{: #fig-client-initial title="Typical Client Initial datagram pattern without
- 0-RTT"}
+{: #fig-client-initial title="Example Client Initial datagram without 0-RTT"}
 
-The Client Initial datagram exposes version number, source and destination
-connection IDs without encryption. Information in the TLS Client Hello frame,
-including any TLS Server Name Indication (SNI) present, is obfuscated using the
-Initial secret. Note that the location of PADDING is implementation-dependent,
-and PADDING frames might not appear in a coalesced Initial packet.
+A Client Initial packet exposes the version, source and destination
+connection IDs without encryption. The payload of the Initial
+packet is obfuscated using the Initial secret.  The complete TLS
+Client Hello, including any TLS Server Name Indication (SNI)
+present, is sent in one or more CRYPTO frames across one or more
+QUIC Initial packets.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -353,10 +353,10 @@ and PADDING frames might not appear in a coalesced Initial packet.
 | 1-RTT encrypted payload                                    |
 +------------------------------------------------------------+
 ~~~~~
-{: #fig-server-initial title="Typical Server Initial datagram pattern"}
+{: #fig-server-initial title="Coalesced Server Initial datagram pattern"}
 
 The Server Initial datagram also exposes version number, source and destination
-connection IDs in the clear; information in the TLS Server Hello message is
+connection IDs in the clear; the payload of the Initial packet(s) is
 obfuscated using the Initial secret.
 
 ~~~~~
@@ -376,14 +376,14 @@ obfuscated using the Initial secret.
 | 1-RTT encrypted payload                                    |
 +------------------------------------------------------------+
 ~~~~~
-{: #fig-init-complete title="Typical Client Completion datagram pattern"}
+{: #fig-init-complete title="Coalesced Client Completion datagram pattern"}
 
-The Client Completion datagram does not expose any additional information;
+The Client Completion flight does not expose any additional information;
 however, as the destination connection ID is server-selected, it usually
-is not the same ID than in the Client Initial datagram. Client Completion
-datagram can be used to determine that a handshake has completed
-(see {{sec-confirm}}), and for three-way handshake RTT estimation as in
-{{sec-rtt}}.
+is not the same ID than in the Client Initial. Client Completion
+flights contain 1-RTT packets which indicate the handshake has completed
+(see {{sec-confirm}}) on the client, and for three-way handshake RTT
+estimation as in {{sec-rtt}}.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -398,14 +398,15 @@ datagram can be used to determine that a handshake has completed
 | 1-RTT encrypted payload                                    |
 +------------------------------------------------------------+
 ~~~~~
-{: #fig-hs-complete title="Typical Server Completion datagram pattern"}
+{: #fig-hs-complete title="Coalesced Server Completion datagram pattern"}
 
 Similar to Client Completion, Server Completion also exposes no additional
 information; observing it serves only to determine that the handshake has
 completed.
 
 When the client uses 0-RTT connection resumption, the Client Initial
-datagram can also carry 0-RTT data, as shown in {{fig-client-initial-0rtt}}.
+flight can also include one or more 0-RTT packets, as shown in
+{{fig-client-initial-0rtt}}.
 
 ~~~~~
 +----------------------------------------------------------+
@@ -423,14 +424,13 @@ datagram can also carry 0-RTT data, as shown in {{fig-client-initial-0rtt}}.
 +----------------------------------------------------------+<-+
 ~~~~~
 {: #fig-client-initial-0rtt
-   title="Typical 0-RTT Client Initial datagram pattern"}
+   title="Coalesced 0-RTT Client Initial datagram"}
 
-In a 0-RTT Client Initial datagram, the PADDING frame is only present if
-necessary to increase the size of the datagram with 0-RTT data to at least 1200
-bytes. Additional datagrams containing only 0-RTT packets with long headers
-could be sent from the client to the server after the Client Initial datagram,
-containing the rest of the 0-RTT data. The amount of 0-RTT protected data
-that can be sent in the first flight is limited by the initial congestion
+When a 0-RTT packet is coalesced with an Initial packet, the datagram
+will be padded to 1200 byes. Additional datagrams containing only 0-RTT
+packets with long headers can be sent after the client Initial packet(s),
+containing more 0-RTT data. The amount of 0-RTT protected data that
+can be sent in the first flight is limited by the initial congestion
 window, typically to around 10 packets (see {{Section 7.2 of
 QUIC-RECOVERY}}).
 
