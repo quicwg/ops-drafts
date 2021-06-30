@@ -679,11 +679,12 @@ After decryption, the client's Initial packet can be parsed to detect the CRYPTO
 frame(s) that contains the TLS ClientHello, which then can be parsed similarly
 to TLS over TCP connections. Note that there can be multiple CRYPTO frames,
 and they might not be in order, so reassembling the CRYPTO stream by parsing
-offsets and lengths is required. Further, the client's Initial packet may contain
-other frames, so the first bytes of each frame need to be checked to identify the
-frame type, and if needed skipped over it. Note that the length of the frames is
-dependent on the frame type; see {{Section 18 of QUIC-TRANSPORT}}. E.g. PADDING
-frames, each consisting of a single zero byte, may occur before, after, or
+offsets and lengths is required. Further, the client's Initial packet may
+contain other frames, so the first bytes of each frame need to be checked
+to identify the frame type, and if needed skipped over it. Note that the
+length of the frames is dependent on the frame type; see {{Section 18 of
+QUIC-TRANSPORT}}. E.g. PADDING frames, each consisting
+of a single zero byte, may occur before, after, or
 between CRYPTO frames. However, extensions might define additional frame types.
 If an unknown frame type is encountered, it is impossible to know the length of
 that frame which prevents skipping over it, and therefore parsing fails.
