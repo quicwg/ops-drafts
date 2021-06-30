@@ -633,11 +633,6 @@ and other protocols that use TLS.
 
 ### Extracting Server Name Indication (SNI) Information
 
-
-
-
-
-
 If the ClientHello is not encrypted, SNI can be derived from the client's
 Initial packet by calculating the Initial secret to decrypt the packet payload
 and parsing the QUIC CRYPTO frame(s) containing the TLS ClientHello.
