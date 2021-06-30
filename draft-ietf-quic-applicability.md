@@ -136,7 +136,7 @@ insecure protocols or to weaker versions of secure protocols.
 
 An application that implements fallback needs to consider the security
 consequences. A fallback to TCP and TLS exposes control information to
-modification and manipulation in the network. Further downgrades to older TLS
+modification and manipulation in the network. Further, downgrades to older TLS
 versions than 1.3, which is used in QUIC version 1, might result in
 significantly weaker
 cryptographic protection. For example, the results of protocol negotiation
@@ -215,7 +215,7 @@ Because QUIC is encapsulated in UDP, applications using QUIC must deal with
 short network idle timeouts. Deployed stateful middleboxes will generally
 establish state for UDP flows on the first packet sent, and keep state for
 much shorter idle periods than for TCP. {{?RFC5382}} suggests a TCP idle
-period of at least 124 minutes, though there is not evidence of widespread
+period of at least 124 minutes, though there is no evidence of widespread
 implementation of this guideline in the literature. Short network timeout for
 UDP, however, is well-documented. According to a 2010 study
 ({{Hatonen10}}), UDP applications can assume that any NAT binding or other
@@ -355,9 +355,10 @@ the way in which they are assigned {{Section 6 of QUIC-HTTP}}).
 ## Stream versus Flow Multiplexing
 
 Streams are meaningful only to the application; since stream information is
-carried inside QUIC's encryption boundary, no information about the stream(s)
-whose frames are carried by a given packet is visible to the network.
-Therefore stream multiplexing is not intended to be used for differentiating
+carried inside QUIC's encryption boundary, a given packet exposes
+no information about which
+stream(s) are carried within the packet.
+Therefore, stream multiplexing is not intended to be used for differentiating
 streams in terms of network treatment. Application traffic requiring different
 network treatment should therefore be carried over different five-tuples (i.e.
 multiple QUIC connections). Given QUIC's ability to send application data in
@@ -499,7 +500,7 @@ close mechanism can be used to communicate the intention to explicitly close the
 connection at some future point. HTTP/3 provides such a mechanism using the
 GOAWAY frame. In HTTP/3, when the GOAWAY frame is received by a client, it
 stops opening new streams even if the cumulative stream limit would allow.
-Instead the client would create a new connection on which to open further
+Instead, the client would create a new connection on which to open further
 streams.  Once all streams are closed on the old connection, it can be
 terminated safely by a connection close or after expiration of the idle time out
 (see also {{sec-termination}}).
@@ -519,7 +520,7 @@ pre-configured or dynamically adjusted based on the observed sending pattern of
 the application.
 
 If the application requires low latency, with only small chunks of data to
-send, it may be valuable to indicate to QUIC that all data should be send out
+send, it may be valuable to indicate to QUIC that all data should be sent out
 immediately. Alternatively, if the application expects to use a specific
 sending pattern, it can also provide a suggested delay to QUIC for how long to
 wait before bundle frames into a packet.
@@ -588,27 +589,35 @@ TCP port already registered for the application is appropriate. For example,
 the default port for HTTP/3 {{QUIC-HTTP}} is UDP port 443, analogous to HTTP/1.1
 or HTTP/2 over TLS over TCP.
 
-Additionally, Application-Layer Version Negotiation {{?RFC7301}} permits the
-client and server to negotiate which of several protocols will be used on a
-given connection.  Therefore, multiple applications might be supported on a
-single UDP port based on the ALPN token offered.  Applications using QUIC
-should register an ALPN token for use in the TLS handshake.
-
-Applications could define an alternate endpoint discovery mechanism to allow
-the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
-and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
-{{?RFC7838}} for an HTTP origin to advertise the availability of an equivalent
-HTTP/3 endpoint on a certain UDP port by using the "h3" ALPN token.  Note that
-HTTP/3's ALPN token ("h3") identifies not only the version of the application
-protocol, but also the version of QUIC itself; this approach allows unambiguous
-agreement between the endpoints on the protocol stack in use.
-
 Given the prevalence of the assumption in network management
 practice that a port number maps unambiguously to an application, the
 use of ports that cannot easily be mapped to a registered service name
 might lead to blocking or other changes to the forwarding behavior by network
 elements such as firewalls that use the port number for application
 identification.
+
+Applications could define an alternate endpoint discovery mechanism to allow
+the usage of ports other than the default. For example, HTTP/3 ({{Sections 3.2
+and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
+{{?RFC7838}} for an HTTP origin to advertise the availability of an equivalent
+HTTP/3 endpoint on a certain UDP port by using the "h3" Application-Layer
+Protocol Negotiation (ALPN) {{?RFC7301}} token.
+
+ALPN permits the
+client and server to negotiate which of several protocols will be used on a
+given connection.  Therefore, multiple applications might be supported on a
+single UDP port based on the ALPN token offered.  Applications using QUIC
+are required to register an ALPN token for use in the TLS handshake.
+
+As QUIC version 1 deferred defining a complete version negotiation mechanism,
+HTTP/3 requires QUIC version 1 and defines the
+ALPN token ("h3") to only apply to that version.
+So far no single approach has been selected for
+managing the use of different QUIC versions, neither in HTTP/3 nor in general.
+Application protocols that use QUIC need to
+consider how the protocol will manage different QUIC versions.
+Decisions for those protocols might be informed by choices made by other
+protocols, like HTTP/3.
 
 
 # Connection Migration
@@ -630,14 +639,14 @@ network path at a time, which
 enables failover use cases.  Path validation is required so that endpoints
 validate paths before use to avoid address spoofing attacks.  Path validation
 takes at least one RTT and congestion control will also be reset after path
-migration. Therefore migration usually has a performance impact.
+migration. Therefore, migration usually has a performance impact.
 
 QUIC probing packets, which can be sent on multiple paths at once, are used to
 perform address validation as well as measure path characteristics.  Probing
 packets cannot carry application data but likely contain padding frames.
 Endpoints can use information about their receipt as input to congestion control
 for that path. Applications could use information learned from probing to inform
-a decisions to switch paths.
+a decision to switch paths.
 
 Only the client can actively migrate in version 1 of QUIC. However, servers can
 indicate during the handshake that they prefer to transfer the connection to a
@@ -778,19 +787,19 @@ that same the same DiffServ Code Point (DSCP) {{?RFC2475}}, will
 receive similar network treatment since feedback about loss or delay
 of each packet is used as input to the congestion controller. Therefore,
 packets belonging to the same connection should use a single DSCP.
-Section 5.1 of {{?RFC7657}} provides a discussion of diffserv interactions
+Section 5.1 of {{?RFC7657}} provides a discussion of DiffServ interactions
 with datagram transport protocols {{?RFC7657}} (in this respect the
 interactions with QUIC resemble those of SCTP).
 
 When multiplexing multiple flows
 over a single QUIC connection, the selected DSCP value should be the one
-associated with the highest priority requested for all multiplexed flows
+associated with the highest priority requested for all multiplexed flows.
 
 If differential network treatment is desired,
 e.g., by the use of different DSCPs, multiple QUIC
 connections to the same server may be used. However, in general it is
 recommended to minimize the number of QUIC connections to the same server, to
-avoid increased overheads and, more importantly, competing congestion control.
+avoid increased overhead and, more importantly, competing congestion control.
 
 As in other uses of DiffServ,
 when a packet enters a network segment that does not support the DSCP value,
@@ -841,7 +850,7 @@ version.  Other clients might have successfully connected with the new version
 and so will believe that the server supports the new version.  Therefore,
 servers need to allow for this ambiguity when validating the negotiated version.
 
-The second stage of deployment commences once all server instances are able
+The second stage of deployment commences once all server instances are able to
 accept new connections with the new version.  At this point, all servers can
 start sending the new version in Version Negotiation packets.
 
@@ -870,7 +879,7 @@ congestion controlled.
 QUIC datagrams are not flow-controlled, and as such data chunks may be dropped
 if the receiver is overloaded. While the reliable transmission service of QUIC
 provides a stream-based interface to send and receive data in order over
-multiple QUIC streams, the datagram service has a unordered message-based
+multiple QUIC streams, the datagram service has an unordered message-based
 interface. If needed, an application layer framing can be used on top to
 allow separate flows of unreliable datagrams to be multiplexed on one QUIC
 connection.
