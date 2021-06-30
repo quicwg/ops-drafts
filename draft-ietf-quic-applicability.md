@@ -607,7 +607,7 @@ are required to register an ALPN token for use in the TLS handshake.
 
 As QUIC version 1 deferred defining a complete version negotiation mechanism,
 HTTP/3 requires QUIC version 1 and defines the
-ALPN token ("h3") to only apply to that version. 
+ALPN token ("h3") to only apply to that version.
 So far no single approach has been selected for
 managing the use of different QUIC versions, neither in HTTP/3 nor in general.
 Application protocols that use QUIC need to
