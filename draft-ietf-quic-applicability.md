@@ -599,22 +599,18 @@ and 3.3 of QUIC-HTTP}}) specifies the use of HTTP Alternative Services
 HTTP/3 endpoint on a certain UDP port by using the "h3" Application-Layer
 Protocol Negotiation (ALPN) {{?RFC7301}} token.
 
-Additionally, ALPN permits the
+ALPN permits the
 client and server to negotiate which of several protocols will be used on a
 given connection.  Therefore, multiple applications might be supported on a
 single UDP port based on the ALPN token offered.  Applications using QUIC
-should register an ALPN token for use in the TLS handshake.
+are required to register an ALPN token for use in the TLS handshake.
 
 As QUIC version 1 deferred defining a complete version negotiation mechanism,
 HTTP/3 requires QUIC version 1 and defines the
-ALPN token ("h3") to only apply to that version. This approach avoids
-ambiguity of the used version in absence of a version negotiation
-mechanism. So far no single approach has been selected for
+ALPN token ("h3") to only apply to that version. 
+So far no single approach has been selected for
 managing the use of different QUIC versions, neither in HTTP/3 nor in general.
-Coupling QUIC version to ALPN tokens is one approach but not the
-only approach. Other options may be suitable when a version negotiation
-scheme gets developed and new protocol versions (at both application and
-transport layers) are defined. Application protocols that use QUIC need to
+Application protocols that use QUIC need to
 consider how the protocol will manage different QUIC versions.
 Decisions for those protocols might be informed by choices made by other
 protocols, like HTTP/3.
