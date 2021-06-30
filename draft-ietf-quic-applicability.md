@@ -563,21 +563,14 @@ signal transport and application errors.
 Stream errors lead to stream termination. The are signaled using STOP_SENDING or
 RESET_STREAM frames, which contain only an error code.
 
-# ACK-only packets on constrained links
+# Acknowledgment Efficiency
 
-The stragegy on sending acknowlegdements in QUIC version 1 is adopted from
-TCP, meaning that usually an QUIC implementation is expected to send one
-packet containing an ACK frame for each two packets received.
-The cost of sending acknowledgments - in processing cost or link
-utilization - could be a significant proportion of available resources if
-these resources are constrained.  "ACK-only" packets are not reliably
-detectable in QUIC, so network ACK thinning done for TCP is not suitable
-for QUIC traffic. Instead QUIC endpoint need to control the ACK rate
-appropriately and some implenentation may even provide an interface to
-impact the amount of ACK traffic sent. Reducing the rate at which
-acknowledgments are generated in constrained situations can preserve resources
-and improve overall performance, for both network processing as well as
-application-relevant metrics.
+QUIC version 1 without extensions uses an acknowledgment strategy adopted from
+TCP. That is, every other packet is acknowledged. However, generating and
+processing QUIC acknowledgments can consume significant resources, both in
+terms of processing costs and link utilization, especially on constraint
+networks. Some applications might be able to improve overall performance
+by using alternative strategies that reduce the rate of acknowledgments.
 
 # Port Selection and Application Endpoint Discovery {#ports}
 
