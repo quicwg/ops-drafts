@@ -633,9 +633,14 @@ and other protocols that use TLS.
 
 ### Extracting Server Name Indication (SNI) Information
 
+
+
+
+
+
 If the ClientHello is not encrypted, SNI can be derived from the client's
 Initial packet by calculating the Initial secret to decrypt the packet payload
-and parsing the QUIC CRYPTO Frame containing the TLS ClientHello.
+and parsing the QUIC CRYPTO frame(s) containing the TLS ClientHello.
 
 As both the derivation of the Initial secret and the structure of the Initial
 packet itself are version-specific, the first step is always to parse the
@@ -661,7 +666,6 @@ other than the one used to generate the Initial secret. Therefore, attempts to
 decrypt these packets using the procedure above might fail unless the Initial
 secret is retained by the observer.
 
-
 To determine the end of the header and find the start of the payload, the packet
 number length, the source connection ID length, and the token length need to be
 extracted. The packet number length is defined by the seventh and eight bits of
@@ -673,14 +677,16 @@ specified in {{Section 16 of QUIC-TRANSPORT}}.
 
 After decryption, the client's Initial packet can be parsed to detect the CRYPTO
 frame(s) that contains the TLS ClientHello, which then can be parsed similarly
-to TLS over TCP connections. The client's Initial packet may contain other
-frames, so the first bytes of each frame need to be checked to identify the
-frame type, and if needed skip over it. Note that the length of the frames is
-dependent on the frame type. In QUIC version 1, the packet is expected to
-contain only CRYPTO frames and optionally PADDING frames. PADDING frames, each
-consisting of a single zero byte, may occur before, after, or between CRYPTO
-frames. There might be multiple CRYPTO frames.  Finally, an extension might
-define additional frame types which could be present.
+to TLS over TCP connections. Note that there can be multiple CRYPTO frames,
+and they might not be in order, so reassembling the CRYPTO stream by parsing
+offsets and lengths is required. Further, the client's Initial packet may contain
+other frames, so the first bytes of each frame need to be checked to identify the
+frame type, and if needed skipped over it. Note that the length of the frames is
+dependent on the frame type; see {{Section 18 of QUIC-TRANSPORT}}. E.g. PADDING
+frames, each consisting of a single zero byte, may occur before, after, or
+between CRYPTO frames. However, extensions might define additional frame types.
+If an unknown frame type is encountered, it is impossible to know the length of
+that frame which prevents skipping over it, and therefore parsing fails.
 
 ## Flow Association {#sec-flow-association}
 
