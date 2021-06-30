@@ -780,16 +780,33 @@ however, the use of more modern cryptographic algorithms is highly recommended.
 
 # Quality of Service (QoS) and DSCP
 
-QUIC assumes that all packets of a QUIC connection, or at least with the
-same 5-tuple {dest addr, source addr, protocol, dest port, source port}, will
+QUIC, as defined in {{!RFC9000}}, has a single congestion controller and
+recovery handler. This design
+assumes that all packets of a QUIC connection, or at least with the
+same 5-tuple {dest addr, source addr, protocol, dest port, source port}
+that same the same DiffServ Code Point (DSCP) {{?RFC2475}}, will
 receive similar network treatment since feedback about loss or delay
-of each packet is used as input to the congestion controller. Therefore, it is
-not recommended to use different DiffServ Code Points (DSCPs) {{?RFC2475}} for
-packets belonging to the same connection. If differential network treatment,
-e.g. by the use of different DSCPs, is desired, multiple QUIC
+of each packet is used as input to the congestion controller. Therefore,
+packets belonging to the same connection should use a single DSCP.
+Section 5.1 of {{?RFC7657}} provides a discussion of DiffServ interactions
+with datagram transport protocols {{?RFC7657}} (in this respect the
+interactions with QUIC resemble those of SCTP).
+
+When multiplexing multiple flows
+over a single QUIC connection, the selected DSCP value should be the one
+associated with the highest priority requested for all multiplexed flows.
+
+If differential network treatment is desired,
+e.g., by the use of different DSCPs, multiple QUIC
 connections to the same server may be used. However, in general it is
 recommended to minimize the number of QUIC connections to the same server, to
-avoid increased overheads and, more importantly, competing congestion control.
+avoid increased overhead and, more importantly, competing congestion control.
+
+As in other uses of DiffServ,
+when a packet enters a network segment that does not support the DSCP value,
+this could result in the connection not receiving the network treatment
+it expects. The DSCP value in this packet could also be remarked as the
+packet travels along the network path, changing the requested treatment.
 
 # Use of Versions and Cryptographic Handshake
 
