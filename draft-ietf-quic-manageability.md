@@ -1190,6 +1190,11 @@ The following people have contributed text to sections of this document:
 * David Schinazi
 * Gorry Fairhurst
 * Chris Box
+* Matt Joras
+* Mike Bishop
+* Lucas Purdue
+* Martin Thomson
+* Ian Swett
 
 # Acknowledgments
 
