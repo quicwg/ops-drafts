@@ -87,6 +87,27 @@ informative:
   RFC5077:
   QUIC-HTTP: I-D.ietf-quic-http
   RFC8085:
+  SSDP:
+    title: UPnP Device Architecture 2.0
+    date: 2020-04-17
+    author:
+      -
+        ins: A. Donoho
+      -
+        ins: B. Roe
+      -
+        ins: M. Bodlaender
+      -
+        ins: J. Gildred
+      -
+        ins: A. Messer
+      -
+        ins: Y. Kim
+      -
+        ins: B. Fairman
+      -
+        ins: J. Tourzan
+    target: https://openconnectivity.org/upnp-specs/UPnP-arch-DeviceArchitecture-v2.0-20200417.pdf
 
 
 --- abstract
@@ -619,6 +640,20 @@ Application protocols that use QUIC need to
 consider how the protocol will manage different QUIC versions.
 Decisions for those protocols might be informed by choices made by other
 protocols, like HTTP/3.
+
+## Source Port Selection
+
+Some UDP protocols are vulnerable to reflection attacks, where an attacker is able to direct traffic to a third party as a denial of service. For example, these source ports are associated with applications known to be vulnerable to reflection attacks (often due to server misconfiguration):
+
+* port 53 - DNS {{?RFC1034}}
+* port 123 - NTP {{?RFC5905}}
+* port 1900 - SSDP {{?SSDP}}
+* port 5353 - mDNS {{?RFC6762}}
+* port 11211 - memcached
+
+Services might block source ports of protocols known to be vulnerable to reflection, to avoid the overhead of processing large numbers of packets by their QUIC implementations. However, this practice has negative effects on clients: not only does it require establishment of a new connection, but in some instances, might cause the client to avoid using QUIC for that service for a period of time, downgrading to a non-UDP protocol.
+
+As a result, client implementations are encouraged to avoid using source ports associated with protocols known to be vulnerable to reflection attacks.
 
 
 # Connection Migration
