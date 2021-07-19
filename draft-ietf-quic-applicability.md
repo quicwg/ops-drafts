@@ -647,7 +647,7 @@ Some UDP protocols are vulnerable to reflection attacks, where an attacker is ab
 
 * port 53 - DNS {{?RFC1034}}
 * port 123 - NTP {{?RFC5905}}
-* port 1900 - SSDP {{?SSDP}}
+* port 1900 - SSDP {{SSDP}}
 * port 5353 - mDNS {{?RFC6762}}
 * port 11211 - memcached
 
