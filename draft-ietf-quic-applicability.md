@@ -659,7 +659,7 @@ reflection, to avoid the overhead of processing large numbers of packets by
 their QUIC implementations. However, this practice has negative effects on
 clients: not only does it require establishment of a new connection, but in
 some instances, might cause the client to avoid using QUIC for that service for
-a period of time, downgrading to a non-UDP protocol.
+a period of time, downgrading to a non-UDP protocol (see {{fallback}}).
 
 As a result, client implementations are encouraged to avoid using source ports
 associated with protocols known to be vulnerable to reflection attacks.
