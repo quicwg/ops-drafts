@@ -991,7 +991,9 @@ While QUIC endpoints are often able to survive address changes, e.g. by NAT
 rebindings, blocking a portion of the traffic based on 5-tuple hashing increases
 the risk of black-holing an active connection when the address changes.
 
-Note that some source ports are assumed to be reflection attack vectors by some servers; see {{Section 8.1 of I-D.ietf-quic-applicability}}. As a result, NAT rebinding to these source ports can result in that traffic being blocked.
+Note that some source ports are assumed to be reflection attack vectors by some
+servers; see {{Section 8.1 of I-D.ietf-quic-applicability}}. As a result, NAT
+rebinding to these source ports can result in that traffic being blocked.
 
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
