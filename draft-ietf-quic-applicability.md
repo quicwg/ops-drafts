@@ -663,7 +663,7 @@ a period of time, downgrading to a non-UDP protocol (see {{fallback}}).
 
 As a result, client implementations are encouraged to avoid using source ports
 associated with protocols known to be vulnerable to reflection attacks. Note
-that the list above is only indicative; other source ports might be considered
+that the list above is not exhaustive; other source ports might be considered
 reflection vectors as well.
 
 
