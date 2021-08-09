@@ -646,7 +646,7 @@ protocols, like HTTP/3.
 Some UDP protocols are vulnerable to reflection attacks, where an attacker is
 able to direct traffic to a third party as a denial of service. For example,
 these source ports are associated with applications known to be vulnerable to
-reflection attacks (often due to server misconfiguration):
+reflection attacks, often due to server misconfiguration:
 
 * port 53 - DNS {{?RFC1034}}
 * port 123 - NTP {{?RFC5905}}
