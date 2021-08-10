@@ -634,10 +634,10 @@ handshake of the server for a preferred address to be used.
 Use of a non-zero-length connection ID for the server is strongly recommended if
 any clients are behind a NAT or could be. A non-zero-length connection ID is
 also strongly recommended when active migration is supported. If a connection
-is intentionally migrated to new path, an new connection ID is used to minimize
-linkability by network observers; of the other QUIC endpoint, however, is
-of course able to link different addresses to the same connection and entity
-if a non-zero-length connection ID is provided.
+is intentionally migrated to new path, a new connection ID is used to minimize
+linkability by network observers. The other QUIC endpoint uses the
+connection ID to link different addresses to the same connection
+and entity if a non-zero-length connection ID is provided.
 
 The base specification of QUIC version 1 only supports the use of a single
 network path at a time, which
@@ -747,8 +747,8 @@ using the connection ID.
 
 While sufficiently robust connection ID generation schemes will mitigate
 linkability for on-path observers, they do not provide full protection.
-Of course, the server uses the connection ID to associate packets to the same
-QUIC connection and as such can also link differeet IP addresses to the same
+The server uses the connection ID to associate packets to a QUIC
+connection and as such can also link different IP addresses to the same
 user. Further, analysis of
 the lifetimes of six-tuples (source and destination addresses as well as the
 migrated CID) may expose these links as well to on-path observers.
