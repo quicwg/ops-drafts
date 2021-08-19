@@ -972,6 +972,7 @@ as well.
 The following people have contributed significant text to and/or feedback
 on this document:
 
+* Christian Huitema
 * Gorry Fairhurst
 * Ian Swett
 * Igor Lubashev
