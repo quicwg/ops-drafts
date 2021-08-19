@@ -1187,7 +1187,7 @@ version selection, as version downgrade may result in connection failure.
 
 # Contributors
 
-The following people have contributed significant text to and/or 
+The following people have contributed significant text to and/or
 feedback on this document:
 
 * Chris Box
