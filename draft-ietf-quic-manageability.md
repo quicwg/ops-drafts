@@ -1191,7 +1191,6 @@ The following people have contributed significant text to and/or
 feedback on this document:
 
 * Chris Box
-* Christian Huitema
 * Dan Druta
 * David Schinazi
 * Gorry Fairhurst
