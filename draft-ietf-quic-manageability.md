@@ -1187,28 +1187,32 @@ version selection, as version downgrade may result in connection failure.
 
 # Contributors
 
-The following people have contributed text to sections of this document:
+The following people have contributed significant text to and/or
+feedback on this document:
 
+* Chris Box
 * Dan Druta
-* Martin Duke
-* Igor Lubashev
 * David Schinazi
 * Gorry Fairhurst
-* Chris Box
+* Ian Swett
+* Igor Lubashev
+* Jana Iyengar
+* Jared Mauch
+* Lars Eggert
+* Lucas Purdue
+* Marcus Ilhar
+* Mark Nottingham
+* Martin Duke
+* Martin Thomson
 * Matt Joras
 * Mike Bishop
-* Lucas Purdue
-* Martin Thomson
-* Ian Swett
+* Nick Banks
+* Thomas Fossati
+* Sean Turner
 
 # Acknowledgments
 
-Thanks to Thomas Fossati, Jana Iygengar, Marcus Ihlar for their early reviews
-and feedback. Special thanks also to Martin Thomson and Martin Duke for their
-detailed reviews and input. And thanks to Sean Turner, Mike Bishop, Ian Swett,
-and Nick Banks for their last call reviews.
-
-This work is partially supported by the European Commission under Horizon 2020
+This work was partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
 Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and
 Innovation under contract no. 15.0268. This support does not imply endorsement.
