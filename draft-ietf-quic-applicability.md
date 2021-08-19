@@ -654,9 +654,9 @@ reflection attacks, often due to server misconfiguration:
 * port 5353 - mDNS {{?RFC6762}}
 * port 11211 - memcached
 
-Services might block source ports of protocols known to be vulnerable to
-reflection, to avoid the overhead of processing large numbers of packets by
-their QUIC implementations. However, this practice has negative effects on
+Services might block source ports associated with protocols known to be
+vulnerable to reflection attacks, to avoid the overhead of processing large
+numbers of packets. However, this practice has negative effects on
 clients: not only does it require establishment of a new connection, but in
 some instances, might cause the client to avoid using QUIC for that service for
 a period of time, downgrading to a non-UDP protocol (see {{fallback}}).
