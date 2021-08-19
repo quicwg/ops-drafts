@@ -905,7 +905,9 @@ See the security considerations in {{QUIC}} and {{!QUIC-TLS}}; the security
 considerations for the underlying transport protocol are relevant for
 applications using QUIC, as well. Considerations on linkability, replay attacks,
 and randomness discussed in {{!QUIC-TLS}} should be taken into account when
-deploying and using QUIC. Further, migration to an new address exposes
+deploying and using QUIC.
+
+Further, migration to an new address exposes
 a linkage between client addresses to the server and may expose this linkage
 also to the path if the connection ID cannot be changed or flows can
 otherwise be correlated. When migration is supported, this needs to be
