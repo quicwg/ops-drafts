@@ -746,12 +746,9 @@ ensures that activity on different paths cannot be trivially correlated
 using the connection ID.
 
 While sufficiently robust connection ID generation schemes will mitigate
-linkability for on-path observers, they do not provide full protection.
-The server uses the connection ID to associate packets to a QUIC
-connection and as such can also link different IP addresses to the same
-user. Further, analysis of
+linkability issues, they do not provide full protection. Analysis of
 the lifetimes of six-tuples (source and destination addresses as well as the
-migrated CID) may expose these links as well to on-path observers.
+migrated CID) may expose these links anyway.
 
 In the limit where connection migration in a server pool is rare, it is trivial
 for an observer to associate two connection IDs. Conversely, in the opposite
