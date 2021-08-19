@@ -969,19 +969,23 @@ as well.
 
 # Contributors
 
-The following people have contributed text to this document:
+The following people have contributed significant text to and/or feedback
+on this document:
 
-* Igor Lubashev
-* Mike Bishop
-* Martin Thomson
-* Lucas Pardue
 * Gorry Fairhurst
+* Ian Swett
+* Igor Lubashev
+* Lucas Pardue
+* Mike Bishop
+* Mark Nottingham
+* Martin Duke
+* Martin Thomson
+* Sean Turner
+* Tommy Pauly
 
 # Acknowledgments
 
-Thanks also to Martin Duke, Sean Turner, and Ian Swett for their reviews.
-
-This work is partially supported by the European Commission under Horizon 2020
+This work was partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
 Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and
 Innovation under contract no. 15.0268. This support does not imply endorsement.
