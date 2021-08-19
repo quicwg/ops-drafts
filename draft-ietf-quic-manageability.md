@@ -1194,7 +1194,6 @@ feedback on this document:
 * Christian Huitema
 * Dan Druta
 * David Schinazi
-* Eric Rescorla
 * Gorry Fairhurst
 * Ian Swett
 * Igor Lubashev
