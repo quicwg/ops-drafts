@@ -1194,10 +1194,12 @@ feedback on this document:
 * Christian Huitema
 * Dan Druta
 * David Schinazi
+* Eric Rescorla
 * Gorry Fairhurst
 * Ian Swett
 * Igor Lubashev
 * Jana Iyengar
+* Jared Mauch
 * Lars Eggert
 * Lucas Purdue
 * Marcus Ilhar
