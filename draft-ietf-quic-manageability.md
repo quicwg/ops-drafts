@@ -959,7 +959,7 @@ Admitting a few packets allows the QUIC endpoint to determine that the path
 accepts QUIC. Sudden drops afterwards will result in slow and costly timeouts
 before abandoning the connection.
 
-## UDP Blocking, Throttling, and Rebinding {#sec-udp-1312}
+## UDP Blocking, Throttling, and NAT Binding {#sec-udp-1312}
 
 Today, UDP is the most prevalent DDoS vector, since it is easy for compromised
 non-admin applications to send a flood of large UDP packets (while with TCP the
@@ -993,7 +993,7 @@ the risk of black-holing an active connection when the address changes.
 
 Note that some source ports are assumed to be reflection attack vectors by some
 servers; see {{Section 8.1 of I-D.ietf-quic-applicability}}. As a result, NAT
-rebinding to these source ports can result in that traffic being blocked.
+binding to these source ports can result in that traffic being blocked.
 
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
