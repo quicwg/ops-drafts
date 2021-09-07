@@ -1200,7 +1200,7 @@ feedback on this document:
 * Jared Mauch
 * Lars Eggert
 * Lucas Purdue
-* Marcus Ilhar
+* Marcus Ihlar
 * Mark Nottingham
 * Martin Duke
 * Martin Thomson
