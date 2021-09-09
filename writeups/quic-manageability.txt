@@ -44,7 +44,7 @@ There are no IPR disclosures require for this document.
 No.
 
 (9) How solid is the WG consensus behind this document? Does it represent the strong concurrence of a few individuals, with others being silent, or does the WG as a whole understand and agree with it? 
-It has received a wide diversity of review from implementers, deployers of QUIC, network operators, and researchers. I would say the consensus is fairly good though the engagement has overall been less than the original QUIC documents.
+It has received a wide diversity of review from implementers, deployers of QUIC, network operators, and researchers. There have been two WGLCs, where feedback from the first was integrated, thus the consensus is good though the engagement has overall been less than the original QUIC documents.
 
 (10) Has anyone threatened an appeal or otherwise indicated extreme discontent? If so, please summarise the areas of conflict in separate email messages to the Responsible Area Director. (It should be in a separate email because this questionnaire is publicly available.) 
 No.
