@@ -587,10 +587,13 @@ RESET_STREAM frames, which contain only an error code.
 # Acknowledgment Efficiency
 
 QUIC version 1 without extensions uses an acknowledgment strategy adopted from
-TCP. That is, every other packet is acknowledged. However, generating and
-processing QUIC acknowledgments can consume significant resources, both in
-terms of processing costs and link utilization, especially on constraint
-networks. Some applications might be able to improve overall performance
+TCP {{Section 13.2 of RFC9000}}). 
+That is, it recommends every other packet is acknowledged. However, generating and
+processing QUIC acknowledgments consumes resources 
+at a sender and receiver.  Acknowledgments also incur forwarding costs and 
+contribute to link utilization, which can impact performance of some
+types of network. 
+Applications might be able to improve overall performance
 by using alternative strategies that reduce the rate of acknowledgments.
 
 # Port Selection and Application Endpoint Discovery {#ports}
