@@ -673,7 +673,7 @@ a variable-length integer as specified in {{Section 16 of QUIC-TRANSPORT}}.
 After decryption, the client's Initial packet(s) can be parsed to detect the
 CRYPTO frame(s) that contains the TLS ClientHello, which then can be parsed
 similarly to TLS over TCP connections. Note that there can be multiple CRYPTO
-frames spread out over one or mor Initial packets, and they might not be in
+frames spread out over one or more Initial packets, and they might not be in
 order, so reassembling the CRYPTO stream by parsing offsets and lengths is
 required. Further, the client's Initial packet(s) may contain other frames,
 so the first bytes of each frame need to be checked to identify the frame
