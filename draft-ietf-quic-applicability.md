@@ -207,7 +207,7 @@ profile is described in {{?HTTP-REPLAY=RFC8470}}.
 ## Replay Attacks
 
 Retransmission or (malicious) replay of data contained in 0-RTT packets could
-cause the server side to receive two copies of the same data.
+cause the server side to receive multiple copies of the same data.
 
 Application data sent by the client in 0-RTT packets could be processed more
 than once if it is replayed. Applications need to be aware of what is safe to
@@ -581,7 +581,7 @@ CONNECTION_CLOSE frame, which contains an error code and a reason field that can
 be zero length. Different types of CONNECTION_CLOSE frame are used to
 signal transport and application errors.
 
-Stream errors lead to stream termination. The are signaled using STOP_SENDING or
+Stream errors lead to stream termination. These are signaled using STOP_SENDING or
 RESET_STREAM frames, which contain only an error code.
 
 # Acknowledgment Efficiency
