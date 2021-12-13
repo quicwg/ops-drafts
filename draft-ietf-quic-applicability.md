@@ -581,7 +581,8 @@ CONNECTION_CLOSE frame, which contains an error code and a reason field that can
 be zero length. Different types of CONNECTION_CLOSE frame are used to
 signal transport and application errors.
 
-Stream errors lead to stream termination. These are signaled using STOP_SENDING or
+Stream errors lead to stream termination. These are signaled using
+STOP_SENDING or
 RESET_STREAM frames, which contain only an error code.
 
 # Acknowledgment Efficiency
