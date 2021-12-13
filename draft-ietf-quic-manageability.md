@@ -605,7 +605,8 @@ the Destination Connection ID fields of the new Initial packet.
 
 ## Distinguishing Acknowledgment Traffic
 
-Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets
+Some deployed in-network functions distinguish packets that carry only
+acknowledgment (ACK-only) information
 from packets carrying upper-layer data in order to attempt to enhance
 performance, for example by queueing ACKs differently or manipulating ACK
 signaling {{?RFC3449}}. Distinguishing ACK packets is possible in TCP,
