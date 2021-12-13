@@ -86,11 +86,11 @@ Encryption of most control signaling means that less information is visible to
 the network than is the case with TCP.
 
 Integrity protection can also simplify troubleshooting at the end points as none
-of the nodes on the network path can modify transport layer information. However,
-it means in-network operations that depend on modification of data (e.g. see 
-{{?RFC9065}} are not possible without the cooperation of an QUIC endpoint. Such
-cooperation might be possible with the introduction of a proxy which
-authenticates as an endpoint. Proxy operations are not in scope for this
+of the nodes on the network path can modify transport layer information.
+However, it means in-network operations that depend on modification of data
+(e.g. see {{?RFC9065}} are not possible without the cooperation of an QUIC
+endpoint. Such cooperation might be possible with the introduction of a proxy
+which authenticates as an endpoint. Proxy operations are not in scope for this
 document.
 
 Network management is not a one-size-fits-all endeavour: practices considered
