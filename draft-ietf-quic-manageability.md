@@ -929,7 +929,7 @@ address-port mapping for flows based on connection ID might seem
 like a solution to this problem. However, hiding information about the
 change of the IP address or port conceals important and security-relevant
 information from QUIC endpoints and as such would facilitate amplification
-attacks (see {{Section 9 of QUIC-TRANSPORT}}). A NAT function that hides
+attacks (see {{Section 8 of QUIC-TRANSPORT}}). A NAT function that hides
 peer address changes prevents the other end from
 detecting and mitigating attacks as the endpoint cannot verify connectivity
 to the new address using QUIC PATH_CHALLENGE and PATH_RESPONSE frames.
