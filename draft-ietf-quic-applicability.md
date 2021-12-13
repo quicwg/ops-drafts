@@ -293,9 +293,7 @@ idle timeout (available from the idle_timeout transport parameter) can simply
 reconnect. When possible, this reconnection can use 0-RTT session resumption,
 reducing the latency involved with restarting the connection. Of course, this
 approach is only valid in cases in which it is safe to use 0-RTT and when the
-client is the restarting peer. It is also not applicable when the application
-binds external state to the connection, as this state cannot reliably be
-transferred to a resumed connection.
+client is the restarting peer.
 
 The tradeoffs between resumption and keep-alives need to be evaluated on a
 per-application basis. In general, applications should use keep-alives only in
