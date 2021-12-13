@@ -124,7 +124,7 @@ to QUIC, and implementors of these application protocols.
 QUIC {{QUIC}} is a new transport protocol providing a number of advanced
 features. While initially designed for the HTTP use case, it provides
 capabilities that can be used with a much wider variety of applications. QUIC is
-encapsulated in UDP. QUIC version 1 integrates TLS 1.3 {{!TLS13=RFC8446}} to
+encapsulated in UDP. QUIC version 1 integrates TLS 1.3 {{?TLS13=RFC8446}} to
 encrypt all payload data and most control information. The version of HTTP that
 uses QUIC is known as HTTP/3 {{QUIC-HTTP}}.
 
@@ -598,7 +598,7 @@ by using alternative strategies that reduce the rate of acknowledgments.
 In general, port numbers serve two purposes: "first, they provide a
 demultiplexing identifier to differentiate transport sessions between the same
 pair of endpoints, and second, they may also identify the application protocol
-and associated service to which processes connect" {{!RFC6335}}. The assumption
+and associated service to which processes connect" {{?RFC6335}}. The assumption
 that an application can be identified in the network based on the port number
 is less true today due to encapsulation, mechanisms for dynamic port
 assignments, and NATs.
