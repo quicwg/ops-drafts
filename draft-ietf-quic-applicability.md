@@ -26,9 +26,6 @@ author:
     city: 8004 Zurich
     country: Switzerland
 
-normative:
-  QUIC: RFC9000
-
 informative:
   Trammell16:
     title: Internet Path Transparency Measurements using RIPE Atlas (RIPE72 MAT presentation)
@@ -121,8 +118,8 @@ to QUIC, and implementors of these application protocols.
 
 # Introduction
 
-QUIC {{QUIC}} is a new transport protocol providing a number of advanced
-features. While initially designed for the HTTP use case, it provides
+QUIC {{!QUIC=RFC9000}} is a new transport protocol providing a number of
+advanced features. While initially designed for the HTTP use case, it provides
 capabilities that can be used with a much wider variety of applications. QUIC is
 encapsulated in UDP. QUIC version 1 integrates TLS 1.3 {{?TLS13=RFC8446}} to
 encrypt all payload data and most control information. The version of HTTP that
@@ -588,7 +585,7 @@ RESET_STREAM frames, which contain only an error code.
 # Acknowledgment Efficiency
 
 QUIC version 1 without extensions uses an acknowledgment strategy
-adopted from TCP {{Section 13.2 of RFC9000}}).
+adopted from TCP {{Section 13.2 of QUIC}}).
 That is, it recommends every other packet is acknowledged.
 However, generating and processing QUIC acknowledgments consumes resources
 at a sender and receiver.  Acknowledgments also incur forwarding costs and
