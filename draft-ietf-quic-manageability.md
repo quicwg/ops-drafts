@@ -954,7 +954,7 @@ Though the guidance there holds, a particularly unwise behavior admits a
 handful of UDP packets and then makes a decision to whether or not filter
 later packets in the same connection.
 QUIC applications are encouraged to fail over to TCP if early packets do
-not arrive at their destination {{?I-D.ietf-quic-applicability}}, as QUIC is
+not arrive at their destination {{?QUIC-APPLICABILITY}}, as QUIC is
 based on UDP and there are known blocks of UDP traffic (see {{sec-udp-1312}}).
 Admitting a few packets allows the QUIC endpoint to determine that the path
 accepts QUIC. Sudden drops afterwards will result in slow and costly timeouts
@@ -993,7 +993,7 @@ rebindings, blocking a portion of the traffic based on 5-tuple hashing increases
 the risk of black-holing an active connection when the address changes.
 
 Note that some source ports are assumed to be reflection attack vectors by some
-servers; see {{Section 8.1 of I-D.ietf-quic-applicability}}. As a result, NAT
+servers; see {{Section 8.1 of QUIC-APPLICABILITY}}. As a result, NAT
 binding to these source ports can result in that traffic being blocked.
 
 
@@ -1155,7 +1155,7 @@ entirely avoid network segment fragmentation for that flow.
 Endpoints can cache PMTU information, in the IP-layer cache. This short-term
 consistency between the PMTU for flows can help avoid an endpoint using a
 PMTU that is inefficient. The IP cache can also influence the PMTU value of
-other IP flows that use the same path {{?RFC8201}}{{?RFC8899}},
+other IP flows that use the same path {{?RFC8201}}{{?DPLPMTUD}},
 including IP packets carrying
 protocols other than QUIC. The representation of an IP path is
 implementation-specific {{?RFC8201}}.
