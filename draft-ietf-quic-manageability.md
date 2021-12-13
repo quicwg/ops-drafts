@@ -82,8 +82,8 @@ network management practices will be impacted by QUIC.
 QUIC is an end-to-end transport protocol. No information in the protocol header,
 even that which can be inspected, is mutable by the network. This is
 achieved through integrity protection of the wire image {{?WIRE-IMAGE=RFC8546}}.
-Encryption of most control signaling means that less information is visible to
-the network than is the case with TCP.
+Encryption of most transport-layer control signaling means that less information
+is visible to the network than is the case with TCP.
 
 Integrity protection can also simplify troubleshooting, because none of the
 nodes on the network path can modify transport layer information. However, it
