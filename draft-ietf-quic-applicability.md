@@ -27,7 +27,7 @@ author:
     country: Switzerland
 
 normative:
-  QUIC: I-D.ietf-quic-transport
+  QUIC: RFC9000
 
 informative:
   Trammell16:
@@ -124,7 +124,7 @@ to QUIC, and implementors of these application protocols.
 QUIC {{QUIC}} is a new transport protocol providing a number of advanced
 features. While initially designed for the HTTP use case, it provides
 capabilities that can be used with a much wider variety of applications. QUIC is
-encapsulated in UDP. QUIC version 1 integrates TLS 1.3 {{!TLS13=RFC8446}} to
+encapsulated in UDP. QUIC version 1 integrates TLS 1.3 {{?TLS13=RFC8446}} to
 encrypt all payload data and most control information. The version of HTTP that
 uses QUIC is known as HTTP/3 {{QUIC-HTTP}}.
 
@@ -602,7 +602,7 @@ by using alternative strategies that reduce the rate of acknowledgments.
 In general, port numbers serve two purposes: "first, they provide a
 demultiplexing identifier to differentiate transport sessions between the same
 pair of endpoints, and second, they may also identify the application protocol
-and associated service to which processes connect" {{!RFC6335}}. The assumption
+and associated service to which processes connect" {{?RFC6335}}. The assumption
 that an application can be identified in the network based on the port number
 is less true today due to encapsulation, mechanisms for dynamic port
 assignments, and NATs.
@@ -834,7 +834,7 @@ however, the use of more modern cryptographic algorithms is highly recommended.
 
 # Quality of Service (QoS) and DSCP
 
-QUIC, as defined in {{!RFC9000}}, has a single congestion controller and
+QUIC, as defined in {{QUIC}}, has a single congestion controller and
 recovery handler. This design
 assumes that all packets of a QUIC connection, or at least with the
 same 5-tuple {dest addr, source addr, protocol, dest port, source port},
@@ -866,7 +866,7 @@ packet travels along the network path, changing the requested treatment.
 
 Versioning in QUIC may change the protocol's behavior completely, except
 for the meaning of a few header fields that have been declared to be invariant
-{{!QUIC-INVARIANTS=I-D.ietf-quic-invariants}}. A version of QUIC
+{{!QUIC-INVARIANTS=RFC8999}}. A version of QUIC
 with a higher version number will not necessarily provide a better service,
 but might simply provide a different feature set. As such, an application needs
 to be able to select which versions of QUIC it wants to use.
@@ -874,7 +874,7 @@ to be able to select which versions of QUIC it wants to use.
 A new version could use an encryption scheme other than TLS 1.3 or higher.
 {{QUIC}} specifies requirements for the cryptographic handshake as currently
 realized by TLS 1.3 and described in a separate specification
-{{!QUIC-TLS=I-D.ietf-quic-tls}}. This split is performed to enable
+{{!QUIC-TLS=RFC9001}}. This split is performed to enable
 light-weight versioning with different cryptographic handshakes.
 
 # Enabling New Versions
