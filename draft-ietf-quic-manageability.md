@@ -859,7 +859,7 @@ The lack of any visible end-of-flow signal ({{sec-teardown}}) means that this
 state must be purged either through timers or through least-recently-used
 eviction, depending on application requirements.
 
-While QUIC has no clear network-visible end-of-connection signal and therefore
+While QUIC has no clear network-visible end-of-flow signal and therefore
 does require timer-based state removal, the QUIC handshake indicates
 confirmation by both ends of a valid bidirectional transmission. As soon
 as the handshake completed, timers should be set long enough to also
