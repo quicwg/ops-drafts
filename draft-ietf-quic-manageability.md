@@ -1055,7 +1055,7 @@ change can be more easily supported, it might be acceptable to not
 support migrations of active QUIC connections that are not visible to
 the network functions performing the DDoS detection.
 As soon as the connection blocking is detected by the client,
-the client may be able to rely on the fast resumption mechanism
+the client may be able to rely on the 0-RTT session resumption mechanism
 provided by QUIC. When clients migrate to a new path, they should be prepared
 for the migration to fail and attempt to reconnect quickly.
 
