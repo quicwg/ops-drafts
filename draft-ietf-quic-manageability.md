@@ -248,18 +248,13 @@ The QUIC handshake can normally be recognized on the wire through four flights
 of datagrams labelled "Client Initial", "Server Initial", "Client Completion",
 and "Server Completion", in the illustration shown in {{fig-handshake}}.
 
-Packets in the handshake belong to three separate cryptographic and transport
-contexts ("Initial", which contains observable payload, and "Handshake" and
-"1-RTT", which do not). QUIC packets in separate contexts during the handshake
-can be coalesced (see {{coalesced}}) in order to reduce the number of UDP
-datagrams sent during the handshake.  QUIC packets can be lost and reordered,
-so packets within a flight might not be sent close in time, though the sequence
-of the flights will not change, because one flight depends upon the peer's
-previous flight.
 
-As shown here, the client can send 0-RTT data as soon as it has sent its Client
-Hello, and the server can send 1-RTT data as soon as it has sent its Server
-Hello.
+A handshake starts with the client sending one or more datagrams containing
+Initial packets, detailed {{fig-client-initial}}, which elicits the
+Server Initial response detailed in {{fig-server-initial}} typically containing
+three types of packets: Initial packet(s) with the beginning of the server's
+side of the TLS handshake, Handshake packet(s) with the rest of the server's
+portion of the TLS handshake, and 1-RTT packet(s), if present.
 
 ~~~~~
 Client                                    Server
@@ -278,16 +273,16 @@ Client                                    Server
 ~~~~~
 {: #fig-handshake
    title="General communication pattern visible in the QUIC handshake"}
-
-A handshake starts with the client sending one or more datagrams containing
-Initial packets as shown in {{fig-client-initial}}, which elicits the
-Server Initial response as shown in {{fig-server-initial}} typically containing
-three types of packets: Initial packet(s) with the beginning of the server's
-side of the TLS handshake, Handshake packet(s) with the rest of the server's
-portion of the TLS handshake, and 1-RTT packet(s), if present.
-
-The Client Completion flight contains at least one Handshake packet and
-could also include an Initial packet.
+   
+As shown here, the client can send 0-RTT data as soon as it has sent its Client
+Hello, and the server can send 1-RTT data as soon as it has sent its Server
+Hello. The Client Completion flight contains at least one Handshake packet and
+could also include an Initial packet. QUIC packets in separate contexts during
+the handshake can be coalesced (see {{coalesced}}) in order to reduce the
+number of UDP datagrams sent during the handshake.  QUIC packets can be lost
+and reordered, so packets within a flight might not be sent close in time,
+though the sequence of the flights will not change, because one flight depends
+upon the peer's previous flight.
 
 Datagrams that contain an Initial packet (Client Initial, Server
 Initial, and some Client Completion) contain at least 1200 octets of UDP
