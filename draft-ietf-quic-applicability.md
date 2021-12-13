@@ -27,7 +27,7 @@ author:
     country: Switzerland
 
 normative:
-  QUIC: I-D.ietf-quic-transport
+  QUIC: RFC9000
 
 informative:
   Trammell16:
