@@ -724,11 +724,10 @@ QUIC explicitly exposes which side of a connection is a client and which side is
 a server during the handshake. In addition, the symmetry of a flow (whether
 primarily client-to-server, primarily server-to-client, or roughly
 bidirectional, as input to basic traffic classification techniques) can be
-inferred through the measurement of data rate in each direction. As QUIC
-encrypts data as well as control frames, the role of an endpoint can only
-be estimated based on the packet size. However, QUIC packets containing
-only control frames, such as ACK-only packets, may be padded; but padding is
-not required.
+inferred through the measurement of data rate in each direction.
+Note that QUIC packets containing only control frames (such as
+ACK-only packets) may be padded. Padding, though optional,
+may conceal connection roles or flow symmetry information.
 
 ## Round-Trip Time (RTT) Measurement {#sec-rtt}
 
