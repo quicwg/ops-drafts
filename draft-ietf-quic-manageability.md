@@ -52,7 +52,7 @@ informative:
     target: https://arxiv.org/abs/1612.02902
     date: 2016-12-09
   RFC7605:
-  QUIC-RECOVERY: I-D.ietf-quic-recovery
+  QUIC-RECOVERY: RFC9002
   RFC4459:
 
 --- abstract
@@ -67,9 +67,9 @@ functions.
 
 # Introduction
 
-QUIC {{?QUIC-TRANSPORT=I-D.ietf-quic-transport}} is a new transport protocol
+QUIC {{?QUIC-TRANSPORT=RFC9000}} is a new transport protocol
 that is encapsulated in UDP. QUIC integrates TLS
-{{?QUIC-TLS=I-D.ietf-quic-tls}} to encrypt all payload data and most control
+{{?QUIC-TLS=RFC9001}} to encrypt all payload data and most control
 information. QUIC version 1 was designed primarily as a transport for HTTP, with
 the resulting protocol being known as HTTP/3 {{?QUIC-HTTP=I-D.ietf-quic-http}}.
 
@@ -111,7 +111,7 @@ QUIC is a versioned protocol, the wire image of the header format can also
 change from version to version. However, the field that identifies the QUIC
 version in some packets, and the format of the Version Negotiation Packet,
 are both inspectable and invariant
-{{?QUIC-INVARIANTS=I-D.ietf-quic-invariants}}.
+{{?QUIC-INVARIANTS=RFC8999}}.
 
 This document describes version 1 of the QUIC protocol, whose wire image
 is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Features of the wire
