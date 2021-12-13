@@ -830,7 +830,7 @@ however, the use of more modern cryptographic algorithms is highly recommended.
 
 # Quality of Service (QoS) and DSCP
 
-QUIC, as defined in {{!RFC9000}}, has a single congestion controller and
+QUIC, as defined in {{QUIC}}, has a single congestion controller and
 recovery handler. This design
 assumes that all packets of a QUIC connection, or at least with the
 same 5-tuple {dest addr, source addr, protocol, dest port, source port},
@@ -862,7 +862,7 @@ packet travels along the network path, changing the requested treatment.
 
 Versioning in QUIC may change the protocol's behavior completely, except
 for the meaning of a few header fields that have been declared to be invariant
-{{!QUIC-INVARIANTS=I-D.ietf-quic-invariants}}. A version of QUIC
+{{!QUIC-INVARIANTS=RFC8999}}. A version of QUIC
 with a higher version number will not necessarily provide a better service,
 but might simply provide a different feature set. As such, an application needs
 to be able to select which versions of QUIC it wants to use.
@@ -870,7 +870,7 @@ to be able to select which versions of QUIC it wants to use.
 A new version could use an encryption scheme other than TLS 1.3 or higher.
 {{QUIC}} specifies requirements for the cryptographic handshake as currently
 realized by TLS 1.3 and described in a separate specification
-{{!QUIC-TLS=I-D.ietf-quic-tls}}. This split is performed to enable
+{{!QUIC-TLS=RFC9001}}. This split is performed to enable
 light-weight versioning with different cryptographic handshakes.
 
 # Enabling New Versions
