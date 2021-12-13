@@ -604,7 +604,7 @@ the Destination Connection ID fields of the new Initial packet.
 
 ## Distinguishing Acknowledgment Traffic
 
-Some deployed in-network functions distinguish packets that carry only 
+Some deployed in-network functions distinguish packets that carry only
 acknowledgment (ACK-only) information
 from packets carrying upper-layer data in order to attempt to enhance
 performance, for example by queueing ACKs differently or manipulating ACK
