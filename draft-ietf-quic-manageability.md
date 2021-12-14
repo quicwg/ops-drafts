@@ -273,7 +273,7 @@ Client                                    Server
 ~~~~~
 {: #fig-handshake
    title="General communication pattern visible in the QUIC handshake"}
-   
+
 As shown here, the client can send 0-RTT data as soon as it has sent its Client
 Hello, and the server can send 1-RTT data as soon as it has sent its Server
 Hello. The Client Completion flight contains at least one Handshake packet and
