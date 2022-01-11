@@ -426,7 +426,7 @@ change with its peer might encounter performance issues or deadlocks.
 
 ## Flow Control Deadlocks {#flow-control-deadlocks}
 
-QUIC flow control {{Section 4 of RFC9000}} provides a means of managing access
+QUIC flow control {{Section 4 of QUIC}} provides a means of managing access
 to the limited buffers endpoints have for incoming data.  This mechanism limits
 the amount of data that can be in buffers in endpoints or in transit on the
 network.  However, there are several ways in which limits can produce conditions
