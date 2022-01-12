@@ -60,6 +60,7 @@ informative:
     date: 2013-11-07
   RFC7605:
   QUIC-RECOVERY: RFC9002
+  QUIC-GREASE: I-D.ietf-quic-bit-grease
   RFC4459:
 
 --- abstract
@@ -551,7 +552,7 @@ First, it only provides one bit of information and is prone to collision with
 UDP-based protocols other than those considered in {{?RFC7983}}. Second, this
 feature of the wire image is not invariant {{QUIC-INVARIANTS}} and may change in
 future versions of the protocol, or even be negotiated during the handshake via
-the use of an extension.
+the use of an extension {{QUIC-GREASE}}.
 
 Even though transport parameters transmitted in the client's Initial packet are
 observable by the network, they cannot be modified by the network without
