@@ -51,6 +51,13 @@ informative:
         ins: B. Trammell
     target: https://arxiv.org/abs/1612.02902
     date: 2016-12-09
+  QUIC-TIMEOUT:
+    title: QUIC (IETF-88 TSV Area Presentation)
+    author:
+      -
+        ins: J. Roskind
+    target: https://www.ietf.org/proceedings/88/slides/slides-88-tsvarea-10.pdf
+    date: 2013-11-07
   RFC7605:
   QUIC-RECOVERY: RFC9002
   RFC4459:
@@ -863,7 +870,7 @@ allow for short idle time during a valid transmission.
 
 {{?RFC4787}} requires a network state timeout that is not less than 2 minutes
 for most UDP traffic.  However, in practice, a QUIC endpoint can experience
-lower timeouts, in the range of 30 to 60 seconds.
+lower timeouts, in the range of 30 to 60 seconds {{QUIC-TIMEOUT}}.
 
 In contrast, {{?RFC5382}} recommends a state timeout of more than 2
 hours for TCP, given that TCP is a connection-oriented protocol with well-
