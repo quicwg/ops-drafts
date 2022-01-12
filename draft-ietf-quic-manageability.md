@@ -1069,7 +1069,7 @@ Retry packets on behalf of consenting servers.
 It is expected that any QoS handling in the network, e.g. based on use of
 DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
 Multi-Path (ECMP) routing, is applied on a per flow-basis (and not per-packet)
-and as such that all packets belonging to the same active QUIC connectio
+and as such that all packets belonging to the same active QUIC connection
 get uniform treatment.
 
 Using ECMP to distribute packets from a single flow across multiple
