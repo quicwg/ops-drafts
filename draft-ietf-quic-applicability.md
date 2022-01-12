@@ -426,11 +426,11 @@ change with its peer might encounter performance issues or deadlocks.
 
 ## Flow Control Deadlocks {#flow-control-deadlocks}
 
-QUIC flow control provides a means of managing access to the limited buffers
-endpoints have for incoming data.  This mechanism limits the amount of data that
-can be in buffers in endpoints or in transit on the network.  However, there are
-several ways in which limits can produce conditions that can cause a connection
-to either perform suboptimally or deadlock.
+QUIC flow control {{Section 4 of QUIC}} provides a means of managing access
+to the limited buffers endpoints have for incoming data.  This mechanism limits
+the amount of data that can be in buffers in endpoints or in transit on the
+network.  However, there are several ways in which limits can produce conditions
+that can cause a connection to either perform suboptimally or deadlock.
 
 Deadlocks in flow control are possible for any protocol that uses QUIC, though
 whether they become a problem depends on how implementations consume data and
