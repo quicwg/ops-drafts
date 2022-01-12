@@ -528,9 +528,10 @@ information.
 The QUIC wire image is not specifically designed to be distinguishable from
 other UDP traffic by a passive observer in the network.
 
-The only application binding defined by the IETF QUIC WG is HTTP/3
-{{?QUIC-HTTP}} at the time of this writing; however, many other applications
-are currently being defined and deployed over QUIC, so an assumption that all
+At the time of writing, two application bindings for QUIC have been published
+or adopted by the IETF: HTTP/3 {{?QUIC-HTTP}} and DNS
+{{?I-D.ietf-dprive-dnsoquic}}. These are both known to have active
+internet deployments, so an assumption that all
 QUIC traffic is HTTP/3 is not valid. HTTP/3 uses UDP port 443 by
 convention but various methods can be used to specify alternate port numbers.
 Simple assumptions about whether a given flow is using QUIC based upon a UDP
