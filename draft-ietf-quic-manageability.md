@@ -758,9 +758,7 @@ ignored for RTT measurement purposes.
 
 Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
-includes any transport- and application-layer delay (the latter mainly
-caused by the asymmetric crypto operations associated with the TLS
-handshake) at both sides.
+includes any transport- and application-layer delay at both endpoints.
 
 ### Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
