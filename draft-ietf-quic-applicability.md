@@ -148,15 +148,15 @@ or be engineered to fall back to some other transport protocol. In the case of
 HTTP, this fallback is TLS over TCP.
 
 The IETF TAPS specifications {{?I-D.ietf-taps-arch}} describe a system with a
-common API for multiple protocols and some of the implications of fallback
-between these different protocols, specifically precluding fallback to
-insecure protocols or to weaker versions of secure protocols.
+common API for multiple protocols. This is particularly relevant for QUIC as
+it addresses the implications of fallback among multiple protocols.
 
-An application that implements fallback needs to consider the security
-consequences. A fallback to TCP and TLS exposes control information to
-modification and manipulation in the network. Further, downgrades to older TLS
-versions than 1.3, which is used in QUIC version 1, might result in
-significantly weaker
+Specifically, fallback to insecure protocols or to weaker versions of secure
+protocols needs to be avoided. In general, a application that implements
+fallback needs to consider the security consequences. A fallback to TCP and
+TLS exposes control information to modification and manipulation in the
+network. Further, downgrades to older TLS versions than 1.3, which is used
+in QUIC version 1, might result in significantly weaker
 cryptographic protection. For example, the results of protocol negotiation
 {{?RFC7301}} only have confidentiality protection if TLS 1.3 is used.
 
