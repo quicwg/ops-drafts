@@ -97,9 +97,9 @@ Integrity protection can also simplify troubleshooting at the end points as none
 of the nodes on the network path can modify transport layer information.
 However, it means in-network operations that depend on modification of data
 (for examples, see {{?RFC9065}}) are not possible without the cooperation of
-a QUIC endpoint. Such cooperation might be possible with the introduction of a proxy
-which authenticates as an endpoint. Proxy operations are not in scope for this
-document.
+a QUIC endpoint. Such cooperation might be possible with the introduction of
+a proxy which authenticates as an endpoint. Proxy operations are not in scope
+for this document.
 
 Network management is not a one-size-fits-all endeavour: practices considered
 necessary or even mandatory within enterprise networks with certain compliance
@@ -109,7 +109,8 @@ recommendations as to which practices should or should not be applied; for each
 practice, it describes what is and is not possible with the QUIC transport
 protocol as defined.
 
-QUIC-specific terminology used in this document is defined in {{QUIC-TRANSPORT}}.
+QUIC-specific terminology used in this document is defined
+in {{QUIC-TRANSPORT}}.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
@@ -315,8 +316,9 @@ initial handshake exchange, and is therefore not visible.
 
 Initial, Handshake, and 1-RTT packets belong to different cryptographic and
 transport contexts. The Client Completion ({{fig-init-complete}}) and the
-Server Completion ({{fig-hs-complete}}) flights conclude the Initial and Handshake
-contexts, by sending final acknowledgments and CRYPTO frames.
+Server Completion ({{fig-hs-complete}}) flights conclude the Initial
+and Handshake contexts, by sending final acknowledgments and
+CRYPTO frames.
 
 ~~~~~
 +----------------------------------------------------------+
@@ -877,7 +879,7 @@ for most UDP traffic.  However, in practice, a QUIC endpoint can experience
 lower timeouts, in the range of 30 to 60 seconds {{QUIC-TIMEOUT}}.
 
 In contrast, {{?RFC5382}} recommends a state timeout of more than 2
-hours for TCP, given that TCP is a connection-oriented protocol with 
+hours for TCP, given that TCP is a connection-oriented protocol with
 well-defined closure semantics.
 Even though QUIC has explicitly been designed to tolerate NAT rebindings,
 decreasing the NAT timeout is not recommended, as it may negatively impact
