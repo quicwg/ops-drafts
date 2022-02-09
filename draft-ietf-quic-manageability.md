@@ -686,7 +686,7 @@ required. Further, the client's Initial packet(s) may contain other frames,
 so the first bytes of each frame need to be checked to identify the frame
 type and determine whether the frame can be skipped over. Note that the
 length of the frames is dependent on the frame type; see
-{{Section 18 of QUIC-TRANSPORT}}. 
+{{Section 18 of QUIC-TRANSPORT}}.
 E.g. PADDING frames, each consisting of a single zero byte, may occur before,
 after, or between CRYPTO frames. However, extensions might define additional
 frame types. If an unknown frame type is encountered, it is impossible to
