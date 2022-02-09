@@ -109,7 +109,7 @@ recommendations as to which practices should or should not be applied; for each
 practice, it describes what is and is not possible with the QUIC transport
 protocol as defined.
 
-QUIC-specific terminology used in this document is defined in {{RFC9000}}.
+QUIC-specific terminology used in this document is defined in {{QUIC-TRANSPORT}}.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
