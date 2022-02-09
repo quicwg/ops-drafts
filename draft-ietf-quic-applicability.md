@@ -139,13 +139,13 @@ QUIC uses UDP as a substrate. This enables userspace implementation and permits
 traversal of network middleboxes (including NAT) without requiring updates to
 existing network infrastructure.
 
-While recent measurements have shown no evidence of a widespread, systematic
-disadvantage of UDP traffic compared to TCP in the Internet {{Edeline16}},
-somewhere between three {{Trammell16}} and five {{Swett16}} percent of networks
-block all UDP traffic. All applications running on top of QUIC must
-therefore either be prepared to accept connectivity failure on such networks
-or be engineered to fall back to some other transport protocol. In the case of
-HTTP, this fallback is TLS over TCP.
+Measurement studies have shown between three {{Trammell16}} and
+five {{Swett16}} percent of networks block all UDP traffic, though there
+is little evidence of other forms of systematic disadvantage to UDP traffic
+compared to TCP {{Edeline16}}. This blocking implies that all applications
+running on top of QUIC must either be prepared to accept connectivity failure
+on such networks, or be engineered to fall back to some other transport
+protocol. In the case of HTTP, this fallback is TLS over TCP.
 
 The IETF TAPS specifications {{?I-D.ietf-taps-arch}} describe a system with a
 common API for multiple protocols. This is particularly relevant for QUIC as
