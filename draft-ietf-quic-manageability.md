@@ -302,12 +302,13 @@ Initial packet, or leaving unused payload in the UDP packet after the Initial
 packet. A network path needs to be able to forward at least this size of
 packet for QUIC to be used.
 
-The content of Initial packets is encrypted using Initial Secrets, which
-are derived from a per-version constant and the client's destination connection
-ID; they are therefore observable by any on-path device that knows the
-per-version constant and considered visible in this illustration. The content
-of QUIC Handshake packets are encrypted using keys established during the
-initial handshake exchange, and are therefore not visible.
+The content of Initial packets is encrypted using Initial Secrets,
+which are derived from a per-version constant and the client's
+destination connection ID. That content is therefore observable by
+any on-path device that knows the per-version constant and is
+considered visible in this illustration.  The content of QUIC
+Handshake packets is encrypted using keys established during the
+initial handshake exchange, and is therefore not visible.
 
 Initial, Handshake, and 1-RTT packets belong to different cryptographic and
 transport contexts. The Client Completion {{fig-init-complete}} and the
@@ -455,9 +456,9 @@ establishment failing later.
 ## Connection ID and Rebinding {#rebinding}
 
 The connection ID in the QUIC packet headers allows association of QUIC
-packets using information independent of the five-tuple. This
-allows rebinding of a connection after one of the endpoints experienced
-an address change - usually the client. Further it can be used by
+packets using information independent of the five-tuple. This allows
+rebinding of a connection after one of the endpoints - usually the
+client - has experienced an address change. Further it can be used by
 in-network devices to ensure that related 5-tuple flows are appropriately
 balanced together.
 
@@ -683,8 +684,9 @@ frames spread out over one or more Initial packets, and they might not be in
 order, so reassembling the CRYPTO stream by parsing offsets and lengths is
 required. Further, the client's Initial packet(s) may contain other frames,
 so the first bytes of each frame need to be checked to identify the frame
-type, and if needed skipped over it. Note that the length of the frames is
-dependent on the frame type; see {{Section 18 of QUIC-TRANSPORT}}.
+type and determine whether the frame can be skipped over. Note that the
+length of the frames is dependent on the frame type; see
+{{Section 18 of QUIC-TRANSPORT}}. 
 E.g. PADDING frames, each consisting of a single zero byte, may occur before,
 after, or between CRYPTO frames. However, extensions might define additional
 frame types. If an unknown frame type is encountered, it is impossible to
