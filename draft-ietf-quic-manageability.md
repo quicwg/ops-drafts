@@ -789,7 +789,7 @@ measure one sample of end-to-end RTT. This mechanism follows the principles of
 protocol measurability laid out in {{IPIM}}.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
-any transport protocol delay (e.g., delayed sending of acknowledgments) and/or
+all transport protocol delay (e.g., delayed sending of acknowledgments) and/or
 application layer delay (e.g., waiting for a response to be generated). It
 therefore provides devices on path a good instantaneous estimate of the RTT as
 experienced by the application.
