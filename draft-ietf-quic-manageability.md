@@ -287,7 +287,7 @@ Hello, and the server can send 1-RTT data as soon as it has sent its Server
 Hello. The Client Completion flight contains at least one Handshake packet and
 could also include an Initial packet. QUIC packets in separate contexts during
 the handshake can be coalesced (see {{coalesced}}) in order to reduce the
-number of UDP datagrams sent during the handshake. 
+number of UDP datagrams sent during the handshake.
 
 Handshake packets can arrive out-of-order without impacting the handshake as
 long as the reordering did not cause extensive delays which would be consider
