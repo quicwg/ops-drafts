@@ -292,9 +292,9 @@ number of UDP datagrams sent during the handshake.
 Handshake packets can arrive out-of-order without impacting the handshake as
 long as the reordering did not cause extensive delays, which would be considered
 as loss by either side. If QUIC packets get lost or reordered, packets belonging
-to the same flight might not be observed in close in time, though the sequence
-of the flights will not change, because one flight depends upon the peer's
-previous flight.
+to the same flight might not be observed in close succession in time, though
+the sequence of the flights will not change, because one flight depends
+upon the peer's previous flight.
 
 Datagrams that contain an Initial packet (Client Initial, Server
 Initial, and some Client Completion) contain at least 1200 octets of UDP
