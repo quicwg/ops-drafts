@@ -290,10 +290,10 @@ the handshake can be coalesced (see {{coalesced}}) in order to reduce the
 number of UDP datagrams sent during the handshake.
 
 Handshake packets can arrive out-of-order without impacting the handshake as
-long as the reordering did not cause extensive delays that trigger a
+long as the reordering was not accompanied by extensive delays that trigger a
 spurious Probe Timeout ({Section 6.2 of RFC9002}).
 If QUIC packets get lost or reordered, packets belonging
-to the same flight might not be observed in close succession in time, though
+to the same flight might not be observed in close time succession, though
 the sequence of the flights will not change, because one flight depends
 upon the peer's previous flight.
 
