@@ -653,7 +653,8 @@ check if the first bit of the QUIC packet is set to 1, indicating a long header.
 Note that proprietary QUIC versions, that have been deployed before
 standardization, might not set the first bit in a QUIC long header packet to
 1. However, it is expected that these versions will
-gradually disappear over time.
+gradually disappear over time and therefore do not require any special
+consideration or treatment.
 
 When the version has been identified as QUIC version 1, the packet type needs to
 be verified as an Initial packet by checking that the third and fourth bits of
