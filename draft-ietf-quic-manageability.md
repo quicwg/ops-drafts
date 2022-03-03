@@ -89,17 +89,17 @@ network management practices will be impacted by QUIC.
 
 QUIC is an end-to-end transport protocol. No information in the protocol header,
 even that which can be inspected, is mutable by the network. This is
-achieved through integrity protection of the wire image {{?WIRE-IMAGE=RFC8546}}.
+enforced through integrity protection of the wire image {{?WIRE-IMAGE=RFC8546}}.
 Encryption of most transport-layer control signaling means that less information
 is visible to the network than is the case with TCP.
 
 Integrity protection can also simplify troubleshooting at the end points as none
 of the nodes on the network path can modify transport layer information.
 However, it means in-network operations that depend on modification of data
-(e.g. see {{?RFC9065}} are not possible without the cooperation of an QUIC
-endpoint. Such cooperation might be possible with the introduction of a proxy
-which authenticates as an endpoint. Proxy operations are not in scope for this
-document.
+(for examples, see {{?RFC9065}}) are not possible without the cooperation of
+a QUIC endpoint. Such cooperation might be possible with the introduction of
+a proxy which authenticates as an endpoint. Proxy operations are not in scope
+for this document.
 
 Network management is not a one-size-fits-all endeavour: practices considered
 necessary or even mandatory within enterprise networks with certain compliance
@@ -108,6 +108,9 @@ those requirements. This document therefore does not make any specific
 recommendations as to which practices should or should not be applied; for each
 practice, it describes what is and is not possible with the QUIC transport
 protocol as defined.
+
+QUIC-specific terminology used in this document is defined
+in {{QUIC-TRANSPORT}}.
 
 # Features of the QUIC Wire Image {#sec-wire-image}
 
@@ -235,11 +238,13 @@ use the same port number for both services. However, as for all other IETF
 transports {{?RFC7605}}, there is no guarantee that a specific application
 will use a given registered port, or that a given port carries traffic belonging
 to the respective registered service, especially when application layer
-information is encrypted. For example, {{QUIC-HTTP}} specifies
-the use of Alt-Svc for discovery of HTTP/3 services on other ports.
+information is encrypted. For example, {{QUIC-HTTP}} specifies the use of the
+HTTP Alternative Services mechanism {{?RFC7838}} for discovery of HTTP/3
+services on other ports.
 
 Further, as QUIC has a connection ID, it is also possible to maintain multiple
-QUIC connections over one 5-tuple. However, if the connection ID is zero-length,
+QUIC connections over one 5-tuple (protocol, source and destination IP address,
+and source and destination port). However, if the connection ID is zero-length,
 all packets of the 5-tuple likely belong to the same QUIC connection.
 
 ## The QUIC Handshake {#handshake}
@@ -254,11 +259,10 @@ detail.
 
 The QUIC handshake can normally be recognized on the wire through four flights
 of datagrams labelled "Client Initial", "Server Initial", "Client Completion",
-and "Server Completion", in the illustration shown in {{fig-handshake}}.
-
+and "Server Completion", as illustrated in {{fig-handshake}}.
 
 A handshake starts with the client sending one or more datagrams containing
-Initial packets, detailed {{fig-client-initial}}, which elicits the
+Initial packets, detailed in {{fig-client-initial}}, which elicits the
 Server Initial response detailed in {{fig-server-initial}} typically containing
 three types of packets: Initial packet(s) with the beginning of the server's
 side of the TLS handshake, Handshake packet(s) with the rest of the server's
@@ -268,13 +272,13 @@ portion of the TLS handshake, and 1-RTT packet(s), if present.
 Client                                    Server
   |                                          |
   +----Client Initial----------------------->|
-  +----(zero or more 0RTT)------------------>|
+  +----(zero or more 0-RTT)----------------->|
   |                                          |
   |<-----------------------Server Initial----+
-  |<---------(1RTT encrypted data starts)----+
+  |<--------(1-RTT encrypted data starts)----+
   |                                          |
   +----Client Completion-------------------->|
-  +----(1RTT encrypted data starts)--------->|
+  +----(1-RTT encrypted data starts)-------->|
   |                                          |
   |<--------------------Server Completion----+
   |                                          |
@@ -311,9 +315,10 @@ Handshake packets is encrypted using keys established during the
 initial handshake exchange, and is therefore not visible.
 
 Initial, Handshake, and 1-RTT packets belong to different cryptographic and
-transport contexts. The Client Completion {{fig-init-complete}} and the
-Server Completion {{fig-hs-complete}} flights conclude the Initial and Handshake
-contexts, by sending final acknowledgments and CRYPTO frames.
+transport contexts. The Client Completion ({{fig-init-complete}}) and the
+Server Completion ({{fig-hs-complete}}) flights conclude the Initial
+and Handshake contexts, by sending final acknowledgments and
+CRYPTO frames.
 
 ~~~~~
 +----------------------------------------------------------+
@@ -385,7 +390,7 @@ obfuscated using the Initial secret.
 
 The Client Completion flight does not expose any additional information;
 however, as the destination connection ID is server-selected, it usually
-is not the same ID than in the Client Initial. Client Completion
+is not the same ID that is sent in the Client Initial. Client Completion
 flights contain 1-RTT packets which indicate the handshake has completed
 (see {{sec-confirm}}) on the client, and for three-way handshake RTT
 estimation as in {{sec-rtt}}.
@@ -409,7 +414,7 @@ Similar to Client Completion, Server Completion also exposes no additional
 information; observing it serves only to determine that the handshake has
 completed.
 
-When the client uses 0-RTT connection resumption, the Client Initial
+When the client uses 0-RTT data, the Client Initial
 flight can also include one or more 0-RTT packets, as shown in
 {{fig-client-initial-0rtt}}.
 
@@ -423,9 +428,9 @@ flight can also include one or more 0-RTT packets, as shown in
 +----------------------------------------------------------+  |
 | TLS Client Hello (incl. TLS SNI)                         |  |
 +----------------------------------------------------------+<-+
-| QUIC long header (type = 0RTT, Version, DCID, SCID)    (Length)
+| QUIC long header (type = 0-RTT, Version, DCID, SCID)   (Length)
 +----------------------------------------------------------+  |
-| 0-rtt encrypted payload                                  |  |
+| 0-RTT encrypted payload                                  |  |
 +----------------------------------------------------------+<-+
 ~~~~~
 {: #fig-client-initial-0rtt
@@ -456,7 +461,7 @@ establishment failing later.
 ## Connection ID and Rebinding {#rebinding}
 
 The connection ID in the QUIC packet headers allows association of QUIC
-packets using information independent of the five-tuple. This allows
+packets using information independent of the 5-tuple. This allows
 rebinding of a connection after one of the endpoints - usually the
 client - has experienced an address change. Further it can be used by
 in-network devices to ensure that related 5-tuple flows are appropriately
@@ -538,9 +543,9 @@ The QUIC wire image is not specifically designed to be distinguishable from
 other UDP traffic by a passive observer in the network.
 
 At the time of writing, two application bindings for QUIC have been published
-or adopted by the IETF: HTTP/3 {{?QUIC-HTTP}} and DNS
-{{?I-D.ietf-dprive-dnsoquic}}. These are both known to have active
-internet deployments, so an assumption that all
+or adopted by the IETF: HTTP/3 {{?QUIC-HTTP}} and DNS over Dedicated QUIC
+Connections {{?I-D.ietf-dprive-dnsoquic}}. These are both known at the time
+of writing to have active Internet deployments, so an assumption that all
 QUIC traffic is HTTP/3 is not valid. HTTP/3 uses UDP port 443 by
 convention but various methods can be used to specify alternate port numbers.
 Simple assumptions about whether a given flow is using QUIC based upon a UDP
@@ -687,7 +692,7 @@ so the first bytes of each frame need to be checked to identify the frame
 type and determine whether the frame can be skipped over. Note that the
 length of the frames is dependent on the frame type; see
 {{Section 18 of QUIC-TRANSPORT}}.
-E.g. PADDING frames, each consisting of a single zero byte, may occur before,
+E.g., PADDING frames, each consisting of a single zero byte, may occur before,
 after, or between CRYPTO frames. However, extensions might define additional
 frame types. If an unknown frame type is encountered, it is impossible to
 know the length of that frame which prevents skipping over it, and therefore
@@ -711,9 +716,9 @@ associate the flow on the new address with the flow on the old address.
 A network function that attempts to use the connection ID to associate flows
 must be robust to the failure of this technique. Since the connection ID may
 change multiple times during the lifetime of a connection, packets with the
-same five-tuple but different connection IDs might or might not belong to
+same 5-tuple but different connection IDs might or might not belong to
 the same connection. Likewise, packets with the same connection ID but
-different five-tuples might not belong to the same connection, either.
+different 5-tuples might not belong to the same connection, either.
 
 Connection IDs should be treated as opaque; see {{sec-loadbalancing}}
 for caveats regarding connection ID selection at servers.
@@ -773,7 +778,7 @@ unilaterally choose to not support "spinning" the bit.
 
 Use of the spin bit for RTT measurement by devices on path is only possible when
 both endpoints enable it. Some endpoints may disable use of the spin bit by
-default, others only in specific deployment scenarios, e.g. for servers and
+default, others only in specific deployment scenarios, e.g., for servers and
 clients where the RTT would reveal the presence of a VPN or proxy. To avoid
 making these connections identifiable based on the usage of the spin bit, all
 endpoints randomly disable "spinning" for at least one eighth of connections,
@@ -796,7 +801,7 @@ experienced by the application.
 
 However, application-limited and flow-control-limited senders can have
 application and transport layer delay, respectively, that are much greater than
-network RTT. When the sender is application-limited and e.g. only sends small
+network RTT. When the sender is application-limited and e.g., only sends small
 amount of periodic application traffic, where that period is longer than the
 RTT, measuring the spin bit provides information about the application period,
 not the network RTT.
@@ -874,8 +879,8 @@ for most UDP traffic.  However, in practice, a QUIC endpoint can experience
 lower timeouts, in the range of 30 to 60 seconds {{QUIC-TIMEOUT}}.
 
 In contrast, {{?RFC5382}} recommends a state timeout of more than 2
-hours for TCP, given that TCP is a connection-oriented protocol with well-
-defined closure semantics.
+hours for TCP, given that TCP is a connection-oriented protocol with
+well-defined closure semantics.
 Even though QUIC has explicitly been designed to tolerate NAT rebindings,
 decreasing the NAT timeout is not recommended, as it may negatively impact
 application performance or incentivize endpoints to send very frequent
@@ -888,7 +893,7 @@ ought to be used for QUIC traffic.
 If state is removed too early, this could lead to black-holing of incoming
 packets after a short idle period. To detect this situation, a timer at the
 client needs to expire before a re-establishment can happen (if at all), which
-would lead to unnecessary long delays in an otherwise working connection.
+would lead to unnecessarily long delays in an otherwise working connection.
 
 Furthermore, not all endpoints use routing architectures where connections
 will survive a port or address change. So even when the client revives the
@@ -906,11 +911,11 @@ what length it has. However, connection IDs may be renegotiated
 after the handshake, and this renegotiation is not visible to the path.
 Therefore, using the connection ID as a flow key field for stateful treatment
 of flows is not recommended as connection ID changes will cause undetectable
-and unrecoverable loss of state in the middle of a connection. Specially, the
-use of the connection ID for functions that require state to make a forwarding
-decison is not viable as it will break connectivity or at minimum cause long
-timeout-based delays before this problem is detected by the endpoints and
-the connection can potentially be re-established.
+and unrecoverable loss of state in the middle of a connection. In particular,
+the use of the connection ID for functions that require state to make a
+forwarding decison is not viable as it will break connectivity, or at minimum
+cause long timeout-based delays before this problem is detected by the
+endpoints and the connection can potentially be re-established.
 
 Use of connection IDs is specifically discouraged for NAT applications.
 If a NAT hits an operational limit, it is recommended to rather drop the
@@ -997,7 +1002,7 @@ policing. Note that this per-flow policing should be stateless to avoid
 problems with stateful treatment of QUIC flows (see {{sec-stateful}}),
 for example blocking a portion of the space of values of a hash function
 over the addresses and ports in the UDP datagram.
-While QUIC endpoints are often able to survive address changes, e.g. by NAT
+While QUIC endpoints are often able to survive address changes, e.g., by NAT
 rebindings, blocking a portion of the traffic based on 5-tuple hashing increases
 the risk of black-holing an active connection when the address changes.
 
@@ -1045,7 +1050,7 @@ traffic from new attack traffic.
 It is also possible for
 endpoints to directly support security functions such as DoS
 classification and mitigation.
-Endpoints can cooperate with an in-network device directly by e.g.
+Endpoints can cooperate with an in-network device directly by e.g.,
 sharing information about connection IDs.
 
 Another potential method could use an
@@ -1059,7 +1064,7 @@ change can be more easily supported, it might be acceptable to not
 support migrations of active QUIC connections that are not visible to
 the network functions performing the DDoS detection.
 As soon as the connection blocking is detected by the client,
-the client may be able to rely on the 0-RTT session resumption mechanism
+the client may be able to rely on the 0-RTT data mechanism
 provided by QUIC. When clients migrate to a new path, they should be prepared
 for the migration to fail and attempt to reconnect quickly.
 
@@ -1075,7 +1080,7 @@ Retry packets on behalf of consenting servers.
 
 ## Quality of Service Handling and ECMP Routing
 
-It is expected that any QoS handling in the network, e.g. based on use of
+It is expected that any QoS handling in the network, e.g., based on use of
 DiffServ Code Points (DSCPs) {{?RFC2475}} as well as Equal-Cost
 Multi-Path (ECMP) routing, is applied on a per flow-basis (and not per-packet)
 and as such that all packets belonging to the same active QUIC connection
