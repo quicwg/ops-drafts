@@ -765,7 +765,7 @@ ignored for RTT measurement purposes.
 
 Handshake RTT can be measured by adding the client-to-observer and
 observer-to-server RTT components together. This measurement necessarily
-includes any transport- and application-layer delay at both endpoints.
+includes all transport- and application-layer delay at both endpoints.
 
 ### Using the Spin Bit for Passive RTT Measurement {#spin-usage}
 
@@ -794,7 +794,7 @@ measure one sample of end-to-end RTT. This mechanism follows the principles of
 protocol measurability laid out in {{IPIM}}.
 
 Note that this measurement, as with passive RTT measurement for TCP, includes
-any transport protocol delay (e.g., delayed sending of acknowledgments) and/or
+all transport protocol delay (e.g., delayed sending of acknowledgments) and/or
 application layer delay (e.g., waiting for a response to be generated). It
 therefore provides devices on path a good instantaneous estimate of the RTT as
 experienced by the application.
@@ -834,7 +834,8 @@ or moving minimum filter can be applied to the stream of RTT samples to get a
 more stable estimate of application-experienced RTT. RTT samples measured from
 the spin bit can also be used to generate RTT distribution information,
 including minimum RTT (which approximates network RTT over longer time windows)
-and RTT variance (which approximates jitter as seen by the application).
+and RTT variance (which approximates one-way packet delay variance as seen
+by an application end-point).
 
 # Specific Network Management Tasks
 
