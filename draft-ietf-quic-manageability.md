@@ -921,7 +921,7 @@ endpoints and the connection can potentially be re-established.
 Use of connection IDs is specifically discouraged for NAT applications.
 If a NAT hits an operational limit, it is recommended to rather drop the
 initial packets of a flow (see also {{sec-filtering}}),
-which potentially triggers a fallback to TCP. Use of the connection ID to
+which potentially triggers TCP fallback. Use of the connection ID to
 multiplex multiple connections on the same IP address/port pair is not a
 viable solution as it risks connectivity breakage, in case the connection
 ID changes.
@@ -968,7 +968,7 @@ but is often also used is other scenarios where packet filtering is desired.
 Though the guidance there holds, a particularly unwise behavior admits a
 handful of UDP packets and then makes a decision to whether or not filter
 later packets in the same connection.
-QUIC applications are encouraged to fail over to TCP if early packets do
+QUIC applications are encouraged to fall back to TCP if early packets do
 not arrive at their destination {{?QUIC-APPLICABILITY}}, as QUIC is
 based on UDP and there are known blocks of UDP traffic (see {{sec-udp-1312}}).
 Admitting a few packets allows the QUIC endpoint to determine that the path
@@ -993,10 +993,10 @@ limits might need to be adapted dynamically.
 Further, if UDP traffic is desired to be throttled, it is recommended to
 block individual
 QUIC flows entirely rather than dropping packets indiscriminately.
-When the handshake is blocked, QUIC-capable applications may fail over
+When the handshake is blocked, QUIC-capable applications may fall back
 to TCP. However, blocking a random fraction of QUIC packets across
-4-tuples will allow many QUIC handshakes to complete, preventing a
-TCP failover, but these connections will suffer from
+4-tuples will allow many QUIC handshakes to complete, preventing TCP fallback,
+but these connections will suffer from
 severe packet loss (see also {{sec-filtering}}). Therefore, UDP throttling
 should be realized by per-flow policing, as opposed to per-packet
 policing. Note that this per-flow policing should be stateless to avoid
