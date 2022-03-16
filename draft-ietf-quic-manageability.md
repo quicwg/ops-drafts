@@ -1019,6 +1019,20 @@ Note that some source ports are assumed to be reflection attack vectors by some
 servers; see {{Section 8.1 of QUIC-APPLICABILITY}}. As a result, NAT
 binding to these source ports can result in that traffic being blocked.
 
+## UDP Reflection
+
+QUIC stateless reset packets ((see {{Section 10.3 of QUIC-TRANSPORT}}) are sent
+in response to packets which appear to be 1-RTT packets.  QUIC prevents an
+infinite loop between QUIC servers by ensuring each stateless reset decreases
+in size.
+
+However, non-QUIC protocols amplify in bytes or packets.  For example,
+ISAKMP {{?RFC2408}} sends two packets in response to each packet. Neither
+packet appears to be a 1-RTT IETF QUIC packet, so loops can be avoided.
+CHARGEGEN {{?RFC864}} generates randomly sized UDP datagrams up to 512 bytes.
+
+As a result, servers may want to consider strategies, such as rate limiting,
+to prevent infinite packet reflection.
 
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
