@@ -125,7 +125,7 @@ version in some packets, and the format of the Version Negotiation Packet,
 are both inspectable and invariant
 {{?QUIC-INVARIANTS=RFC8999}}.
 
-This document describes version 1 of the QUIC protocol, whose wire image
+This document addresses version 1 of the QUIC protocol, whose wire image
 is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Features of the wire
 image described herein may change in future versions of the protocol, except
 when specified as an invariant {{QUIC-INVARIANTS}},
@@ -214,11 +214,11 @@ other information in the packet headers:
   is encrypted, and therefore not of use to on-path observers. The offset of the
   packet number can be decoded in long headers, while it
   is implicit (depending on destination connection ID length) in short headers.
-  The length of the packet number is cryptographically obfuscated.
+  The length of the packet number is cryptographically protected.
 
 - key phase: The Key Phase bit, present in short headers, specifies the keys
   used to encrypt the packet to support key rotation. The Key Phase bit is
-  cryptographically obfuscated.
+  cryptographically protected.
 
 ## Coalesced Packets {#coalesced}
 
