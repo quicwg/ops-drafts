@@ -205,7 +205,7 @@ In version 1 of QUIC, the following additional information is exposed:
   token is explicit in both cases.
 
 Retry ({{Section 17.2.5 of QUIC-TRANSPORT}}) and Version Negotiation ({{Section
-17.2.1 of QUIC-TRANSPORT}}) packets are not encrypted or obfuscated in any
+17.2.1 of QUIC-TRANSPORT}}) packets are not encrypted or protected in any
 way. For other kinds of packets, version 1 of QUIC cryptographically obfuscates
 other information in the packet headers:
 
@@ -342,7 +342,7 @@ CRYPTO frames.
 
 A Client Initial packet exposes the version, source and destination
 connection IDs without encryption. The payload of the Initial
-packet is obfuscated using the Initial secret.  The complete TLS
+packet is protected using the Initial secret.  The complete TLS
 Client Hello, including any TLS Server Name Indication (SNI)
 present, is sent in one or more CRYPTO frames across one or more
 QUIC Initial packets.
@@ -372,7 +372,7 @@ QUIC Initial packets.
 
 The Server Initial datagram also exposes version number, source and destination
 connection IDs in the clear; the payload of the Initial packet(s) is
-obfuscated using the Initial secret.
+protected using the Initial secret.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -685,7 +685,7 @@ To determine the end of the packet header and find the start of the payload,
 the packet number length, the source connection ID length, and the token length
 need to be extracted. The packet number length is defined by the seventh and
 eight bits of the header as described in {{Section 17.2 of QUIC-TRANSPORT}},
-but is obfuscated as described in {{Section 5.4 of QUIC-TLS}}. The source
+but is protected as described in {{Section 5.4 of QUIC-TLS}}. The source
 connection ID length is specified in the byte after the destination
 connection ID. The token length, which follows the source connection ID, is
 a variable-length integer as specified in {{Section 16 of QUIC-TRANSPORT}}.
