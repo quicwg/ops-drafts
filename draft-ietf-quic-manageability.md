@@ -173,8 +173,8 @@ QUIC:
   packet headers additionally carry a source connection ID. The source
   connection ID corresponds to the destination connection ID the source would
   like to have on packets sent to it, and is only present on long packet
-  headers. On long header packets, the length of the connection
-  IDs is also present; on short header packets, the length of the destination
+  headers. On long-header packets, the length of the connection
+  IDs is also present; on short-header packets, the length of the destination
   connection ID is implicit.
 
 In version 1 of QUIC, the following additional information is exposed:
@@ -224,7 +224,7 @@ other information in the packet headers:
 
 Multiple QUIC packets may be coalesced into a single UDP datagram,
 with a datagram
-carrying one or more long header packets followed by zero or one short header
+carrying one or more long-header packets followed by zero or one short-header
 packets. When packets are coalesced, the Length fields in the long headers are
 used to separate QUIC packets; see {{Section 12.2 of QUIC-TRANSPORT}}.
 The Length field is variable length, and its position in the header is
@@ -659,11 +659,11 @@ payload and parsing the QUIC CRYPTO frame(s) containing the TLS ClientHello.
 As both the derivation of the Initial secret and the structure of the Initial
 packet itself are version-specific, the first step is always to parse the
 version number (the second through fifth bytes of the long header). Note that
-only long header packets carry the version number, so it is necessary to also
+only long-header packets carry the version number, so it is necessary to also
 check if the first bit of the QUIC packet is set to 1, indicating a long header.
 
 Note that proprietary QUIC versions, that have been deployed before
-standardization, might not set the first bit in a QUIC long header packet to
+standardization, might not set the first bit in a QUIC long-header packet to
 1. However, it is expected that these versions will
 gradually disappear over time and therefore do not require any special
 consideration or treatment.
