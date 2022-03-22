@@ -166,15 +166,15 @@ QUIC:
   versions are maintained in an IANA registry
   (see {{Section 22.2 of QUIC-TRANSPORT}}).
 
-- source and destination connection ID: short and long packet headers carry a
+- source and destination connection ID: short and long headers carry a
   destination connection ID, a variable-length field that can be used to
   identify the connection associated with a QUIC packet, for load-balancing and
   NAT rebinding purposes; see {{sec-loadbalancing}} and {{rebinding}}. Long
   packet headers additionally carry a source connection ID. The source
   connection ID corresponds to the destination connection ID the source would
-  like to have on packets sent to it, and is only present on long packet
-  headers. On long-header packets, the length of the connection
-  IDs is also present; on short-header packets, the length of the destination
+  like to have on packets sent to it, and is only present on long
+  headers. On long header packets, the length of the connection
+  IDs is also present; on short header packets, the length of the destination
   connection ID is implicit.
 
 In version 1 of QUIC, the following additional information is exposed:
@@ -186,7 +186,7 @@ In version 1 of QUIC, the following additional information is exposed:
   Therefore, observers cannot reliably use it as an identifier for QUIC.
 
 - latency spin bit: The third-most-significant bit of the first octet in the
-  short packet header for version 1. The spin bit is set by endpoints such that
+  short header for version 1. The spin bit is set by endpoints such that
   tracking edge transitions can be used to passively observe end-to-end RTT. See
   {{spin-usage}} for further details.
 
@@ -224,7 +224,7 @@ other information in the packet headers:
 
 Multiple QUIC packets may be coalesced into a single UDP datagram,
 with a datagram
-carrying one or more long-header packets followed by zero or one short-header
+carrying one or more long header packets followed by zero or one short header
 packets. When packets are coalesced, the Length fields in the long headers are
 used to separate QUIC packets; see {{Section 12.2 of QUIC-TRANSPORT}}.
 The Length field is variable length, and its position in the header is
@@ -659,11 +659,11 @@ payload and parsing the QUIC CRYPTO frame(s) containing the TLS ClientHello.
 As both the derivation of the Initial secret and the structure of the Initial
 packet itself are version-specific, the first step is always to parse the
 version number (the second through fifth bytes of the long header). Note that
-only long-header packets carry the version number, so it is necessary to also
+only long header packets carry the version number, so it is necessary to also
 check if the first bit of the QUIC packet is set to 1, indicating a long header.
 
 Note that proprietary QUIC versions, that have been deployed before
-standardization, might not set the first bit in a QUIC long-header packet to
+standardization, might not set the first bit in a QUIC long header packet to
 1. However, it is expected that these versions will
 gradually disappear over time and therefore do not require any special
 consideration or treatment.
