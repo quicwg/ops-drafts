@@ -546,8 +546,12 @@ information.
 
 ## Identifying QUIC Traffic {#sec-identifying}
 
-The QUIC wire image is not specifically designed to be distinguishable from
-other UDP traffic by a passive observer in the network.
+The QUIC wire image is not specifically designed to be distinguishable
+from other UDP traffic by a passive observer in the network. While certain
+QUIC applications may be heuristically identifiable on a per-application
+basis, there is no general method for distinguishing QUIC traffic from
+otherwise-unclassifiable UDP traffic on a given link. Any unrecognized UDP
+traffic may therefore be QUIC traffic.
 
 At the time of writing, two application bindings for QUIC have been published
 or adopted by the IETF: HTTP/3 {{?QUIC-HTTP}} and DNS over Dedicated QUIC
