@@ -107,7 +107,10 @@ requirements, for example, would be impermissible on other networks without
 those requirements. This document therefore does not make any specific
 recommendations as to which practices should or should not be applied; for each
 practice, it describes what is and is not possible with the QUIC transport
-protocol as defined.
+protocol as defined. This document also focuses solely on network management
+practices that interact with traffic on the wire; replacement of
+troubleshooting based on observation with active measurement techniques, for
+example, is therefore out of scope.
 
 QUIC-specific terminology used in this document is defined
 in {{QUIC-TRANSPORT}}.
