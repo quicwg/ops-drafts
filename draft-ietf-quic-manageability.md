@@ -1240,7 +1240,7 @@ feedback on this document:
 
 # Acknowledgments
 
-Special thanks to last call reviewers Elwyn Davies, Barry Lieba, 
+Special thanks to last call reviewers Elwyn Davies, Barry Lieba,
 Al Morton, and Peter Saint-Andre.
 
 This work was partially supported by the European Commission under Horizon 2020
