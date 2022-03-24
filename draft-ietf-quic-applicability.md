@@ -984,6 +984,8 @@ on this document:
 
 # Acknowledgments
 
+Special thanks to last-call reviewers Chris Lonvick and Ines Robles.
+
 This work was partially supported by the European Commission under Horizon 2020
 grant agreement no. 688421 Measurement and Architecture for a Middleboxed
 Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and
