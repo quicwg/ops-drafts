@@ -125,7 +125,7 @@ version in some packets, and the format of the Version Negotiation Packet,
 are both inspectable and invariant
 {{?QUIC-INVARIANTS=RFC8999}}.
 
-This document describes version 1 of the QUIC protocol, whose wire image
+This document addresses version 1 of the QUIC protocol, whose wire image
 is fully defined in {{QUIC-TRANSPORT}} and {{?QUIC-TLS}}. Features of the wire
 image described herein may change in future versions of the protocol, except
 when specified as an invariant {{QUIC-INVARIANTS}},
@@ -166,13 +166,13 @@ QUIC:
   versions are maintained in an IANA registry
   (see {{Section 22.2 of QUIC-TRANSPORT}}).
 
-- source and destination connection ID: short and long packet headers carry a
+- source and destination connection ID: short and long headers carry a
   destination connection ID, a variable-length field that can be used to
   identify the connection associated with a QUIC packet, for load-balancing and
   NAT rebinding purposes; see {{sec-loadbalancing}} and {{rebinding}}. Long
   packet headers additionally carry a source connection ID. The source
   connection ID corresponds to the destination connection ID the source would
-  like to have on packets sent to it, and is only present on long packet
+  like to have on packets sent to it, and is only present on long
   headers. On long header packets, the length of the connection
   IDs is also present; on short header packets, the length of the destination
   connection ID is implicit.
@@ -186,7 +186,7 @@ In version 1 of QUIC, the following additional information is exposed:
   Therefore, observers cannot reliably use it as an identifier for QUIC.
 
 - latency spin bit: The third-most-significant bit of the first octet in the
-  short packet header for version 1. The spin bit is set by endpoints such that
+  short header for version 1. The spin bit is set by endpoints such that
   tracking edge transitions can be used to passively observe end-to-end RTT. See
   {{spin-usage}} for further details.
 
@@ -205,7 +205,7 @@ In version 1 of QUIC, the following additional information is exposed:
   token is explicit in both cases.
 
 Retry ({{Section 17.2.5 of QUIC-TRANSPORT}}) and Version Negotiation ({{Section
-17.2.1 of QUIC-TRANSPORT}}) packets are not encrypted or obfuscated in any
+17.2.1 of QUIC-TRANSPORT}}) packets are not encrypted or protected in any
 way. For other kinds of packets, version 1 of QUIC cryptographically obfuscates
 other information in the packet headers:
 
@@ -214,11 +214,11 @@ other information in the packet headers:
   is encrypted, and therefore not of use to on-path observers. The offset of the
   packet number can be decoded in long headers, while it
   is implicit (depending on destination connection ID length) in short headers.
-  The length of the packet number is cryptographically obfuscated.
+  The length of the packet number is cryptographically protected.
 
 - key phase: The Key Phase bit, present in short headers, specifies the keys
   used to encrypt the packet to support key rotation. The Key Phase bit is
-  cryptographically obfuscated.
+  cryptographically protected.
 
 ## Coalesced Packets {#coalesced}
 
@@ -342,7 +342,7 @@ CRYPTO frames.
 
 A Client Initial packet exposes the version, source and destination
 connection IDs without encryption. The payload of the Initial
-packet is obfuscated using the Initial secret.  The complete TLS
+packet is protected using the Initial secret.  The complete TLS
 Client Hello, including any TLS Server Name Indication (SNI)
 present, is sent in one or more CRYPTO frames across one or more
 QUIC Initial packets.
@@ -372,7 +372,7 @@ QUIC Initial packets.
 
 The Server Initial datagram also exposes version number, source and destination
 connection IDs in the clear; the payload of the Initial packet(s) is
-obfuscated using the Initial secret.
+protected using the Initial secret.
 
 ~~~~~
 +------------------------------------------------------------+
@@ -685,7 +685,7 @@ To determine the end of the packet header and find the start of the payload,
 the packet number length, the source connection ID length, and the token length
 need to be extracted. The packet number length is defined by the seventh and
 eight bits of the header as described in {{Section 17.2 of QUIC-TRANSPORT}},
-but is obfuscated as described in {{Section 5.4 of QUIC-TLS}}. The source
+but is protected as described in {{Section 5.4 of QUIC-TLS}}. The source
 connection ID length is specified in the byte after the destination
 connection ID. The token length, which follows the source connection ID, is
 a variable-length integer as specified in {{Section 16 of QUIC-TRANSPORT}}.
