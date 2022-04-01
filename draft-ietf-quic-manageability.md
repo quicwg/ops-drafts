@@ -109,6 +109,12 @@ recommendations as to which practices should or should not be applied; for each
 practice, it describes what is and is not possible with the QUIC transport
 protocol as defined.
 
+This document focuses solely on network management practices that observe
+traffic on the wire. Replacement of troubleshooting based on observation
+with active measurement techniques, for example, is therefore out of scope.
+A more generalized treatment of network management operations on encrypted
+transports is given in {{?RFC9065}}.
+
 QUIC-specific terminology used in this document is defined
 in {{QUIC-TRANSPORT}}.
 
