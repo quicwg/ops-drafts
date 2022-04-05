@@ -537,7 +537,7 @@ and completely fail in the near future. Reliance on the version number field
 for the purposes of admission control is similarly likely to rapidly lead to
 unintended failure modes. Admission of QUIC traffic regardless of version
 avoids these failure modes, avoids unnecessary deployment delays, and
-supports continuous continious version-based evolution.
+supports continuous version-based evolution.
 
 # Network-Visible Information about QUIC Flows
 
