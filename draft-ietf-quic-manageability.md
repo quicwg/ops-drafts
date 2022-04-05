@@ -536,7 +536,7 @@ not recommended. In addition, due to the speed of evolution of the protocol,
 devices that attempt to distinguish QUIC traffic from non-QUIC traffic for
 purposes of network admission control should not rely on the version number
 field. Instead it is recommended to admit all QUIC traffic regardless
-of version in order to support continious version-based evolution and
+of version in order to support continuous version-based evolution and
 avoid unnecessary deployment delays.
 
 
