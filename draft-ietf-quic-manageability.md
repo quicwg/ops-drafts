@@ -104,10 +104,10 @@ for this document.
 Network management is not a one-size-fits-all endeavour: practices considered
 necessary or even mandatory within enterprise networks with certain compliance
 requirements, for example, would be impermissible on other networks without
-those requirements. This document therefore does not make any specific
-recommendations as to which practices should or should not be applied; for each
-practice, it describes what is and is not possible with the QUIC transport
-protocol as defined.
+those requirements. The presence of a particular practice in this document
+should therefore not be construed as a recommendation to apply it. For each
+practice, this document describes what is and is not possible with the QUIC
+transport protocol as defined.
 
 This document focuses solely on network management practices that observe
 traffic on the wire. Replacement of troubleshooting based on observation
