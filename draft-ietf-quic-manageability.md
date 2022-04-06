@@ -529,15 +529,16 @@ information will also cause the connection to fail.
 
 QUIC is expected to evolve rapidly, so new versions, both experimental and IETF
 standard versions, will be deployed on the Internet more often than with
-traditional Internet- and transport-layer protocols. Using a particular version
-number to recognize valid QUIC traffic is likely to persistently miss a fraction
-of QUIC flows and completely fail in the near future, and is therefore
-not recommended. In addition, due to the speed of evolution of the protocol,
-devices that attempt to distinguish QUIC traffic from non-QUIC traffic for
-purposes of network admission control should not rely on the version number
-field. Instead it is recommended to admit all QUIC traffic regardless
-of version in order to support continuous version-based evolution and
-avoid unnecessary deployment delays.
+other commonly deployed Internet- and transport-layer protocols. Use
+of the version number field for traffic recognition will therefore behave
+differently than with these protocols. Using a particular version number
+to recognize valid QUIC traffic is likely to persistently miss a fraction of
+QUIC flows,
+and completely fail in the near future. Reliance on the version number field
+for the purposes of admission control is similarly likely to rapidly lead to
+unintended failure modes. Admission of QUIC traffic regardless of version
+avoids these failure modes, avoids unnecessary deployment delays, and
+supports continuous version-based evolution.
 
 
 # Network-Visible Information about QUIC Flows
