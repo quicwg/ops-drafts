@@ -349,8 +349,8 @@ for that message.
 If a QUIC receiver has opened the maximum allowed concurrent
 streams, and the sender indicates that more streams are needed, it
 does not automatically lead to an increase of the maximum number of
-streams by the receiver. Therefore, an application can use the maximum
-number of allowed, currently open, and currently used streams when
+streams by the receiver. Therefore, an application should consider the
+maximum number of allowed, currently open, and currently used streams when
 determining how to map data to streams.
 
 QUIC assigns a numerical identifier to each stream, called the stream ID.  While
@@ -583,7 +583,7 @@ RESET_STREAM frames, which contain only an error code.
 # Acknowledgment Efficiency
 
 QUIC version 1 without extensions uses an acknowledgment strategy
-adopted from TCP {{Section 13.2 of QUIC}}).
+adopted from TCP (see {{Section 13.2 of QUIC}}).
 That is, it recommends every other packet is acknowledged.
 However, generating and processing QUIC acknowledgments consumes resources
 at a sender and receiver.  Acknowledgments also incur forwarding costs and
@@ -668,7 +668,7 @@ reflection vectors as well.
 
 # Connection Migration
 
-QUIC supports connection migration by the client. If an IP address
+QUIC supports connection migration by the client. If the client's IP address
 changes, a QUIC endpoint can still associate packets with an existing
 transport connection using the Destination Connection ID field
 (see also {{connid}}) in the QUIC header.
