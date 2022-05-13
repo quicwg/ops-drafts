@@ -152,7 +152,7 @@ common API for multiple protocols. This is particularly relevant for QUIC as
 it addresses the implications of fallback among multiple protocols.
 
 Specifically, fallback to insecure protocols or to weaker versions of secure
-protocols needs to be avoided. In general, a application that implements
+protocols needs to be avoided. In general, an application that implements
 fallback needs to consider the security consequences. A fallback to TCP and
 TLS exposes control information to modification and manipulation in the
 network. Further, downgrades to older TLS versions than 1.3, which is used
@@ -191,7 +191,7 @@ exists in TLS 1.3 with TCP, 0-RTT presents opportunities and challenges for
 applications using QUIC.
 
 A transport protocol that provides 0-RTT connection establishment is
-qualitatively different than one that does not from the point of view of the
+qualitatively different from one that does not from the point of view of the
 application using it. Relative trade-offs between the cost of closing and
 reopening a connection and trying to keep it open are different; see
 {{resumption-v-keepalive}}.
@@ -280,10 +280,10 @@ survive NAT rebinding or is known to be in a controlled environment (e.g.
 data centres) in order to lower network and computational load.
 
 Sending PING frames more frequently than every 30 seconds over long idle
-periods may result in excessive unproductive traffic in some situations, and to
+periods may result in excessive unproductive traffic in some situations, and
 unacceptable power usage for power-constrained (mobile) devices. Additionally,
 timeouts shorter than 30 seconds can make it harder to handle transient network
-interruptions, such as VM migration or coverage loss during mobilty.
+interruptions, such as VM migration or coverage loss during mobility.
 See {{RFC8085}}, especially Section 3.5.
 
 Alternatively, the client (but not the server) can use session resumption
@@ -366,7 +366,7 @@ might vary between transport implementations. Therefore, an application should
 not assume a particular stream ID will be assigned to a stream that has not yet
 been allocated.  For example, HTTP/3 uses stream IDs to refer to streams that
 have already been opened, but makes no assumptions about future stream IDs or
-the way in which they are assigned {{Section 6 of QUIC-HTTP}}).
+the way in which they are assigned (see {{Section 6 of QUIC-HTTP}}).
 
 ## Stream versus Flow Multiplexing
 
@@ -487,7 +487,7 @@ being terminated in some protocols.
 QUIC endpoints are responsible for communicating the cumulative limit of streams
 they would allow to be opened by their peer. Initial limits are advertised using
 the initial_max_streams_bidi and initial_max_streams_uni transport parameters.
-As streams are opened and closed they are consumed and the cumulative total is
+As streams are opened and closed they are consumed, and the cumulative total is
 incremented. Limits can be increased using the MAX_STREAMS frame but there is no
 mechanism to reduce limits. Once stream limits are reached, no more streams can
 be opened, which prevents applications using QUIC from making further progress.
@@ -567,7 +567,7 @@ transport layer. QUIC encourages endpoints to use the most specific code,
 although any applicable code is permitted, including generic ones.
 
 Applications using QUIC define an error
-code space that is independent from QUIC or other applications (see, for
+code space that is independent of QUIC or other applications (see, for
 example, {{Section 8.1 of QUIC-HTTP}}). The values in an application error code
 space can be reused across connection-level and stream-level errors.
 
@@ -874,7 +874,7 @@ light-weight versioning with different cryptographic handshakes.
 
 # Enabling New Versions
 
-QUIC version 1 does not specify a version negotation mechanism in the base spec
+QUIC version 1 does not specify a version negotiation mechanism in the base spec
 but {{?I-D.draft-ietf-quic-version-negotiation}} proposes an extension. This
 process assumes that the set of versions that a server supports is fixed.  This
 complicates the process for deploying new QUIC versions or disabling old
@@ -920,7 +920,7 @@ the old version is no longer accepted.
 
 # Unreliable Datagram Service over QUIC
 
-{{?I-D.ietf-quic-datagram}} specifies a QUIC extension to enable sending
+{{?RFC9221}} specifies a QUIC extension to enable sending
 and receiving unreliable datagrams over QUIC. Unlike operating directly over
 UDP, applications that use the QUIC datagram service do not need to implement
 their own congestion control, per {{RFC8085}}, as QUIC datagrams are
@@ -949,7 +949,7 @@ applications using QUIC, as well. Considerations on linkability, replay attacks,
 and randomness discussed in {{!QUIC-TLS}} should be taken into account when
 deploying and using QUIC.
 
-Further, migration to an new address exposes
+Further, migration to a new address exposes
 a linkage between client addresses to the server and may expose this linkage
 also to the path if the connection ID cannot be changed or flows can
 otherwise be correlated. When migration is supported, this needs to be
