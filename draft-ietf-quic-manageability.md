@@ -188,8 +188,9 @@ In version 1 of QUIC, the following additional information is exposed:
 - "fixed bit": The second-most-significant bit of the first octet of most QUIC
   packets of the current version is set to 1, enabling endpoints to demultiplex
   with other UDP-encapsulated protocols. Even though this bit is fixed in the
-  version 1 specification, endpoints might use an extension that varies the bit.
-  Therefore, observers cannot reliably use it as an identifier for QUIC.
+  version 1 specification, endpoints might use an extension that varies the bit
+  [QUIC-GREASE]. Therefore, observers cannot reliably use it as an identifier
+  for QUIC.
 
 - latency spin bit: The third-most-significant bit of the first octet in the
   short header for version 1. The spin bit is set by endpoints such that
@@ -448,7 +449,7 @@ flight can also include one or more 0-RTT packets, as shown in
    title="Coalesced 0-RTT Client Initial datagram"}
 
 When a 0-RTT packet is coalesced with an Initial packet, the datagram
-will be padded to 1200 byes. Additional datagrams containing only 0-RTT
+will be padded to 1200 bytes. Additional datagrams containing only 0-RTT
 packets with long headers can be sent after the client Initial packet(s),
 containing more 0-RTT data. The amount of 0-RTT protected data that
 can be sent in the first flight is limited by the initial congestion
@@ -486,7 +487,7 @@ supplied via encrypted frames (see {{Section 5.1 of QUIC-TRANSPORT}}).
 Therefore, observing a new connection ID does not necessarily indicate a new
 connection.
 
-{{?QUIC_LB=I-D.ietf-quic-load-balancers}} specifies algorithms for
+{{?QUIC-LB=I-D.ietf-quic-load-balancers}} specifies algorithms for
 encoding the server mapping in a connection ID in order to share this
 information with selected on-path devices such as load balancers. Server
 mappings should only be exposed to selected entities. Uncontrolled exposure
@@ -520,7 +521,7 @@ endpoints to terminate the connection attempt.
 
 Also note that the list of versions in the Version Negotiation packet may
 contain reserved versions. This mechanism is used to avoid ossification in the
-implementation on the selection mechanism. Further, a client may send an Initial
+implementation of the selection mechanism. Further, a client may send an Initial
 packet with a reserved version number to trigger version negotiation. In
 the Version Negotiation packet, the connection IDs of the client's
 Initial packet
@@ -872,7 +873,7 @@ on ECN-enabled QUIC traffic.
 On-path devices can also make measurements of RTT, loss and other
 performance metrics when information is carried in an additional network-layer
 packet header (Section 6 of
-{{?I-D.ietf-tsvwg-transport-encrypt}} describes use of operations,
+{{?RFC9065}} describes use of operations,
 administration and management (OAM) information).
 Using network-layer approaches also has the advantage that common observation
 and analysis tools can be consistently used for multiple transport protocols,
@@ -933,7 +934,7 @@ Therefore, using the connection ID as a flow key field for stateful treatment
 of flows is not recommended as connection ID changes will cause undetectable
 and unrecoverable loss of state in the middle of a connection. In particular,
 the use of the connection ID for functions that require state to make a
-forwarding decison is not viable as it will break connectivity, or at minimum
+forwarding decision is not viable as it will break connectivity, or at minimum
 cause long timeout-based delays before this problem is detected by the
 endpoints and the connection can potentially be re-established.
 
@@ -951,7 +952,7 @@ While QUIC's migration capability makes it possible for a connection to survive
 client address changes, this does not work if the routers or switches in the
 server infrastructure route using the address-port 4-tuple. If infrastructure
 routes on addresses only, NAT rebinding or address migration will cause packets
-to be delivered to the wrong server. {{QUIC_LB}} describes a way to addresses
+to be delivered to the wrong server. {{QUIC-LB}} describes a way to addresses
 this problem by coordinating the selection and use of connection IDs between
 load-balancers and servers.
 
@@ -976,7 +977,7 @@ In the case of networking architectures that include load balancers,
 the connection ID can be used as a way for the server to signal information
 about the desired treatment of a flow to the load balancers. Guidance on
 assigning connection IDs is given in
-{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}}. {{QUIC_LB}}
+{{?QUIC-APPLICABILITY=I-D.ietf-quic-applicability}}. {{QUIC-LB}}
 describes a system for coordinating selection and use of connection IDs between
 load-balancers and servers.
 
@@ -1094,8 +1095,8 @@ kinds of TCP DDoS attacks. QUIC Retry packets are the functional analogue to
 syncookies, forcing clients to prove possession of their IP address before
 committing server state.  However, there are safeguards in QUIC against
 unsolicited injection of these packets by intermediaries who do not have consent
-of the end server. See {{QUIC_LB}} for standard ways for intermediaries to send
-Retry packets on behalf of consenting servers.
+of the end server. See {{QUIC-RETRY=I-D.duke-quic-retry-offload}} for standard
+ways for intermediaries to send Retry packets on behalf of consenting servers.
 
 
 ## Quality of Service Handling and ECMP Routing
@@ -1117,9 +1118,9 @@ more tolerant of packet re-ordering than traditional TCP traffic (see
 known by the network and therefore reordering tolerance should be
 considered as unknown.
 
-Note that the 5-tuple of a QUIC connnection can change due to migration.
+Note that the 5-tuple of a QUIC connection can change due to migration.
 In this case different flows are observed by the path and maybe be treated
-differently, as congestion control is usualy reset on migration (see also
+differently, as congestion control is usually reset on migration (see also
 {{sec-flow-association}}).
 
 ## Handling ICMP Messages
@@ -1143,7 +1144,7 @@ but can only do so by fragmenting at a
 lower layer before traversing a network segment with a smaller MTU,
 and then reassembling within the network segment.
 This is permissible even when the IP layer is IPv6 or IPv4 with the DF bit set,
-because fragmention occurs below the IP layer.
+because fragmentation occurs below the IP layer.
 However, this process can add to compute
 and memory costs, leading to a bottleneck that limits network capacity. In such
 networks this generates a desire to influence a majority of senders to use
@@ -1210,7 +1211,7 @@ cryptographic handshake is complete, QUIC endpoints discard most packets that
 are not authenticated, greatly limiting the ability of an attacker to interfere
 with existing connections.
 
-However, some information is still observerable, as supporting manageability of
+However, some information is still observable, as supporting manageability of
 QUIC traffic inherently involves tradeoffs with the confidentiality of QUIC's
 control information; this entire document is therefore security-relevant.
 
@@ -1251,7 +1252,7 @@ feedback on this document:
 
 # Acknowledgments
 
-Special thanks to last call reviewers Elwyn Davies, Barry Lieba,
+Special thanks to last call reviewers Elwyn Davies, Barry Leiba,
 Al Morton, and Peter Saint-Andre.
 
 This work was partially supported by the European Commission under Horizon 2020
