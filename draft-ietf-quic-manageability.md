@@ -1095,7 +1095,7 @@ kinds of TCP DDoS attacks. QUIC Retry packets are the functional analogue to
 syncookies, forcing clients to prove possession of their IP address before
 committing server state.  However, there are safeguards in QUIC against
 unsolicited injection of these packets by intermediaries who do not have consent
-of the end server. See {{QUIC-RETRY=I-D.duke-quic-retry-offload}} for standard
+of the end server. See {{?QUIC-RETRY=I-D.duke-quic-retry-offload}} for standard
 ways for intermediaries to send Retry packets on behalf of consenting servers.
 
 
