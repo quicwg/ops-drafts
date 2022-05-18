@@ -662,9 +662,9 @@ a period of time, downgrading to a non-UDP protocol (see {{fallback}}).
 
 As a result, client implementations are encouraged to avoid using source ports
 associated with protocols known to be vulnerable to reflection attacks. Note
-that the list above is not exhaustive; other source ports might be considered
-reflection vectors as well.
-
+that following the general guidance for client implementations given in
+{{?RFC6335}}, to use ephemeral ports in the range 49152–65535, has the
+effect of avoiding these ports.
 
 # Connection Migration
 
