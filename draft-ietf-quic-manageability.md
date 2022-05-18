@@ -567,8 +567,10 @@ Connections {{?I-D.ietf-dprive-dnsoquic}}. These are both known at the time
 of writing to have active Internet deployments, so an assumption that all
 QUIC traffic is HTTP/3 is not valid. HTTP/3 uses UDP port 443 by
 convention but various methods can be used to specify alternate port numbers.
-Simple assumptions about whether a given flow is using QUIC based upon a UDP
-port number may therefore not hold; see also {{Section 5 of RFC7605}}.
+Other applications (e.g. Microsoft's SMB over QUIC) also use UDP port 443 by
+default. Therefore, simple assumptions about whether a given flow is using
+QUIC, or indeed which application it might be using QUIC, based solely upon 
+a UDP port number may not hold; see also {{Section 5 of RFC7605}}.
 
 While the second-most-significant bit (0x40) of the first octet is set to 1 in
 most QUIC packets of the current version (see {{public-header}} and {{Section 17
