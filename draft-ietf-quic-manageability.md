@@ -605,9 +605,9 @@ A related question is whether the first packet of a given flow on a port known
 to be associated with QUIC is a valid QUIC packet.  This determination supports
 in-network filtering of garbage UDP packets (reflection attacks, random
 backscatter, etc.). While heuristics based on the first byte of the packet
-(packet type) could be used to separate valid from invalid first packet types,
-the deployment of such heuristics is not recommended, as bits in the first byte
-may have different meanings in future versions of the protocol.
+(packet type) could be used to distinguish garbage from non-garbage first packet
+types, the deployment of such heuristics is not recommended, as bits in the
+first byte may have different meanings in future versions of the protocol.
 
 ## Connection Confirmation {#sec-confirm}
 
@@ -1113,7 +1113,7 @@ connection could result in variations in order, delivery rate, and drop rate.
 As feedback about loss or delay of each packet is used as input to
 the congestion controller, these variations could adversely affect performance.
 Depending on the loss recovery mechanism implemented, QUIC may be
-more tolerant of packet re-ordering than traditional TCP traffic (see
+more tolerant of packet re-ordering than TCP traffic (see
 {{packetnumber}}). However, the recovery mechanism used by a flow cannot be
 known by the network and therefore reordering tolerance should be
 considered as unknown.
