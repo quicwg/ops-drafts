@@ -181,7 +181,8 @@ QUIC:
   like to have on packets sent to it, and is only present on long
   headers. On long header packets, the length of the connection
   IDs is also present; on short header packets, the length of the destination
-  connection ID is implicit.
+  connection ID is implicit and as such need to be known from the long header
+  packets.
 
 In version 1 of QUIC, the following additional information is exposed:
 
@@ -477,7 +478,7 @@ packets using information independent of the 5-tuple. This allows
 rebinding of a connection after one of the endpoints - usually the
 client - has experienced an address change. Further it can be used by
 in-network devices to ensure that related 5-tuple flows are appropriately
-balanced together.
+balanced together (see Section {{sec-loadbalancing}}).
 
 Client and server each choose a connection ID during the handshake; for
 example, a server might request that a client use a connection ID, whereas the
