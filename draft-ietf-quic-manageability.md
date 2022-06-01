@@ -173,7 +173,8 @@ QUIC:
   (see {{Section 22.2 of QUIC-TRANSPORT}}).
 
 - source and destination connection ID: short and long headers carry a
-  destination connection ID, a variable-length field that can be used to
+  destination connection ID, a variable-length field which can also be zero-length
+  but if present can be used to
   identify the connection associated with a QUIC packet, for load-balancing and
   NAT rebinding purposes; see {{sec-loadbalancing}} and {{rebinding}}. Long
   packet headers additionally carry a source connection ID. The source
