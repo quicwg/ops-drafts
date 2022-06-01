@@ -169,7 +169,7 @@ QUIC:
   version 1 uses version 0x00000001. Operators should expect to observe
   packets with other version numbers as a result of various Internet
   experiments, future standards, and greasing ({{?RFC7801}}). An IANA registry
-  contains the values of all standardized versions of QUIC, and may contain some 
+  contains the values of all standardized versions of QUIC, and may contain some
   proprietary versions (see {{Section 22.2 of QUIC-TRANSPORT}}). However, other
   versions of QUIC can be expected to be seen in the Internet at any given time.
 
