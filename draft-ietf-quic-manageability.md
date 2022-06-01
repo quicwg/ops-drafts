@@ -867,7 +867,7 @@ techniques and how QUIC's design impacts them.
 Limited RTT measurement is possible by passive observation of QUIC traffic;
 see {{sec-rtt}}. No passive measurement of loss is possible with the present
 wire image. Limited observation of upstream congestion may be
-possible via the observation of Congestion Experienced (CE) markings in the 
+possible via the observation of Congestion Experienced (CE) markings in the
 IP header {{?RFC3168}} on ECN-enabled QUIC traffic.
 
 On-path devices can also make measurements of RTT, loss and other
