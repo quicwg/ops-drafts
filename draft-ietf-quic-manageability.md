@@ -652,7 +652,10 @@ use of extensions.
 The client's TLS ClientHello may contain a Server Name Indication (SNI)
 {{?RFC6066}} extension, by which the client reveals the name of the server it
 intends to connect to, in order to allow the server to present a certificate
-based on that name. It may also contain an Application-Layer Protocol
+based on that name. SNI information is available to unidirectional observers
+on the client-to-server path, if present.
+
+The TLS ClientHello may also contain an Application-Layer Protocol
 Negotiation (ALPN) {{?RFC7301}} extension, by which the client exposes the names
 of application-layer protocols it supports; an observer can deduce that one of
 those protocols will be used if the connection continues.
@@ -770,7 +773,8 @@ during the handshake, as in passive TCP measurement; this requires parsing of
 the QUIC packet header and recognition of the handshake, as illustrated in
 {{handshake}}. It can also be inferred during the flow's lifetime, if the
 endpoints use the spin bit facility described below and in {{Section 17.3.1 of
-QUIC-TRANSPORT}}.
+QUIC-TRANSPORT}}. RTT measurement is available to unidirectional observers
+when the spin bit is enabled.
 
 ### Measuring Initial RTT
 
