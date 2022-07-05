@@ -874,8 +874,18 @@ light-weight versioning with different cryptographic handshakes.
 
 # Enabling Deployment of New Versions
 
-{{?I-D.draft-ietf-quic-version-negotiation}} proposes an extension to QUIC
-that provides compatible version negotiation; see that document for details.
+QUIC version 1 does not specify a version negotiation mechanism in the base
+specification, but {{?I-D.draft-ietf-quic-version-negotiation}} proposes an
+extension that provides compatible version negotiation.
+
+This approach uses a three-stage deployment mechanism, enabling
+progressive rollout and experimentation with multiple versions across
+a large server deployment. In this approach, all servers in the deployment
+must accept connections using a new version (stage 1) before any server
+advertises it (stage 2), and authentication of the new version (stage 3)
+only proceeds after advertising of that version is completely deployed.
+
+See {{?I-D.draft-ietf-quic-version-negotiation}} for details.
 
 # Unreliable Datagram Service over QUIC
 
