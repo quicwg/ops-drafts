@@ -155,8 +155,8 @@ Specifically, fallback to insecure protocols or to weaker versions of secure
 protocols needs to be avoided. In general, an application that implements
 fallback needs to consider the security consequences. A fallback to TCP and
 TLS exposes control information to modification and manipulation in the
-network. Further, downgrades to older TLS versions than 1.3, which is used
-in QUIC version 1, might result in significantly weaker
+network. Additionally, downgrades to older TLS versions than 1.3, which is
+used in QUIC version 1, might result in significantly weaker
 cryptographic protection. For example, the results of protocol negotiation
 {{?RFC7301}} only have confidentiality protection if TLS 1.3 is used.
 
@@ -796,7 +796,7 @@ linkability issues, they do not provide full protection. Analysis of
 the lifetimes of six-tuples (source and destination addresses as well as the
 migrated CID) may expose these links anyway.
 
-In the limit where connection migration in a server pool is rare, it is trivial
+In the case where connection migration in a server pool is rare, it is trivial
 for an observer to associate two connection IDs. Conversely, in the opposite
 limit where every server handles multiple simultaneous migrations, even an
 exposed server mapping may be insufficient information.
