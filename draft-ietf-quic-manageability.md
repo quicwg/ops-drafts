@@ -154,9 +154,9 @@ In version 1 of QUIC, the long header is used during connection establishment
 to transmit crypto handshake data, perform version negotiation, retry, and
 send 0-RTT data.
 
-Short headers contain only an optional destination connection ID and the spin
-bit for RTT measurement. In version 1 of QUIC, they are used after connection
-establishment.
+Short headers are used after connection establishment in version 1 of QUIC,
+and expose only an optional destination connection ID and the initial flags
+byte with the spin bit for RTT measurement.
 
 The following information is exposed in QUIC packet headers in all versions of
 QUIC (as specified in {{QUIC-INVARIANTS}}):
