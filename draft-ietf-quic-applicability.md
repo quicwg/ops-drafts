@@ -680,7 +680,7 @@ field (see also {{connid}}) in the QUIC header.
 This supports cases where address information changes, such as NAT rebinding,
 intentional change of the local interface, the expiration of a temporary
 IPv6 address {{?RFC8981}}, or the server indicating a preferred
-address {{Section 9.6 of RFC9000}}.
+address {{Section 9.6 of QUIC}}.
 
 Use of a non-zero-length connection ID for the server is strongly recommended if
 any clients are behind a NAT or could be. A non-zero-length connection ID is
