@@ -664,7 +664,8 @@ As a result, client implementations are encouraged to avoid using source ports
 associated with protocols known to be vulnerable to reflection attacks. Note
 that following the general guidance for client implementations given in
 {{?RFC6335}}, to use ephemeral ports in the range 49152–65535, has the
-effect of avoiding these ports.
+effect of avoiding these ports. Note that other source ports might be
+reflection vectors as well.
 
 # Connection Migration
 
