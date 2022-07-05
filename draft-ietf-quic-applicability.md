@@ -591,6 +591,10 @@ contribute to link utilization, which can impact performance over some
 types of network.
 Applications might be able to improve overall performance
 by using alternative strategies that reduce the rate of acknowledgments.
+{{?I-D.ietf-quic-ack-frequency}} describes an extension to signal the desired
+delay of acknowledgments and discusses use cases as well as implications for
+congestion control and recovery.
+
 
 # Port Selection and Application Endpoint Discovery {#ports}
 
