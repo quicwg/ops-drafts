@@ -785,8 +785,9 @@ information into the connection ID. For an example of this technique, see
 
 ## Mitigating Timing Linkability with Connection ID Migration
 
-QUIC requires that endpoints generate fresh connection IDs for use on new
-network paths. Choosing values that are unlinkable to an outside observer
+If QUIC endpoints do not issue fresh connection IDs, then clients cannot
+reduce the linkability of address migration by using them.
+Choosing values that are unlinkable to an outside observer
 ensures that activity on different paths cannot be trivially correlated
 using the connection ID.
 
@@ -821,7 +822,7 @@ served in cooperation with load balancers that forward the traffic based on the
 connection ID. A server can choose the connection ID in the Retry packet such
 that the load balancer will redirect the next Initial packet to a different
 server in that pool.  Alternatively the load balancer can directly offer a Retry
-service as further described in {{?QUIC-LB}}.
+offload as further described in {{?QUIC-RETRY=I-D.duke-quic-retry-offload}}.
 
 {{Section 4 of RFC5077}} describes an example approach for constructing
 TLS resumption tickets that can be also applied for validation tokens,
