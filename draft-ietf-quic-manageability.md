@@ -159,7 +159,7 @@ bit for RTT measurement. In version 1 of QUIC, they are used after connection
 establishment.
 
 The following information is exposed in QUIC packet headers in all versions of
-QUIC:
+QUIC (as specified in {{QUIC-INVARIANTS}}):
 
 - version number: the version number is present in the long header, and
   identifies the version used for that packet. During Version
