@@ -872,8 +872,8 @@ techniques and how QUIC's design impacts them.
 Limited RTT measurement is possible by passive observation of QUIC traffic;
 see {{sec-rtt}}. No passive measurement of loss is possible with the present
 wire image. Limited observation of upstream congestion may be
-possible via the observation of CE markings in the IP header {{?RFC3168}}
-on ECN-enabled QUIC traffic.
+possible via the observation of Congestion Experienced (CE) markings in the
+IP header {{?RFC3168}} on ECN-enabled QUIC traffic.
 
 On-path devices can also make measurements of RTT, loss and other
 performance metrics when information is carried in an additional network-layer
@@ -1040,8 +1040,8 @@ binding to these source ports can result in that traffic being blocked.
 ## DDoS Detection and Mitigation {#sec-ddos-dec}
 
 On-path observation of the transport headers of packets can be used for various
-security functions. For example, Denial of Service (DOS) and Distributed DOS
-(DDOS) attacks against the infrastructure or against an endpoint can be
+security functions. For example, Denial of Service (DoS) and Distributed DoS
+(DDoS) attacks against the infrastructure or against an endpoint can be
 detected and mitigated by characterising anomalous traffic.
 Other uses include support for security audits (e.g., verifying the
 compliance with ciphersuites); client and application fingerprinting for
