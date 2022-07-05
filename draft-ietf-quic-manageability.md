@@ -154,7 +154,7 @@ In version 1 of QUIC, the long header is used during connection establishment
 to transmit crypto handshake data, perform version negotiation, retry, and
 send 0-RTT data.
 
-Short headers are used after connection establishment, in version 1 of QUIC,
+Short headers are used after connection establishment in version 1 of QUIC,
 and expose only an optional destination connection ID and the initial flags
 byte with the spin bit for RTT measurement.
 
