@@ -87,7 +87,9 @@ is exposed by QUIC to the network, requirements and assumptions of the QUIC
 design with respect to network treatment, and a description of how common
 network management practices will be impacted by QUIC.
 
-QUIC is an end-to-end transport protocol. This property is
+QUIC is an end-to-end transport protocol; therefore, no information in
+the protocol header is intended to be mutable by the network. This
+property is
 enforced through integrity protection of the wire image {{?WIRE-IMAGE=RFC8546}}.
 Encryption of most transport-layer control signaling means that less information
 is visible to the network than is the case with TCP.
