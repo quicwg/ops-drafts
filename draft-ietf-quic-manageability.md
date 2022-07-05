@@ -592,7 +592,7 @@ might infer the version number in use by observing the handshake. If the
 version number in an Initial packet of the server response is subsequently
 seen in a packet from the client, that version has been accepted by both
 endpoints to be used for the rest of the connection (see
-{{Section 2 of I-D.ietf-quic-version-negotiation}}).
+{{Section 2 of ?I-D.ietf-quic-version-negotiation}}).
 
 The negotiated version cannot be identified for flows for which a handshake is
 not observed, such as in the case of connection migration; however, it might be
