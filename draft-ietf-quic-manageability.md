@@ -212,9 +212,11 @@ In version 1 of QUIC, the following additional information is exposed:
   token is explicit in both cases.
 
 Retry ({{Section 17.2.5 of QUIC-TRANSPORT}}) and Version Negotiation ({{Section
-17.2.1 of QUIC-TRANSPORT}}) packets are not encrypted or protected in any
-way. For other kinds of packets, version 1 of QUIC cryptographically obfuscates
-other information in the packet headers:
+17.2.1 of QUIC-TRANSPORT}}) packets are not encrypted. Retry packets are
+(forgibly) integrity protected. Transport parameters are used
+authenticate the contents of Retry packets later in the handshake. For other
+kinds of packets, version 1 of QUIC cryptographically protects other
+information in the packet headers:
 
 - packet number: All packets except Version Negotiation and
   Retry packets have an associated packet number; however, this packet number
