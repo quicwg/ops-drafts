@@ -599,8 +599,8 @@ demultiplexing identifier to differentiate transport sessions between the same
 pair of endpoints, and second, they may also identify the application protocol
 and associated service to which processes connect" {{?RFC6335}}. The assumption
 that an application can be identified in the network based on the port number
-is less true today due to encapsulation, mechanisms for dynamic port
-assignments, and NATs.
+is less true today due to encapsulation and mechanisms for dynamic port
+assignments, as also noted in {{?RFC6335}}.
 
 As QUIC is a general-purpose transport protocol, there are no requirements that
 servers use a particular UDP port for QUIC. For applications with a fallback to
