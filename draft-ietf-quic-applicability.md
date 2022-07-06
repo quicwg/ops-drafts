@@ -885,7 +885,7 @@ must accept connections using a new version (stage 1) before any server
 advertises it (stage 2), and authentication of the new version (stage 3)
 only proceeds after advertising of that version is completely deployed.
 
-See {{?I-D.draft-ietf-quic-version-negotiation}} for details.
+See {{Section 5 of ?I-D.draft-ietf-quic-version-negotiation}} for details.
 
 # Unreliable Datagram Service over QUIC
 
