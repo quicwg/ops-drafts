@@ -879,6 +879,12 @@ realized by TLS 1.3 and described in a separate specification
 {{!QUIC-TLS=RFC9001}}. This split is performed to enable
 light-weight versioning with different cryptographic handshakes.
 
+The QUIC Versions Registry established in {{QUIC}} allows for
+provisional registrations for experimentation. Registration, also of
+experimental versions, is important to avoid collision. Experimental
+versions should not be used long-term or registered as permanent to minimize
+the risk of fingerprinting based on the version number.
+
 # Enabling Deployment of New Versions
 
 QUIC version 1 does not specify a version negotiation mechanism in the base
@@ -893,6 +899,7 @@ advertises it (stage 2), and authentication of the new version (stage 3)
 only proceeds after advertising of that version is completely deployed.
 
 See {{Section 5 of ?I-D.draft-ietf-quic-version-negotiation}} for details.
+
 
 # Unreliable Datagram Service over QUIC
 
