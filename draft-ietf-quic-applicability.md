@@ -878,51 +878,20 @@ realized by TLS 1.3 and described in a separate specification
 {{!QUIC-TLS=RFC9001}}. This split is performed to enable
 light-weight versioning with different cryptographic handshakes.
 
-# Enabling New Versions
+# Enabling Deployment of New Versions
 
-QUIC version 1 does not specify a version negotiation mechanism in the base spec
-but {{?I-D.draft-ietf-quic-version-negotiation}} proposes an extension. This
-process assumes that the set of versions that a server supports is fixed.  This
-complicates the process for deploying new QUIC versions or disabling old
-versions when servers operate in clusters.
+QUIC version 1 does not specify a version negotiation mechanism in the base
+specification, but {{?I-D.draft-ietf-quic-version-negotiation}} proposes an
+extension that provides compatible version negotiation.
 
-A server that rolls out a new version of QUIC can do so in three stages.  Each
-stage is completed across all server instances before moving to the next stage.
+This approach uses a three-stage deployment mechanism, enabling
+progressive rollout and experimentation with multiple versions across
+a large server deployment. In this approach, all servers in the deployment
+must accept connections using a new version (stage 1) before any server
+advertises it (stage 2), and authentication of the new version (stage 3)
+only proceeds after advertising of that version is completely deployed.
 
-In the first stage of deployment, all server instances start accepting new
-connections with the new version.  The new version can be enabled progressively
-across a deployment, which allows for selective testing.  This is especially
-useful when the new version is compatible with an old version, because the new
-version is more likely to be used.
-
-While enabling the new version, servers do not advertise the new version in any
-Version Negotiation packets they send.  This prevents clients that receive a
-Version Negotiation packet from attempting to connect to server instances that
-might not have the new version enabled.
-
-During the initial deployment, some clients will have received Version
-Negotiation packets that indicate that the server does not support the new
-version.  Other clients might have successfully connected with the new version
-and so will believe that the server supports the new version.  Therefore,
-servers need to allow for this ambiguity when validating the negotiated version.
-
-The second stage of deployment commences once all server instances are able to
-accept new connections with the new version.  At this point, all servers can
-start sending the new version in Version Negotiation packets.
-
-During the second stage, the server still allows for the possibility that some
-clients believe the new version to be available and some do not.  This state
-will persist only for as long as any Version Negotiation packets take to be
-transmitted and responded to.  So the third stage can follow after a relatively
-short delay.
-
-The third stage completes the process by enabling authentication of the
-negotiated version with the assumption that the new version is fully available.
-
-The process for disabling an old version or rolling back the introduction of a
-new version uses the same process in reverse.  Servers disable validation of the
-old version, stop sending the old version in Version Negotiation packets, then
-the old version is no longer accepted.
+See {{Section 5 of ?I-D.draft-ietf-quic-version-negotiation}} for details.
 
 # Unreliable Datagram Service over QUIC
 
