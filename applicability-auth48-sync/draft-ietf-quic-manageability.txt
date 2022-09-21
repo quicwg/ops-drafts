@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 5 January 2023                          Google Switzerland GmbH
-                                                             4 July 2022
+Expires: 25 March 2023                           Google Switzerland GmbH
+                                                       21 September 2022
 
 
               Manageability of the QUIC Transport Protocol
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 January 2023.
+   This Internet-Draft will expire on 25 March 2023.
 
 Copyright Notice
 
@@ -113,9 +113,9 @@ Table of Contents
    a description of how common network management practices will be
    impacted by QUIC.
 
-   QUIC is an end-to-end transport protocol.  No information in the
-   protocol header, even that which can be inspected, is mutable by the
-   network.  This is enforced through integrity protection of the wire
+   QUIC is an end-to-end transport protocol; therefore, no information
+   in the protocol header is intended to be mutable by the network.
+   This property is enforced through integrity protection of the wire
    image [WIRE-IMAGE].  Encryption of most transport-layer control
    signaling means that less information is visible to the network than
    is the case with TCP.
@@ -186,12 +186,12 @@ Table of Contents
    establishment to transmit crypto handshake data, perform version
    negotiation, retry, and send 0-RTT data.
 
-   Short headers contain only an optional destination connection ID and
-   the spin bit for RTT measurement.  In version 1 of QUIC, they are
-   used after connection establishment.
+   Short headers are used after connection establishment in version 1 of
+   QUIC, and expose only an optional destination connection ID and the
+   initial flags byte with the spin bit for RTT measurement.
 
    The following information is exposed in QUIC packet headers in all
-   versions of QUIC:
+   versions of QUIC (as specified in [QUIC-INVARIANTS]):
 
    *  version number: the version number is present in the long header,
       and identifies the version used for that packet.  During Version
@@ -201,20 +201,24 @@ Table of Contents
       packet.  QUIC version 1 uses version 0x00000001.  Operators should
       expect to observe packets with other version numbers as a result
       of various Internet experiments, future standards, and greasing
-      ([RFC7801]).  All deployed versions are maintained in an IANA
-      registry (see Section 22.2 of [QUIC-TRANSPORT]).
+      ([RFC7801]).  An IANA registry contains the values of all
+      standardized versions of QUIC, and may contain some proprietary
+      versions (see Section 22.2 of [QUIC-TRANSPORT]).  However, other
+      versions of QUIC can be expected to be seen in the Internet at any
+      given time.
 
    *  source and destination connection ID: short and long headers carry
-      a destination connection ID, a variable-length field that can be
-      used to identify the connection associated with a QUIC packet, for
-      load-balancing and NAT rebinding purposes; see Section 4.4 and
-      Section 2.6.  Long packet headers additionally carry a source
-      connection ID.  The source connection ID corresponds to the
-      destination connection ID the source would like to have on packets
-      sent to it, and is only present on long headers.  On long header
-      packets, the length of the connection IDs is also present; on
-      short header packets, the length of the destination connection ID
-      is implicit.
+      a destination connection ID, a variable-length field which, if not
+      zero-length, can be used to identify the connection associated
+      with a QUIC packet, for load-balancing and NAT rebinding purposes;
+      see Section 4.4 and Section 2.6.  Long packet headers additionally
+      carry a source connection ID.  The source connection ID
+      corresponds to the destination connection ID the source would like
+      to have on packets sent to it, and is only present on long
+      headers.  On long header packets, the length of the connection IDs
+      is also present; on short header packets, the length of the
+      destination connection ID is implicit and as such need to be known
+      from the long header packets.
 
    In version 1 of QUIC, the following additional information is
    exposed:
@@ -300,8 +304,8 @@ Table of Contents
 2.4.  The QUIC Handshake
 
    New QUIC connections are established using a handshake, which is
-   distinguishable on the wire and contains some information that can be
-   passively observed.
+   distinguishable on the wire (see Section 3.1 for details), and
+   contains some information that can be passively observed.
 
    To illustrate the information visible in the QUIC wire image during
    the handshake, we first show the general communication pattern
@@ -518,7 +522,7 @@ Table of Contents
    allows rebinding of a connection after one of the endpoints - usually
    the client - has experienced an address change.  Further it can be
    used by in-network devices to ensure that related 5-tuple flows are
-   appropriately balanced together.
+   appropriately balanced together (see Section Section 4.4).
 
    Client and server each choose a connection ID during the handshake;
    for example, a server might request that a client use a connection
@@ -607,9 +611,12 @@ Table of Contents
    both known at the time of writing to have active Internet
    deployments, so an assumption that all QUIC traffic is HTTP/3 is not
    valid.  HTTP/3 uses UDP port 443 by convention but various methods
-   can be used to specify alternate port numbers.  Simple assumptions
-   about whether a given flow is using QUIC based upon a UDP port number
-   may therefore not hold; see also Section 5 of [RFC7605].
+   can be used to specify alternate port numbers.  Other applications
+   (e.g., Microsoft's SMB over QUIC) also use UDP port 443 by default.
+   Therefore, simple assumptions about whether a given flow is using
+   QUIC, or indeed which application it might be using QUIC, based
+   solely upon a UDP port number may not hold; see also Section 5 of
+   [RFC7605].
 
    While the second-most-significant bit (0x40) of the first octet is
    set to 1 in most QUIC packets of the current version (see Section 2.1
@@ -631,10 +638,11 @@ Table of Contents
 
    An in-network observer assuming that a set of packets belongs to a
    QUIC flow might infer the version number in use by observing the
-   handshake: for QUIC version 1, if the version number in the Initial
-   packet from a client is the same as the version number in the Initial
-   packet of the server response, that version has been accepted by both
-   endpoints to be used for the rest of the connection.
+   handshake.  If the version number in an Initial packet of the server
+   response is subsequently seen in a packet from the client, that
+   version has been accepted by both endpoints to be used for the rest
+   of the connection (see Section 2 of
+   [I-D.ietf-quic-version-negotiation]).
 
    The negotiated version cannot be identified for flows for which a
    handshake is not observed, such as in the case of connection
@@ -697,11 +705,15 @@ Table of Contents
    The client's TLS ClientHello may contain a Server Name Indication
    (SNI) [RFC6066] extension, by which the client reveals the name of
    the server it intends to connect to, in order to allow the server to
-   present a certificate based on that name.  It may also contain an
-   Application-Layer Protocol Negotiation (ALPN) [RFC7301] extension, by
-   which the client exposes the names of application-layer protocols it
-   supports; an observer can deduce that one of those protocols will be
-   used if the connection continues.
+   present a certificate based on that name.  SNI information is
+   available to unidirectional observers on the client-to-server path,
+   if present.
+
+   The TLS ClientHello may also contain an Application-Layer Protocol
+   Negotiation (ALPN) [RFC7301] extension, by which the client exposes
+   the names of application-layer protocols it supports; an observer can
+   deduce that one of those protocols will be used if the connection
+   continues.
 
    Work is currently underway in the TLS working group to encrypt the
    contents of the ClientHello in TLS 1.3 [TLS-ECH].  This would make
@@ -826,7 +838,8 @@ Table of Contents
    recognition of the handshake, as illustrated in Section 2.4.  It can
    also be inferred during the flow's lifetime, if the endpoints use the
    spin bit facility described below and in Section 17.3.1 of
-   [QUIC-TRANSPORT].
+   [QUIC-TRANSPORT].  RTT measurement is available to unidirectional
+   observers when the spin bit is enabled.
 
 3.8.1.  Measuring Initial RTT
 
@@ -935,8 +948,9 @@ Table of Contents
    Limited RTT measurement is possible by passive observation of QUIC
    traffic; see Section 3.8.  No passive measurement of loss is possible
    with the present wire image.  Limited observation of upstream
-   congestion may be possible via the observation of CE markings in the
-   IP header [RFC3168] on ECN-enabled QUIC traffic.
+   congestion may be possible via the observation of Congestion
+   Experienced (CE) markings in the IP header [RFC3168] on ECN-enabled
+   QUIC traffic.
 
    On-path devices can also make measurements of RTT, loss and other
    performance metrics when information is carried in an additional
@@ -1111,8 +1125,8 @@ Table of Contents
 4.7.  DDoS Detection and Mitigation
 
    On-path observation of the transport headers of packets can be used
-   for various security functions.  For example, Denial of Service (DOS)
-   and Distributed DOS (DDOS) attacks against the infrastructure or
+   for various security functions.  For example, Denial of Service (DoS)
+   and Distributed DoS (DDoS) attacks against the infrastructure or
    against an endpoint can be detected and mitigated by characterising
    anomalous traffic.  Other uses include support for security audits
    (e.g., verifying the compliance with ciphersuites); client and
@@ -1191,9 +1205,9 @@ Table of Contents
    is used as input to the congestion controller, these variations could
    adversely affect performance.  Depending on the loss recovery
    mechanism implemented, QUIC may be more tolerant of packet re-
-   ordering than traditional TCP traffic (see Section 2.7).  However,
-   the recovery mechanism used by a flow cannot be known by the network
-   and therefore reordering tolerance should be considered as unknown.
+   ordering than typical TCP traffic (see Section 2.7).  However, the
+   recovery mechanism used by a flow cannot be known by the network and
+   therefore reordering tolerance should be considered as unknown.
 
    Note that the 5-tuple of a QUIC connection can change due to
    migration.  In this case different flows are observed by the path and
@@ -1396,6 +1410,13 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-dprive-
               dnsoquic-12>.
 
+   [I-D.ietf-quic-version-negotiation]
+              Schinazi, D. and E. Rescorla, "Compatible Version
+              Negotiation for QUIC", Work in Progress, Internet-Draft,
+              draft-ietf-quic-version-negotiation-09, 11 July 2022,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
+              version-negotiation-09>.
+
    [IPIM]     Allman, M., Beverly, R., and B. Trammell, "In-Protocol
               Internet Measurement (arXiv preprint 1612.02902)", 9
               December 2016, <https://arxiv.org/abs/1612.02902>.
@@ -1403,9 +1424,9 @@ Table of Contents
    [QUIC-APPLICABILITY]
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
-              draft-ietf-quic-applicability-16, 6 April 2022,
+              draft-ietf-quic-applicability-18, 15 July 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              applicability-16>.
+              applicability-18>.
 
    [QUIC-GREASE]
               Thomson, M., "Greasing the QUIC Bit", Work in Progress,
@@ -1426,9 +1447,9 @@ Table of Contents
 
    [QUIC-LB]  Duke, M., Banks, N., and C. Huitema, "QUIC-LB: Generating
               Routable QUIC Connection IDs", Work in Progress, Internet-
-              Draft, draft-ietf-quic-load-balancers-13, 28 March 2022,
+              Draft, draft-ietf-quic-load-balancers-14, 11 July 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              load-balancers-13>.
+              load-balancers-14>.
 
    [QUIC-RECOVERY]
               Iyengar, J., Ed. and I. Swett, Ed., "QUIC Loss Detection
