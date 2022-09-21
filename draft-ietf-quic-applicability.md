@@ -147,9 +147,10 @@ running on top of QUIC must either be prepared to accept connectivity failure
 on such networks or be engineered to fall back to some other transport
 protocol. In the case of HTTP, this fallback is TLS over TCP.
 
-The IETF TAPS specifications {{?TAPS-ARCH=I-D.ietf-taps-arch}} describe a system with a
-common API for multiple protocols. This is particularly relevant for QUIC as
-it addresses the implications of fallback among multiple protocols.
+The IETF TAPS specifications {{?TAPS-ARCH=I-D.ietf-taps-arch}} describe a
+system with a common API for multiple protocols. This is particularly
+relevant for QUIC as it addresses the implications of fallback among
+multiple protocols.
 
 Specifically, fallback to insecure protocols or to weaker versions of secure
 protocols needs to be avoided. In general, an application that implements
@@ -234,13 +235,13 @@ short network idle timeouts. Deployed stateful middleboxes will generally
 establish state for UDP flows on the first packet sent and keep state for
 much shorter idle periods than for TCP. {{?RFC5382}} suggests a TCP idle
 period of at least 124 minutes, though there is no evidence of widespread
-implementation of this guideline in the literature. However, short network 
-timeout for UDP is well-documented. According to a 2010 study
+implementation of this guideline in the literature. However, short
+network timeout for UDP is well-documented. According to a 2010 study
 ({{Hatonen10}}), UDP applications can assume that any NAT binding or other
-state entry can expire after just thirty seconds of inactivity.  {{Section 3.5
-of RFC8085}} further discusses keep-alive intervals for UDP: it requires 
-that there is a minimum value of 15 seconds, but recommends larger values, or
-that keep-alive is omitted entirely.
+state entry can expire after just thirty seconds of inactivity.
+{{Section 3.5 of RFC8085}} further discusses keep-alive intervals for UDP:
+it requires that there is a minimum value of 15 seconds, but recommends
+larger values, or that keep-alive is omitted entirely.
 
 By using a connection ID, QUIC is designed to be robust to NAT
 rebinding after a timeout. However, this only helps if one endpoint maintains
@@ -496,7 +497,7 @@ see {{sec-termination}}.
 
 An application that uses QUIC and communicates a cumulative stream limit might
 require the connection to be closed before the limit is reached, e.g.,
-to stop the server in order to perform scheduled maintenance. Immediate 
+to stop the server in order to perform scheduled maintenance. Immediate
 connection close causes abrupt closure of actively used streams. Depending
 on how an application uses QUIC streams, this could be undesirable or
 detrimental to behavior or performance.
@@ -512,7 +513,7 @@ these aspects can be specific to applications and their deployments.
 
 Instead of relying on stream limits to avoid abrupt closure, an application
 layer's graceful close mechanism can be used to communicate the intention to
-explicitly close the connection at some future point. HTTP/3 provides such a 
+explicitly close the connection at some future point. HTTP/3 provides such a
 mechanism using the GOAWAY frame. In HTTP/3, when the GOAWAY frame is received
 by a client, it stops opening new streams even if the cumulative stream limit
 would allow. Instead, the client would create a new connection on which to open
@@ -528,7 +529,7 @@ streams is mapped into frames or how those frames are bundled into packets.
 
 By default, many implementations will try to pack STREAM frames from
 from one or more streams into each QUIC packet, in order to minimize
-bandwidth consumption and computational costs (see {{Section 13 of QUIC}}). 
+bandwidth consumption and computational costs (see {{Section 13 of QUIC}}).
 If there is not enough data
 available to fill a packet, an implementation might wait for a short time to
 optimize bandwidth efficiency instead of latency. This delay can either be
@@ -601,13 +602,13 @@ well as implications for congestion control and recovery.
 In general, port numbers serve two purposes: "first, they provide a
 demultiplexing identifier to differentiate transport sessions between the same
 pair of endpoints, and second, they may also identify the application protocol
-and associated service to which processes connect" ({{Section 3 of ?RFC6335}}). The assumption
-that an application can be identified in the network based on the port number
-is less true today due to encapsulation and mechanisms for dynamic port
-assignments, as noted in {{?RFC6335}}.
+and associated service to which processes connect" ({{Section 3 of ?RFC6335}}).
+The assumption that an application can be identified in the network based on
+the port number is less true today due to encapsulation and mechanisms for
+dynamic port assignments, as noted in {{?RFC6335}}.
 
 As QUIC is a general-purpose transport protocol, there are no requirements that
-servers use a particular UDP port for QUIC. 
+servers use a particular UDP port for QUIC.
 For an application with a fallback to TCP that does not already have an
 alternate mapping to UDP, it is usually appropriate to register (if
 necessary) and use of the UDP port number corresponding to the TCP
@@ -677,7 +678,7 @@ reflection vectors as well.
 QUIC supports connection migration by the client. If the client's IP address
 changes, a QUIC endpoint can still associate packets
 with an existing transport connection using the Destination Connection ID
-field (see {{connid}}) in the QUIC header. This supports cases where the 
+field (see {{connid}}) in the QUIC header. This supports cases where the
 address information changes, such as NAT rebinding, the
 intentional change of the local interface, the expiration of a temporary
 IPv6 address {{?RFC8981}}, or the indication from the server of a preferred
@@ -830,10 +831,11 @@ In this case, it is assumed that all servers belonging to a certain pool are
 served in cooperation with load balancers that forward the traffic based on the
 connection ID. A server can choose the connection ID in the Retry packet such
 that the load balancer will redirect the next Initial packet to a different
-server in that pool.  Alternatively, the load balancer can directly offer a Retry
-offload as further described in {{?QUIC-RETRY=I-D.duke-quic-retry-offload}}.
+server in that pool.  Alternatively, the load balancer can directly offer a
+Retry offload as further described in
+{{?QUIC-RETRY=I-D.duke-quic-retry-offload}}.
 
-The approach described in 
+The approach described in
 {{Section 4 of RFC5077}} for constructing
 TLS resumption tickets provides an example that can also be applied to
 validation tokens. However, the use of more modern cryptographic algorithms
