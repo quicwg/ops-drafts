@@ -261,7 +261,7 @@ timeout, which is defined as the minimum of either endpoint's idle timeout
 parameter; see {{Section 10.1 of QUIC}}). There are three options:
 
 - Ignore the issue if the application-layer protocol consists only of
-  interactions with no or very short idle periods or if the protocol's 
+  interactions with no or very short idle periods or if the protocol's
   resistance to NAT rebinding is sufficient.
 - Ensure there are no long idle periods.
 - Resume the session after a long idle period, using 0-RTT resumption when
@@ -354,10 +354,11 @@ streams by the receiver. Therefore, an application should consider the
 maximum number of allowed, currently open, and currently used streams when
 determining how to map data to streams.
 
-QUIC assigns a numerical identifier, called the stream ID, to each stream.  While
-the relationship between these identifiers and stream types is clearly defined
-in version 1 of QUIC, future versions might change this relationship for various
-reasons. QUIC implementations should expose the properties of each stream
+QUIC assigns a numerical identifier, called the stream ID, to each stream.
+While the relationship between these identifiers and stream types is
+clearly defined in version 1 of QUIC, future versions might change this
+relationship for various reasons. QUIC implementations should expose the
+properties of each stream
 (which endpoint initiated the stream, whether the stream is unidirectional or
 bidirectional, the stream ID used for the stream); applications should query for
 these properties rather than attempting to infer them from the stream ID.
@@ -489,11 +490,11 @@ QUIC endpoints are responsible for communicating the cumulative limit of streams
 they would allow to be opened by their peer. Initial limits are advertised using
 the initial_max_streams_bidi and initial_max_streams_uni transport parameters.
 As streams are opened and closed, they are consumed, and the cumulative total is
-incremented. Limits can be increased using the MAX_STREAMS frame, but there is no
-mechanism to reduce limits. Once stream limits are reached, no more streams can
-be opened, which prevents applications using QUIC from making further progress.
-At this stage, connections can be terminated via idle timeout or explicit close;
-see {{sec-termination}}.
+incremented. Limits can be increased using the MAX_STREAMS frame, but there is
+no mechanism to reduce limits. Once stream limits are reached, no more streams
+can be opened, which prevents applications using QUIC from making further
+progress. At this stage, connections can be terminated via idle timeout or
+explicit close; see {{sec-termination}}.
 
 An application that uses QUIC and communicates a cumulative stream limit might
 require the connection to be closed before the limit is reached, e.g.,
