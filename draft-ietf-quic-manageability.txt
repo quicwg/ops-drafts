@@ -5,8 +5,8 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                                  Ericsson
 Intended status: Informational                               B. Trammell
-Expires: 12 January 2023                         Google Switzerland GmbH
-                                                            11 July 2022
+Expires: 1 April 2023                            Google Switzerland GmbH
+                                                       28 September 2022
 
 
               Manageability of the QUIC Transport Protocol
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 January 2023.
+   This Internet-Draft will expire on 1 April 2023.
 
 Copyright Notice
 
@@ -1413,20 +1413,20 @@ Table of Contents
    [I-D.ietf-quic-version-negotiation]
               Schinazi, D. and E. Rescorla, "Compatible Version
               Negotiation for QUIC", Work in Progress, Internet-Draft,
-              draft-ietf-quic-version-negotiation-08, 8 June 2022,
+              draft-ietf-quic-version-negotiation-10, 27 September 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              version-negotiation-08>.
+              version-negotiation-10>.
 
    [IPIM]     Allman, M., Beverly, R., and B. Trammell, "In-Protocol
               Internet Measurement (arXiv preprint 1612.02902)", 9
               December 2016, <https://arxiv.org/abs/1612.02902>.
 
    [QUIC-APPLICABILITY]
-              Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
+              Kühlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
-              draft-ietf-quic-applicability-16, 6 April 2022,
+              draft-ietf-quic-applicability-18, 15 July 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              applicability-16>.
+              applicability-18>.
 
    [QUIC-GREASE]
               Thomson, M., "Greasing the QUIC Bit", Work in Progress,
@@ -1447,9 +1447,9 @@ Table of Contents
 
    [QUIC-LB]  Duke, M., Banks, N., and C. Huitema, "QUIC-LB: Generating
               Routable QUIC Connection IDs", Work in Progress, Internet-
-              Draft, draft-ietf-quic-load-balancers-13, 28 March 2022,
+              Draft, draft-ietf-quic-load-balancers-14, 11 July 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              load-balancers-13>.
+              load-balancers-14>.
 
    [QUIC-RECOVERY]
               Iyengar, J., Ed. and I. Swett, Ed., "QUIC Loss Detection
